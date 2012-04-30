@@ -3,26 +3,17 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 project(Protobuf)
 cmake_minimum_required(VERSION 2.6)
 
-if( WIN32 )
-  include_directories(
-    ${PROJECT_SOURCE_DIR}/vsprojects
-    ${PROJECT_SOURCE_DIR}/src
-    )
+if(WIN32)
   if(MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS=1
-    /wd4244 /wd4267 /wd4018 /wd4355 /wd4800 /wd4251 /wd4996 /wd4146 /wd4305
-    )
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS=1 /wd4244 /wd4267 /wd4018 /wd4355 /wd4800 /wd4251 /wd4996 /wd4146 /wd4305)
   ENDIF(  )
 else()
-  include_directories(
-    ${PROJECT_SOURCE_DIR}/src
-    )
   add_definitions(-Wno-deprecated)
   add_definitions(-DHAVE_PTHREAD)
 endif()
-add_definitions(-D_CONSOLE)
 
-
+include_directories(${PROJECT_SOURCE_DIR}/src)
+add_definitions(-D_CONSOLE -std=c++11)
 
 # library
 FILE(GLOB_RECURSE LIB_PROTBUF_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/*.cc")
@@ -40,7 +31,6 @@ SET(TESTS ${PROTOC_TESTS_SOURCES} ${PROTOC_TESTS_HEADERS})
 LIST(REMOVE_ITEM PROTOBUF_DIR ${PROTOC_DIR} ${TESTS})
 
 add_library("libprotobuf" ${PROTOBUF_DIR})
-
 add_executable(protoc ${PROTOC_DIR})
 
 if( UNIX )
