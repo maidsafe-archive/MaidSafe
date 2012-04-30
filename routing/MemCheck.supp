@@ -1,0 +1,17 @@
+{
+   Use of uninitialised value of size 4: CryptoPP::Rijndael_Enc_AdvancedProcessBlocks(void*, unsigned int const*)
+   Memcheck:Value4
+   fun:_ZN8CryptoPP34Rijndael_Enc_AdvancedProcessBlocksEPvPKj
+}
+{
+   Conditional jump or move depends on uninitialised value(s): CryptoPP::X917RNG::GenerateIntoBufferedTransformation(CryptoPP::BufferedTransformation, std::string const, unsigned long long)
+   Memcheck:Cond
+   fun:_ZN8CryptoPP7X917RNG34GenerateIntoBufferedTransformationERNS_22BufferedTransformationERKSsy
+   fun:_ZN8CryptoPP21RandomNumberGenerator13GenerateBlockEPhj
+   fun:_ZN8CryptoPP7X917RNGC1EPNS_19BlockTransformationEPKhS4_
+   fun:_ZN8CryptoPP17AutoSeededX917RNGINS_8RijndaelEE6ReseedEPKhjS4_S4_
+   fun:_ZN8CryptoPP17AutoSeededX917RNGINS_8RijndaelEE6ReseedEbPKhj
+   fun:_ZN8CryptoPP17AutoSeededX917RNGINS_8RijndaelEEC1Ebb
+   fun:_Z41__static_initialization_and_destruction_0ii
+   fun:_GLOBAL__I_crypto.cc
+}

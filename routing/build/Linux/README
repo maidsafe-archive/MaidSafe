@@ -1,0 +1,12 @@
+Linux Build Instructions
+========================
+
+#  cd to build dir for Linux matching the build type required (build/Linux/Debug, build/Linux/Release, etc.)
+#  Run cmake ../../.. -G"CodeBlocks - Unix Makefiles"
+#  Run make (this will make all). Other options:
+
+    *  Run make Experimental to configure, build, test and upload to our dashboard.
+    *  Run make package to create auto rpm or deb.
+    *  Run make install to install the maidsafe-dht library to /usr/lib and headers to /usr/include.
+
+For full build instructions, see http://code.google.com/p/maidsafe-dht/wiki/DevBuild

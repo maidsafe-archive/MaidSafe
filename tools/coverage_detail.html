@@ -1,0 +1,108 @@
+<script type="text/javascript">
+var file = '';
+function gup( name ) {
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec(window.location.href);
+  if(results == null)
+    return "";
+  else
+    return results[1];
+}
+
+ file = gup('full_name');
+</script>
+
+<html>
+<head>
+
+<script type="text/javascript">
+document.write("<title>Coverage results: " + file + "</title>");
+</script>
+
+<style type="text/css">
+th {
+	border-width: 0px;
+	padding: 3px;
+	border-style: solid;
+	border-color: black;
+	background-color: #0033FF;
+	color: #FFFFFF;
+	text-align: left; 
+}
+td {
+  font-size: 14px;
+	text-align: left;
+}
+pre {
+  font-size: 14px;
+	text-align: left;
+	padding: 0px;
+  margin: 0px;
+}
+</style>
+
+</head>
+
+<body>
+<script type="text/javascript">
+if (window.XMLHttpRequest) {  // code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+} else {  // code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+}
+xmlhttp.open("GET", "CoverageLog-0.xml", false);
+xmlhttp.send();
+xmlDoc = xmlhttp.responseXML; 
+
+var x = xmlDoc.getElementsByTagName("File");
+var found = false;
+var j = -1;
+for (i = 0; i < x.length && !found; ++i) {
+  if (x[i].getAttribute("FullPath") == file) {
+    document.write("Found it! ");
+    found = true; 
+  }
+  ++j;
+}
+
+if (!found) {
+  document.write("File '" + file + "' not found in CoverageLog-0.xml");
+} else {
+  var n = x[j].getElementsByTagName("Line");
+  document.write("<h3>File '" + x[j].getAttribute("FullPath") + " - " + n.length + " lines.</h3>");
+  document.write("<table cellpading=0 cellspacing=0 border=0>");
+  document.write("  <th>Line</th>");
+  document.write("  <th>Count</th>");
+  document.write("  <th>Code</th>");
+  var num, cnt, colour;
+  for (a = 0; a < n.length; ++a) {
+    cnt = n[a].getAttribute("Count");
+    if (cnt == 0)
+      colour = "#ff6666";
+    else
+      colour = "#ffffff";
+
+    document.write("<tr>");
+    num = n[a].getAttribute("Number");
+    ++num;
+    document.write("  <td width=100 bgcolor=" + colour + ">" + num + "</td>");
+    document.write("  <td width=100 bgcolor=" + colour + ">" + cnt + "</td>");
+    var nachas = '';
+    if (n[a].childNodes.length == 1) {
+      nachas = n[a].childNodes[0].nodeValue;
+      // nachas.replace(' ', '&nbsp;')
+    }
+    document.write("  <td bgcolor=" + colour + "><pre>" + nachas + "</pre></td>");
+    document.write("</tr>"); 
+  }
+  document.write("</table>");
+}
+</script>
+</body>
+
+</html>
+
+
+

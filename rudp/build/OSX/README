@@ -1,0 +1,10 @@
+OSX Build Instructions
+======================
+
+#  cd to build dir for OSX matching the build type required (build/OSX/Debug, build/OSX/Release, etc.)
+#  Run cmake ../../.. -G"CodeBlocks - Unix Makefiles"
+#  Run make (this will make all). Other options:
+
+    *  Run make Experimental to configure, build, test and upload to our dashboard.
+    *  Run make package to create auto rpm or deb.
+    *  Run make install to install MaidSafe-RUDP (by default to MaidSafe-Common/installed/)

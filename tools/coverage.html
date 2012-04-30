@@ -1,0 +1,92 @@
+<html>
+<head>
+
+<title>Coverage Results...</title>
+
+<style type="text/css">
+table.sample {
+	border-width: 0px;
+	border-spacing: 0px;
+	border-style: none;
+	border-color: black;
+	border-collapse: separate;
+	background-color: white;
+}
+table.sample th {
+	border-width: 0px;
+	padding: 3px;
+	border-style: solid;
+	border-color: black;
+	background-color: #0033FF;
+	color: #FFFFFF;
+	text-align: left; 
+}
+table.sample td.blanco {
+	border-width: 0px;
+	padding: 3px;
+	border-style: solid;
+	border-color: black;
+	background-color: white;
+}
+table.sample td.gris {
+	border-width: 0px;
+	padding: 3px;
+	border-style: solid;
+	border-color: black;
+	background-color: #E0E0E0;
+}
+</style>
+
+</head>
+
+<body>
+
+<script type="text/javascript">
+if (window.XMLHttpRequest) {  // code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+} else {  // code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+}
+xmlhttp.open("GET", "Coverage.xml", false);
+xmlhttp.send();
+xmlDoc = xmlhttp.responseXML; 
+
+document.write("<table class='sample'>");
+document.write("<th>Name</th>");
+document.write("<th>Full Path</th>");
+document.write("<th>Covered</th>");
+document.write("<th>Tested</th>");
+document.write("<th>UnTested</th>");
+document.write("<th>Percent</th>");
+document.write("<th>Metric</th>");
+
+var x = xmlDoc.getElementsByTagName("File");
+for (i = 0; i < x.length; ++i) {
+  colorin = 'blanco';
+  if (i%2 == 0)
+    colorin = 'gris';
+  document.write("<tr><td class='" + colorin + "'>");
+  document.write(x[i].getAttribute("Name"));
+  document.write("</td><td class='" + colorin + "'>");
+  document.write("<a href='coverage_detail.html?full_name=" + x[i].getAttribute("FullPath") + "'>" + x[i].getAttribute("FullPath") + "</a>");
+  document.write("</td><td class='" + colorin + "'>");
+  document.write(x[i].getAttribute("Covered"));
+  document.write("</td><td class='" + colorin + "'>");
+  document.write(x[i].getElementsByTagName("LOCTested")[0].childNodes[0].nodeValue);
+  document.write("</td><td class='" + colorin + "'>");
+  document.write(x[i].getElementsByTagName("LOCUnTested")[0].childNodes[0].nodeValue);
+  document.write("</td><td class='" + colorin + "'>");
+  document.write(x[i].getElementsByTagName("PercentCoverage")[0].childNodes[0].nodeValue);
+  document.write("</td><td class='" + colorin + "'>");
+  document.write(x[i].getElementsByTagName("CoverageMetric")[0].childNodes[0].nodeValue);
+  document.write("</td></tr>");
+}
+document.write("</table>");
+</script>
+
+</body>
+
+</html>
+
+
+

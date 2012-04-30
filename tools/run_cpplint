@@ -1,0 +1,23 @@
+#! /bin/sh
+echo  "checking please wait (3mins) ....."
+ find ../../src/$1 -name "*.cc" -exec python ./cpplint.py {} \;   > code_style_errors 2>&1
+ find ../../src$1 -name "*.h" -exec python ./cpplint.py {} \;   >> code_style_errors 2>&1
+
+for k in ../../src/maidsafe/protobuf/ Done Total  *\.pb\.* cryptopp udt libupnp
+do
+  egrep -v $k code_style_errors > code_style_errors2
+  cat code_style_errors2 > code_style_errors
+done
+
+x=`cat code_style_errors | wc -l`
+echo -e "Errors: $x"
+
+if [ $x -eq 0 ]; then
+  echo "Well done. Stop looking smug."
+elif [ $x -le 100 ]; then
+  echo "Getting there... slowmo."
+elif [ $x -le 2 ]; then
+  echo "Ohhhh ! soooo close na na - na na na ."
+else
+  echo "Do ya fink that's good enough?"
+fi

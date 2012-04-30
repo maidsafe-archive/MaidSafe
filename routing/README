@@ -1,0 +1,19 @@
+For full build instructions, see https://github.com/maidsafe/MaidSafe-DHT/wiki/Developer-Build-Instructions
+Abbreviated instructions can be found in build/<DirAppropriateToYourOS>/README
+
+Directory structure
+===================
+- build (all build files)
+    - Linux
+        - Debug
+        - Release
+        - RelWithDebInfo
+        - MinSizeRel
+    - OSX
+        - Debug
+        - Release
+        - RelWithDebInfo
+        - MinSizeRel
+    - Win_MSVC
+- src
+    - maidsafe

@@ -1,0 +1,57 @@
+{
+   Use of uninitialised value of size 4: CryptoPP::Rijndael_Enc_AdvancedProcessBlocks(void*, unsigned int const*)
+   Memcheck:Value4
+   fun:_ZN8CryptoPP34Rijndael_Enc_AdvancedProcessBlocksEPvPKj
+}
+{
+   Conditional jump or move depends on uninitialised value(s): CryptoPP::X917RNG::GenerateIntoBufferedTransformation(CryptoPP::BufferedTransformation, std::string const, unsigned long long)
+   Memcheck:Cond
+   fun:_ZN8CryptoPP7X917RNG34GenerateIntoBufferedTransformationERNS_22BufferedTransformationERKSsy
+   fun:_ZN8CryptoPP21RandomNumberGenerator13GenerateBlockEPhj
+   fun:_ZN8CryptoPP7X917RNGC1EPNS_19BlockTransformationEPKhS4_
+   fun:_ZN8CryptoPP17AutoSeededX917RNGINS_8RijndaelEE6ReseedEPKhjS4_S4_
+   fun:_ZN8CryptoPP17AutoSeededX917RNGINS_8RijndaelEE6ReseedEbPKhj
+   fun:_ZN8CryptoPP17AutoSeededX917RNGINS_8RijndaelEEC1Ebb
+   fun:_Z41__static_initialization_and_destruction_0ii
+   fun:_GLOBAL__I_crypto.cc
+}
+{
+   8 bytes in 1 blocks are still reachable in loss record 1 of 1: boost::detail::get_once_per_thread_epoch()
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN5boost6detail25get_once_per_thread_epochEv
+   fun:_ZN5boost9call_onceIPFvvEEEvRNS_9once_flagET_.clone.108
+   fun:_ZN5boost11this_thread20disable_interruptionC1Ev
+   fun:_ZN5boost12shared_mutex4lockEv
+   fun:_ZN5boost11unique_lockINS_12shared_mutexEE4lockEv
+   fun:_ZN5boost11unique_lockINS_12shared_mutexEEC1ERS1_
+}
+{
+   8 bytes in 1 blocks are still reachable in loss record 1 of 1: boost::detail::get_once_per_thread_epoch()
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN5boost6detail25get_once_per_thread_epochEv
+   fun:_ZN5boost9call_onceIPFvvEEEvRNS_9once_flagET_.clone.108
+   fun:_ZN5boost11this_thread20disable_interruptionC1Ev
+   fun:_ZN5boost12shared_mutex11lock_sharedEv
+   fun:_ZN5boost11shared_lockINS_12shared_mutexEE4lockEv
+   fun:_ZN5boost11shared_lockINS_12shared_mutexEEC1ERS1_
+}
+{
+   8 bytes in 1 blocks are still reachable in loss record 1 of 1: boost::detail::get_once_per_thread_epoch()
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN5boost6detail25get_once_per_thread_epochEv
+   fun:_ZN5boost9call_onceIPFvvEEEvRNS_9once_flagET_.clone.108
+   fun:_ZN5boost6thread4joinEv
+}
+{
+   8 bytes in 1 blocks are still reachable in loss record 1 of 1: boost::detail::get_once_per_thread_epoch()
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN5boost6detail25get_once_per_thread_epochEv
+   fun:_ZN5boost9call_onceIPFvvEEEvRNS_9once_flagET_.clone.108
+   fun:_ZN5boost11this_thread5sleepERKNS_10posix_time5ptimeE
+   fun:_ZN5boost11this_thread5sleepINS_10posix_time13time_durationEEEvRKT_
+   fun:_ZN8maidsafe5SleepERKN5boost10posix_time13time_durationE
+}
