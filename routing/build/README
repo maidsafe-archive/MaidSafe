@@ -1,5 +1,0 @@
-Do not build files from this directory - cd to Linux, OSX, Win_MinGW or Win_MSVC
-depending on your OS and/or build tool and run the build from there.
-
-For full build instructions, see http://code.google.com/p/maidsafe-dht/wiki/DevBuild
-Abbreviated instructions can be found in src/build/<DirAppropriateToYourOS>/README
