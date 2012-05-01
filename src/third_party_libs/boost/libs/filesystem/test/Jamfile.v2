@@ -1,0 +1,32 @@
+# Boost Filesystem Library test Jamfile
+
+# (C) Copyright Beman Dawes 2002-2006
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or www.boost.org/LICENSE_1_0.txt)
+
+project 
+    : requirements
+      <library>/boost/filesystem//boost_filesystem
+      <library>/boost/system//boost_system
+      <toolset>msvc:<asynch-exceptions>on
+    ;
+    
+   test-suite "filesystem" :
+       [ run ../v2/test/path_test.cpp :  :  :  : v2_path_test ]                  
+       [ run ../v2/test/operations_test.cpp :  :  :  : v2_operations_test ]
+       [ run ../v2/test/fstream_test.cpp :  :  :  : v2_fstream_test ]
+       [ run ../v2/test/convenience_test.cpp :  :  :  : v2_convenience_test ]
+       [ run ../v2/test/large_file_support_test.cpp :  :  :  : v2_large_file_support_test ]
+ 
+       [ run ../v3/test/path_unit_test.cpp :  :  :  : v3_path_unit_test ]                  
+       [ run ../v3/test/path_test.cpp :  :  :  : v3_path_test ]                  
+       [ run ../v3/test/operations_unit_test.cpp :  :  :  : v3_operations_unit_test ]
+       [ run ../v3/test/operations_test.cpp :  :  : <test-info>always_show_run_output : v3_operations_test ]
+       [ run ../v3/test/fstream_test.cpp :  :  :  : v3_fstream_test ]
+       [ run ../v3/test/convenience_test.cpp :  :  :  : v3_convenience_test ]
+       [ run ../v3/test/large_file_support_test.cpp :  :  :  : v3_large_file_support_test ]
+       [ run ../v3/test/deprecated_test.cpp :  :  :  : v3_deprecated_test ]                  
+       [ run ../v3/example/simple_ls.cpp :  :  :  : v3_simple_ls ]
+ 
+       [ run ../v3/test/locale_info.cpp  : : : <test-info>always_show_run_output ]
+       ;

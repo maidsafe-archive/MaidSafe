@@ -1,0 +1,42 @@
+# Signals library
+
+# Copyright (C) 2001-2003 Douglas Gregor
+
+# Permission to copy, use, sell and distribute this software is granted 
+# provided this copyright notice appears in all copies. Permission to modify 
+# the code and to distribute modified code is granted provided this copyright 
+# notice appears in all copies, and a notice that the code was modified is 
+# included with the copyright notice. This software is provided "as is" 
+# without express or implied warranty, and with no claim as to its suitability 
+# for any purpose. 
+
+# For more information, see http://www.boost.org/
+
+# bring in rules for testing
+import testing ;
+import feature ;
+
+feature.feature nowchar : on :
+ composite optional propagated link-incompatible ;
+feature.compose <nowchar>on : <cxxflags>/Zc:wchar_t- ; 
+ 
+test-suite conversion
+  : [ run implicit_cast.cpp ]
+    [ compile-fail implicit_cast_fail.cpp ]
+    [ run ../cast_test.cpp ]
+    [ run ../numeric_cast_test.cpp ]    
+    [ run ../lexical_cast_test.cpp ../../test/build//boost_unit_test_framework/<link>static ]
+    [ run lexical_cast_loopback_test.cpp ../../test/build//boost_unit_test_framework/<link>static ]
+    [ run lexical_cast_abstract_test.cpp ../../test/build//boost_unit_test_framework/<link>static ]
+    [ run lexical_cast_noncopyable_test.cpp ../../test/build//boost_unit_test_framework/<link>static ]
+    [ run lexical_cast_vc8_bug_test.cpp ../../test/build//boost_unit_test_framework/<link>static ]
+    [ run lexical_cast_wchars_test.cpp ../../test/build//boost_unit_test_framework/<link>static ]
+    [ run lexical_cast_float_types_test.cpp ../../test/build//boost_unit_test_framework/<link>static ]
+    [ run lexical_cast_inf_nan_test.cpp ../../test/build//boost_unit_test_framework/<link>static ]
+    [ run lexical_cast_containers_test.cpp ../../test/build//boost_unit_test_framework/<link>static ]
+    [ run lexical_cast_empty_input_test.cpp ../../test/build//boost_unit_test_framework/<link>static ]
+    [ run lexical_cast_pointers_test.cpp ../../test/build//boost_unit_test_framework/<link>static ]
+    [ compile lexical_cast_typedefed_wchar_test.cpp : <toolset>msvc:<nowchar>on ]
+    [ run lexical_cast_typedefed_wchar_test_runtime.cpp ../../test/build//boost_unit_test_framework/<link>static : : : <toolset>msvc:<nowchar>on ]
+  ;
+      

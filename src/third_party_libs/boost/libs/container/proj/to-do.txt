@@ -1,0 +1,46 @@
+->Change "insert" and "push_back"/"push_front" to catch non-const rvalues
+->Add an example with stateful allocators
+->Add test to check convertible types in push_back/insert
+
+
+Review allocator traits
+-> Explicit instantiation of simple allocator & std::allocator to detect missing allocator_traits calls
+-> Avoid any rebind<>::other
+-> Review select_on_container_copy_xxx
+-> Review propagate_on_xxx
+-> Put default constructed containers with their own constructor (different nothrow guarantees). Optimization, not needed
+-> Default + swap move constructors correct?
+-> Review container documentation in swap/copy/move regarding allocators
+
+Check all move constructors: swap might not be a valid idiom, allocators must be move constructed, intrusive containers are now movable
+
+Add and test:
+
+Test different propagation values and with inequal allocators
+
+
+propagate_on_container_move_assignment
+select_on_container_copy_construction
+propagate_on_container_swap
+propagate_on_container_copy_assignment
+
+Test move constructors with data values and unequal allocators
+
+An allocator should use a smart allocator not constructible from raw pointers to catch missing pointer_traits calls
+
+Review all internal container swap's to check allocator propagation is correct
+
+Add initializer lists
+
+Write forward_list
+
+Review all move constructors to test if allocator is move constructed
+
+check move if noexcept conditions in vector, deque and stable_vector
+
+Add new allocator propagation copy constructors
+
+Review all destructors (search for "~") to detect placement destruction and replace it with allocator_traits::destroy
+
+All functions from base classes like vector_base, node_alloc_holder, etc., should be named with underscore or
+similar to avoid namespace pollution.
