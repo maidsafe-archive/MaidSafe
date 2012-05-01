@@ -1,0 +1,6 @@
+[submodule "MaidSafe-Routing"]
+	path = MaidSafe-Routing
+	url = git@github.com:maidsafe/MaidSafe-Routing.git
+[submodule "src/routing"]
+	path = src/routing
+	url = git@github.com:maidsafe/MaidSafe-Routing.git
