@@ -4,3 +4,9 @@
 [submodule "src/routing"]
 	path = src/routing
 	url = git@github.com:maidsafe/MaidSafe-Routing.git
+[submodule "src/private"]
+	path = src/private
+	url = git@github.com:maidsafe/MaidSafe-Private.git
+[submodule "src/rudp"]
+	path = src/rudp
+	url = git@github.com:maidsafe/MaidSafe-RUDP.git

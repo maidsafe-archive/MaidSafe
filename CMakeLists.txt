@@ -27,7 +27,7 @@ if(MSVC)
   endif()
 endif()
 
-add_subdirectory(routing)
+add_subdirectory(src)
 
 
 
