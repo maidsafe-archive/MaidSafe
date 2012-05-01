@@ -6,7 +6,7 @@
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/config for the most recent version.//
-//  Revision $Id: no_decltype_n3276_fail.cpp 73153 2011-07-16 20:12:46Z eric_niebler $
+//  Revision $Id$
 //
 
 

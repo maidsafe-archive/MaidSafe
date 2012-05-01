@@ -8,7 +8,7 @@
         [@http://www.boost.org/LICENSE_1_0.txt])]
     [authors [Maddock, John]]
     [category misc]
-    [last-revision $Date: 2011-04-25 11:56:08 -0400 (Mon, 25 Apr 2011) $]
+    [last-revision $Date$]
 ]
 
 [section:intro Introduction]

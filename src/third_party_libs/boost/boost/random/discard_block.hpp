@@ -8,7 +8,7 @@
  *
  * See http://www.boost.org for most recent version including documentation.
  *
- * $Id: discard_block.hpp 72951 2011-07-07 04:57:37Z steven_watanabe $
+ * $Id$
  *
  * Revision history
  *  2001-03-02  created

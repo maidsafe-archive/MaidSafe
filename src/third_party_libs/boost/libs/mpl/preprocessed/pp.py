@@ -7,9 +7,9 @@
 #
 # See http://www.boost.org/libs/mpl for documentation.
 
-# $Id: pp.py 49270 2008-10-11 06:35:10Z agurtovoy $
-# $Date: 2008-10-11 02:35:10 -0400 (Sat, 11 Oct 2008) $
-# $Revision: 49270 $
+# $Id$
+# $Date$
+# $Revision$
 
 import fileinput
 import os

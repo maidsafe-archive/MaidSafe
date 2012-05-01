@@ -8,7 +8,7 @@
 :Author: David Abrahams and Jeremy Siek
 :Contact: dave@boost-consulting.com, jsiek@osl.iu.edu
 :Organization: `Boost Consulting`_, Indiana University Bloomington
-:date: $Date: 2008-03-22 17:45:55 -0400 (Sat, 22 Mar 2008) $
+:date: $Date$
 :Copyright: Copyright David Abrahams, Jeremy Siek 2003. Use, modification and
       distribution is subject to the Boost Software License,
       Version 1.0. (See accompanying file LICENSE_1_0.txt or copy

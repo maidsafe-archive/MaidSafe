@@ -7,7 +7,7 @@
      (See accompanying file LICENSE_1_0.txt or  http://www.boost.org/LICENSE_1_0.txt)
 -->
 
-<section id="string_algo.concept" last-revision="$Date: 2008-06-19 08:07:24 -0400 (Thu, 19 Jun 2008) $">
+<section id="string_algo.concept" last-revision="$Date$">
     <title>Concepts</title>
 
     <using-namespace name="boost"/>

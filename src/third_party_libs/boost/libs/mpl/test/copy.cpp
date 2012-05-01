@@ -8,9 +8,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id: copy.cpp 55647 2009-08-18 05:00:17Z agurtovoy $
-// $Date: 2009-08-18 01:00:17 -0400 (Tue, 18 Aug 2009) $
-// $Revision: 55647 $
+// $Id$
+// $Date$
+// $Revision$
 
 #include <boost/mpl/copy.hpp>
 

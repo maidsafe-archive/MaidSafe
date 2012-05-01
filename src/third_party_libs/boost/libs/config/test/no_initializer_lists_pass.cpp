@@ -6,7 +6,7 @@
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/config for the most recent version.//
-//  Revision $Id: no_initializer_lists_pass.cpp 50451 2009-01-03 23:18:33Z danieljames $
+//  Revision $Id$
 //
 
 

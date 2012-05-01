@@ -8,9 +8,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Id: map.cpp 55752 2009-08-24 04:17:30Z agurtovoy $
-// $Date: 2009-08-24 00:17:30 -0400 (Mon, 24 Aug 2009) $
-// $Revision: 55752 $
+// $Id$
+// $Date$
+// $Revision$
 
 #include <boost/mpl/map.hpp>
 #include <boost/mpl/insert.hpp>

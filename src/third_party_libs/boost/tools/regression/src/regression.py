@@ -549,8 +549,8 @@ class runner:
             raise
 
     def command_show_revision(self):
-        modified = '$Date: 2011-10-06 11:41:40 -0400 (Thu, 06 Oct 2011) $'
-        revision = '$Revision: 74759 $'
+        modified = '$Date$'
+        revision = '$Revision$'
 
         import re
         re_keyword_value = re.compile( r'^\$\w+:\s+(.*)\s+\$$' )

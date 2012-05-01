@@ -13,7 +13,7 @@ else()
 endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
-add_definitions(-D_CONSOLE -std=c++11 -Wambiguous-member-template -Wbind-to-temporary-copy -Weverything )
+add_definitions(-D_CONSOLE )
 
 # library
 FILE(GLOB_RECURSE LIB_PROTBUF_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/*.cc")

@@ -7,7 +7,7 @@
  *
  * See http://www.boost.org for most recent version including documentation.
  *
- * $Id: seed_seq.hpp 74867 2011-10-09 23:13:31Z steven_watanabe $
+ * $Id$
  *
  */
 

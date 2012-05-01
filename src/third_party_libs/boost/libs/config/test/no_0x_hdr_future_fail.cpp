@@ -6,7 +6,7 @@
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/config for the most recent version.//
-//  Revision $Id: no_0x_hdr_future_fail.cpp 53445 2009-05-30 11:22:59Z bemandawes $
+//  Revision $Id$
 //
 
 

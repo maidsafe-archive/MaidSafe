@@ -75,6 +75,27 @@ function(handle_versions VERSION_H)
   endforeach()
 endfunction()
 
+function(set_maidsafe_variables)
+
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CLANG = TRUE)
+    set(COMPILER = "Clang")
+  endif()
+
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    set(LINUX = TRUE)
+  endif()
+
+  if(${CMAKE_COMPILER_IS_GNUCC})
+    set (GCC = TRUE)
+    set(COMPILER=GCC)
+  endif()
+
+  if(MSVC)
+    set(COMPILER = MSVC)
+  endif()
+
+endfunction()
 
 # Adds a static library with CMake Target name of "maidsafe_${LIB_OUTPUT_NAME}".
 function(ms_add_static_library LIB_OUTPUT_NAME)

@@ -118,15 +118,12 @@ if(APPLE)
 endif()
 
 if(UNIX)
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    include_directories("/usr/local/include/c++/v1") 
+  if(CLANG)
     add_definitions(-DCRYPTOPP_DISABLE_ASM)
     set_target_properties(cryptopp PROPERTIES
-                            COMPILE_FLAGS "-Wno-tautological-compare -pipe -std=c++11 -stdlib=libc++ -Wno-c++11-narrowing")
+                            COMPILE_FLAGS "-O2 -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION  -stdlib=libc++ -std=c++98 -Wno-tautological-compare -fPIC -pthread ")
     set_target_properties(cryptest PROPERTIES
-                            COMPILE_FLAGS "-O2 -w -finline-functions -Wno-tautological-compare -pipe -stdlib=libc++ -Wno-c++11-narrowing"
-                            LINK_FLAGS_RELEASE "-stdlib=libc++"
-                            LINK_FLAGS_DEBUG "-stdlib=libc++")
+                            COMPILE_FLAGS "-O2 -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION  -stdlib=libc++ -std=c++98 -Wno-tautological-compare -fPIC -pthread ")
   else()
     set_target_properties(cryptopp PROPERTIES COMPILE_FLAGS "-O2 -fPIC -w -pipe -finline-functions -std=c++11")
   endif()

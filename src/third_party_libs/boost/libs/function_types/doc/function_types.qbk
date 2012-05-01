@@ -11,7 +11,7 @@
   [purpose Meta-programming support library]
   [category template]
   [category generic]
-  [last-revision $Date: 2009-11-20 05:13:51 -0500 (Fri, 20 Nov 2009) $]
+  [last-revision $Date$]
 ]
 
 [def __unspecified__ /unspecified/]

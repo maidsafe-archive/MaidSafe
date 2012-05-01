@@ -20,7 +20,7 @@
     [authors [authors, various]]
     [category template]
     [category generic]
-    [last-revision $Date: 2011-10-09 18:28:33 -0400 (Sun, 09 Oct 2011) $]
+    [last-revision $Date$]
 ]
 
 [include ../../../tools/auto_index/include/auto_index_helpers.qbk]

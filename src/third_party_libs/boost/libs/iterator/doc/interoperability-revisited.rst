@@ -2,7 +2,7 @@
  Interoperability Revisited 
 ++++++++++++++++++++++++++++
 
-:date: $Date: 2008-03-22 17:45:55 -0400 (Sat, 22 Mar 2008) $
+:date: $Date$
 :copyright: Copyright Thomas Witt 2004.
 
 .. Distributed under the Boost

@@ -6,7 +6,7 @@
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/config for the most recent version.//
-//  Revision $Id: config_test.cpp 76122 2011-12-23 17:17:31Z johnmaddock $
+//  Revision $Id$
 //
 
 // Test file for config setup
