@@ -130,9 +130,7 @@ static void DumpStackTrace(int skip_count, DebugWriter *writerfn, void *arg) {
 #endif
   }
 }
-#ifdef __clang__
-static void DumpStackTraceAndExit() ATTRIBUTE_NORETURN;
-#endif
+
 static void DumpStackTraceAndExit() {
   DumpStackTrace(1, DebugWriteToStderr, NULL);
 

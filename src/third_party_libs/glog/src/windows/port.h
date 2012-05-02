@@ -94,7 +94,7 @@ enum { STDIN_FILENO = 0, STDOUT_FILENO = 1, STDERR_FILENO = 2 };
 #define strncasecmp  _strnicmp
 
 /* In windows-land, hash<> is called hash_compare<> (from xhash.h) */
-// #define hash  hash_compare
+#define hash  hash_compare
 
 /* Sleep is in ms, on windows */
 #define sleep(secs)  Sleep((secs) * 1000)

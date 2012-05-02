@@ -292,7 +292,7 @@ class LogDestination {
 
   // These methods are just forwarded to by their global versions.
   static void SetLogDestination(LogSeverity severity,
-        const char* base_filename);
+				const char* base_filename);
   static void SetLogSymlink(LogSeverity severity,
                             const char* symlink_basename);
   static void AddLogSink(LogSink *destination);
@@ -319,17 +319,17 @@ class LogDestination {
   // Take a log message of a particular severity and log it to stderr
   // iff it's of a high enough severity to deserve it.
   static void MaybeLogToStderr(LogSeverity severity, const char* message,
-             size_t len);
+			       size_t len);
 
   // Take a log message of a particular severity and log it to email
   // iff it's of a high enough severity to deserve it.
   static void MaybeLogToEmail(LogSeverity severity, const char* message,
-            size_t len);
+			      size_t len);
   // Take a log message of a particular severity and log it to a file
   // iff the base filename is not "" (which means "don't log to me")
   static void MaybeLogToLogfile(LogSeverity severity,
                                 time_t timestamp,
-        const char* message, size_t len);
+				const char* message, size_t len);
   // Take a log message of a particular severity and log it to the file
   // for that severity and also for all files with severity less than
   // this severity.
@@ -424,7 +424,7 @@ inline void LogDestination::FlushLogFiles(int min_severity) {
 }
 
 inline void LogDestination::SetLogDestination(LogSeverity severity,
-                const char* base_filename) {
+					      const char* base_filename) {
   assert(severity >= 0 && severity < NUM_SEVERITIES);
   // Prevent any subtle race conditions by wrapping a mutex lock around
   // all this stuff.
@@ -491,7 +491,7 @@ inline void LogDestination::LogToStderr() {
 }
 
 inline void LogDestination::SetEmailLogging(LogSeverity min_severity,
-              const char* addresses) {
+					    const char* addresses) {
   assert(min_severity >= 0 && min_severity < NUM_SEVERITIES);
   // Prevent any subtle race conditions by wrapping a mutex lock around
   // all this stuff.
@@ -507,7 +507,7 @@ static void WriteToStderr(const char* message, size_t len) {
 }
 
 inline void LogDestination::MaybeLogToStderr(LogSeverity severity,
-               const char* message, size_t len) {
+					     const char* message, size_t len) {
   if ((severity >= FLAGS_stderrthreshold) || FLAGS_alsologtostderr) {
     WriteToStderr(message, len);
 #ifdef OS_WINDOWS
@@ -519,7 +519,7 @@ inline void LogDestination::MaybeLogToStderr(LogSeverity severity,
 
 
 inline void LogDestination::MaybeLogToEmail(LogSeverity severity,
-              const char* message, size_t len) {
+					    const char* message, size_t len) {
   if (severity >= email_logging_severity_ ||
       severity >= FLAGS_logemaillevel) {
     string to(FLAGS_alsologtoemail);
@@ -546,8 +546,8 @@ inline void LogDestination::MaybeLogToEmail(LogSeverity severity,
 
 inline void LogDestination::MaybeLogToLogfile(LogSeverity severity,
                                               time_t timestamp,
-                const char* message,
-                size_t len) {
+					      const char* message,
+					      size_t len) {
   const bool should_flush = severity > FLAGS_logbuflevel;
   LogDestination* destination = log_destination(severity);
   destination->logger_->Write(should_flush, timestamp, message, len);
@@ -768,15 +768,15 @@ void LogFileObject::Write(bool force_flush,
     ostrstream time_pid_stream(time_pid_string, sizeof(time_pid_string));
     time_pid_stream.fill('0');
     time_pid_stream << 1900+tm_time.tm_year
-        << setw(2) << 1+tm_time.tm_mon
-        << setw(2) << tm_time.tm_mday
-        << '-'
-        << setw(2) << tm_time.tm_hour
-        << setw(2) << tm_time.tm_min
-        << setw(2) << tm_time.tm_sec
-        << '.'
-        << GetMainThreadPid()
-        << '\0';
+		    << setw(2) << 1+tm_time.tm_mon
+		    << setw(2) << tm_time.tm_mday
+		    << '-'
+		    << setw(2) << tm_time.tm_hour
+		    << setw(2) << tm_time.tm_min
+		    << setw(2) << tm_time.tm_sec
+		    << '.'
+		    << GetMainThreadPid()
+		    << '\0';
 
     if (base_filename_selected_) {
       if (!CreateLogfile(time_pid_string)) {
@@ -929,7 +929,7 @@ LogMessage::LogMessageData::~LogMessageData() {
 }
 
 LogMessage::LogMessage(const char* file, int line, LogSeverity severity,
-           int ctr, void (LogMessage::*send_method)()) {
+		       int ctr, void (LogMessage::*send_method)()) {
   Init(file, line, severity, send_method);
   data_->stream_->set_ctr(ctr);
 }
@@ -1230,37 +1230,25 @@ void LogMessage::RecordCrashReason(
   reason->depth = 0;
 #endif
 }
-#ifdef __clang__
-static void logging_fail() ATTRIBUTE_NORETURN;
-#endif
 
 static void logging_fail() {
 #if defined(_DEBUG) && defined(_MSC_VER)
   // When debugging on windows, avoid the obnoxious dialog and make
   // it possible to continue past a LOG(FATAL) in the debugger
-//  _asm int 3
-  DebugBreak();
+  _asm int 3
 #else
   abort();
 #endif
 }
 
-#ifndef __clang__
 #ifdef HAVE___ATTRIBUTE__
 GOOGLE_GLOG_DLL_DECL
-void (*g_logging_fail_func)() __attribute__((noreturn)) = &logging_fail;
+void (*g_logging_fail_func)() = &logging_fail;
 #else
 GOOGLE_GLOG_DLL_DECL void (*g_logging_fail_func)() = &logging_fail;
-#endif  // HAVE_ATTRIBUTE
-#else // __clang__
-GOOGLE_GLOG_DLL_DECL void (*g_logging_fail_func)() ATTRIBUTE_NORETURN = &logging_fail;
 #endif
 
-#ifdef __clang__
-void InstallFailureFunction(void (*fail_func)() ATTRIBUTE_NORETURN) {
-#else
 void InstallFailureFunction(void (*fail_func)()) {
-#endif
   g_logging_fail_func = fail_func;
 }
 
@@ -1641,9 +1629,9 @@ void TruncateLogFile(const char *path, int64 limit, int64 keep) {
       // rather scary.
       // Instead just truncate the file to something we can manage
       if (truncate(path, 0) == -1) {
-  PLOG(ERROR) << "Unable to truncate " << path;
+	PLOG(ERROR) << "Unable to truncate " << path;
       } else {
-  LOG(ERROR) << "Truncated " << path << " due to EFBIG error";
+	LOG(ERROR) << "Truncated " << path << " due to EFBIG error";
       }
     } else {
       PLOG(ERROR) << "Unable to open " << path;

@@ -53,12 +53,6 @@
 #include <string.h>               // for memchr
 #include <stdlib.h>               // for getenv
 
-#ifdef HAVE_LIB_GFLAGS
-
-#include <gflags/gflags.h>
-
-#else
-
 #include "glog/logging.h"
 
 #define DECLARE_VARIABLE(type, name, tn)                                      \
@@ -99,7 +93,6 @@
   }                                                                           \
   using FLAG__namespace_do_not_use_directly_use_DECLARE_string_instead::FLAGS_##name
 
-#endif  // HAVE_LIB_GFLAGS
 
 // Define GLOG_DEFINE_* using DEFINE_* . By using these macros, we
 // have GLOG_* environ variables even if we have gflags installed.
