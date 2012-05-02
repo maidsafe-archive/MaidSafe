@@ -130,6 +130,7 @@ if(UNIX)
                             COMPILE_FLAGS "-O2 -DNDEBUG -g -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION -std=c++11 -stdlib=libc++ -Wno-tautological-compare -pipe -pthread -c ")
   else()
     set_target_properties(cryptopp PROPERTIES COMPILE_FLAGS "-O2  -DNDEBUG -fPIC -w -pipe -finline-functions -std=c++11")
+    set_target_properties(cryptest PROPERTIES COMPILE_FLAGS "-O2  -DNDEBUG -fPIC -w -pipe -finline-functions -std=c++11")
   endif()
 elseif(MSVC)
   set_target_properties(cryptopp PROPERTIES

@@ -12,7 +12,7 @@
 #                                                                              #
 #==============================================================================#
 add_subdirectory(cryptopp)
-add_subdirectory(glog)
+#add_subdirectory(glog)
 add_subdirectory(googlemock)
 add_subdirectory(protobuf)
 
