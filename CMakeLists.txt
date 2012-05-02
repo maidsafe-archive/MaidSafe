@@ -13,29 +13,18 @@
 #==============================================================================#
 
 
-#set(CMAKE_DISABLE_SOURCE_CHANGES ON)
-#set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
-
 cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
 message("================================================================================\n")
 
 project(maidsafe)
 
-set(CMAKE_MODULE_PATH  ${PROJECT_SOURCE_DIR}/cmake_modules)
-include(maidsafe_standard_flags)
-
-
-
-if(MSVC)
-  if(${MSVC_VERSION} LESS 1700)  # i.e for MSVC < Visual Studio 11.0
-    message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of Visual Studio less than 11.")
-  endif()
-endif()
-
-set(MAIDSAFE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/${COMPILER}/installed" )
-set(MAIDSAFE_INCLUDE_DIR "${MAIDSAFE_INSTALL_PREFIX}/include")
-add_subdirectory(src)
-
+#set(MAIDSAFE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/${COMPILER}/installed" )
+#set(MAIDSAFE_INCLUDE_DIR "${MAIDSAFE_INSTALL_PREFIX}/include")
+add_subdirectory(src/third_party_libs)
+add_subdirectory(src/common)
+#add_subdirectory(src/private)
+#add_subdirectory(src/rudp)
+#add_subdirectory(src/routing)
 
 
 

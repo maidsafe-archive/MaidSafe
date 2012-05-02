@@ -10,3 +10,6 @@
 [submodule "src/rudp"]
 	path = src/rudp
 	url = git@github.com:maidsafe/MaidSafe-RUDP.git
+[submodule "src/common"]
+	path = src/common
+	url = git@github.com:maidsafe/MaidSafe-Common

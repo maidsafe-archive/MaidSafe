@@ -16,24 +16,6 @@
 #                                                                              #
 #==============================================================================#
 
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CLANG = TRUE)
-    set(COMPILER  "Clang")
-  endif()
-
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    set(LINUX = TRUE)
-  endif()
-
-  if(${CMAKE_COMPILER_IS_GNUCC})
-    set (GCC = TRUE)
-    set(COMPILER "GCC")
-  endif()
-
-  if(MSVC)
-    set(COMPILER  "MSVC")
-  endif()
-
 
 add_definitions(-DSTATICLIB)
 #add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_FILESYSTEM_VERSION=3)

@@ -17,6 +17,13 @@
 #==============================================================================#
 
 
+if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+  set(MS_PROCESSOR_WIDTH 32-bit)
+else()
+  set(MS_PROCESSOR_WIDTH 64-bit)
+endif()
+
+
 if(MSVC)
   if(${MSVC_VERSION} LESS 1700)  # i.e for MSVC < Visual Studio 11
     message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of Visual Studio less than 11.")
@@ -24,9 +31,11 @@ if(MSVC)
 endif()
 
 get_filename_component(MAIDSAFE_SOURCE_DIR ${PROJECT_SOURCE_DIR} PATH)
+get_filename_component(MAIDSAFE_SOURCE_DIR ${MAIDSAFE_SOURCE_DIR} PATH)
 set(CMAKE_MODULE_PATH ${MAIDSAFE_SOURCE_DIR}/cmake_modules)
 string(TOLOWER ${CMAKE_CXX_COMPILER_ID} COMPILER)
 set(CMAKE_INSTALL_PREFIX ${MAIDSAFE_SOURCE_DIR}/installed_${COMPILER})
+file(TO_NATIVE_PATH ${CMAKE_INSTALL_PREFIX} CMAKE_INSTALL_PREFIX_MESSAGE)
 
 set(MAIDSAFE_TEST_TYPE_MESSAGE "Tests included: All")
 if(NOT MAIDSAFE_TEST_TYPE)

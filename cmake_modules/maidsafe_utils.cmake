@@ -75,27 +75,6 @@ function(handle_versions VERSION_H)
   endforeach()
 endfunction()
 
-function(set_maidsafe_variables)
-
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CLANG = TRUE)
-    set(COMPILER = "Clang")
-  endif()
-
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    set(LINUX = TRUE)
-  endif()
-
-  if(${CMAKE_COMPILER_IS_GNUCC})
-    set (GCC = TRUE)
-    set(COMPILER=GCC)
-  endif()
-
-  if(MSVC)
-    set(COMPILER = MSVC)
-  endif()
-
-endfunction()
 
 # Adds a static library with CMake Target name of "maidsafe_${LIB_OUTPUT_NAME}".
 function(ms_add_static_library LIB_OUTPUT_NAME)
@@ -104,7 +83,6 @@ function(ms_add_static_library LIB_OUTPUT_NAME)
   string(TOLOWER ${LIB_OUTPUT_NAME} LIB)
   set(ALL_LIBRARIES ${ALL_LIBRARIES} maidsafe_${LIB} PARENT_SCOPE)
   add_library(maidsafe_${LIB} STATIC ${FILES})
-  message("ADD LIB  maidsafe_${LIB}")
   set_target_properties(maidsafe_${LIB} PROPERTIES FOLDER "MaidSafe Libraries")
 endfunction()
 
@@ -165,20 +143,20 @@ function(add_memcheck_ignore TEST_NAME)
 endfunction()
 
 
-function(final_message)
-  message("\nThe library and headers will be installed to:\n")
-  message("    \"${CMAKE_INSTALL_PREFIX_MESSAGE}\"\n\n")
-  message("To include this project in any other MaidSafe project, use:\n")
-  message("    -DMAIDSAFE_COMMON_INSTALL_DIR:PATH=\"${CMAKE_INSTALL_PREFIX_MESSAGE}\"\n\n")
-  message("To build and install this project now, run:\n")
-  if(MSVC)
-    message("    cmake --build . --config Release --target install")
-    message("    cmake --build . --config Debug --target install")
-  else()
-    message("    cmake --build . --target install")
-  endif()
-  message("\n\n================================================================================"\n)
-endfunction()
+#function(final_message)
+#  message("\nThe library and headers will be installed to:\n")
+#  message("    \"${CMAKE_INSTALL_PREFIX_MESSAGE}\"\n\n")
+#  message("To include this project in any other MaidSafe project, use:\n")
+#  message("    -DMAIDSAFE_COMMON_INSTALL_DIR:PATH=\"${CMAKE_INSTALL_PREFIX_MESSAGE}\"\n\n")
+#  message("To build and install this project now, run:\n")
+#  if(MSVC)
+#    message("    cmake --build . --config Release --target install")
+#    message("    cmake --build . --config Debug --target install")
+#  else()
+#    message("    cmake --build . --target install")
+#  endif()
+#  message("\n\n================================================================================"\n)
+#endfunction()
 
 
 # Appends ".old" to executable files found (recursively) within the build tree
@@ -203,7 +181,7 @@ endfunction()
 
 
 function(ms_install_libs)
-  install(TARGETS ${ARGV} export ${MS_PROJECT_NAME} ARCHIVE DESTINATION lib)
+  install(TARGETS ${ARGV} EXPORT ${PROJECT_NAME} ARCHIVE DESTINATION lib)
 endfunction()
 
 
