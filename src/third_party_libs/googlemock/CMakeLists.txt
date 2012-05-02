@@ -1,3 +1,6 @@
+set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+
 ########################################################################
 # CMake build script for Google Mock.
 #

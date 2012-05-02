@@ -24,6 +24,9 @@
 #                                                                        #
 # For more information about CMake, see http://www.cmake.org             #
 ##########################################################################
+#set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+#set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+
 cmake_minimum_required(VERSION 2.6.4 FATAL_ERROR)
 project(Boost)
 

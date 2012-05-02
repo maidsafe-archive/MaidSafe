@@ -11,11 +11,14 @@
 #  the explicit written permission of the board of directors of MaidSafe.net.  #
 #                                                                              #
 #==============================================================================#
+set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 
 cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
 project(Cryptopp)
 enable_testing()
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(CMAKE_DEBUG_POSTFIX _d)
 set(CMAKE_RELWITHDEBINFO_POSTFIX _rwdi)
@@ -118,14 +121,15 @@ if(APPLE)
 endif()
 
 if(UNIX)
-  if(CLANG)
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_definitions(-DCRYPTOPP_DISABLE_ASM)
     set_target_properties(cryptopp PROPERTIES
-                            COMPILE_FLAGS "-O2 -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION  -stdlib=libc++ -std=c++98 -Wno-tautological-compare -fPIC -pthread ")
+                            COMPILE_FLAGS "-O2 -DNDEBUG -g -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION  -std=c++11 -stdlib=libc++ -Wno-tautological-compare -pipe -pthread -c ")
+    set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/wake.cpp PROPERTIES COMPILE_FLAGS "-Wno-c++11-narrowing")
     set_target_properties(cryptest PROPERTIES
-                            COMPILE_FLAGS "-O2 -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION  -stdlib=libc++ -std=c++98 -Wno-tautological-compare -fPIC -pthread ")
+                            COMPILE_FLAGS "-O2 -DNDEBUG -g -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION -std=c++11 -stdlib=libc++ -Wno-tautological-compare -pipe -pthread -c ")
   else()
-    set_target_properties(cryptopp PROPERTIES COMPILE_FLAGS "-O2 -fPIC -w -pipe -finline-functions -std=c++11")
+    set_target_properties(cryptopp PROPERTIES COMPILE_FLAGS "-O2  -DNDEBUG -fPIC -w -pipe -finline-functions -std=c++11")
   endif()
 elseif(MSVC)
   set_target_properties(cryptopp PROPERTIES
