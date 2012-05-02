@@ -24,6 +24,6 @@ seT(CMAKE_INSTALL_PREFIX ${MAIDSAFE_INSTALL_PREFIX} )
 seT(ENABLE_SHARED "OFF")
 set(ENABLE_STATIC "ON")
 set(INSTALL_VERSIONED "OFF") 
-set(BUILD_PROJECTS date_time;filesystem;system)
+set(BUILD_PROJECTS date_time;filesystem;system;thread;serialization)
 add_subdirectory(boost)
 

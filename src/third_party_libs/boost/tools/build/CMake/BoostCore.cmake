@@ -474,12 +474,12 @@ macro(boost_library_variant_target_name)
 
   # Add -mt for multi-threaded libraries
   list_contains(VARIANT_IS_MT MULTI_THREADED ${ARGN})
-  if (VARIANT_IS_MT)
-    set(VARIANT_TARGET_NAME "${VARIANT_TARGET_NAME}-mt")
+#  if (VARIANT_IS_MT)
+#    set(VARIANT_TARGET_NAME "${VARIANT_TARGET_NAME}-mt")
 
     # If we're creating versioned names, tack on "-mt"
-    set(VARIANT_VERSIONED_NAME "${VARIANT_VERSIONED_NAME}-mt")
-  endif (VARIANT_IS_MT)
+#    set(VARIANT_VERSIONED_NAME "${VARIANT_VERSIONED_NAME}-mt")
+#  endif (VARIANT_IS_MT)
 
   # Add -static for static libraries, -shared for shared libraries
   list_contains(VARIANT_IS_STATIC STATIC ${ARGN})
