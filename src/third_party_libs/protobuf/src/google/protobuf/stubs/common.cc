@@ -220,13 +220,13 @@ LogSilencer::LogSilencer() {
   internal::InitLogSilencerCountOnce();
   MutexLock lock(internal::log_silencer_count_mutex_);
   ++internal::log_silencer_count_;
-};
+}
 
 LogSilencer::~LogSilencer() {
   internal::InitLogSilencerCountOnce();
   MutexLock lock(internal::log_silencer_count_mutex_);
   --internal::log_silencer_count_;
-};
+}
 
 // ===================================================================
 // emulates google3/base/callback.cc
