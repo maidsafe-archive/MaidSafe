@@ -597,7 +597,7 @@ bool GetField(std::istream &is, std::string &name, std::string &value)
 		is.ignore(1);
 
 	// VC60 workaround: getline bug
-	char buffer[128];
+	char buffer[1440];
 	value.resize(0);	// GCC workaround: 2.95.3 doesn't have clear()
 	bool continueLine;
 

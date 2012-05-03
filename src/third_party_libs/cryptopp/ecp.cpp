@@ -1,6 +1,7 @@
 // ecp.cpp - written and placed in the public domain by Wei Dai
 
 #include "pch.h"
+#include <deque>
 
 #ifndef CRYPTOPP_IMPORTS
 
@@ -375,7 +376,7 @@ void ECP::SimultaneousMultiply(ECP::Point *results, const ECP::Point &P, const I
 	std::vector<WindowSlider> exponents;
 	exponents.reserve(expCount);
 	std::vector<std::vector<word32> > baseIndices(expCount);
-	std::vector<std::vector<bool> > negateBase(expCount);
+	std::vector<std::deque<bool> > negateBase(expCount);
 	std::vector<std::vector<word32> > exponentWindows(expCount);
 	unsigned int i;
 
