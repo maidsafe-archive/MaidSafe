@@ -13,3 +13,33 @@
 [submodule "src/common"]
 	path = src/common
 	url = git@github.com:maidsafe/MaidSafe-Common
+[submodule "MaidSafe-Drive"]
+	path = MaidSafe-Drive
+	url = git@github.com:maidsafe/MaidSafe-Drive.git
+[submodule "src/lifestuff"]
+	path = src/lifestuff
+	url = git@github.com:maidsafe/LifeStuff.git
+[submodule "src/drive"]
+	path = src/drive
+	url = git@github.com:maidsafe/MaidSafe-Drive.git
+[submodule "src/dht"]
+	path = src/dht
+	url = git@github.com:maidsafe/MaidSafe-DHT.git
+[submodule "src/transport"]
+	path = src/transport
+	url = git@github.com:maidsafe/MaidSafe-Transport.git
+[submodule "src/passport"]
+	path = src/passport
+	url = git@github.com:maidsafe/MaidSafe-Passport.git
+[submodule "src/pki"]
+	path = src/pki
+	url = git@github.com:maidsafe/MaidSafe-PKI.git
+[submodule "src/encrypt"]
+	path = src/encrypt
+	url = git@github.com:maidsafe/MaidSafe-Encrypt.git
+[submodule "src/pd"]
+	path = src/pd
+	url = git@github.com:maidsafe/MaidSafe-PD.git
+[submodule "src/docs"]
+	path = src/docs
+	url = git@github.com:maidsafe/MaidSafe-Documents.git
