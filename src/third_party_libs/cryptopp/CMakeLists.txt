@@ -107,10 +107,10 @@ target_link_libraries(cryptest cryptopp)
 
 if(UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    add_definitions(-DCRYPTOPP_DISABLE_ASM)
+    add_definitions(-DCRYPTOPP_DISABLE_ASM -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION)
     set_target_properties(cryptopp cryptest PROPERTIES
                             COMPILE_FLAGS "-Wno-tautological-compare -Wno-c++11-narrowing -std=c++11 -stdlib=libc++")
-    set_target_properties(cryptest PROPERTIES LINK_FLAGS_RELEASE "-stdlib=libc++" LINK_FLAGS_DEBUG "-stdlib=libc++")
+    set_target_properties(cryptest PROPERTIES LINK_FLAGS_RELEASE "-stdlib=libc++" LINK_FLAGS "-stdlib=libc++")
   else()
     set_target_properties(cryptopp PROPERTIES COMPILE_FLAGS "-O2 -fPIC -w -pipe -finline-functions -std=c++11")
   endif()
