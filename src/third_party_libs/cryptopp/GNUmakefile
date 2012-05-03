@@ -52,7 +52,7 @@ endif
 endif
 
 ifneq ($(CLANG_COMPILER),0)
-CXXFLAGS += -std=c++11 -stdlib=libc++ -Wno-tautological-compare
+CXXFLAGS += -std=c++11 -stdlib=libc++ -Wno-tautological-compare -Wno-c++11-narrowing
 endif
 
 ifeq ($(GAS210_OR_LATER),0)	# .intel_syntax wasn't supported until GNU assembler 2.10

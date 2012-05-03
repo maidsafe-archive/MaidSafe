@@ -1,35 +1,14 @@
 #==============================================================================#
 #                                                                              #
-#  Copyright (c) 2011 maidsafe.net limited                                     #
-#  All rights reserved.                                                        #
+#  Copyright (c) 2012 MaidSafe.net limited                                     #
 #                                                                              #
-#  Redistribution and use in source and binary forms, with or without          #
-#  modification, are permitted provided that the following conditions are met: #
+#  The following source code is property of MaidSafe.net limited and is not    #
+#  meant for external use.  The use of this code is governed by the license    #
+#  file licence.txt found in the root directory of this project and also on    #
+#  www.maidsafe.net.                                                           #
 #                                                                              #
-#      * Redistributions of source code must retain the above copyright        #
-#        notice, this list of conditions and the following disclaimer.         #
-#      * Redistributions in binary form must reproduce the above copyright     #
-#        notice, this list of conditions and the following disclaimer in the   #
-#        documentation and/or other materials provided with the distribution.  #
-#      * Neither the name of the maidsafe.net limited nor the names of its     #
-#        contributors may be used to endorse or promote products derived from  #
-#        this software without specific prior written permission.              #
-#                                                                              #
-#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" #
-#  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE   #
-#  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE  #
-#  ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE  #
-#  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR         #
-#  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF        #
-#  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS    #
-#  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN     #
-#  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)     #
-#  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE  #
-#  POSSIBILITY OF SUCH DAMAGE.                                                 #
-#                                                                              #
-#==============================================================================#
-#                                                                              #
-#  Written by maidsafe.net team                                                #
+#  You are not free to copy, amend or otherwise use this source code without   #
+#  the explicit written permission of the board of directors of MaidSafe.net.  #
 #                                                                              #
 #==============================================================================#
 
@@ -112,8 +91,7 @@ set(cryptopp_TEST_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/bench.h
 
 add_executable(cryptest ${cryptopp_TEST_SOURCES} ${cryptopp_TEST_HEADERS})
 
-add_library(cryptopp_static STATIC ${cryptopp_SOURCES} ${cryptopp_HEADERS})
-set_target_properties(cryptopp_static PROPERTIES OUTPUT_NAME cryptopp)
+add_library(cryptopp STATIC ${cryptopp_SOURCES} ${cryptopp_HEADERS})
 
 if(NOT MSVC)
   set_target_properties(cryptest PROPERTIES
@@ -123,21 +101,21 @@ if(NOT MSVC)
 
 endif()
 
-install(TARGETS cryptopp_static ARCHIVE DESTINATION lib)
+install(TARGETS cryptopp ARCHIVE DESTINATION lib)
 
-target_link_libraries(cryptest cryptopp_static)
+target_link_libraries(cryptest cryptopp)
 
 if(UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    add_definitions(-DCRYPTOPP_DISABLE_ASM -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION )
-    set_target_properties(cryptopp_static cryptest PROPERTIES
+    add_definitions(-DCRYPTOPP_DISABLE_ASM)
+    set_target_properties(cryptopp cryptest PROPERTIES
                             COMPILE_FLAGS "-Wno-tautological-compare -Wno-c++11-narrowing -std=c++11 -stdlib=libc++")
-    set_target_properties(cryptest PROPERTIES LINK_FLAGS_RELEASE "-stdlib=libc++" LINK_FLAGS "-stdlib=libc++")
+    set_target_properties(cryptest PROPERTIES LINK_FLAGS_RELEASE "-stdlib=libc++" LINK_FLAGS_DEBUG "-stdlib=libc++")
   else()
-    set_target_properties(cryptopp_static PROPERTIES COMPILE_FLAGS "-O2 -fPIC -w -pipe -finline-functions -std=c++11")
+    set_target_properties(cryptopp PROPERTIES COMPILE_FLAGS "-O2 -fPIC -w -pipe -finline-functions -std=c++11")
   endif()
 elseif(MSVC)
-  set_target_properties(cryptopp_static PROPERTIES
+  set_target_properties(cryptopp PROPERTIES
                           COMPILE_FLAGS "/D_WINDOWS /DUSE_PRECOMPILED_HEADERS /DWIN32 /D_VC80_UPGRADE=0x0710 /EHsc /W3")
   set_target_properties(cryptest PROPERTIES
                           COMPILE_FLAGS "/D_CONSOLE /DWIN32 /D_VC80_UPGRADE=0x0710 /D_MBCS /EHsc /W3"
@@ -155,3 +133,23 @@ elseif(MSVC)
                                 COMPILE_FLAGS "/Yc\"pch.h\"")
   target_link_libraries(cryptest odbc32.lib odbccp32.lib Ws2_32.lib)
 endif()
+
+add_test(CrypoppTest.BEH_FULL cryptest v)
+add_test(CrypoppTest.BEH_AES cryptest tv aes)
+add_test(CrypoppTest.BEH_SHA cryptest tv sha)
+add_test(CrypoppTest.BEH_RSA_PSS cryptest tv rsa_pss)
+add_test(CrypoppTest.BEH_RSA_OAEP cryptest tv rsa_oaep)
+add_test(CrypoppTest.BEH_RSA_PKCS1_1_5 cryptest tv rsa_pkcs1_1_5)
+
+set_property(TEST CrypoppTest.BEH_FULL PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
+set_property(TEST CrypoppTest.BEH_FULL PROPERTY TIMEOUT 60)
+set_property(TEST CrypoppTest.BEH_AES PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
+set_property(TEST CrypoppTest.BEH_AES PROPERTY TIMEOUT 60)
+set_property(TEST CrypoppTest.BEH_SHA PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
+set_property(TEST CrypoppTest.BEH_SHA PROPERTY TIMEOUT 60)
+set_property(TEST CrypoppTest.BEH_RSA_PSS PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
+set_property(TEST CrypoppTest.BEH_RSA_PSS PROPERTY TIMEOUT 60)
+set_property(TEST CrypoppTest.BEH_RSA_OAEP PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
+set_property(TEST CrypoppTest.BEH_RSA_OAEP PROPERTY TIMEOUT 60)
+set_property(TEST CrypoppTest.BEH_RSA_PKCS1_1_5 PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
+set_property(TEST CrypoppTest.BEH_RSA_PKCS1_1_5 PROPERTY TIMEOUT 60)
