@@ -19,14 +19,6 @@
 #include <boost/smart_ptr/bad_weak_ptr.hpp>
 #include <boost/utility/swap.hpp>
 
-#if !defined(BOOST_INTEL_STDCXX0X)
-namespace std
-{
-//  template<typename T> class shared_ptr;
-  template<typename T> class weak_ptr;
-}
-#endif
-
 namespace boost
 {
   template<typename T> class shared_ptr;

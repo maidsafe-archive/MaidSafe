@@ -21,5 +21,5 @@ add_subdirectory(glog)
 add_subdirectory(googlemock)
 add_subdirectory(protobuf)
 
-set(BUILD_PROJECTS date_time;filesystem;iostreams;program_options;random;regex;serialization;system;thread;)  # test
+set(BUILD_PROJECTS date_time;filesystem;program_options;random;serialization;system;thread;)  # test
 add_subdirectory(boost)

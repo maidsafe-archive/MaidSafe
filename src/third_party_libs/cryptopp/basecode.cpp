@@ -36,6 +36,7 @@ void BaseN_Encoder::IsolatedInitialize(const NameValuePairs &parameters)
 	m_outBuf.New(m_outputBlockSize);
 }
 
+
 size_t BaseN_Encoder::Put2(const byte *begin, size_t length, int messageEnd, bool blocking)
 {
 	FILTER_BEGIN;
@@ -78,8 +79,10 @@ size_t BaseN_Encoder::Put2(const byte *begin, size_t length, int messageEnd, boo
 				assert(m_outBuf[i] < (1 << m_bitsPerChar));
 				m_outBuf[i] = m_alphabet[m_outBuf[i]];
 			}
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
 			FILTER_OUTPUT(1, m_outBuf, m_outputBlockSize, 0);
-			
+#pragma clang diagnostic pop
 			m_bytePos = m_bitPos = 0;
 		}
 	}

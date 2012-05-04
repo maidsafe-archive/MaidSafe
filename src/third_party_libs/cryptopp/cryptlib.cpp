@@ -687,8 +687,10 @@ public:
 			m_ciphertext.resize(ciphertextLength);
 			m_encryptor.Encrypt(m_rng, plaintext, plaintextLength, m_ciphertext, m_parameters);
 			}
-			
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
 			FILTER_OUTPUT(1, m_ciphertext, m_ciphertext.size(), messageEnd);
+#pragma clang diagnostic pop			
 		}
 		FILTER_END_NO_MESSAGE_END;
 	}
@@ -734,8 +736,10 @@ public:
 			if (!m_result.isValidCoding)
 				throw InvalidCiphertext(m_decryptor.AlgorithmName() + ": invalid ciphertext");
 			}
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
 			FILTER_OUTPUT(1, m_plaintext, m_result.messageLength, messageEnd);
+#pragma clang diagnostic pop			
 		}
 		FILTER_END_NO_MESSAGE_END;
 	}
