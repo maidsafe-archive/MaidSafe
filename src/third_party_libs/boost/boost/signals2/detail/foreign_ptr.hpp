@@ -11,6 +11,7 @@
 #ifndef BOOST_SIGNALS2_FOREIGN_PTR_HPP
 #define BOOST_SIGNALS2_FOREIGN_PTR_HPP
 
+#include <memory>
 #include <algorithm>
 #include <boost/config.hpp>
 #include <boost/assert.hpp>
@@ -21,7 +22,7 @@
 #if !defined(BOOST_INTEL_STDCXX0X)
 namespace std
 {
-  template<typename T> class shared_ptr;
+//  template<typename T> class shared_ptr;
   template<typename T> class weak_ptr;
 }
 #endif

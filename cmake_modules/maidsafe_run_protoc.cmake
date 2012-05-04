@@ -24,6 +24,7 @@ function(generate_proto_files PROTO_FILE CACHE_NAME)
   unset(NEW_${ARGV1} CACHE)
   set(NEW_${ARGV1} ${PROTO_STRING} CACHE string "Google Protocol Buffers - new file contents for ${ARGV1}")
   if((FORCE_PROTOC_COMPILE) OR (NOT "${NEW_${ARGV1}}" STREQUAL "${${ARGV1}}"))
+    set(RAN_PROTOC TRUE PARENT_SCOPE)
     get_filename_component(PROTO_FILE_NAME ${PROTO_SOURCE_DIR}/${PROTO_FILE} NAME)
     execute_process(COMMAND ${Protoc_EXE}
                       --proto_path=${PROTO_SOURCE_DIR}
