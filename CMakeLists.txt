@@ -25,6 +25,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 add_subdirectory(src/third_party_libs)
 add_subdirectory(src/common)
 add_subdirectory(src/private)
+add_subdirectory(src/transport)
 #add_subdirectory(src/rudp)
 #add_subdirectory(src/routing)
 
