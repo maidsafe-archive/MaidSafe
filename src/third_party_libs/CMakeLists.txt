@@ -11,24 +11,15 @@
 #  the explicit written permission of the board of directors of MaidSafe.net.  #
 #                                                                              #
 #==============================================================================#
+
+
+set(HR "================================================================================")
+message("${HR}\nConfiguring third party projects\n--------------------------------\n")
+
 add_subdirectory(cryptopp)
 add_subdirectory(glog)
 add_subdirectory(googlemock)
 add_subdirectory(protobuf)
 
-set(BOOST_INCLUDE_INSTALL_DIR "include")
-set(BOOST_LIB_INSTALL_DIR "lib")
-set(BUILD_TESTS "NONE")
-set(CMAKE_BUILD_TYPE "Release")
-seT(CMAKE_INSTALL_PREFIX ${MAIDSAFE_INSTALL_PREFIX} ) 
-seT(ENABLE_SHARED "OFF")
-set(ENABLE_STATIC "ON")
-set(INSTALL_VERSIONED "OFF") 
-SET(Boost_USE_STATIC_LIBS ON)
-SET(Boost_USE_MULTITHREADED ON)
-SET(Boost_USE_STATIC_RUNTIME ON)
-SET(Boost_NO_SYSTEM_PATHS ON)
-SET(BOOST_LIB_DIAGNOSTIC OFF)
-set(BUILD_PROJECTS date_time;filesystem;system;thread;serialization)
+set(BUILD_PROJECTS date_time;filesystem;iostreams;program_options;random;regex;serialization;system;thread;)  # test
 add_subdirectory(boost)
-

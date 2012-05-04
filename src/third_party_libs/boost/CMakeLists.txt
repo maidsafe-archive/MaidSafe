@@ -36,9 +36,6 @@ project(Boost)
 list(APPEND CMAKE_MODULE_PATH ${Boost_SOURCE_DIR}/tools/build/CMake)
 include(BoostUtils)
 
-message(STATUS "")
-colormsg(_HIBLUE_ "Boost.CMake starting")
-
 ##########################################################################
 # Version information                                                    #
 ##########################################################################

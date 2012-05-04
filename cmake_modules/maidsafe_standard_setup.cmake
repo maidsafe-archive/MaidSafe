@@ -17,6 +17,12 @@
 #==============================================================================#
 
 
+set(HR "================================================================================")
+
+string(REGEX REPLACE . "-" UNDERSCORE ${PROJECT_NAME})
+message("${HR}\nConfiguring MaidSafe ${PROJECT_NAME} project\n--------------------${UNDERSCORE}---------\n")
+
+
 if(CMAKE_SIZEOF_VOID_P EQUAL 4)
   set(MS_PROCESSOR_WIDTH 32-bit)
 else()
@@ -30,12 +36,14 @@ if(MSVC)
   endif()
 endif()
 
-#get_filename_component(MAIDSAFE_SOURCE_DIR ${PROJECT_SOURCE_DIR} PATH)
-#get_filename_component(MAIDSAFE_SOURCE_DIR ${MAIDSAFE_SOURCE_DIR} PATH)
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_modules)
+
+get_filename_component(MAIDSAFE_SOURCE_DIR ${PROJECT_SOURCE_DIR} PATH)
+get_filename_component(MAIDSAFE_SOURCE_DIR ${MAIDSAFE_SOURCE_DIR} PATH)
+set(CMAKE_MODULE_PATH ${MAIDSAFE_SOURCE_DIR}/cmake_modules)
 #string(TOLOWER ${CMAKE_CXX_COMPILER_ID} COMPILER)
 #set(CMAKE_INSTALL_PREFIX ${MAIDSAFE_SOURCE_DIR}/installed_${COMPILER})
 #file(TO_NATIVE_PATH ${CMAKE_INSTALL_PREFIX} CMAKE_INSTALL_PREFIX_MESSAGE)
+
 
 set(MAIDSAFE_TEST_TYPE_MESSAGE "Tests included: All")
 if(NOT MAIDSAFE_TEST_TYPE)
@@ -53,9 +61,9 @@ endif()
 enable_testing()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-if(APPLE)
-  set(CMAKE_OSX_SYSROOT "/")
-endif()
+# if(APPLE)
+#   set(CMAKE_OSX_SYSROOT "/")
+# endif()
 
 set(CMAKE_DEBUG_POSTFIX -d)
 set(CMAKE_RELWITHDEBINFO_POSTFIX -rwdi)
@@ -75,30 +83,31 @@ set(CMAKE_MINSIZEREL_POSTFIX -msr)
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 include_directories("${PROJECT_SOURCE_DIR}/src")
-include_directories("${CMAKE_SOURCE_DIR}/src/third_party_libs/")  # for cryptopp
-include_directories("${CMAKE_SOURCE_DIR}/src/third_party_libs/protobuf/src")
-include_directories("${CMAKE_SOURCE_DIR}/src/third_party_libs/googlemock/gtest/include")
-include_directories("${CMAKE_SOURCE_DIR}/src/third_party_libs/googlemock/include")
-include_directories("${CMAKE_SOURCE_DIR}/src/third_party_libs/glog/src")
-include_directories("${CMAKE_SOURCE_DIR}/src/third_party_libs/boost")
+include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/")  # for cryptopp
+include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/protobuf/src")
+include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/googlemock/gtest/include")
+include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/googlemock/include")
+include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/glog/src")
+include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/boost")
 
 include(maidsafe_utils)
 include(maidsafe_run_protoc)
 
 # Create CTestCustom.cmake to avoid inclusion of coverage results from test files, protocol buffer files and main.cc files
 file(WRITE ${PROJECT_BINARY_DIR}/CTestCustom.cmake "\n")
-ADD_COVERAGE_EXCLUDE(\\\\.pb\\\\.)
-ADD_COVERAGE_EXCLUDE(tests/)
-ADD_COVERAGE_EXCLUDE(main\\\\.cc)
+add_coverage_exclude(\\\\.pb\\\\.)
+add_coverage_exclude(tests/)
+add_coverage_exclude(main\\\\.cc)
 
 # Avoid running MemCheck on STYLE_CHECK tests
-ADD_MEMCHECK_IGNORE(STYLE_CHECK)
+add_memcheck_ignore(STYLE_CHECK)
+set(HR "================================================================================\n")
 
 
 ###################################################################################################
 # Python library search                                                                           #
 ###################################################################################################
-unset(PYTHON_EXECUTABLE CACHE)
+# unset(PYTHON_EXECUTABLE CACHE)
 include(FindPythonInterp)
 set(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
 find_package(PythonInterp)
@@ -119,27 +128,6 @@ if(UNIX)
   set(CMAKE_THREAD_PREFER_PTHREAD true)
   find_package(Threads REQUIRED)
   set(SYS_LIB ${CMAKE_THREAD_LIBS_INIT})
-# elseif(WIN32)
-#   if(MSVC)
-#     set(SYS_LIB ws2_32 odbc32 odbccp32 WSock32 IPHlpApi)
-#   else()
-#     set(SYS_LIB advapi32 kernel32 ws2_32 iphlpapi mswsock)
-#   endif()
-#   foreach(library ${SYS_LIB})
-#     find_library(CURRENT_LIB ${library})
-#     if(CURRENT_LIB)
-#       message("-- Found library ${CURRENT_LIB}")
-#     else()
-#       set(ERROR_MESSAGE "\nCould not find library ${library}.")
-#       if(MSVC)
-#         set(ERROR_MESSAGE "${ERROR_MESSAGE}\nRun cmake from a Visual Studio Command Prompt.")
-#       else()
-#         set(ERROR_MESSAGE "${ERROR_MESSAGE}  Run\n${ERROR_MESSAGE_CMAKE_PATH} -DADD_LIBRARY_DIR=<Path to ${library} directory>")
-#       endif()
-#       message(FATAL_ERROR "${ERROR_MESSAGE}")
-#     endif()
-#     unset(CURRENT_LIB CACHE)
-#   endforeach()
 endif()
 
 # include_directories(BEFORE ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR})
@@ -171,6 +159,5 @@ endif()
 include(CTest)
 include(maidsafe_add_gtests)
 
-CLEANUP_TEMP_DIR()
 set(CPACK_STRIP_FILES TRUE)
 

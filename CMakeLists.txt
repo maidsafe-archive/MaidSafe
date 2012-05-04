@@ -36,6 +36,7 @@ if(UNIX)
   endif()
 endif()
 
+cleanup_temp_dir()
 
 
 

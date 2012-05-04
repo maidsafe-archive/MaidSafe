@@ -44,6 +44,8 @@ function(generate_proto_files PROTO_FILE CACHE_NAME)
 endfunction()
 
 
+set(RAN_PROTOC FALSE PARENT_SCOPE)
+
 if(APPLE)
   set(Protoc_EXE ${MAIDSAFE_SOURCE_DIR}/tools/OSX/${MS_PROCESSOR_WIDTH}/protoc)
 elseif(UNIX)
