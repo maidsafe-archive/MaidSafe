@@ -13,8 +13,7 @@
 #==============================================================================#
 #                                                                              #
 #  Module used to run Google Protocol Buffers compiler against .proto files if #
-#  their contents have changed or if protobuf version has changed.  The path   #
-#  to the compiler must be set in the variable Protoc_EXE.                     #
+#  their contents have changed or if protobuf version has changed.             #
 #                                                                              #
 #==============================================================================#
 
@@ -47,7 +46,7 @@ endfunction()
 if(APPLE)
   set(Protoc_EXE ${MAIDSAFE_SOURCE_DIR}/tools/OSX/${MS_PROCESSOR_WIDTH}/protoc)
 elseif(UNIX)
-  set(Protoc_EXE ${MAIDSAFE_SOURCE_DIR}/tools/Linux/${MS_PROCESSOR_WIDTH}/protoc)
+  set(Protoc_EXE ${CMAKE_BINARY_DIR}/protoc)
 elseif(WIN32)
   set(Protoc_EXE ${MAIDSAFE_SOURCE_DIR}/tools/Windows/${MS_PROCESSOR_WIDTH}/protoc.exe)
 endif()
@@ -74,3 +73,4 @@ foreach(PROTO_FILE ${PROTO_FILES})
   string(REGEX REPLACE "[\\/.:]" "_" PROTO_CACHE_NAME ${PROTO_FILE})
   generate_proto_files(${PROTO_FILE} ${PROTO_CACHE_NAME})
 endforeach()
+

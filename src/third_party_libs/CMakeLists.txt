@@ -29,6 +29,6 @@ SET(Boost_USE_MULTITHREADED ON)
 SET(Boost_USE_STATIC_RUNTIME ON)
 SET(Boost_NO_SYSTEM_PATHS ON)
 SET(BOOST_LIB_DIAGNOSTIC OFF)
-set(BUILD_PROJECTS test;date_time;filesystem;system;thread;serialization)
+set(BUILD_PROJECTS date_time;filesystem;system;thread;serialization)
 add_subdirectory(boost)
 

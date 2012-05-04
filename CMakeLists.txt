@@ -24,9 +24,18 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 #set(MAIDSAFE_INCLUDE_DIR "${MAIDSAFE_INSTALL_PREFIX}/include")
 add_subdirectory(src/third_party_libs)
 add_subdirectory(src/common)
-#add_subdirectory(src/private)
+add_subdirectory(src/private)
 #add_subdirectory(src/rudp)
 #add_subdirectory(src/routing)
+
+# When this target is built, it removes all .gcda files from the build directory and its subdirectories
+if(UNIX)
+  find_file(CLEAN_COVERAGE clean_coverage.cmake ${CMAKE_MODULE_PATH})
+  if(CLEAN_COVERAGE)
+    add_custom_target(CleanCoverage COMMAND ${CMAKE_COMMAND} -DSEARCH_DIR=${CMAKE_BINARY_DIR} -P ${CLEAN_COVERAGE})
+  endif()
+endif()
+
 
 
 
