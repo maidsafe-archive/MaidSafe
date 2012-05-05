@@ -21,8 +21,8 @@
 
 namespace boost
 {
-  template<typename T> class shared_ptr;
-  template<typename T> class weak_ptr;
+//  template<typename T> class shared_ptr;
+//  template<typename T> class weak_ptr;
 
   namespace signals2
   {
