@@ -1,4 +1,4 @@
-ompiled source #
+# Compiled source #
 ###################
 *.com
 *.class
@@ -7,6 +7,13 @@ ompiled source #
 *.o
 *.so
 *.gc*
+*.pdb
+*.manifest
+*.manifest.res
+*.obj
+*.rc
+*.unsuccessfulbuild
+
 # Packages #
 ############
 # it's better to unpack these files and commit the raw source
@@ -23,6 +30,7 @@ ompiled source #
 # Logs and databases #
 ######################
 *.log
+*.tlog
 *.sql
 *.sqlite
 
@@ -35,6 +43,12 @@ Thumbs.db
 *~
 ~.swp
 *.kdev*
+
 # build dir(s) #
 ###############
 build*
+*.sln
+*.lastbuildstate
+*.filters
+*.vcproj
+*.vcxproj
