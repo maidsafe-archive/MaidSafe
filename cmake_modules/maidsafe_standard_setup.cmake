@@ -17,7 +17,7 @@
 #==============================================================================#
 
 
-set(HR "================================================================================")
+set(HR "================================================================================" PARENT_SCOPE)
 
 string(REGEX REPLACE . "-" UNDERSCORE ${PROJECT_NAME})
 message("${HR}\nConfiguring MaidSafe ${PROJECT_NAME} project\n--------------------${UNDERSCORE}---------\n")
@@ -101,7 +101,6 @@ add_coverage_exclude(main\\\\.cc)
 
 # Avoid running MemCheck on STYLE_CHECK tests
 add_memcheck_ignore(STYLE_CHECK)
-set(HR "================================================================================\n")
 
 
 ###################################################################################################
@@ -135,7 +134,7 @@ endif()
 # 
 # link_directories(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 # 
-# message("================================================================================")
+# message("${HR}")
 
 
 set(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 50000)
@@ -160,4 +159,3 @@ include(CTest)
 include(maidsafe_add_gtests)
 
 set(CPACK_STRIP_FILES TRUE)
-

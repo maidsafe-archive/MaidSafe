@@ -76,4 +76,3 @@ foreach(PROTO_FILE ${PROTO_FILES})
   string(REGEX REPLACE "[\\/.:]" "_" PROTO_CACHE_NAME ${PROTO_FILE})
   generate_proto_files(${PROTO_FILE} ${PROTO_CACHE_NAME})
 endforeach()
-
