@@ -21,7 +21,7 @@ set(HR "========================================================================
 set(HR ${HR} PARENT_SCOPE)
 
 string(REGEX REPLACE . "-" UNDERSCORE ${PROJECT_NAME})
-message("${HR}\nConfiguring MaidSafe ${PROJECT_NAME} project\n--------------------${UNDERSCORE}---------\n")
+message("${HR}\nConfiguring MaidSafe ${PROJECT_NAME} project\n--------------------${UNDERSCORE}---------")
 
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 4)

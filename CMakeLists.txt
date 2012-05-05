@@ -39,7 +39,7 @@ message("${HR}")
 
 # When this target is built, it removes all .gcda files from the build directory and its subdirectories
 if(UNIX)
-  find_file(CLEAN_COVERAGE clean_coverage.cmake ${CMAKE_MODULE_PATH})
+  find_file(CLEAN_COVERAGE clean_coverage.cmake cmake_modules/)
   if(CLEAN_COVERAGE)
     add_custom_target(CleanCoverage COMMAND ${CMAKE_COMMAND} -DSEARCH_DIR=${CMAKE_BINARY_DIR} -P ${CLEAN_COVERAGE})
   endif()
