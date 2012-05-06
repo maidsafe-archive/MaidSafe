@@ -27,7 +27,7 @@
 #set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 #set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
-cmake_minimum_required(VERSION 2.6.4 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
 project(Boost)
 
 ##########################################################################
@@ -50,7 +50,7 @@ if (BOOST_VERSIONSTR)
   math(EXPR BOOST_VERSION_SUBMINOR "${BOOST_VERSIONSTR} % 100")
   set(BOOST_VERSION "${BOOST_VERSION_MAJOR}.${BOOST_VERSION_MINOR}.${BOOST_VERSION_SUBMINOR}")
 else()
-  message(FATAL_ERROR 
+  message(FATAL_ERROR
     "Unable to parse Boost version from ${CMAKE_CURRENT_SOURCE_DIR}/boost/version.hpp")
 endif()
 
@@ -77,15 +77,15 @@ set(BOOST_CMAKE_URL ${BOOST_CMAKE_HOST}:${BOOST_CMAKE_VERSIONED_DOCROOT})
 #
 # BOOST_MAINTAINER: undocced variable that sets up maintainer mode
 #
-if(BOOST_MAINTAINER)  
+if(BOOST_MAINTAINER)
   #
   #  Put the boost.cmake version someplace sphinx can get it
   #  for use in generated documentation
   #
   set(CMAKE_DOCS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tools/build/CMake/docs/)
   set(UPSTREAM_TAG "Boost_1_41_0")
-  
-  set(gitdiff "git diff --stat=100,90 ${UPSTREAM_TAG}") 
+
+  set(gitdiff "git diff --stat=100,90 ${UPSTREAM_TAG}")
   add_custom_target(make-diff
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND echo "% ${gitdiff}" > ${CMAKE_DOCS_DIR}/source/git_diff.txt
@@ -102,7 +102,7 @@ if(BOOST_MAINTAINER)
     COMMAND scp boost-${BOOST_CMAKE_VERSION}.tar.gz boost-${BOOST_CMAKE_VERSION}.zip ${BOOST_CMAKE_URL}
     COMMAND make -C ${CMAKE_DOCS_DIR} deploy
     )
-    
+
   colormsg(HIRED "*** MAINTAINER TARGETS ADDED ***")
 
 endif()
@@ -123,12 +123,11 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 
-message(STATUS "")
 boost_report_pretty("Boost.CMake version" BOOST_CMAKE_VERSION)
 
 include(BoostConfig)
 include(BoostCore)
-include(BoostDocs)
+#include(BoostDocs)
 #include(BoostTesting)
 ##########################################################################
 
@@ -137,10 +136,10 @@ include(BoostDocs)
 ##########################################################################
 
 
-# User-level options deciding which variants we will build. 
+# User-level options deciding which variants we will build.
 option(ENABLE_STATIC "Whether to build static libraries" ON)
-option(ENABLE_SHARED "Whether to build shared libraries" ON)
-option(ENABLE_DEBUG "Whether to build debugging libraries" ON)
+option(ENABLE_SHARED "Whether to build shared libraries" OFF)
+option(ENABLE_DEBUG "Whether to build debugging libraries" OFF)
 option(ENABLE_RELEASE "Whether to build release libraries" ON)
 option(ENABLE_SINGLE_THREADED "Whether to build single-threaded libraries" OFF)
 option(ENABLE_MULTI_THREADED "Whether to build multi-threaded libraries" ON)
@@ -154,7 +153,7 @@ endif(BUILD_VERSIONED)
 #endif()
 
 option(WINMANGLE_LIBNAMES
-  "mangle toolset and boost version tags to into library names" 
+  "mangle toolset and boost version tags to into library names"
   ${WIN32})
 
 option(BUILD_SOVERSIONED "Create libraries with SONAMES" ${UNIX})
@@ -170,15 +169,15 @@ boost_add_default_variant(SHARED STATIC)
 boost_add_default_variant(MULTI_THREADED SINGLE_THREADED)
 
 if (MSVC)
-  # For now, we only actually support static/dynamic run-time variants for 
+  # For now, we only actually support static/dynamic run-time variants for
   # Visual C++. Provide both options for Visual C++ users, but just fix
   # the values of the variables for all other platforms.
-  option(ENABLE_STATIC_RUNTIME 
-    "Whether to build libraries linking against the static runtime" 
+  option(ENABLE_STATIC_RUNTIME
+    "Whether to build libraries linking against the static runtime"
     ON)
 
-  option(ENABLE_DYNAMIC_RUNTIME 
-    "Whether to build libraries linking against the dynamic runtime" 
+  option(ENABLE_DYNAMIC_RUNTIME
+    "Whether to build libraries linking against the dynamic runtime"
     ON)
 
   boost_add_default_variant(DYNAMIC_RUNTIME STATIC_RUNTIME)
@@ -206,7 +205,7 @@ else()
   set(verstring "")
 endif()
 
-set(BOOST_INCLUDE_INSTALL_DIR 
+set(BOOST_INCLUDE_INSTALL_DIR
   "include/${verdir}"
   CACHE STRING "Destination path under CMAKE_INSTALL_PREFIX for header files"
   )
@@ -223,16 +222,16 @@ boost_report_pretty("Install lib dir" BOOST_LIB_INSTALL_DIR)
 include(BoostExternals)
 
 if (BOOST_VERSION_OVERRIDE)
-  install(FILES ${CMAKE_BINARY_DIR}/version.hpp 
+  install(FILES ${CMAKE_BINARY_DIR}/version.hpp
     DESTINATION ${BOOST_INCLUDE_INSTALL_DIR}/boost
     RENAME version.hpp)
-  install(DIRECTORY boost 
+  install(DIRECTORY boost
     DESTINATION ${BOOST_INCLUDE_INSTALL_DIR}
     PATTERN "CVS" EXCLUDE
     PATTERN ".svn" EXCLUDE
     PATTERN "boost/version.hpp" EXCLUDE)
 else()
-  install(DIRECTORY boost 
+  install(DIRECTORY boost
     DESTINATION ${BOOST_INCLUDE_INSTALL_DIR}
     PATTERN "CVS" EXCLUDE
     PATTERN ".svn" EXCLUDE)
@@ -242,7 +241,7 @@ endif()
 # for testing
 #
 if (BOOST_VERSION_OVERRIDE)
-  install(FILES ${CMAKE_BINARY_DIR}/version.hpp 
+  install(FILES ${CMAKE_BINARY_DIR}/version.hpp
     DESTINATION ${BOOST_INCLUDE_INSTALL_DIR}/boost
     RENAME version.hpp)
 endif()
@@ -289,8 +288,8 @@ if(WIN32 AND NOT UNIX)
   set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.boost.org")
   set(CPACK_NSIS_CONTACT "boost-users@lists.boost.org")
   set(CPACK_NSIS_MODIFY_PATH ON)
-  
-  # Encode the compiler name in the package 
+
+  # Encode the compiler name in the package
   if (MSVC60)
     set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-vc6")
     set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual C++ 6")
@@ -302,13 +301,13 @@ if(WIN32 AND NOT UNIX)
     set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual Studio 2003")
   elseif (MSVC80)
     set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-vc8")
-    set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual Studio 2005")    
+    set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual Studio 2005")
   elseif (MSVC90)
     set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-vc9")
     set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual Studio 2008")
   elseif (BORLAND)
-    set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-borland")  
-    set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Borland C++ Builder")    
+    set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-borland")
+    set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Borland C++ Builder")
   endif (MSVC60)
   set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${CPACK_NSIS_DISPLAY_NAME}")
 endif(WIN32 AND NOT UNIX)
@@ -317,7 +316,7 @@ include(CPack)
 if (FALSE)
   option(BOOST_INSTALLER_ON_THE_FLY
     "Whether to build installers that download components on-the-fly" OFF)
- 
+
   if (BOOST_INSTALLER_ON_THE_FLY)
     if(COMMAND cpack_configure_downloads)
       cpack_configure_downloads(
@@ -347,7 +346,7 @@ else()
 endif (TEST_INSTALLED_TREE)
 
 # Boost.Build version 2 does this due to trouble with autolinking
-# during building and testing.  
+# during building and testing.
 # TODO: See if we can actually use auto-linking in our regression tests.
 add_definitions(-DBOOST_ALL_NO_LIB=1)
 
@@ -386,10 +385,10 @@ if(NOT BOOST_ALL_COMPONENTS)
   #
   # This is a dummy target to suppress the warning from
   # install(EXPORT,....) below.
-  # 
+  #
   add_executable(this_is_a_dummy_no_libs_were_built
     ${CMAKE_CURRENT_SOURCE_DIR}/tools/build/CMake/main.cpp)
-  
+
   install(TARGETS this_is_a_dummy_no_libs_were_built
     EXPORT Boost
     DESTINATION ${BOOST_LIB_INSTALL_DIR}
