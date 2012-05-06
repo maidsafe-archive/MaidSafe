@@ -17,65 +17,6 @@
 #==============================================================================#
 
 
-# Checks VERSION_H file for dependent MaidSafe library versions.  For a project
-# with e.g. "#define MAIDSAFE_COMMON_VERSION 010215" in its version.h then the following
-# variables are set:
-# ${THIS_VERSION_FILE}            maidsafe/common/version.h
-# ${THIS_VERSION}                 MAIDSAFE_COMMON_VERSION
-# ${${THIS_VERSION}}              10215
-# ${CPACK_PACKAGE_VERSION_MAJOR}  1
-# ${CPACK_PACKAGE_VERSION_MINOR}  02
-# ${CPACK_PACKAGE_VERSION_PATCH}  15
-# ${CPACK_PACKAGE_VERSION}        1.02.15
-# ${MAIDSAFE_LIBRARY_POSTFIX}     -1_02_15
-# Also, the MAIDSAFE_LIBRARY_POSTFIX is appended to each of the CMAKE_<build type>_POSTFIX variables.
-# Finally, a preprocessor definition CMAKE_${THIS_VERSION} is added to force a re-run of CMake
-# after changing the version in version.h
-function(handle_versions VERSION_H)
-  file(GLOB THIS_VERSION_FILE RELATIVE ${PROJECT_SOURCE_DIR}/src ${VERSION_H})
-  set(THIS_VERSION_FILE ${THIS_VERSION_FILE} PARENT_SCOPE)
-  file(STRINGS ${VERSION_H} VERSIONS REGEX "#define [A-Z_]+VERSION [0-9]+$")
-  foreach(VERSN ${VERSIONS})
-    string(REPLACE "#define " "" VERSN ${VERSN})
-    string(REGEX REPLACE "[ ]+" ";" VERSN ${VERSN})
-    list(GET VERSN 0 VERSION_VARIABLE_NAME)
-    list(GET VERSN 1 VERSION_VARIABLE_VALUE)
-    string(REGEX MATCH "THIS_NEEDS_" IS_DEPENDENCY ${VERSION_VARIABLE_NAME})
-    if(IS_DEPENDENCY)
-      string(REGEX REPLACE "THIS_NEEDS_" "" DEPENDENCY_VARIABLE_NAME ${VERSION_VARIABLE_NAME})
-      if(NOT ${${DEPENDENCY_VARIABLE_NAME}} MATCHES ${VERSION_VARIABLE_VALUE})
-        set(ERROR_MESSAGE "\n\nThis project needs ${DEPENDENCY_VARIABLE_NAME} ${VERSION_VARIABLE_VALUE}\n")
-        set(ERROR_MESSAGE "${ERROR_MESSAGE}Found ${DEPENDENCY_VARIABLE_NAME} ${${DEPENDENCY_VARIABLE_NAME}}\n\n")
-        message(FATAL_ERROR "${ERROR_MESSAGE}")
-      endif()
-    else()
-      set(${VERSION_VARIABLE_NAME} ${VERSION_VARIABLE_VALUE} PARENT_SCOPE)
-      set(THIS_VERSION ${VERSION_VARIABLE_NAME} PARENT_SCOPE)
-      math(EXPR VERSION_MAJOR ${VERSION_VARIABLE_VALUE}/10000)
-      math(EXPR VERSION_MINOR ${VERSION_VARIABLE_VALUE}/100%100)
-      math(EXPR VERSION_PATCH ${VERSION_VARIABLE_VALUE}%100)
-      if(VERSION_MINOR LESS 10)
-        set(VERSION_MINOR 0${VERSION_MINOR})
-      endif()
-      if(VERSION_PATCH LESS 10)
-        set(VERSION_PATCH 0${VERSION_PATCH})
-      endif()
-      set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR} PARENT_SCOPE)
-      set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR} PARENT_SCOPE)
-      set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH} PARENT_SCOPE)
-      set(CPACK_PACKAGE_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH} PARENT_SCOPE)
-      set(MAIDSAFE_LIBRARY_POSTFIX -${VERSION_MAJOR}_${VERSION_MINOR}_${VERSION_PATCH})
-      set(MAIDSAFE_LIBRARY_POSTFIX ${MAIDSAFE_LIBRARY_POSTFIX} PARENT_SCOPE)
-      set(CMAKE_RELEASE_POSTFIX ${CMAKE_RELEASE_POSTFIX}${MAIDSAFE_LIBRARY_POSTFIX} PARENT_SCOPE)
-      set(CMAKE_DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}${MAIDSAFE_LIBRARY_POSTFIX} PARENT_SCOPE)
-      set(CMAKE_RELWITHDEBINFO_POSTFIX ${CMAKE_RELWITHDEBINFO_POSTFIX}${MAIDSAFE_LIBRARY_POSTFIX} PARENT_SCOPE)
-      set(CMAKE_MINSIZEREL_POSTFIX ${CMAKE_MINSIZEREL_POSTFIX}${MAIDSAFE_LIBRARY_POSTFIX} PARENT_SCOPE)
-      add_definitions(-DCMAKE_${VERSION_VARIABLE_NAME}=${VERSION_VARIABLE_VALUE})
-    endif()
-  endforeach()
-endfunction()
-
-
 # Adds a static library with CMake Target name of "maidsafe_${LIB_OUTPUT_NAME}".
 function(ms_add_static_library LIB_OUTPUT_NAME)
   set(FILES ${ARGV})
@@ -140,22 +81,6 @@ endfunction()
 function(add_memcheck_ignore TEST_NAME)
   file(APPEND ${PROJECT_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_MEMCHECK_IGNORE \${CTEST_CUSTOM_MEMCHECK_IGNORE} \"${TEST_NAME}\")\n")
 endfunction()
-
-
-#function(final_message)
-#  message("\nThe library and headers will be installed to:\n")
-#  message("    \"${CMAKE_INSTALL_PREFIX_MESSAGE}\"\n\n")
-#  message("To include this project in any other MaidSafe project, use:\n")
-#  message("    -DMAIDSAFE_COMMON_INSTALL_DIR:PATH=\"${CMAKE_INSTALL_PREFIX_MESSAGE}\"\n\n")
-#  message("To build and install this project now, run:\n")
-#  if(MSVC)
-#    message("    cmake --build . --config Release --target install")
-#    message("    cmake --build . --config Debug --target install")
-#  else()
-#    message("    cmake --build . --target install")
-#  endif()
-#  message("\n\n${HR}"\n)
-#endfunction()
 
 
 # Appends ".old" to executable files found (recursively) within the build tree
@@ -273,3 +198,4 @@ function(cleanup_temp_dir)
     endif()
   endif()
 endfunction()
+

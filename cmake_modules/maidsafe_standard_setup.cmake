@@ -41,9 +41,6 @@ endif()
 get_filename_component(MAIDSAFE_SOURCE_DIR ${PROJECT_SOURCE_DIR} PATH)
 get_filename_component(MAIDSAFE_SOURCE_DIR ${MAIDSAFE_SOURCE_DIR} PATH)
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
-#string(TOLOWER ${CMAKE_CXX_COMPILER_ID} COMPILER)
-#set(CMAKE_INSTALL_PREFIX ${MAIDSAFE_SOURCE_DIR}/installed_${COMPILER})
-#file(TO_NATIVE_PATH ${CMAKE_INSTALL_PREFIX} CMAKE_INSTALL_PREFIX_MESSAGE)
 
 
 set(MAIDSAFE_TEST_TYPE_MESSAGE "Tests included: All")
@@ -59,12 +56,10 @@ else()
   endif()
 endif()
 
+
 enable_testing()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# if(APPLE)
-#   set(CMAKE_OSX_SYSROOT "/")
-# endif()
 
 set(CMAKE_DEBUG_POSTFIX -d)
 set(CMAKE_RELWITHDEBINFO_POSTFIX -rwdi)
@@ -76,11 +71,6 @@ set(CMAKE_MINSIZEREL_POSTFIX -msr)
 #   set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
 # endif()
 
-# if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-#   include_directories("/usr/local/include/c++/v1")
-# endif()
-
-# include_directories(SYSTEM ${MaidSafeCommon_INCLUDE_DIR} ${MaidSafeCommon_INCLUDE_DIR}/breakpad ${Boost_INCLUDE_DIR})
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 include_directories("${PROJECT_SOURCE_DIR}/src")
@@ -91,14 +81,17 @@ include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/googlemock/incl
 include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/glog/src")
 include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/boost")
 
+
 include(maidsafe_utils)
 include(maidsafe_run_protoc)
+
 
 # Create CTestCustom.cmake to avoid inclusion of coverage results from test files, protocol buffer files and main.cc files
 file(WRITE ${PROJECT_BINARY_DIR}/CTestCustom.cmake "\n")
 add_coverage_exclude(\\\\.pb\\\\.)
 add_coverage_exclude(tests/)
 add_coverage_exclude(main\\\\.cc)
+
 
 # Avoid running MemCheck on STYLE_CHECK tests
 add_memcheck_ignore(STYLE_CHECK)
@@ -160,3 +153,4 @@ include(CTest)
 include(maidsafe_add_gtests)
 
 set(CPACK_STRIP_FILES TRUE)
+
