@@ -84,12 +84,12 @@ set(CMAKE_MINSIZEREL_POSTFIX -msr)
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 include_directories("${PROJECT_SOURCE_DIR}/src")
-include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/")  # for cryptopp
-include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/protobuf/src")
-include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/googlemock/gtest/include")
-include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/googlemock/include")
-include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/glog/src")
-include_directories("${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/boost")
+include_directories(SYSTEM "${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/")  # for cryptopp
+include_directories(SYSTEM "${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/protobuf/src")
+include_directories(SYSTEM "${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/googlemock/gtest/include")
+include_directories(SYSTEM "${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/googlemock/include")
+include_directories(SYSTEM "${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/glog/src")
+include_directories(SYSTEM "${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/boost")
 
 include(maidsafe_utils)
 include(maidsafe_run_protoc)
