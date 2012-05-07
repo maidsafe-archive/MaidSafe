@@ -178,7 +178,7 @@ if (MSVC)
 
   option(ENABLE_DYNAMIC_RUNTIME
     "Whether to build libraries linking against the dynamic runtime"
-    ON)
+    OFF)
 
   boost_add_default_variant(DYNAMIC_RUNTIME STATIC_RUNTIME)
 endif()
