@@ -66,10 +66,10 @@ set(CMAKE_RELWITHDEBINFO_POSTFIX -rwdi)
 set(CMAKE_MINSIZEREL_POSTFIX -msr)
 
 # include_directories(${MaidSafeCommon_INCLUDE_DIR}/maidsafe)
-# if(UNIX)
-#   set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ")
-#   set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
-# endif()
+if(UNIX)
+  set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ")
+  set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
+endif()
 
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
