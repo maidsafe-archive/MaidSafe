@@ -31,7 +31,7 @@ add_subdirectory(src/encrypt)
 add_subdirectory(src/pki)
 add_subdirectory(src/passport)
 add_subdirectory(src/pd)
-#add_subdirectory(src/drive)
+add_subdirectory(src/drive)
 #add_subdirectory(src/lifestuff)
 
 message("${HR}")
