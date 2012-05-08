@@ -16,6 +16,8 @@
 cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
 project(maidsafe)
 
+enable_testing()
+
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 # set(MAIDSAFE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/${COMPILER}/installed" )
@@ -35,7 +37,6 @@ add_subdirectory(src/drive)
 add_subdirectory(src/lifestuff)
 
 message("${HR}")
-
 
 # When this target is built, it removes all .gcda files from the build directory and its subdirectories
 if(UNIX)
