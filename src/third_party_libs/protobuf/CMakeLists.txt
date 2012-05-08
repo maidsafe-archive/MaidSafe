@@ -30,8 +30,10 @@ SET(TESTS ${PROTOC_TESTS_SOURCES} ${PROTOC_TESTS_HEADERS})
 
 LIST(REMOVE_ITEM PROTOBUF_DIR ${PROTOC_DIR} ${TESTS})
 
-add_library("protobuf" ${PROTOBUF_DIR})
+add_library(protobuf ${PROTOBUF_DIR})
 add_executable(protoc ${PROTOC_DIR})
+set_target_properties(protobuf protoc PROPERTIES FOLDER "Third Party/Google Protocol Buffers")
+
 
 if( UNIX )
   target_link_libraries(protoc -lpthread )

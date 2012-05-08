@@ -17,9 +17,9 @@ set(HR "========================================================================
 message("${HR}\nConfiguring third party projects\n--------------------------------\n")
 
 add_subdirectory(cryptopp)
-add_subdirectory(glog)
+add_subdirectory(glog/src)
 add_subdirectory(googlemock)
 add_subdirectory(protobuf)
 
-set(BUILD_PROJECTS date_time;filesystem;program_options;random;regex;serialization;system;thread;)  # test
+set(BUILD_PROJECTS date_time;filesystem;program_options;random;serialization;system;thread)  # regex;test
 add_subdirectory(boost)

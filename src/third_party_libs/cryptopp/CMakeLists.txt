@@ -93,15 +93,29 @@ add_executable(cryptest ${cryptopp_TEST_SOURCES} ${cryptopp_TEST_HEADERS})
 
 add_library(cryptopp STATIC ${cryptopp_SOURCES} ${cryptopp_HEADERS})
 
-if(NOT MSVC)
-  set_target_properties(cryptest PROPERTIES
-                          DEBUG_OUTPUT_NAME cryptest${CMAKE_DEBUG_POSTFIX}
-                          RELWITHDEBINFO_OUTPUT_NAME cryptest${CMAKE_RELWITHDEBINFO_POSTFIX}
-                          MINSIZEREL_OUTPUT_NAME cryptest${CMAKE_MINSIZEREL_POSTFIX})
+set_target_properties(cryptest cryptopp PROPERTIES FOLDER "Third Party/Crypto++")
 
-endif()
+add_custom_command(TARGET cryptest
+                     POST_BUILD
+                     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestData $<TARGET_FILE_DIR:cryptest>/TestData)
+add_custom_command(TARGET cryptest
+                     POST_BUILD
+                     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestVectors $<TARGET_FILE_DIR:cryptest>/TestVectors)
+add_custom_command(TARGET cryptest
+                     POST_BUILD
+                     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestData ${CMAKE_BINARY_DIR}/TestData)
+add_custom_command(TARGET cryptest
+                     POST_BUILD
+                     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestVectors ${CMAKE_BINARY_DIR}/TestVectors)
+# if(NOT MSVC)
+#   set_target_properties(cryptest PROPERTIES
+#                           DEBUG_OUTPUT_NAME cryptest${CMAKE_DEBUG_POSTFIX}
+#                           RELWITHDEBINFO_OUTPUT_NAME cryptest${CMAKE_RELWITHDEBINFO_POSTFIX}
+#                           MINSIZEREL_OUTPUT_NAME cryptest${CMAKE_MINSIZEREL_POSTFIX})
+# 
+# endif()
 
-install(TARGETS cryptopp ARCHIVE DESTINATION lib)
+# install(TARGETS cryptopp ARCHIVE DESTINATION lib)
 
 target_link_libraries(cryptest cryptopp)
 
@@ -134,22 +148,22 @@ elseif(MSVC)
   target_link_libraries(cryptest odbc32.lib odbccp32.lib Ws2_32.lib)
 endif()
 
-add_test(CrypoppTest.BEH_FULL cryptest v)
-add_test(CrypoppTest.BEH_AES cryptest tv aes)
-add_test(CrypoppTest.BEH_SHA cryptest tv sha)
-add_test(CrypoppTest.BEH_RSA_PSS cryptest tv rsa_pss)
-add_test(CrypoppTest.BEH_RSA_OAEP cryptest tv rsa_oaep)
-add_test(CrypoppTest.BEH_RSA_PKCS1_1_5 cryptest tv rsa_pkcs1_1_5)
+add_test(NAME CryptoppTest.BEH_FULL COMMAND $<TARGET_FILE:cryptest> v WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
+add_test(NAME CryptoppTest.BEH_AES COMMAND $<TARGET_FILE:cryptest> tv aes WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
+add_test(NAME CryptoppTest.BEH_SHA COMMAND $<TARGET_FILE:cryptest> tv sha WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
+add_test(NAME CryptoppTest.BEH_RSA_PSS COMMAND $<TARGET_FILE:cryptest> tv rsa_pss WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
+add_test(NAME CryptoppTest.BEH_RSA_OAEP COMMAND $<TARGET_FILE:cryptest> tv rsa_oaep WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
+add_test(NAME CryptoppTest.BEH_RSA_PKCS1_1_5 COMMAND $<TARGET_FILE:cryptest> tv rsa_pkcs1_1_5 WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
 
-set_property(TEST CrypoppTest.BEH_FULL PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CrypoppTest.BEH_FULL PROPERTY TIMEOUT 60)
-set_property(TEST CrypoppTest.BEH_AES PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CrypoppTest.BEH_AES PROPERTY TIMEOUT 60)
-set_property(TEST CrypoppTest.BEH_SHA PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CrypoppTest.BEH_SHA PROPERTY TIMEOUT 60)
-set_property(TEST CrypoppTest.BEH_RSA_PSS PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CrypoppTest.BEH_RSA_PSS PROPERTY TIMEOUT 60)
-set_property(TEST CrypoppTest.BEH_RSA_OAEP PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CrypoppTest.BEH_RSA_OAEP PROPERTY TIMEOUT 60)
-set_property(TEST CrypoppTest.BEH_RSA_PKCS1_1_5 PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CrypoppTest.BEH_RSA_PKCS1_1_5 PROPERTY TIMEOUT 60)
+set_property(TEST CryptoppTest.BEH_FULL PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
+set_property(TEST CryptoppTest.BEH_FULL PROPERTY TIMEOUT 60)
+set_property(TEST CryptoppTest.BEH_AES PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
+set_property(TEST CryptoppTest.BEH_AES PROPERTY TIMEOUT 60)
+set_property(TEST CryptoppTest.BEH_SHA PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
+set_property(TEST CryptoppTest.BEH_SHA PROPERTY TIMEOUT 60)
+set_property(TEST CryptoppTest.BEH_RSA_PSS PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
+set_property(TEST CryptoppTest.BEH_RSA_PSS PROPERTY TIMEOUT 60)
+set_property(TEST CryptoppTest.BEH_RSA_OAEP PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
+set_property(TEST CryptoppTest.BEH_RSA_OAEP PROPERTY TIMEOUT 60)
+set_property(TEST CryptoppTest.BEH_RSA_PKCS1_1_5 PROPERTY LABELS Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
+set_property(TEST CryptoppTest.BEH_RSA_PKCS1_1_5 PROPERTY TIMEOUT 60)

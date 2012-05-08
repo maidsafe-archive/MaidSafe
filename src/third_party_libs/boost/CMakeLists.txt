@@ -371,7 +371,7 @@ endif()
 mark_as_advanced(BOOST_EXPORTS_FILE)
 
 # Add build rules for documentation
-add_subdirectory(doc)
+# add_subdirectory(doc)
 
 # Add build rules for all of the Boost libraries
 add_subdirectory(libs)

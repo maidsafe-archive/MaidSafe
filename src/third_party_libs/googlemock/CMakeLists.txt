@@ -87,9 +87,11 @@ include_directories("${gmock_SOURCE_DIR}/include"
 # a user aggressive about warnings.
 cxx_library(gmock "${cxx_strict}" src/gmock-all.cc)
 target_link_libraries(gmock gtest)
+set_target_properties(gmock PROPERTIES FOLDER "Third Party/GoogleMock")
 
-cxx_library(gmock_main "${cxx_strict}" src/gmock_main.cc)
-target_link_libraries(gmock_main gmock)
+# cxx_library(gmock_main "${cxx_strict}" src/gmock_main.cc)
+# target_link_libraries(gmock_main gmock)
+# set_target_properties(gmock_main PROPERTIES FOLDER "Third Party/GoogleMock")
 
 ########################################################################
 #

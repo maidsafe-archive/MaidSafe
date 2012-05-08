@@ -4,12 +4,6 @@ else()
   include_directories(.)
 endif()
 
-#IF(CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
-#  message(FATAL_ERROR "HEREEEEEEEEEE")
-#  SET(CMAKE_CXX_FLAGS "")
-#  #  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused -Wno-type-limits -Wno-empty-body")
-#ENDIF()
-
 include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_flags.cmake)
 
 if(WIN32)
@@ -30,10 +24,12 @@ else()
               vlog_is_on.cc)
 endif()
 
+set_target_properties(glog PROPERTIES FOLDER "Third Party/Google Logging")
+
 macro(glog_test NAME)
   add_executable(${NAME} ${NAME}.cc)
   target_link_libraries(${NAME} glog gflags pthread googletest)
-  set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${LIBMV_TESTS_OUTPUT_DIR})
+  set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${LIBMV_TESTS_OUTPUT_DIR} FOLDER "Third Party/Google Logging")
   add_test(${NAME} ${LIBMV_TESTS_OUTPUT_DIR}/${NAME})
 endmacro()
 

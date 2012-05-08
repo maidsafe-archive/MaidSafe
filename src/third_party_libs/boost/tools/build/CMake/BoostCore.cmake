@@ -474,12 +474,12 @@ macro(boost_library_variant_target_name)
 
   # Add -mt for multi-threaded libraries
   list_contains(VARIANT_IS_MT MULTI_THREADED ${ARGN})
-#  if (VARIANT_IS_MT)
-#    set(VARIANT_TARGET_NAME "${VARIANT_TARGET_NAME}-mt")
+  if (VARIANT_IS_MT)
+    set(VARIANT_TARGET_NAME "${VARIANT_TARGET_NAME}-mt")
 
     # If we're creating versioned names, tack on "-mt"
-#    set(VARIANT_VERSIONED_NAME "${VARIANT_VERSIONED_NAME}-mt")
-#  endif (VARIANT_IS_MT)
+    set(VARIANT_VERSIONED_NAME "${VARIANT_VERSIONED_NAME}-mt")
+  endif (VARIANT_IS_MT)
 
   # Add -static for static libraries, -shared for shared libraries
   list_contains(VARIANT_IS_STATIC STATIC ${ARGN})
@@ -695,6 +695,7 @@ macro(boost_library_variant LIBNAME)
     if (THIS_LIB_IS_STATIC)
 
       add_library(${VARIANT_LIBNAME} STATIC ${THIS_LIB_SOURCES})
+      set_target_properties(${VARIANT_LIBNAME} PROPERTIES FOLDER "Third Party/Boost")
 
       # On Windows, we need static and shared libraries to have
       # different names, so we follow the Boost.Build version 2 style
@@ -718,6 +719,7 @@ macro(boost_library_variant LIBNAME)
     elseif (THIS_LIB_MODULE)
 
       add_library(${VARIANT_LIBNAME} MODULE ${THIS_LIB_SOURCES})
+      set_target_properties(${VARIANT_LIBNAME} PROPERTIES FOLDER "Third Party/Boost")
 
       #
       # You don't set SOVERSION here... nothing links "to" these things      		
@@ -735,6 +737,7 @@ macro(boost_library_variant LIBNAME)
     else ()  # shared
 
       add_library(${VARIANT_LIBNAME} SHARED ${THIS_LIB_SOURCES})
+      set_target_properties(${VARIANT_LIBNAME} PROPERTIES FOLDER "Third Party/Boost")
 
       if(MINGW)
 	set_target_properties(${VARIANT_LIBNAME}
@@ -1224,7 +1227,7 @@ macro(boost_add_library SHORT_LIBNAME)
     "MODULE;NO_INSTALL;${BOOST_ADDLIB_OPTION_NAMES}"
     ${ARGN}
     )
-
+    
   set(THIS_LIB_SOURCES ${THIS_LIB_DEFAULT_ARGS})
 
   #
@@ -1237,6 +1240,7 @@ macro(boost_add_library SHORT_LIBNAME)
   # A top-level target that refers to all of the variants of the
   # library, collectively.
   add_custom_target(${LIBNAME})
+  set_target_properties(${LIBNAME} PROPERTIES FOLDER "Third Party/Boost")
 
   if (THIS_LIB_EXTRA_VARIANTS)
     # Build the set of variants that we will generate for this library
