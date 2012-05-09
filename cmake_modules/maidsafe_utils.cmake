@@ -67,9 +67,9 @@ endfunction()
 function(test_summary_output)
   list(LENGTH ALL_GTESTS GTEST_COUNT)
   message(STATUS "${MAIDSAFE_TEST_TYPE_MESSAGE}.   ${GTEST_COUNT} Google Tests.")
-  message(STATUS "    To include all tests,                ${ERROR_MESSAGE_CMAKE_PATH} -DMAIDSAFE_TEST_TYPE=ALL")
-  message(STATUS "    To include behavioural tests,        ${ERROR_MESSAGE_CMAKE_PATH} -DMAIDSAFE_TEST_TYPE=BEH")
-  message(STATUS "    To include functional tests,        ${ERROR_MESSAGE_CMAKE_PATH} -DMAIDSAFE_TEST_TYPE=FUNC")
+  message(STATUS "    To include all tests,                cmake . -DMAIDSAFE_TEST_TYPE=ALL")
+  message(STATUS "    To include behavioural tests,        cmake . -DMAIDSAFE_TEST_TYPE=BEH")
+  message(STATUS "    To include functional tests,         cmake . -DMAIDSAFE_TEST_TYPE=FUNC")
 endfunction()
 
 

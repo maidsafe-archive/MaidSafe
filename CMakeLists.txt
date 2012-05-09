@@ -35,6 +35,7 @@ add_subdirectory(src/passport)
 add_subdirectory(src/pd)
 add_subdirectory(src/drive)
 add_subdirectory(src/lifestuff)
+add_subdirectory(src/lifestuff-gui)
 
 message("${HR}")
 
