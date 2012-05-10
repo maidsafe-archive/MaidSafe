@@ -223,7 +223,7 @@ class LIBPROTOBUF_EXPORT WireFormat {
 
   enum Operation {
     PARSE,
-    SERIALIZE,
+    SERIALIZE
   };
 
   // Verifies that a string field is valid UTF8, logging an error if not.

@@ -125,8 +125,16 @@ if(UNIX)
     set_target_properties(cryptopp cryptest PROPERTIES
                             COMPILE_FLAGS "-Wno-tautological-compare -Wno-c++11-narrowing -std=c++11 -stdlib=libc++")
     set_target_properties(cryptest PROPERTIES LINK_FLAGS_RELEASE "-stdlib=libc++" LINK_FLAGS "-stdlib=libc++")
-  else()
-    set_target_properties(cryptopp PROPERTIES COMPILE_FLAGS "-O2 -fPIC -w -pipe -finline-functions -std=c++11")
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
+    if (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7)
+        set_target_properties(cryptopp cryptest PROPERTIES COMPILE_FLAGS "-O2 -fPIC -w -pipe -finline-functions -std=c++11")
+        
+    elseif(GCC_VERSION VERSION_GREATER 4.6 OR GCC_VERSION VERSION_EQUAL 4.6)
+        set_target_properties(cryptopp cryptest PROPERTIES COMPILE_FLAGS "-O2 -fPIC -w -pipe -finline-functions -std=c++0x")
+    else()
+      message(FATAL "Unsupported verion of GCC, minimum 4.6 required")
+    endif()
   endif()
 elseif(MSVC)
   set_target_properties(cryptopp PROPERTIES

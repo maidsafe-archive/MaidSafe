@@ -106,7 +106,7 @@ class LIBPROTOBUF_EXPORT Tokenizer {
     TYPE_STRING,      // A quoted sequence of escaped characters.  Either single
                       // or double quotes can be used, but they must match.
                       // A string literal cannot cross a line break.
-    TYPE_SYMBOL,      // Any other printable character, like '!' or '+'.
+    TYPE_SYMBOL      // Any other printable character, like '!' or '+'.
                       // Symbols are always a single character, so "!+$%" is
                       // four tokens.
   };

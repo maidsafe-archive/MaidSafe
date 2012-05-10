@@ -319,7 +319,7 @@ class LIBPROTOBUF_EXPORT FieldDescriptor {
     TYPE_SINT32         = 17,  // int32, ZigZag-encoded varint on the wire
     TYPE_SINT64         = 18,  // int64, ZigZag-encoded varint on the wire
 
-    MAX_TYPE            = 18,  // Constant useful for defining lookup tables
+    MAX_TYPE            = 18  // Constant useful for defining lookup tables
                                // indexed by Type.
   };
 
@@ -338,7 +338,7 @@ class LIBPROTOBUF_EXPORT FieldDescriptor {
     CPPTYPE_STRING      = 9,     // TYPE_STRING, TYPE_BYTES
     CPPTYPE_MESSAGE     = 10,    // TYPE_MESSAGE, TYPE_GROUP
 
-    MAX_CPPTYPE         = 10,    // Constant useful for defining lookup tables
+    MAX_CPPTYPE         = 10    // Constant useful for defining lookup tables
                                  // indexed by CppType.
   };
 
@@ -349,7 +349,7 @@ class LIBPROTOBUF_EXPORT FieldDescriptor {
     LABEL_REQUIRED      = 2,    // required
     LABEL_REPEATED      = 3,    // repeated
 
-    MAX_LABEL           = 3,    // Constant useful for defining lookup tables
+    MAX_LABEL           = 3    // Constant useful for defining lookup tables
                                 // indexed by Label.
   };
 
