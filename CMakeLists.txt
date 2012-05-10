@@ -18,24 +18,42 @@ project(maidsafe)
 
 enable_testing()
 
+set(SubModules
+      common
+      private
+      transport
+#       rudp
+#       routing
+      dht
+      encrypt
+      pki
+      passport
+      pd
+      drive
+      lifestuff
+      lifestuff-gui)
+
+# Check the submodules are initialised
+foreach(SubModule ${SubModules})
+  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/src/${SubModule}/.git")
+    set(ErrorMsg "\nThe git submodule for ${SubModule} is not intialised.  ")
+    set(ErrorMsg "${ErrorMsg}Please cd to ${CMAKE_SOURCE_DIR} and run:\n    ")
+    set(ErrorMsg "${ErrorMsg}git submodule update --init --recursive\n")
+    message(FATAL_ERROR ${ErrorMsg})
+  endif()
+endforeach()
+
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 # set(MAIDSAFE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/${COMPILER}/installed" )
 # set(MAIDSAFE_INCLUDE_DIR "${MAIDSAFE_INSTALL_PREFIX}/include")
+
 add_subdirectory(src/third_party_libs)
-add_subdirectory(src/common)
-add_subdirectory(src/private)
-add_subdirectory(src/transport)
-# add_subdirectory(src/rudp)
-# add_subdirectory(src/routing)
-add_subdirectory(src/dht)
-add_subdirectory(src/encrypt)
-add_subdirectory(src/pki)
-add_subdirectory(src/passport)
-add_subdirectory(src/pd)
-add_subdirectory(src/drive)
-add_subdirectory(src/lifestuff)
-add_subdirectory(src/lifestuff-gui)
+
+# Add each sub-module
+foreach(SubModule ${SubModules})
+  add_subdirectory(src/${SubModule})
+endforeach()
 
 message("${HR}")
 
