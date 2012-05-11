@@ -40,8 +40,13 @@
 #include <cstdio>
 #include <string>
 #include "base/commandlineflags.h"
-#include "glog/logging.h"
-#include "glog/raw_logging.h"
+#ifdef _WIN32
+#  include "windows/glog/logging.h"
+#  include "windows/glog/raw_logging.h"
+#else
+#  include "glog/logging.h"
+#  include "glog/raw_logging.h"
+#endif
 #include "base/googleinit.h"
 
 // glog doesn't have annotation
@@ -72,7 +77,7 @@ GOOGLE_GLOG_DLL_DECL bool SafeFNMatch_(const char* pattern,
                                        size_t str_len) {
   int p = 0;
   int s = 0;
-  while (1) {
+  for (;;) {
     if (p == patt_len  &&  s == str_len) return true;
     if (p == patt_len) return false;
     if (s == str_len) return p+1 == patt_len  &&  pattern[p] == '*';
@@ -160,7 +165,7 @@ static void VLOG2Initializer() {
 // This can be called very early, so we use SpinLock and RAW_VLOG here.
 int SetVLOGLevel(const char* module_pattern, int log_level) {
   int result = FLAGS_v;
-  int const pattern_len = strlen(module_pattern);
+  int const pattern_len = static_cast<int>(strlen(module_pattern));
   bool found = false;
   MutexLock l(&vmodule_lock);  // protect whole read-modify-write
   for (const VModuleInfo* info = vmodule_list;
@@ -186,7 +191,14 @@ int SetVLOGLevel(const char* module_pattern, int log_level) {
     info->next = vmodule_list;
     vmodule_list = info;
   }
+#ifdef __MSVC__
+#  pragma warning(push)
+#  pragma warning(disable: 4127)
+#endif
   RAW_VLOG(1, "Set VLOG level for \"%s\" to %d", module_pattern, log_level);
+#ifdef __MSVC__
+#  pragma warning(pop)
+#endif
   return result;
 }
 

@@ -183,7 +183,7 @@ struct timeval {
 
 // Based on: http://www.google.com/codesearch/p?hl=en#dR3YEbitojA/os_win32.c&q=GetSystemTimeAsFileTime%20license:bsd
 // See COPYING for copyright information.
-static int gettimeofday(struct timeval *tv, void* tz) {
+static int gettimeofday(struct timeval *tv, void* /*tz*/) {
 #define EPOCHFILETIME (116444736000000000ULL)
   FILETIME ft;
   LARGE_INTEGER li;

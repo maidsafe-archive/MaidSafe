@@ -58,8 +58,13 @@
 #include <errno.h>                   // for errno
 #include <sstream>
 #include "base/commandlineflags.h"        // to get the program name
-#include "glog/logging.h"
-#include "glog/raw_logging.h"
+#ifdef _WIN32
+#  include "windows/glog/logging.h"
+#  include "windows/glog/raw_logging.h"
+#else
+#  include "glog/logging.h"
+#  include "glog/raw_logging.h"
+#endif
 #include "base/googleinit.h"
 
 #ifdef HAVE_STACKTRACE
@@ -454,7 +459,7 @@ inline void LogDestination::RemoveLogSink(LogSink *destination) {
   MutexLock l(&sink_mutex_);
   // This doesn't keep the sinks in order, but who cares?
   if (sinks_) {
-    for (int i = sinks_->size() - 1; i >= 0; i--) {
+    for (int i = static_cast<int>(sinks_->size()) - 1; i >= 0; i--) {
       if ((*sinks_)[i] == destination) {
         (*sinks_)[i] = (*sinks_)[sinks_->size() - 1];
         sinks_->pop_back();
@@ -503,7 +508,7 @@ inline void LogDestination::SetEmailLogging(LogSeverity min_severity,
 static void WriteToStderr(const char* message, size_t len) {
   // Avoid using cerr from this module since we may get called during
   // exit code, and cerr may be partially or fully destroyed by then.
-  write(STDERR_FILENO, message, len);
+  write(STDERR_FILENO, message, static_cast<unsigned int>(len));
 }
 
 inline void LogDestination::MaybeLogToStderr(LogSeverity severity,
@@ -550,7 +555,7 @@ inline void LogDestination::MaybeLogToLogfile(LogSeverity severity,
 					      size_t len) {
   const bool should_flush = severity > FLAGS_logbuflevel;
   LogDestination* destination = log_destination(severity);
-  destination->logger_->Write(should_flush, timestamp, message, len);
+  destination->logger_->Write(should_flush, timestamp, message, static_cast<int>(len));
 }
 
 inline void LogDestination::LogToAllLogfiles(LogSeverity severity,
@@ -575,7 +580,7 @@ inline void LogDestination::LogToSinks(LogSeverity severity,
                                        size_t message_len) {
   ReaderMutexLock l(&sink_mutex_);
   if (sinks_) {
-    for (int i = sinks_->size() - 1; i >= 0; i--) {
+    for (int i = static_cast<int>(sinks_->size()) - 1; i >= 0; i--) {
       (*sinks_)[i]->send(severity, full_filename, base_filename,
                          line, tm_time, message, message_len);
     }
@@ -585,7 +590,7 @@ inline void LogDestination::LogToSinks(LogSeverity severity,
 inline void LogDestination::WaitForSinks(LogMessage::LogMessageData* data) {
   ReaderMutexLock l(&sink_mutex_);
   if (sinks_) {
-    for (int i = sinks_->size() - 1; i >= 0; i--) {
+    for (int i = static_cast<int>(sinks_->size()) - 1; i >= 0; i--) {
       (*sinks_)[i]->WaitTillSent();
     }
   }
@@ -852,7 +857,7 @@ void LogFileObject::Write(bool force_flush,
                        << "Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu "
                        << "threadid file:line] msg" << '\n'
                        << '\0';
-    int header_len = strlen(file_header_string);
+    int header_len = static_cast<int>(strlen(file_header_string));
     fwrite(file_header_string, 1, header_len, file_);
     file_length_ += header_len;
     bytes_since_flush_ += header_len;
@@ -1118,7 +1123,7 @@ static char fatal_message[256];
 
 void ReprintFatalMessage() {
   if (fatal_message[0]) {
-    const int n = strlen(fatal_message);
+    const int n = static_cast<int>(strlen(fatal_message));
     if (!FLAGS_logtostderr) {
       // Also write to stderr
       WriteToStderr(fatal_message, n);
@@ -1133,6 +1138,10 @@ void LogMessage::SendToLog() EXCLUSIVE_LOCKS_REQUIRED(log_mutex) {
 
   log_mutex.AssertHeld();
 
+#ifdef __MSVC__
+#  pragma warning(push)
+#  pragma warning(disable: 4127)
+#endif
   RAW_DCHECK(data_->num_chars_to_log_ > 0 &&
              data_->message_text_[data_->num_chars_to_log_-1] == '\n', "");
 
@@ -1189,8 +1198,8 @@ void LogMessage::SendToLog() EXCLUSIVE_LOCKS_REQUIRED(log_mutex) {
       SetCrashReason(&crash_reason);
 
       // Store shortened fatal message for other logs and GWQ status
-      const int copy = min<int>(data_->num_chars_to_log_,
-                                sizeof(fatal_message)-1);
+      const int copy = min<int>(static_cast<int>(data_->num_chars_to_log_),
+                                static_cast<int>(sizeof(fatal_message)-1));
       memcpy(fatal_message, data_->message_text_, copy);
       fatal_message[copy] = '\0';
       fatal_time = data_->timestamp_;
@@ -1212,10 +1221,13 @@ void LogMessage::SendToLog() EXCLUSIVE_LOCKS_REQUIRED(log_mutex) {
     LogDestination::WaitForSinks(data_);
 
     const char* message = "*** Check failure stack trace: ***\n";
-    write(STDERR_FILENO, message, strlen(message));
+    write(STDERR_FILENO, message, static_cast<int>(strlen(message)));
     Fail();
   }
 }
+#ifdef __MSVC__
+#  pragma warning(pop)
+#endif
 
 void LogMessage::RecordCrashReason(
     glog_internal_namespace_::CrashReason* reason) {
@@ -1232,13 +1244,13 @@ void LogMessage::RecordCrashReason(
 }
 
 static void logging_fail() {
-#if defined(_DEBUG) && defined(_MSC_VER)
-  // When debugging on windows, avoid the obnoxious dialog and make
-  // it possible to continue past a LOG(FATAL) in the debugger
-  _asm int 3
-#else
+// #if defined(_DEBUG) && defined(_MSC_VER)
+//   // When debugging on windows, avoid the obnoxious dialog and make
+//   // it possible to continue past a LOG(FATAL) in the debugger
+//   _asm int 3
+// #else
   abort();
-#endif
+// #endif
 }
 
 #ifdef HAVE___ATTRIBUTE__
@@ -1259,6 +1271,10 @@ void LogMessage::Fail() {
 // L >= log_mutex (callers must hold the log_mutex).
 void LogMessage::SendToSink() EXCLUSIVE_LOCKS_REQUIRED(log_mutex) {
   if (data_->sink_ != NULL) {
+#ifdef __MSVC__
+#  pragma warning(push)
+#  pragma warning(disable: 4127)
+#endif
     RAW_DCHECK(data_->num_chars_to_log_ > 0 &&
                data_->message_text_[data_->num_chars_to_log_-1] == '\n', "");
     data_->sink_->send(data_->severity_, data_->fullname_, data_->basename_,
@@ -1268,6 +1284,9 @@ void LogMessage::SendToSink() EXCLUSIVE_LOCKS_REQUIRED(log_mutex) {
                         data_->num_prefix_chars_ - 1));
   }
 }
+#ifdef __MSVC__
+#  pragma warning(pop)
+#endif
 
 // L >= log_mutex (callers must hold the log_mutex).
 void LogMessage::SendToSinkAndLog() EXCLUSIVE_LOCKS_REQUIRED(log_mutex) {
@@ -1278,28 +1297,42 @@ void LogMessage::SendToSinkAndLog() EXCLUSIVE_LOCKS_REQUIRED(log_mutex) {
 // L >= log_mutex (callers must hold the log_mutex).
 void LogMessage::SaveOrSendToLog() EXCLUSIVE_LOCKS_REQUIRED(log_mutex) {
   if (data_->outvec_ != NULL) {
+#ifdef __MSVC__
+#  pragma warning(push)
+#  pragma warning(disable: 4127)
+#endif
     RAW_DCHECK(data_->num_chars_to_log_ > 0 &&
                data_->message_text_[data_->num_chars_to_log_-1] == '\n', "");
     // Omit prefix of message and trailing newline when recording in outvec_.
     const char *start = data_->message_text_ + data_->num_prefix_chars_;
-    int len = data_->num_chars_to_log_ - data_->num_prefix_chars_ - 1;
+    int len = static_cast<int>(data_->num_chars_to_log_ - data_->num_prefix_chars_ - 1);
     data_->outvec_->push_back(string(start, len));
   } else {
     SendToLog();
   }
 }
+#ifdef __MSVC__
+#  pragma warning(pop)
+#endif
 
 void LogMessage::WriteToStringAndLog() EXCLUSIVE_LOCKS_REQUIRED(log_mutex) {
   if (data_->message_ != NULL) {
+#ifdef __MSVC__
+#  pragma warning(push)
+#  pragma warning(disable: 4127)
+#endif
     RAW_DCHECK(data_->num_chars_to_log_ > 0 &&
                data_->message_text_[data_->num_chars_to_log_-1] == '\n', "");
     // Omit prefix of message and trailing newline when writing to message_.
     const char *start = data_->message_text_ + data_->num_prefix_chars_;
-    int len = data_->num_chars_to_log_ - data_->num_prefix_chars_ - 1;
+    int len = static_cast<int>(data_->num_chars_to_log_ - data_->num_prefix_chars_ - 1);
     data_->message_->assign(start, len);
   }
   SendToLog();
 }
+#ifdef __MSVC__
+#  pragma warning(pop)
+#endif
 
 // L >= log_mutex (callers must hold the log_mutex).
 void LogMessage::SendToSyslogAndLog() {
@@ -1609,8 +1642,8 @@ void GetExistingTempDirectories(vector<string>* list) {
   }
 }
 
-void TruncateLogFile(const char *path, int64 limit, int64 keep) {
 #ifdef HAVE_UNISTD_H
+void TruncateLogFile(const char *path, int64 limit, int64 keep) {
   struct stat statbuf;
   const int kCopyBlockSize = 8 << 10;
   char copybuf[kCopyBlockSize];
@@ -1680,6 +1713,7 @@ void TruncateLogFile(const char *path, int64 limit, int64 keep) {
  out_close_fd:
   close(fd);
 #else
+void TruncateLogFile(const char * /*path*/, int64 /*limit*/, int64 /*keep*/) {
   LOG(ERROR) << "No log truncation support.";
 #endif
 }

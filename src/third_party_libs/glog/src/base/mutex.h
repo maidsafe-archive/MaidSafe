@@ -107,7 +107,8 @@
 #if defined(NO_THREADS)
   typedef int MutexType;      // to keep a lock-count
 #elif defined(_WIN32) || defined(__CYGWIN32__) || defined(__CYGWIN64__)
-# define WIN32_LEAN_AND_MEAN  // We only need minimal includes
+// We already define WIN32_LEAN_AND_MEAN in the CMakeLists.txt
+// # define WIN32_LEAN_AND_MEAN  // We only need minimal includes
 # ifdef GMUTEX_TRYLOCK
   // We need Windows NT or later for TryEnterCriticalSection().  If you
   // don't need that functionality, you can remove these _WIN32_WINNT
@@ -118,8 +119,8 @@
 # endif
 // To avoid macro definition of ERROR.
 # define NOGDI
-// To avoid macro definition of min/max.
-# define NOMINMAX
+// We already define NOMINMAX in the CMakeLists.txt
+// # define NOMINMAX  // To avoid macro definition of min/max.
 # include <windows.h>
   typedef CRITICAL_SECTION MutexType;
 #elif defined(HAVE_PTHREAD) && defined(HAVE_RWLOCK)

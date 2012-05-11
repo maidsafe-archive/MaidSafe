@@ -1,11 +1,16 @@
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+
 project(Protobuf)
-cmake_minimum_required(VERSION 2.6)
+
+cmake_minimum_required(VERSION 2.8.7)
+
 include(../../../cmake_modules/maidsafe_standard_flags.cmake)
+
 if(WIN32)
   if(MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS=1 /wd4244 /wd4267 /wd4018 /wd4355 /wd4800 /wd4251 /wd4996 /wd4146 /wd4305)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX-")
+#    add_definitions(-D_CRT_SECURE_NO_WARNINGS=1 /wd4244 /wd4267 /wd4018 /wd4355 /wd4800 /wd4251 /wd4146 /wd4305)
   ENDIF(  )
 else()
   add_definitions(-Wno-deprecated -std=c++11)

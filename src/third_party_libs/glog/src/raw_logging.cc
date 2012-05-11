@@ -41,9 +41,15 @@
 #endif
 #include <fcntl.h>                 // for open()
 #include <time.h>
-#include "config.h"
-#include "glog/logging.h"          // To pick up flag settings etc.
-#include "glog/raw_logging.h"
+#ifdef _WIN32
+#  include "windows/config.h"
+#  include "windows/glog/logging.h"          // To pick up flag settings etc.
+#  include "windows/glog/raw_logging.h"
+#else
+#  include "config.h"
+#  include "glog/logging.h"          // To pick up flag settings etc.
+#  include "glog/raw_logging.h"
+#endif
 #include "base/commandlineflags.h"
 
 #ifdef HAVE_STACKTRACE
@@ -150,7 +156,7 @@ void RawLog__(LogSeverity severity, const char* file, int line,
   // avoiding FILE buffering (to avoid invoking malloc()), and bypassing
   // libc (to side-step any libc interception).
   // We write just once to avoid races with other invocations of RawLog__.
-  safe_write(STDERR_FILENO, buffer, strlen(buffer));
+  safe_write(STDERR_FILENO, buffer, static_cast<int>(strlen(buffer)));
   if (severity == FATAL)  {
     if (!sync_val_compare_and_swap(&crashed, false, true)) {
       crash_reason.filename = file;

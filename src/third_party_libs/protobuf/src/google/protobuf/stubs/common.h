@@ -44,7 +44,8 @@
 // Tru64 lacks stdint.h, but has inttypes.h which defines a superset of
 // what stdint.h would define.
 #include <inttypes.h>
-#elif !defined(_MSC_VER)
+// #elif !defined(_MSC_VER)
+#else
 #include <stdint.h>
 #endif
 

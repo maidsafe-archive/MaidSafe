@@ -19,9 +19,16 @@
 
 add_definitions(-DSTATICLIB)
 add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_FILESYSTEM_VERSION=3)
+
 set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE True)
+
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
   add_definitions(-DDEBUG)
+endif()
+
+if(MSVC)
+  set(CMAKE_CXX_FLAGS)
+  set(CMAKE_CXX_FLAGS_INIT)
 endif()
 
 # Enable OpenMP if available
@@ -50,9 +57,6 @@ if(MSVC)
 
   # prevents from automatic linking of boost libraries
   add_definitions(-DBOOST_ALL_NO_LIB)
-  
-  set(CMAKE_CXX_FLAGS)
-  set(CMAKE_CXX_FLAGS_INIT)
 
   # W4 -   Set warning level 4.
   # WX -   Treat warnings as errors.
@@ -60,7 +64,7 @@ if(MSVC)
   # EHsc - Catches C++ exceptions only and tells the compiler to assume that
   #        extern C functions never throw a C++ exception.
   # TP -   Treat sources as C++
-  set(CMAKE_CXX_FLAGS "{CMAKE_CXX_FLAGS} /W4 /WX /MP7 /EHsc /TP")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /WX /MP7 /EHsc /TP")
 
   # C4351 'new behavior: elements of array 'array' will be default initialized'
   # unneeded for new code (only applies to code previously compiled with VS 2005).

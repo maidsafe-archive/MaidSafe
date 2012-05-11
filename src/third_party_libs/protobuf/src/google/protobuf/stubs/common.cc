@@ -37,7 +37,7 @@
 #include <vector>
 
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN  // We only need minimal includes
+// #define WIN32_LEAN_AND_MEAN  // We only need minimal includes
 #include <windows.h>
 #define snprintf _snprintf    // see comment in strutil.cc
 #elif defined(HAVE_PTHREAD)

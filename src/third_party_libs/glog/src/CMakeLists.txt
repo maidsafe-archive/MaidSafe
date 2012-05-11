@@ -1,5 +1,5 @@
 if(WIN32)
-  include_directories(windows ../../msinttypes)
+  include_directories(windows)
 else()
   include_directories(.)
 endif()
@@ -8,11 +8,22 @@ include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_flags.cmake)
 
 if(WIN32)
   add_library(glog
+              base/commandlineflags.h
+              windows/config.h
+              base/googleinit.h
+              windows/glog/log_severity.h
               logging.cc
+              windows/glog/logging.h
+              base/mutex.h
               windows/port.cc
+              windows/port.h
               raw_logging.cc
+              windows/glog/raw_logging.h
+              windows/glog/stl_logging.h
               utilities.cc
-              vlog_is_on.cc)
+              utilities.h
+              vlog_is_on.cc
+              windows/glog/vlog_is_on.h)
 else()
   add_library(glog
               demangle.cc
