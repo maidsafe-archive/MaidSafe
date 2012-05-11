@@ -99,11 +99,12 @@ if (NOT BOOST_TOOLSET)
       OUTPUT_VARIABLE INTEL_VERSION_STRING
       OUTPUT_STRIP_TRAILING_WHITESPACE)
     set(BOOST_COMPILER_VERSION ${INTEL_VERSION_STRING})
-   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
   endif(MSVC60)
 endif (NOT BOOST_TOOLSET)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
+endif()
 boost_report_pretty("Boost compiler" BOOST_COMPILER)
 boost_report_pretty("Boost toolset"  BOOST_TOOLSET)
 
