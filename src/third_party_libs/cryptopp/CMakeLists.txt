@@ -123,7 +123,7 @@ if(UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_definitions(-DCRYPTOPP_DISABLE_ASM -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION)
     set_target_properties(cryptopp cryptest PROPERTIES
-                            COMPILE_FLAGS "-Wno-tautological-compare -Wno-c++11-narrowing -std=c++11 -stdlib=libc++")
+                            COMPILE_FLAGS "-Wno-tautological-compare -fPIC -Wno-c++11-narrowing -std=c++11 -stdlib=libc++")
     set_target_properties(cryptest PROPERTIES LINK_FLAGS_RELEASE "-stdlib=libc++" LINK_FLAGS "-stdlib=libc++")
   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
