@@ -43,6 +43,7 @@ Thumbs.db
 *~
 ~.swp
 *.kdev*
+*desktop.ini
 
 # build dir(s) #
 ###############
