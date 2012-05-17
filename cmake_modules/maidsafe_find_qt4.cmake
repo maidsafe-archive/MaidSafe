@@ -66,7 +66,11 @@ if(NOT QT_QMAKE_EXECUTABLE)
 endif()
 
 set(QT_STATIC 1)
-set(MS_QT_REQUIRED_LIBRARIES QtCore QtGui QtMain QtXml QtSql)
+if(WIN32)
+  set(MS_QT_REQUIRED_LIBRARIES QtCore QtGui QtMain QtXml QtSql)
+else()
+  set(MS_QT_REQUIRED_LIBRARIES QtCore QtGui QtXml QtSql)
+endif()
 find_package(Qt4 4.8.0 COMPONENTS ${MS_QT_REQUIRED_LIBRARIES} REQUIRED)
 include(${QT_USE_FILE})
 
