@@ -17,7 +17,6 @@
 #==============================================================================#
 
 
-add_definitions(-DSTATICLIB)
 add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_FILESYSTEM_VERSION=3)
 set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE True)
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
