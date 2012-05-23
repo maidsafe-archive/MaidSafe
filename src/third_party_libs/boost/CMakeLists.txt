@@ -29,6 +29,9 @@
 
 cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
 project(Boost)
+if(WIN32)
+  add_definitions(-D_BIND_TO_CURRENT_MFC_VERSION=1 -D_BIND_TO_CURRENT_CRT_VERSION=1)
+endif()
 
 ##########################################################################
 # Boost CMake modules                                                    #
@@ -126,6 +129,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 boost_report_pretty("Boost.CMake version" BOOST_CMAKE_VERSION)
 
 include(BoostConfig)
+set(BUILD_PROJECTS date_time;filesystem;program_options;serialization;system;thread)  # random;regex;test
+
 include(BoostCore)
 #include(BoostDocs)
 #include(BoostTesting)
@@ -139,7 +144,11 @@ include(BoostCore)
 # User-level options deciding which variants we will build.
 option(ENABLE_STATIC "Whether to build static libraries" ON)
 option(ENABLE_SHARED "Whether to build shared libraries" OFF)
-option(ENABLE_DEBUG "Whether to build debugging libraries" OFF)
+if(WIN32)
+  option(ENABLE_DEBUG "Whether to build debugging libraries" ON)
+else()
+  option(ENABLE_DEBUG "Whether to build debugging libraries" OFF)
+endif()
 option(ENABLE_RELEASE "Whether to build release libraries" ON)
 option(ENABLE_SINGLE_THREADED "Whether to build single-threaded libraries" OFF)
 option(ENABLE_MULTI_THREADED "Whether to build multi-threaded libraries" ON)
@@ -215,11 +224,13 @@ set(BOOST_LIB_INSTALL_DIR
   CACHE STRING "Destination path under CMAKE_INSTALL_PREFIX for libraries"
   )
 
-boost_report_pretty("Install prefix" CMAKE_INSTALL_PREFIX)
-boost_report_pretty("Install include dir" BOOST_INCLUDE_INSTALL_DIR)
-boost_report_pretty("Install lib dir" BOOST_LIB_INSTALL_DIR)
+# boost_report_pretty("Install prefix" CMAKE_INSTALL_PREFIX)
+# boost_report_pretty("Install include dir" BOOST_INCLUDE_INSTALL_DIR)
+# boost_report_pretty("Install lib dir" BOOST_LIB_INSTALL_DIR)
 
-include(BoostExternals)
+if(NOT WIN32)
+  include(BoostExternals)
+endif()
 
 if (BOOST_VERSION_OVERRIDE)
   install(FILES ${CMAKE_BINARY_DIR}/version.hpp

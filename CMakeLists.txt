@@ -18,6 +18,7 @@ project(maidsafe)
 
 enable_testing()
 include(CTest)
+set(BUILD_SHARED_LIBS OFF)
 
 set(SubModules
       common

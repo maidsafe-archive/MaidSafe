@@ -16,7 +16,6 @@
 set(HR "================================================================================")
 message("${HR}\nConfiguring third party projects\n--------------------------------\n")
 
-set(BUILD_PROJECTS date_time;filesystem;program_options;serialization;system;thread)  # random;regex;test
 add_subdirectory(boost)
 if(WIN32)
   set(BoostDateTimeLibs debug boost_date_time-static-staticrt-debug optimized boost_date_time-static-staticrt PARENT_SCOPE)

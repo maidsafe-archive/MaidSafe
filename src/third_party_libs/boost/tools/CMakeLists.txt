@@ -87,13 +87,15 @@ endmacro(boost_tool_dependencies)
 
 set(BUILD_TOOLS "NONE" CACHE STRING "Semicolon-separated list of tools to build")
 
-message(STATUS "")
 if (BUILD_TOOLS STREQUAL "NONE")
 
-  colormsg(HIGRAY "BUILD_TOOLS is NONE: skipping tools.")
+#   message(STATUS "")
+#   colormsg(HIGRAY "BUILD_TOOLS is NONE: skipping tools.")
+#   message(STATUS "")
 
 else()
 
+  message(STATUS "")
   colormsg(_HIBLUE_ "Reading tools...")
   message(STATUS "")
 
@@ -116,7 +118,6 @@ else()
 
   endforeach()
 
-endif()
-  
-message(STATUS "")
+  message(STATUS "")
 
+endif()

@@ -75,8 +75,8 @@ GOOGLE_GLOG_DLL_DECL bool SafeFNMatch_(const char* pattern,
                                        size_t patt_len,
                                        const char* str,
                                        size_t str_len) {
-  int p = 0;
-  int s = 0;
+  size_t p = 0;
+  size_t s = 0;
   for (;;) {
     if (p == patt_len  &&  s == str_len) return true;
     if (p == patt_len) return false;
