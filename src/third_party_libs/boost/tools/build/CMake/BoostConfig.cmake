@@ -66,7 +66,14 @@ if (NOT BOOST_TOOLSET)
     execute_process(
       COMMAND ${CMAKE_CXX_COMPILER} "-dumpversion" 
       OUTPUT_VARIABLE GCC_VERSION_STRING)
-    
+      execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
+    if (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++11")
+    elseif(GCC_VERSION VERSION_GREATER 4.6 OR GCC_VERSION VERSION_EQUAL 4.6)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -std=c++0x")
+    else()
+      message(FATAL "Unsupported verion of GCC, minimum 4.6 required")
+    endif()
     # Match only the major and minor versions of the version string
     string(REGEX MATCH "[0-9]+.[0-9]+" GCC_MAJOR_MINOR_VERSION_STRING
       "${GCC_VERSION_STRING}")
@@ -92,11 +99,12 @@ if (NOT BOOST_TOOLSET)
       OUTPUT_VARIABLE INTEL_VERSION_STRING
       OUTPUT_STRIP_TRAILING_WHITESPACE)
     set(BOOST_COMPILER_VERSION ${INTEL_VERSION_STRING})
-   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
   endif(MSVC60)
 endif (NOT BOOST_TOOLSET)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -fPIC")
+endif()
 boost_report_pretty("Boost compiler" BOOST_COMPILER)
 boost_report_pretty("Boost toolset"  BOOST_TOOLSET)
 

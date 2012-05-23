@@ -113,7 +113,7 @@ class TextFormat::Parser::ParserImpl {
   // required/optional field named "foo".
   enum SingularOverwritePolicy {
     ALLOW_SINGULAR_OVERWRITES = 0,   // the last value is retained
-    FORBID_SINGULAR_OVERWRITES = 1,  // an error is issued
+    FORBID_SINGULAR_OVERWRITES = 1  // an error is issued
   };
 
   ParserImpl(const Descriptor* root_message_type,

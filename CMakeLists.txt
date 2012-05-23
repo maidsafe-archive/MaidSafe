@@ -52,6 +52,14 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(src/third_party_libs)
 
+if(NOT ${BUILD_DIR}/protoc)
+     execute_process(COMMAND mkdir ${PROJECT_SOURCE_DIR}/src/third_party_libs/protobuf/build)
+     execute_process(COMMAND cmake ../ WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src/third_party_libs/protobuf/build)
+     execute_process(COMMAND make WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src/third_party_libs/protobuf/build)
+     execute_process(COMMAND cp ${PROJECT_SOURCE_DIR}/src/third_party_libs/protobuf/build/protoc ${CMAKE_BINARY_DIR})
+endif()
+
+
 # Add each sub-module
 foreach(SubModule ${SubModules})
   add_subdirectory(src/${SubModule})
@@ -68,3 +76,8 @@ if(UNIX)
 endif()
 
 cleanup_temp_dir()
+
+message (
+  CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE} \n
+  CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER} \t CMAKE_C_COMPILER = ${CMAKE_C_COMPILER} \n
+)

@@ -284,7 +284,7 @@ static void MyUserNameInitializer() {
     g_my_user_name = "invalid-user";
   }
 }
-REGISTER_MODULE_INITIALIZER(utilities, MyUserNameInitializer());
+REGISTER_MODULE_INITIALIZER(utilities, MyUserNameInitializer())
 
 #ifdef HAVE_STACKTRACE
 void DumpStackTraceToString(string* stacktrace) {
