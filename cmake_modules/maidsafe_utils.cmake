@@ -60,7 +60,7 @@ function(add_style_test)
       string(REPLACE "/" "\\\\" STYLE_CHECK_SOURCE ${PROJECT_SOURCE_DIR})
       add_test(${ThisTestName} ${maidsafe_SOURCE_DIR}/tools/Windows/run_cpplint.bat ${STYLE_CHECK_SOURCE} ${maidsafe_SOURCE_DIR}/tools/cpplint.py)
     endif()
-    set_property(TEST ${ThisTestName} PROPERTY LABELS Functional CodingStyle)
+    set_property(TEST ${ThisTestName} PROPERTY LABELS ${CamelCaseProjectName} ${PROJECT_NAME} Functional CodingStyle)
   endif()
 endfunction()
 
