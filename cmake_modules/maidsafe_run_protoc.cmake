@@ -47,7 +47,7 @@ endfunction()
 set(RAN_PROTOC FALSE PARENT_SCOPE)
 
 if(APPLE)
-  set(Protoc_EXE ${MAIDSAFE_SOURCE_DIR}/tools/OSX/${MS_PROCESSOR_WIDTH}/protoc)
+  set(Protoc_EXE ${CMAKE_BINARY_DIR}/protoc)
 elseif(UNIX)
   set(Protoc_EXE ${CMAKE_BINARY_DIR}/protoc)
 elseif(WIN32)
