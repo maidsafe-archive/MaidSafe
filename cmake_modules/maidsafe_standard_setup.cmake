@@ -20,8 +20,19 @@
 set(HR "================================================================================")
 set(HR ${HR} PARENT_SCOPE)
 
+
+# Get camel case version of project name
+string(REPLACE "_" ";" ThisProject ${PROJECT_NAME})
+foreach(Part ${ThisProject})
+  string(SUBSTRING ${Part} 0 1 Initial)
+  string(SUBSTRING ${Part} 1 -1 Part)
+  string(TOUPPER ${Initial} Initial)
+  set(CamelCaseProjectName ${CamelCaseProjectName}${Initial}${Part})
+endforeach()
+
+
 string(REGEX REPLACE . "-" UNDERSCORE ${PROJECT_NAME})
-message("${HR}\nConfiguring MaidSafe ${PROJECT_NAME} project\n--------------------${UNDERSCORE}---------")
+message("${HR}\nConfiguring MaidSafe ${CamelCaseProjectName} project\n--------------------${UNDERSCORE}---------")
 
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 4)
@@ -97,8 +108,8 @@ add_coverage_exclude(tests/)
 add_coverage_exclude(main\\\\.cc)
 
 
-# Avoid running MemCheck on STYLE_CHECK tests
-add_memcheck_ignore(STYLE_CHECK)
+# Avoid running MemCheck on Style Check tests
+add_memcheck_ignore(${CamelCaseProjectName}StyleCheck)
 
 
 ###################################################################################################
