@@ -24,17 +24,18 @@ set(BUILD_SHARED_LIBS OFF)
 set(SubModules
       common
       private
-      transport
-#       rudp
-#       routing
-      dht
-      encrypt
-      pki
-      passport
-      pd
-      drive
-      lifestuff
-      lifestuff-gui)
+#      transport
+      rudp
+      routing
+#       dht
+#       encrypt
+#       pki
+#       passport
+#       pd
+#       drive
+#       lifestuff
+#       lifestuff-gui
+      )
 
 # Check the submodules are initialised
 foreach(SubModule ${SubModules})
