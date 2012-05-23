@@ -228,9 +228,8 @@ set(BOOST_LIB_INSTALL_DIR
 # boost_report_pretty("Install include dir" BOOST_INCLUDE_INSTALL_DIR)
 # boost_report_pretty("Install lib dir" BOOST_LIB_INSTALL_DIR)
 
-if(NOT WIN32)
-  include(BoostExternals)
-endif()
+# include(BoostExternals)
+
 
 if (BOOST_VERSION_OVERRIDE)
   install(FILES ${CMAKE_BINARY_DIR}/version.hpp
