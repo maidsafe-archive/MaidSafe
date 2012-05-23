@@ -16,8 +16,24 @@
 set(HR "================================================================================")
 message("${HR}\nConfiguring third party projects\n--------------------------------\n")
 
-set(BUILD_PROJECTS date_time;filesystem;program_options;random;serialization;system;thread)  # regex;test
+set(BUILD_PROJECTS date_time;filesystem;program_options;serialization;system;thread)  # random;regex;test
 add_subdirectory(boost)
+if(WIN32)
+  set(BoostDateTimeLibs debug boost_date_time-static-staticrt-debug optimized boost_date_time-static-staticrt PARENT_SCOPE)
+  set(BoostFilesystemLibs debug boost_filesystem-static-staticrt-debug optimized boost_filesystem-static-staticrt PARENT_SCOPE)
+  set(BoostProgramOptionsLibs debug boost_program_options-static-staticrt-debug optimized boost_program_options-static-staticrt PARENT_SCOPE)
+  set(BoostSerializationLibs debug boost_serialization-static-staticrt-debug optimized boost_serialization-static-staticrt PARENT_SCOPE)
+  set(BoostSystemLibs debug boost_system-static-staticrt-debug optimized boost_system-static-staticrt PARENT_SCOPE)
+  set(BoostThreadLibs debug boost_thread-static-staticrt-debug optimized boost_thread-static-staticrt PARENT_SCOPE)
+else()
+  set(BoostDateTimeLibs boost_date_time-static PARENT_SCOPE)
+  set(BoostFilesystemLibs boost_filesystem-static PARENT_SCOPE)
+  set(BoostProgramOptionsLibs boost_program_options-static PARENT_SCOPE)
+  set(BoostSerializationLibs boost_serialization-static PARENT_SCOPE)
+  set(BoostSystemLibs boost_system-static PARENT_SCOPE)
+  set(BoostThreadLibs boost_thread-static PARENT_SCOPE)
+endif()
+
 add_subdirectory(cryptopp)
 add_subdirectory(googlemock)
 add_subdirectory(glog/src)
