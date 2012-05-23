@@ -33,7 +33,13 @@ unset(Cbfs_LIBRARY_DEBUG CACHE)
 if(CBFS_ROOT_DIR)
   set(CBFS_ROOT_DIR ${CBFS_ROOT_DIR} CACHE PATH "Path to Callback File System library directory" FORCE)
 else()
-  set(CBFS_ROOT_DIR "C:/Program Files/EldoS/Callback File System")
+  set(CBFS_ROOT_DIR
+        "C:/Program Files/EldoS/Callback File System"
+        "D:/Program Files/EldoS/Callback File System"
+        "E:/Program Files/EldoS/Callback File System"
+        "C:/Program Files (x86)/EldoS/Callback File System"
+        "D:/Program Files (x86)/EldoS/Callback File System"
+        "E:/Program Files (x86)/EldoS/Callback File System")
 endif()
 
 if(CMAKE_CL_64)

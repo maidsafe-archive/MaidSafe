@@ -26,7 +26,7 @@ function(generate_proto_files PROTO_FILE CACHE_NAME)
   if((FORCE_PROTOC_COMPILE) OR (NOT "${NEW_${ARGV1}}" STREQUAL "${${ARGV1}}"))
     set(RAN_PROTOC TRUE PARENT_SCOPE)
     get_filename_component(PROTO_FILE_NAME ${PROTO_SOURCE_DIR}/${PROTO_FILE} NAME)
-    execute_process(COMMAND ${Protoc_EXE}
+    execute_process(COMMAND ${ProtocExe}
                       --proto_path=${PROTO_SOURCE_DIR}
                       --cpp_out=${PROTO_SOURCE_DIR}
                       ${PROTO_SOURCE_DIR}/${PROTO_FILE}
@@ -46,14 +46,6 @@ endfunction()
 
 set(RAN_PROTOC FALSE PARENT_SCOPE)
 
-if(APPLE)
-  set(Protoc_EXE ${CMAKE_BINARY_DIR}/protoc)
-elseif(UNIX)
-  set(Protoc_EXE ${CMAKE_BINARY_DIR}/protoc)
-elseif(WIN32)
-  set(Protoc_EXE ${MAIDSAFE_SOURCE_DIR}/tools/Windows/${MS_PROCESSOR_WIDTH}/protoc.exe)
-endif()
-
 if(NOT PROTO_FILES)
   message(STATUS "No proto files to be generated")
   return()
@@ -65,7 +57,7 @@ endif()
 
 remove_old_proto_files()
 
-execute_process(COMMAND ${Protoc_EXE} "--version" OUTPUT_VARIABLE TMP_CURRENT_PROTOC_VERSION)
+execute_process(COMMAND ${ProtocExe} "--version" OUTPUT_VARIABLE TMP_CURRENT_PROTOC_VERSION)
 string(STRIP ${TMP_CURRENT_PROTOC_VERSION} CURRENT_PROTOC_VERSION)
 if(NOT PROTOC_VERSION STREQUAL CURRENT_PROTOC_VERSION)
   set(PROTOC_VERSION ${CURRENT_PROTOC_VERSION} CACHE STATIC "Google Protocol Buffers - Current version" FORCE)

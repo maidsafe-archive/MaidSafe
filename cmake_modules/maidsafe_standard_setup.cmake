@@ -83,6 +83,7 @@ if(UNIX)
 endif()
 
 
+set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 include_directories("${PROJECT_SOURCE_DIR}/include")
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories(SYSTEM "${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/")  # for cryptopp
@@ -137,13 +138,6 @@ if(UNIX)
   find_package(Threads REQUIRED)
   set(SYS_LIB ${CMAKE_THREAD_LIBS_INIT})
 endif()
-
-# include_directories(BEFORE ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR})
-# set(INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR} ${INCLUDE_DIRS})
-# 
-# link_directories(${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
-# 
-# message("${HR}")
 
 
 set(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 50000)

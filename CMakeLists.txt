@@ -20,6 +20,7 @@ enable_testing()
 include(CTest)
 set(BUILD_SHARED_LIBS OFF)
 
+
 set(SubModules
       common
       private
@@ -45,18 +46,37 @@ foreach(SubModule ${SubModules})
   endif()
 endforeach()
 
+
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 # set(MAIDSAFE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/${COMPILER}/installed" )
 # set(MAIDSAFE_INCLUDE_DIR "${MAIDSAFE_INSTALL_PREFIX}/include")
 
+
 add_subdirectory(src/third_party_libs)
 
-if(NOT ${BUILD_DIR}/protoc)
-     execute_process(COMMAND mkdir ${PROJECT_SOURCE_DIR}/src/third_party_libs/protobuf/build)
-     execute_process(COMMAND cmake ../ WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src/third_party_libs/protobuf/build)
-     execute_process(COMMAND make WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src/third_party_libs/protobuf/build)
-     execute_process(COMMAND cp ${PROJECT_SOURCE_DIR}/src/third_party_libs/protobuf/build/protoc ${CMAKE_BINARY_DIR})
+
+# Build protoc if not already done
+set(ProtocBuildDir ${CMAKE_BINARY_DIR}/build_protoc)
+find_program(ProtocExe NAMES protoc PATHS ${ProtocBuildDir} PATH_SUFFIXES Release NO_DEFAULT_PATH)
+if(NOT ProtocExe)
+  message(STATUS "Building protoc...")
+  execute_process(COMMAND
+                    ${CMAKE_COMMAND} -E make_directory ${ProtocBuildDir}
+                    OUTPUT_VARIABLE OutVar
+                    RESULT_VARIABLE ResVar)
+  execute_process(COMMAND
+                    ${CMAKE_COMMAND} ${CMAKE_SOURCE_DIR}/src/third_party_libs/protobuf -G ${CMAKE_GENERATOR} -DCMAKE_BUILD_TYPE=Release
+                    WORKING_DIRECTORY ${ProtocBuildDir}
+                    OUTPUT_VARIABLE OutVar
+                    RESULT_VARIABLE ResVar)
+  set(ProtocOutVar "${OutVar}")
+  execute_process(COMMAND ${CMAKE_COMMAND} --build . --config Release WORKING_DIRECTORY ${ProtocBuildDir} OUTPUT_VARIABLE OutVar RESULT_VARIABLE ResVar)
+  set(ProtocOutVar "${ProtocOutVar}\n\n\n\n*********************\n\n\n\n${OutVar}")
+  find_program(ProtocExe NAMES protoc PATHS ${ProtocBuildDir} PATH_SUFFIXES Release NO_DEFAULT_PATH)
+  if(NOT ProtocExe)
+    message(FATAL_ERROR "${ProtocOutVar}")
+  endif()
 endif()
 
 
@@ -67,6 +87,7 @@ endforeach()
 
 message("${HR}")
 
+
 # When this target is built, it removes all .gcda files from the build directory and its subdirectories
 if(UNIX)
   find_file(CLEAN_COVERAGE clean_coverage.cmake cmake_modules/)
@@ -76,8 +97,3 @@ if(UNIX)
 endif()
 
 cleanup_temp_dir()
-
-message (
-  CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE} \n
-  CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER} \t CMAKE_C_COMPILER = ${CMAKE_C_COMPILER} \n
-)
