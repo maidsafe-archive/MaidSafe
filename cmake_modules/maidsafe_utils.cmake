@@ -70,7 +70,7 @@ endfunction()
 
 
 function(add_project_experimental)
-  add_custom_target(Exper${CamelCaseProjectName} COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION> -M Experimental -T STart -T Build -T Test -T Coverage -T Submit)
+  add_custom_target(Exper${CamelCaseProjectName} COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION> -M Experimental -T Start -T Build -T Test -T Coverage -T Submit)
   set_target_properties(Exper${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/Executables/Tests/${TEST_FOLDER_NAME}")
 endfunction()
 
