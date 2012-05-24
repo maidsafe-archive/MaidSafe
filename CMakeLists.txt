@@ -80,8 +80,11 @@ if(NOT ProtocExe)
                     ${CMAKE_COMMAND} -E make_directory ${ProtocBuildDir}
                     OUTPUT_VARIABLE OutVar
                     RESULT_VARIABLE ResVar)
+  if(NOT MSVC)
+    set(ProtocBuildType "-DCMAKE_BUILD_TYPE=Release")
+  endif()
   execute_process(COMMAND
-                    ${CMAKE_COMMAND} ${CMAKE_SOURCE_DIR}/src/third_party_libs/protobuf -G ${CMAKE_GENERATOR} -DCMAKE_BUILD_TYPE=Release
+                    ${CMAKE_COMMAND} ${CMAKE_SOURCE_DIR}/src/third_party_libs/protobuf -G ${CMAKE_GENERATOR} ${ProtocBuildType}
                     WORKING_DIRECTORY ${ProtocBuildDir}
                     OUTPUT_VARIABLE OutVar
                     RESULT_VARIABLE ResVar)
