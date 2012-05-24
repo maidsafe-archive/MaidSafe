@@ -19,10 +19,6 @@
 
 add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_FILESYSTEM_VERSION=3)
 
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-  add_definitions(-DDEBUG)
-endif()
-
 if(MSVC)
   set(CMAKE_CXX_FLAGS)
   set(CMAKE_CXX_FLAGS_INIT)
@@ -103,26 +99,15 @@ if(MSVC)
   # MTd -  Use the debug multithread, static version of the C run-time library.
   set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /D \"_DEBUG\" /D \"DEBUG\" /RTC1 /MTd")
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/MT")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MT")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MTd")
 
   set_target_properties(${ALL_LIBRARIES} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
 
   set_target_properties(${ALL_EXECUTABLES} PROPERTIES
-                          LINK_FLAGS_RELEASE "/OPT:REF /OPT:ICF /LTCG /INCREMENTAL:NO ${LINKER_LIBS_DIRS_RELEASE}"
-                          LINK_FLAGS_DEBUG "${LINKER_LIBS_DIRS_DEBUG}"
-                          LINK_FLAGS_RELWITHDEBINFO "${LINKER_LIBS_DIRS_DEBUG} /LTCG /INCREMENTAL:NO"
-                          LINK_FLAGS_MINSIZEREL "${LINKER_LIBS_DIRS_DEBUG} /LTCG")
-
-  # Given a link dir of "a/b/c", MSVC adds "a/b/c/" AND "a/b/c/CMAKE_BUILD_TYPE" as link dirs, so we
-  # can't just use "LINK_DIRECTORIES" as some Google debug libs have the same name as the release version.
-  foreach(LIBS_DIR ${LIBS_DIRS})
-    string(REPLACE "\\" "\\\\" LIBS_DIR ${LIBS_DIR})
-    set(LINKER_LIBS_DIRS_RELEASE "${LINKER_LIBS_DIRS_RELEASE} /LIBPATH:\"${LIBS_DIR}\"")
-  endforeach()
-  foreach(LIBS_DIR_DEBUG ${LIBS_DIRS_DEBUG})
-    string(REPLACE "\\" "\\\\" LIBS_DIR_DEBUG ${LIBS_DIR_DEBUG})
-    set(LINKER_LIBS_DIRS_DEBUG "${LINKER_LIBS_DIRS_DEBUG} /LIBPATH:\"${LIBS_DIR_DEBUG}\"")
-  endforeach()
+                          LINK_FLAGS_RELEASE "/OPT:REF /OPT:ICF /LTCG /INCREMENTAL:NO"
+                          LINK_FLAGS_DEBUG "/DEBUG"
+                          LINK_FLAGS_RELWITHDEBINFO "/DEBUG /LTCG /INCREMENTAL:NO"
+                          LINK_FLAGS_MINSIZEREL "/LTCG")
 elseif(UNIX)
   if(DEFINED COVERAGE)
     if(${COVERAGE})
@@ -159,6 +144,9 @@ elseif(UNIX)
     else()
       message(FATAL_ERROR "Unsupported version of GCC, minimum 4.6 required")
     endif()
+  endif()
+  if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    add_definitions(-DDEBUG)
   endif()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -Wunused-parameter -Wno-system-headers -Wno-deprecated")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wwrite-strings -Wundef -D_FORTIFY_SOURCE=2")
