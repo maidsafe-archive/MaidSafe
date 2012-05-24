@@ -653,7 +653,7 @@ class TextFormat::Parser::ParserImpl {
     explicit ParserErrorCollector(TextFormat::Parser::ParserImpl* parser) :
         parser_(parser) { }
 
-    virtual ~ParserErrorCollector() { };
+    virtual ~ParserErrorCollector() { }
 
     virtual void AddError(int line, int column, const string& message) {
       parser_->ReportError(line, column, message);
