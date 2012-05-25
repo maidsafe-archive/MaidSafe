@@ -1,0 +1,1472 @@
+;--------------------------------
+; LifeStuff installation script
+;--------------------------------
+
+;--------------------------------
+; Header Files
+
+  !include "MUI2.nsh"
+  !include "nsDialogs.nsh"
+  !include "Memento.nsh"
+  !include "LogicLib.nsh"
+  !include "Sections.nsh"
+  !include "WordFunc.nsh"
+  !include "FileFunc.nsh"
+
+;--------------------------------
+; Defines
+
+  !define VERSION "@CPACK_PACKAGE_VERSION@"
+  !define VERSION_MAJOR "@CPACK_PACKAGE_VERSION_MAJOR@"
+  !define VERSION_MINOR "@CPACK_PACKAGE_VERSION_MINOR@"
+  !define VERSION_PATCH "@CPACK_PACKAGE_VERSION_PATCH@"
+  !define INST_DIR "@CPACK_TEMPORARY_DIRECTORY@"
+  !define REGISTRY_KEY @CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@
+
+  @CPACK_NSIS_INSTALLER_MUI_ICON_CODE@
+  @CPACK_NSIS_INSTALLER_ICON_CODE@
+  @CPACK_NSIS_INSTALLER_MUI_COMPONENTS_DESC@
+  @CPACK_NSIS_INSTALLER_MUI_FINISHPAGE_RUN_CODE@
+
+  !define MUI_HEADERIMAGE
+  !define MUI_ABORTWARNING
+  !define MUI_COMPONENTSPAGE_SMALLDESC
+
+  @CPACK_NSIS_DEFINES@
+
+;--------------------------------
+; Installation types
+  @CPACK_NSIS_INSTALLATION_TYPES@
+
+;--------------------------------
+; Component sections
+  @CPACK_NSIS_COMPONENT_SECTIONS@
+
+;--------------------------------
+; Configuration
+
+  Name "@CPACK_NSIS_PACKAGE_NAME@"
+  Caption "LifeStuff ${VERSION} Setup"
+
+  OutFile "@CPACK_TOPLEVEL_DIRECTORY@/@CPACK_OUTPUT_FILE_NAME@"
+
+  !define MEMENTO_REGISTRY_ROOT SHELL_CONTEXT
+  !define MEMENTO_REGISTRY_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
+
+  SetCompressor @CPACK_NSIS_COMPRESSOR@
+
+  InstallDir "@CPACK_NSIS_INSTALL_ROOT@\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
+
+  RequestExecutionLevel admin
+
+;--------------------------------
+; Variables
+
+  Var MUI_TEMP
+  Var START_MENU
+  Var STARTMENU_FOLDER
+  Var INSTALL_DESKTOP
+  Var PREVIOUS_INSTALL_DIRECTORY
+  Var PREVIOUS_VERSION
+  Var PREVIOUS_VERSION_STATUS
+  Var ALL_USERS_DEFAULT
+  Var ALL_USERS
+  Var REINSTALL_STATE
+  Var REINSTALL_UNINSTALL
+  Var IS_ADMIN
+  Var USER_NAME
+  Var VAULT_LOCATION
+  Var VAULT_SIZE
+
+  Var un.REMOVE_ALL_USERS
+  Var un.REMOVE_CURRENT_USER
+
+;--------------------------------
+; Pages
+
+  !define MUI_WELCOMEPAGE_TITLE "Welcome to the LifeStuff ${VERSION} Setup Wizard"
+  ; !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of LifeStuff.$\r$\n$\r$\n$_CLICK"
+  !define MUI_WELCOMEPAGE_TEXT "LifeStuff gives you everything you need, messaging, photos, music, videos, contacts, documents and your diary, in one place, on one screen!$\n$\nYou can synchronize all your files across multiple devices making them accessible anytime, anywhere.$\n$\nOn a world first, totally secure, distributed network, free from corporate controls or data protection risks, LifeStuff allows you to self authenticate your data.$\n$\nClick Next and you'll be up and running in minutes..."
+
+  !insertmacro MUI_PAGE_WELCOME
+  !insertmacro MUI_PAGE_LICENSE "@CPACK_RESOURCE_FILE_LICENSE@"
+  Page custom PageInstallationOptions PageInstallationOptionsLeave
+  Page custom PageVaultConfiguration PageVaultConfigurationLeave
+  !define MUI_STARTMENUPAGE_REGISTRY_ROOT "SHCTX"
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\${REGISTRY_KEY}"
+  !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
+  !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
+  !insertmacro MUI_PAGE_DIRECTORY
+  !define MUI_PAGE_CUSTOMFUNCTION_SHOW PreInstallPage
+  !define MUI_PAGE_CUSTOMFUNCTION_LEAVE PostInstallPage
+  !insertmacro MUI_PAGE_INSTFILES
+  !define MUI_FINISHPAGE_LINK "Visit http://maidsafe.net"
+  !define MUI_FINISHPAGE_LINK_LOCATION "http://maidsafe.net"
+  !define MUI_FINISHPAGE_RUN "$INSTDIR\@CPACK_NSIS_INSTALLED_ICON_NAME@"
+  !define MUI_FINISHPAGE_SHOWREADME
+  !define MUI_FINISHPAGE_SHOWREADME_TEXT "Show release notes"
+  !define MUI_FINISHPAGE_SHOWREADME_FUNCTION ShowReleaseNotes
+  !insertmacro MUI_PAGE_FINISH
+  !insertmacro MUI_UNPAGE_CONFIRM
+  !insertmacro MUI_UNPAGE_INSTFILES
+
+;--------------------------------
+; Languages
+
+  !insertmacro MUI_LANGUAGE "English"
+
+;--------------------------------
+; Macros
+
+  !insertmacro VersionCompare
+
+;--------------------------------
+; Version Information
+  
+  VIProductVersion "${VERSION}.0"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "@CPACK_NSIS_PACKAGE_NAME@"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "@CPACK_NSIS_PACKAGE_NAME@ is..." ; TODO finish comment
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "@CPACK_PACKAGE_VENDOR@"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" "@CPACK_PACKAGE_VENDOR@"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Copyright (C) maidsafe.net limited 2012"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "@CPACK_NSIS_PACKAGE_NAME@ Installer"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}"
+
+;--------------------------------
+; Functions
+
+Function BrowseVaultLocation
+
+  nsDialogs::SelectFolderDialog "Select vault storage location."
+  Pop $R0
+  StrCmp $R0 "error" leave
+  StrCpy $VAULT_LOCATION $R0
+  ${NSD_SetText} $R1 $VAULT_LOCATION
+  leave:
+
+FunctionEnd
+
+Function VaultLocationChanged
+
+  ${NSD_GetText} $R1 $VAULT_LOCATION
+  StrCpy $0 $VAULT_LOCATION
+  Call FreeDiskSpace
+  ${NSD_SetText} $R4 $R5$1GB
+
+FunctionEnd
+
+Function VaultSizeChanged
+
+  StrCpy $R0 $VAULT_SIZE
+  ${NSD_GetText} $R3 $VAULT_SIZE
+  StrCpy $0 $VAULT_LOCATION
+  Call FreeDiskSpace
+  System::Int64Op $1 <= $VAULT_SIZE
+  Pop $R6
+  IntCmp $R6 0 ok
+  StrCpy $VAULT_SIZE $R0
+  ${NSD_SetText} $R3 $VAULT_SIZE
+  ok:
+
+FunctionEnd
+
+Function FreeDiskSpace
+
+  ; $0 - Path to check (can be a drive 'C:' or a full path 'C:\Windows')
+  ; $1 - Return value, free space in kb
+  ${GetRoot} $0 $0
+  System::Call 'kernel32::GetDiskFreeSpaceExA(t, *l, *l, *l) i (r0,.,,.r1)'
+  System::Int64Op $1 / 1073741824 ; kb->gb
+  Pop $1
+
+FunctionEnd
+
+Function GetUserInfo
+
+  ClearErrors
+  UserInfo::GetName
+  ${If} ${Errors}
+    StrCpy $IS_ADMIN 1
+    Return
+  ${EndIf}
+
+  Pop $USER_NAME
+  UserInfo::GetAccountType
+  Pop $R0
+  ${Switch} $R0
+    ${Case} "Admin"
+    ${Case} "Power"
+      StrCpy $IS_ADMIN 1
+      ${Break}
+    ${Default}
+      StrCpy $IS_ADMIN 0
+      ${Break}
+  ${EndSwitch}
+
+FunctionEnd
+
+Function UpdateShellVarContext
+
+  ${If} $ALL_USERS == 1
+    SetShellVarContext all
+  ${Else}
+    SetShellVarContext current
+  ${EndIf}
+
+FunctionEnd
+
+Function CheckPreviousInstallDirectoryExists
+
+  ${If} $PREVIOUS_INSTALL_DIRECTORY != ""
+    ; Make sure directory is valid
+    Push $R0
+    Push $R1
+    StrCpy $R0 "$PREVIOUS_INSTALL_DIRECTORY" "" -1
+    ${If} $R0 == '\'
+    ${OrIf} $R0 == '/'
+      StrCpy $R0 $PREVIOUS_INSTALL_DIRECTORY*.*
+    ${Else}
+      StrCpy $R0 $PREVIOUS_INSTALL_DIRECTORY\*.*
+    ${EndIf}
+    ${IfNot} ${FileExists} $R0
+      StrCpy $PREVIOUS_INSTALL_DIRECTORY ""
+    ${EndIf}
+    Pop $R1
+    Pop $R0
+  ${EndIf}
+
+FunctionEnd
+
+Function ReadPreviousVersion
+
+  ReadRegStr $PREVIOUS_INSTALL_DIRECTORY HKLM "Software\${REGISTRY_KEY}" ""
+
+  Call CheckPreviousInstallDirectoryExists
+
+  ${If} $PREVIOUS_INSTALL_DIRECTORY != ""
+    ReadRegStr $PREVIOUS_VERSION HKLM "Software\${REGISTRY_KEY}" "Version"
+    ${If} $PREVIOUS_VERSION != ""
+      StrCpy $ALL_USERS 1
+      SetShellVarContext all
+      return
+    ${EndIf}
+  ${EndIf}
+
+  ReadRegStr $PREVIOUS_INSTALL_DIRECTORY HKCU "Software\${REGISTRY_KEY}" ""
+
+  Call CheckPreviousInstallDirectoryExists
+
+  ${If} $PREVIOUS_INSTALL_DIRECTORY != ""
+    ReadRegStr $PREVIOUS_VERSION HKCU "Software\${REGISTRY_KEY}" "Version"
+    ${If} $PREVIOUS_VERSION != ""
+      StrCpy $ALL_USERS 0
+      SetShellVarContext current
+      return
+    ${EndIf}
+  ${EndIf}
+
+FunctionEnd
+
+Function LoadPreviousSettings
+
+  ; Startmenu
+  !define ID "Application"
+
+  !ifdef MUI_STARTMENUPAGE_${ID}_REGISTRY_ROOT & MUI_STARTMENUPAGE_${ID}_REGISTRY_KEY & MUI_STARTMENUPAGE_${ID}_REGISTRY_VALUENAME
+
+    ReadRegStr $mui.StartMenuPage.RegistryLocation "${MUI_STARTMENUPAGE_${ID}_REGISTRY_ROOT}" "${MUI_STARTMENUPAGE_${ID}_REGISTRY_KEY}" "${MUI_STARTMENUPAGE_${ID}_REGISTRY_VALUENAME}"
+
+    ${if} $mui.StartMenuPage.RegistryLocation != ""
+      StrCpy "$STARTMENU_FOLDER" $mui.StartMenuPage.RegistryLocation
+    ${else}
+      StrCpy "$STARTMENU_FOLDER" ""
+    ${endif}
+
+    !undef ID
+
+  !endif
+
+  ${If} $PREVIOUS_INSTALL_DIRECTORY != ""
+    StrCpy $INSTDIR $PREVIOUS_INSTALL_DIRECTORY
+  ${EndIf}
+
+FunctionEnd
+
+Function CompareVersion
+
+  Push $1
+  Push $2
+  Push $3
+
+  ReadRegStr $1 SHCTX "Software\${REGISTRY_KEY}" "VersionMajor"
+  ReadRegStr $2 SHCTX "Software\${REGISTRY_KEY}" "VersionMinor"
+  ReadRegStr $3 SHCTX "Software\${REGISTRY_KEY}" "VersionPatch"
+
+  ${If} $1 == ""
+    Goto finish
+  ${Else}
+    ${If} $2 == ""
+      Goto finish
+    ${Else}
+      ${If} $3 == ""
+        Goto finish
+      ${EndIf}
+    ${EndIf}
+  ${EndIf}
+
+  ; PREVIOUS_VERSION_STATUS - 0 same, 1 older, 2 newer
+  ${If} $1 == "${VERSION_MAJOR}"
+    ${If} $2 == "${VERSION_MINOR}"
+      ${If} $3 == "${VERSION_PATCH}"
+        StrCpy $PREVIOUS_VERSION_STATUS 0
+      ${Else}
+        ${If} $3 < "${VERSION_PATCH}"
+          StrCpy $PREVIOUS_VERSION_STATUS 1
+        ${Else}
+          StrCpy $PREVIOUS_VERSION_STATUS 2
+        ${EndIf}
+      ${EndIf}
+    ${Else}
+      ${If} $2 < "${VERSION_MINOR}"
+        StrCpy $PREVIOUS_VERSION_STATUS 1
+      ${Else}
+        StrCpy $PREVIOUS_VERSION_STATUS 2
+      ${EndIf}
+    ${EndIf}
+  ${Else}
+    ${If} $1 < "${VERSION_MAJOR}"
+      StrCpy $PREVIOUS_VERSION_STATUS 1
+    ${Else}
+      StrCpy $PREVIOUS_VERSION_STATUS 2
+    ${EndIf}
+  ${EndIf}
+
+  finish:
+
+  Pop $3
+  Pop $2
+  Pop $1
+
+FunctionEnd
+
+Function RunUninstaller
+
+  ReadRegStr $R1 SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_NAME@" "UninstallString"
+
+  ${If} $R1 == ""
+    Return
+  ${EndIf}
+
+  HideWindow
+
+    ClearErrors
+    ExecWait '$R1 _?=$INSTDIR'
+
+    IfErrors no_remove_uninstaller
+    IfFileExists "$INSTDIR\@CPACK_NSIS_INSTALLED_ICON_NAME@" no_remove_uninstaller
+
+      Delete $R1
+      RMDir $INSTDIR
+
+    no_remove_uninstaller:
+
+    StrCmp $R0 "2" 0 +2
+      Quit
+
+  BringToFront
+
+FunctionEnd
+
+; Returns number of processes * 4 on top of stack, array with all processes right below it.
+; Array should be cleared using System::Free
+Function EnumProcesses
+
+  ; Is this really necesssary for $Rx?
+  Push $R1
+  Push $R0
+  Push $R2
+  Push $R3
+
+  ; Double size of array each time EnumProcesses fills it completely so that
+  ; we do get all processes
+
+  StrCpy $R1 1024
+
+ enum_processes_loop:
+
+  System::Alloc $R1
+
+  Pop $R0
+
+  System::Call "psapi::EnumProcesses(i R0, i R1, *i .R2) i .R3"
+
+  ${If} $R3 == 0
+    ; EnumProcesses failed, how can that be? :P
+    goto enum_processes_fail
+  ${EndIf}
+
+  ${If} $R1 == $R2
+
+    ; Too small buffer. Retry with twice the size
+
+    Intop $R1 $R1 * 2
+    System::Free $R0
+
+    goto enum_processes_loop
+
+  ${EndIf}
+
+  StrCpy $R1 $R2
+
+  ; Restore registers and put results on stack
+  Pop $R3
+  Pop $R2
+  Exch $R0
+  Exch
+  Exch $R1
+  return
+
+ enum_processes_fail:
+
+  Pop $R3
+  Pop $R2
+  Pop $R0
+  Pop $R1
+
+  Push 0
+  Push 0
+
+FunctionEnd
+
+; Expects process ID on top of stack, returns filename (in device syntax) on top of stack
+Function GetFilenameFromProcessId
+
+  Exch $R0
+  Push $R1
+  Push $R2
+
+  !ifndef PROCESS_QUERY_INFORMATION
+  !define PROCESS_QUERY_INFORMATION 0x0400
+  !endif
+  System::Call "kernel32::OpenProcess(i ${PROCESS_QUERY_INFORMATION}, i 0, i $R0) i .R0"
+
+  ${If} $R0 == 0
+
+    Pop $R2
+    Pop $R1
+    Pop $R0
+    Push ''
+    return
+
+  ${EndIf}
+
+  System::Call "psapi::GetProcessImageFileName(i R0, t .R1, i ${NSIS_MAX_STRLEN}) i .R2"
+
+  ${If} $R2 == 0
+
+    System::Call "kernel32::CloseHandle(i R0)"
+    Pop $R2
+    Pop $R1
+    Pop $R0
+    Push ''
+
+    return
+
+  ${EndIf}
+
+  System::Call "kernel32::CloseHandle(i R0)"
+
+  Pop $R2
+  StrCpy $R0 $R1
+  Pop $R1
+  Exch $R0
+
+FunctionEnd
+
+; Expects process name on top of stack.
+; Gets replaced with 1 if process is running, 0 if it is not
+Function IsProcessRunning
+
+  Exch $R0 ; Name
+
+  Push $R1 ; Bytes
+  Push $R2 ; Array
+  Push $R3 ; Counter
+  Push $R4 ; Strlen
+  Push $R5 ; Current process ID and image filename
+
+  StrCpy $R0 "\$R0"
+
+  StrLen $R4 $R0
+  IntOp $R4 0 - $R4
+
+  Call EnumProcesses
+
+  Pop $R1
+  Pop $R2
+
+  StrCpy $R3 0
+
+  ${While} $R3 < $R1
+
+    IntOp $R5 $R2 + $R3
+
+    System::Call "*$R5(i .R5)"
+    Push $R5
+
+    Call GetFilenameFromProcessId
+
+    Pop $R5
+
+    ; Get last part of filename
+    StrCpy $R5 $R5 '' $R4
+
+    ${If} $R5 == $R0
+
+      ; Program is running
+      Pop $R5
+      Pop $R4
+      Pop $R3
+      Pop $R2
+      Pop $R1
+      Pop $R0
+      Push 1
+      return
+
+    ${EndIf}
+
+    IntOp $R3 $R3 + 4
+
+  ${EndWhile}
+
+  Pop $R5
+  Pop $R4
+  Pop $R3
+  Pop $R2
+  Pop $R1
+  Pop $R0
+  Push 0
+
+FunctionEnd
+
+Function CheckIfRunning
+
+  Push "lifestuff_local.exe"
+  Call IsProcessRunning
+  Pop $R1
+
+  ${If} $REINSTALL_UNINSTALL == 1
+    StrCpy $R0 10
+  ${Else}
+    StrCpy $R0 2
+  ${EndIf}
+
+  ${While} $R1 == 1
+
+    ${If} $R0 == 0
+
+      ${ExitWhile}
+
+    ${EndIf}
+
+    Sleep 500
+
+    Push "lifestuff_local.exe"
+    Call IsProcessRunning
+    Pop $R1
+
+    IntOp $R0 $R0 - 1
+
+  ${EndWhile}
+
+  Push "lifestuff_local.exe"
+  Call IsProcessRunning
+  Pop $R1
+
+  ${While} $R1 == 1
+
+    MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "LifeStuff appears to be running. Please close all running instances of LifeStuff before continuing the installation." IDCANCEL cancel IDRETRY retry
+    retry:
+    Push "lifestuff_local.exe"
+    Call IsProcessRunning
+    Pop $R1
+
+  ${EndWhile}
+
+  Return
+
+  cancel:
+    Quit
+
+FunctionEnd
+
+Function PreInstallPage
+
+  Call CheckIfRunning
+
+  ${If} $REINSTALL_UNINSTALL == 1
+
+    Call RunUninstaller
+    BringToFront
+
+  ${EndIf}
+
+FunctionEnd
+
+Function PostInstallPage
+
+  ; Don't advance automatically if details expanded
+  FindWindow $R0 "#32770" "" $HWNDPARENT
+  GetDlgItem $R0 $R0 1016
+  System::Call user32::IsWindowVisible(i$R0)i.s
+  Pop $R0
+
+  StrCmp $R0 0 +2
+  SetAutoClose false
+
+FunctionEnd
+
+Function ShowReleaseNotes
+
+  ${If} ${FileExists} $WINDIR\notepad.exe
+    StrCpy $0 $WINDIR\notepad.exe
+    Exec '"$0" @CPACK_RESOURCE_FILE_README@'
+  ${Else}
+    SearchPath $0 notepad.exe
+    ${If} ${FileExists} $0
+      Exec '"$0" @CPACK_RESOURCE_FILE_README@'
+    ${EndIf}
+  ${EndIf}
+
+FunctionEnd
+
+;--------------------------------
+; Custom Pages
+
+Function PageInstallationOptions
+
+  ${If} $PREVIOUS_VERSION == ""
+
+	!insertmacro MUI_HEADER_TEXT "Installation Options" "Who should this application be installed for?"
+
+    nsDialogs::Create 1018
+    Pop $R4
+
+    ${NSD_CreateLabel} 0 0 100% 24u "Please select whether you wish to make this software available to all users or just yourself. Installation for all users requires Administrator privileges."
+    Pop $R1
+
+    ${NSD_CreateRadioButton} 30u 50u -30u 8u "&Anyone who uses this computer."
+    Pop $R2
+    ${NSD_OnClick} $R2 UsersSelection
+
+	${If} $USER_NAME != ""
+      StrCpy $R3 "&Only for me, $USER_NAME."
+    ${Else}
+      StrCpy $R3 "&Only for me."
+    ${EndIf}
+
+    ${NSD_CreateRadioButton} 30u 70u -30u 8u $R3
+    Pop $R3
+    ${NSD_OnClick} $R3 UsersSelection
+
+	${If} $IS_ADMIN == 1
+      ${If} $ALL_USERS == 1
+        SendMessage $R2 ${BM_SETCHECK} ${BST_CHECKED} 0
+      ${Else}
+        SendMessage $R3 ${BM_SETCHECK} ${BST_CHECKED} 0
+      ${EndIf}
+	  ${NSD_SetFocus} $R2
+	${Else}
+	  EnableWindow $R2 0
+      SendMessage $R3 ${BM_SETCHECK} ${BST_CHECKED} 0
+	  ${NSD_SetFocus} $R3
+	${EndIf}
+
+    nsDialogs::Show
+
+  ${Else}
+
+    Call CompareVersion
+    ${If} $PREVIOUS_VERSION_STATUS == 0
+      StrCpy $R1 "LifeStuff ${VERSION} is already installed. Select the operation you want to perform and click Next to continue."
+      StrCpy $R2 "Reinstall LifeStuff"
+      StrCpy $R3 "Uninstall LifeStuff"
+      !insertmacro MUI_HEADER_TEXT "Installation Options" "Choose an option to perform."
+      StrCpy $R0 "2"
+    ${ElseIf} $PREVIOUS_VERSION_STATUS == 1
+	 ; Abort
+      StrCpy $R1 "An older version of LifeStuff is installed on your system. It's recommended that you uninstall the current version before installing. Select the operation you want to perform and click Next to continue."
+      StrCpy $R2 "Uninstall before installing"
+      StrCpy $R3 "Do not uninstall"
+      !insertmacro MUI_HEADER_TEXT "Upgrade Options" "Choose how you want to install LifeStuff."
+      StrCpy $R0 "1"
+    ${ElseIf} $PREVIOUS_VERSION_STATUS == 2
+      StrCpy $R1 "A newer version of LifeStuff is already installed! It is not recommended that you install an older version. If you really want to install this older version, it's better to uninstall the current version first. Select the operation you want to perform and click Next to continue."
+      StrCpy $R2 "Uninstall before installing"
+      StrCpy $R3 "Do not uninstall"
+      !insertmacro MUI_HEADER_TEXT "Reinstallation Options" "Choose how you want to install LifeStuff."
+      StrCpy $R0 "1"
+    ${Else}
+      Abort
+    ${EndIf}
+
+	nsDialogs::Create 1018
+    Pop $R4
+
+    ${NSD_CreateLabel} 0 0 100% 24u $R1
+    Pop $R1
+
+    ${NSD_CreateRadioButton} 30u 50u -30u 8u $R2
+    Pop $R2
+    ${NSD_OnClick} $R2 ReinstallSelection
+
+    ${NSD_CreateRadioButton} 30u 70u -30u 8u $R3
+    Pop $R3
+    ${NSD_OnClick} $R3 ReinstallSelection
+
+    ${If} $REINSTALL_STATE != 2
+      SendMessage $R2 ${BM_SETCHECK} ${BST_CHECKED} 0
+    ${Else}
+      SendMessage $R3 ${BM_SETCHECK} ${BST_CHECKED} 0
+    ${EndIf}
+
+    ${NSD_SetFocus} $R2
+
+    nsDialogs::Show
+
+  ${EndIf}
+
+FunctionEnd
+
+Function UsersSelection
+
+  Pop $R1
+
+  ${NSD_GetState} $R2 $R1
+
+  ${If} $R1 == ${BST_CHECKED}
+    StrCpy $ALL_USERS 1
+  ${Else}
+    StrCpy $ALL_USERS 0
+  ${EndIf}
+
+FunctionEnd
+
+Function ReinstallSelection
+
+  Pop $R1
+
+  ${NSD_GetState} $R2 $R1
+
+  ${If} $R1 == ${BST_CHECKED}
+    StrCpy $REINSTALL_STATE 1
+  ${Else}
+    StrCpy $REINSTALL_STATE 2
+  ${EndIf}
+
+FunctionEnd
+
+Function PageInstallationOptionsLeave
+
+  ${If} $PREVIOUS_VERSION_STATUS == ""
+
+	${NSD_GetState} $R2 $R1
+	${If} $R1 == ${BST_CHECKED}
+      StrCpy $ALL_USERS 1
+    ${Else}
+      StrCpy $ALL_USERS 0
+    ${EndIf}
+    Call UpdateShellVarContext
+
+  ${Else}
+
+	${NSD_GetState} $R2 $R1
+
+    StrCmp $R0 "1" 0 +2
+      StrCmp $R1 "1" reinstall_uninstall reinstall_done
+
+    StrCmp $R0 "2" 0 +3
+      StrCmp $R1 "1" reinstall_done do_uninstall
+
+    do_uninstall:
+
+    Call CheckIfRunning
+    Call RunUninstaller
+    Quit
+
+    reinstall_uninstall:
+
+    StrCpy $REINSTALL_UNINSTALL 1
+
+    reinstall_done:
+
+  ${EndIf}
+
+FunctionEnd
+
+Function PageVaultConfiguration
+
+  !insertmacro MUI_HEADER_TEXT "Vault Configuration" "Setup working directory and size for Vault."
+
+  nsDialogs::Create /NOUNLOAD 1018
+  Pop $R0
+
+  ${If} $R0 == error
+    Abort
+  ${EndIf}
+  
+  StrCpy $R5 "Total space available: "
+
+  ${NSD_CreateLabel} 0 0 100% 24u "Setup will generate your Vault configuration file. Please choose a location where files can be stored and set the amount of space you wish to make available to your Vault."
+  
+  ${NSD_CreateGroupBox} 0u 57u 100% 63u "Vault location and size"
+  ${NSD_CreateText} 3% 72u 72% 13u $VAULT_LOCATION
+  Pop $R1
+  ${NSD_CreateBrowseButton} 78% 70u 19% 15u "Browse..."
+  Pop $R2
+  ${NSD_OnChange} $R1 VaultLocationChanged
+  ${NSD_OnClick} $R2 BrowseVaultLocation
+
+  ${NSD_CreateNumber} 3% 99u 12% 13u $VAULT_SIZE
+  Pop $R3
+  ${NSD_SetTextLimit} $R3 10
+  ${NSD_OnChange} $R3 VaultSizeChanged
+
+  ${NSD_CreateLabel} 18% 101u 50% 13u $R5
+  Pop $R4
+
+  Call VaultLocationChanged
+  nsDialogs::Show
+
+FunctionEnd
+
+Function PageVaultConfigurationLeave
+
+  CreateDirectory $APPDATA\maidsafe\Vault
+  IfFileExists '$VAULT_LOCATION\*.*' vault_location_exists
+    CreateDirectory $VAULT_LOCATION
+  vault_location_exists:
+  ClearErrors
+  FileOpen $0 $APPDATA\maidsafe\Vault\maidsafe_vault.conf w
+  IfErrors done
+  FileWrite $0 "# Port on which transport starts listening$\r$\n"
+  FileWrite $0 "port = auto$\r$\n"
+  FileWrite $0 "chunkstore_path = $VAULT_LOCATION$\r$\n"
+  System::Int64Op $VAULT_SIZE * 1073741824
+  Pop $R0
+  FileWrite $0 "chunkstore_capacity = $R0$\r$\n"
+  FileWrite $0 "bootstrap = $INSTDIR\bootstrap_contacts.xml$\r$\n"
+  FileWrite $0 "vault_id_path = $INSTDIR\vault_id.conf$\r$\n"
+  FileClose $0
+  done:
+
+FunctionEnd
+
+Function ConditionalAddToRegisty
+  Pop $0
+  Pop $1
+  StrCmp "$0" "" EmptyString
+    WriteRegStr SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_NAME@" "$1" "$0"
+    DetailPrint "Set install registry entry: '$1' to '$0'"
+  EmptyString:
+FunctionEnd
+
+;--------------------------------
+
+!ifdef CPACK_USES_DOWNLOAD
+Function DownloadFile
+    IfFileExists $INSTDIR\* +2
+    CreateDirectory $INSTDIR
+    Pop $0
+
+    ; Skip if already downloaded
+    IfFileExists $INSTDIR\$0 0 +2
+    Return
+
+    StrCpy $1 "@CPACK_DOWNLOAD_SITE@"
+
+  try_again:
+    NSISdl::download "$1/$0" "$INSTDIR\$0"
+
+    Pop $1
+    StrCmp $1 "Success" success
+    StrCmp $1 "Cancelled" cancel
+    MessageBox MB_OK "Download failed: $1"
+  cancel:
+    Return
+  success:
+FunctionEnd
+!endif
+
+;--------------------------------
+; Installer Sections
+
+${MementoSection} "LifeStuff (required)" LifeStuff
+
+  SetDetailsPrint textonly
+  DetailPrint "Installing LifeStuff Files..."
+  SetDetailsPrint listonly
+
+  SectionIn 1 2 RO
+  SetOutPath $INSTDIR
+  @CPACK_NSIS_FULL_INSTALL@
+  RMDir /r $SMPROGRAMS\@CPACK_NSIS_PACKAGE_NAME@
+
+${MementoSectionEnd}
+
+${MementoSection} "Start Menu Shortcuts" StartMenuShortcuts
+
+  SetDetailsPrint textonly
+  DetailPrint "Installing Start Menu Shortcuts..."
+  SetDetailsPrint listonly
+  SectionIn 1
+
+${MementoSectionEnd}
+
+${MementoSection} "Desktop Icon" DesktopIcon
+
+  SetDetailsPrint textonly
+  DetailPrint "Installing Desktop Shortcut..."
+  SetDetailsPrint listonly
+  SectionIn 1
+
+${MementoSectionEnd}
+
+${MementoSectionDone}
+
+Section -post
+
+  !insertmacro SectionFlagIsSet ${StartMenuShortcuts} ${SF_SELECTED} startmemu nostartmemu
+  startmemu:
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  SetDetailsPrint textonly
+  DetailPrint "Creating start menu items..."
+  SetDetailsPrint listonly
+  CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
+  @CPACK_NSIS_CREATE_ICONS@
+  @CPACK_NSIS_CREATE_ICONS_EXTRA@
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+  Push "StartMenu"
+  Push "$STARTMENU_FOLDER"
+  Call ConditionalAddToRegisty
+  Push "InstallToDesktop"
+  Push "$INSTALL_DESKTOP"
+  Call ConditionalAddToRegisty
+  !insertmacro MUI_STARTMENU_WRITE_END
+  nostartmemu:
+  !insertmacro SectionFlagIsSet ${DesktopIcon} ${SF_SELECTED} desktopicon nodesktopicon
+  desktopicon:
+  CreateShortCut "$DESKTOP\LifeStuff.lnk" "$INSTDIR\@CPACK_NSIS_INSTALLED_ICON_NAME@"  
+  nodesktopicon:
+
+  SetOutPath "$INSTDIR"
+  SetDetailsPrint textonly
+  DetailPrint "Writing registry entries..."
+  SetDetailsPrint listonly
+
+  WriteRegStr SHCTX "Software\${REGISTRY_KEY}" "" $INSTDIR
+  WriteRegStr SHCTX "Software\${REGISTRY_KEY}" "Version" "${VERSION}"
+  WriteRegStr SHCTX "Software\${REGISTRY_KEY}" "VersionMajor" "${VERSION_MAJOR}"
+  WriteRegStr SHCTX "Software\${REGISTRY_KEY}" "VersionMinor" "${VERSION_MINOR}"
+  WriteRegStr SHCTX "Software\${REGISTRY_KEY}" "VersionPatch" "${VERSION_PATCH}"
+
+  Push "DisplayName"
+  Push "@CPACK_NSIS_DISPLAY_NAME@"
+  Call ConditionalAddToRegisty
+  Push "DisplayVersion"
+  Push "@CPACK_PACKAGE_VERSION@"
+  Call ConditionalAddToRegisty
+  Push "Publisher"
+  Push "@CPACK_PACKAGE_VENDOR@"
+  Call ConditionalAddToRegisty
+  Push "UninstallString"
+  Push "$INSTDIR\Uninstall.exe"
+  Call ConditionalAddToRegisty
+  Push "NoRepair"
+  Push "1"
+  Call ConditionalAddToRegisty
+
+  !ifdef CPACK_NSIS_ADD_REMOVE
+    Push "ModifyPath"
+    Push "$INSTDIR\AddRemove.exe"
+    Call ConditionalAddToRegisty
+  !else
+    Push "NoModify"
+    Push "1"
+    Call ConditionalAddToRegisty
+  !endif
+
+  ; Optional registration
+  Push "DisplayIcon"
+  Push "$INSTDIR\@CPACK_NSIS_INSTALLED_ICON_NAME@"
+  Call ConditionalAddToRegisty
+  Push "HelpLink"
+  Push "@CPACK_NSIS_HELP_LINK@"
+  Call ConditionalAddToRegisty
+  Push "URLInfoAbout"
+  Push "@CPACK_NSIS_URL_INFO_ABOUT@"
+  Call ConditionalAddToRegisty
+  Push "Contact"
+  Push "@CPACK_NSIS_CONTACT@"
+  Call ConditionalAddToRegisty
+
+  SetDetailsPrint textonly
+  DetailPrint "Creating service..."
+  SetDetailsPrint listonly
+  ; ExecWait '"$SYSDIR\sc.exe" create "MaidSafeVault" type= "own" start= "demand" binpath= "$INSTDIR\bin\pd-vault-service.exe" DisplayName= "MaidSafeVault"'
+  nsExec::ExecToStack '"$SYSDIR\sc.exe" create "MaidSafeVault" type= "own" start= "demand" binpath= "$INSTDIR\bin\pd-vault-service.exe" DisplayName= "MaidSafeVault"'
+  SetDetailsPrint textonly
+  DetailPrint "Installing filesystem driver..."
+  SetDetailsPrint listonly
+  Push $0
+  ; ExecWait '"$INSTDIR\bin\cbfs_installer.exe" install' $0
+  nsExec::ExecToStack '"$INSTDIR\bin\cbfs_installer.exe" install'
+  Pop $0
+  IntCmp $0 0 no_reboot ""
+  SetRebootFlag true
+  no_reboot:
+  Pop $0
+
+  WriteUninstaller "$INSTDIR\Uninstall.exe"
+
+  @CPACK_NSIS_EXTRA_INSTALL_COMMANDS@
+  ${MementoSectionSave}
+  SetDetailsPrint both
+
+SectionEnd
+
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+  !insertmacro MUI_DESCRIPTION_TEXT ${LifeStuff} "LifeStuff essentials."
+  !insertmacro MUI_DESCRIPTION_TEXT ${StartMenuShortcuts} "Adds icons to your start menu for easy access."
+  !insertmacro MUI_DESCRIPTION_TEXT ${DesktopIcon} "Creates a shortcut to LifeStuff on your desktop."
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
+
+;--------------------------------
+; Uninstaller Section
+
+Function un.GetUserInfo
+  ClearErrors
+  UserInfo::GetName
+  ${If} ${Errors}
+    StrCpy $IS_ADMIN 1
+    Return
+  ${EndIf}
+
+  UserInfo::GetAccountType
+  Pop $R0
+  ${Switch} $R0
+    ${Case} "Admin"
+    ${Case} "Power"
+      StrCpy $IS_ADMIN 1
+      ${Break}
+    ${Default}
+      StrCpy $IS_ADMIN 0
+      ${Break}
+  ${EndSwitch}
+
+FunctionEnd
+
+Function un.ReadPreviousVersion
+
+  ReadRegStr $R0 HKLM "Software\${REGISTRY_KEY}" ""
+
+  ${If} $R0 != ""
+    ReadRegStr $R2 HKLM "Software\${REGISTRY_KEY}" "Version"
+    ${If} $R2 == ""
+      StrCpy $R0 ""
+    ${EndIf}
+  ${EndIf}
+
+  ReadRegStr $R1 HKCU "Software\${REGISTRY_KEY}" ""
+
+  ${If} $R1 != ""
+    ReadRegStr $R2 HKCU "Software\${REGISTRY_KEY}" "Version"
+    ${If} $R2 == ""
+      StrCpy $R1 ""
+    ${EndIf}
+  ${EndIf}
+
+  ${If} $R1 == $INSTDIR
+    Strcpy $un.REMOVE_CURRENT_USER 1
+  ${EndIf}
+  ${If} $R0 == $INSTDIR
+    Strcpy $un.REMOVE_ALL_USERS 1
+  ${EndIf}
+  ${If} $un.REMOVE_CURRENT_USER != 1
+  ${AndIf} $un.REMOVE_ALL_USERS != 1
+    ${If} $R1 != ""
+      Strcpy $un.REMOVE_CURRENT_USER 1
+      ${If} $R0 == $R1
+        Strcpy $un.REMOVE_ALL_USERS 1
+      ${EndIf}
+    ${Else}
+      StrCpy $un.REMOVE_ALL_USERS = 1
+    ${EndIf}
+  ${EndIf}
+
+FunctionEnd
+
+; Returns number of processes * 4 on top of stack, array with all processes right below it.
+; Array should be cleared using System::Free
+Function un.EnumProcesses
+
+  ; Is this really necesssary for $Rx?
+  Push $R1
+  Push $R0
+  Push $R2
+  Push $R3
+
+  ; Double size of array each time EnumProcesses fills it completely so that
+  ; we do get all processes
+
+  StrCpy $R1 1024
+
+ enum_processes_loop:
+
+  System::Alloc $R1
+
+  Pop $R0
+
+  System::Call "psapi::EnumProcesses(i R0, i R1, *i .R2) i .R3"
+
+  ${If} $R3 == 0
+    ; EnumProcesses failed, how can that be? :P
+    goto enum_processes_fail
+  ${EndIf}
+
+  ${If} $R1 == $R2
+
+    ; Too small buffer. Retry with twice the size
+
+    Intop $R1 $R1 * 2
+    System::Free $R0
+
+    goto enum_processes_loop
+
+  ${EndIf}
+
+  StrCpy $R1 $R2
+
+  ; Restore registers and put results on stack
+  Pop $R3
+  Pop $R2
+  Exch $R0
+  Exch
+  Exch $R1
+  return
+
+ enum_processes_fail:
+
+  Pop $R3
+  Pop $R2
+  Pop $R0
+  Pop $R1
+
+  Push 0
+  Push 0
+
+FunctionEnd
+
+; Expects process ID on top of stack, returns filename (in device syntax) on top of stack
+Function un.GetFilenameFromProcessId
+
+  Exch $R0
+  Push $R1
+  Push $R2
+
+  !ifndef PROCESS_QUERY_INFORMATION
+  !define PROCESS_QUERY_INFORMATION 0x0400
+  !endif
+  System::Call "kernel32::OpenProcess(i ${PROCESS_QUERY_INFORMATION}, i 0, i $R0) i .R0"
+
+  ${If} $R0 == 0
+
+    Pop $R2
+    Pop $R1
+    Pop $R0
+    Push ''
+    return
+
+  ${EndIf}
+
+  System::Call "psapi::GetProcessImageFileName(i R0, t .R1, i ${NSIS_MAX_STRLEN}) i .R2"
+
+  ${If} $R2 == 0
+
+    System::Call "kernel32::CloseHandle(i R0)"
+    Pop $R2
+    Pop $R1
+    Pop $R0
+    Push ''
+
+    return
+
+  ${EndIf}
+
+  System::Call "kernel32::CloseHandle(i R0)"
+
+  Pop $R2
+  StrCpy $R0 $R1
+  Pop $R1
+  Exch $R0
+
+FunctionEnd
+
+; Expects process name on top of stack.
+; Gets replaced with 1 if process is running, 0 if it is not
+Function un.IsProcessRunning
+
+  Exch $R0 ; Name
+
+  Push $R1 ; Bytes
+  Push $R2 ; Array
+  Push $R3 ; Counter
+  Push $R4 ; Strlen
+  Push $R5 ; Current process ID and image filename
+
+  StrCpy $R0 "\$R0"
+
+  StrLen $R4 $R0
+  IntOp $R4 0 - $R4
+
+  Call un.EnumProcesses
+
+  Pop $R1
+  Pop $R2
+
+  StrCpy $R3 0
+
+  ${While} $R3 < $R1
+
+    IntOp $R5 $R2 + $R3
+
+    System::Call "*$R5(i .R5)"
+    Push $R5
+
+    Call un.GetFilenameFromProcessId
+
+    Pop $R5
+
+    ; Get last part of filename
+    StrCpy $R5 $R5 '' $R4
+
+    ${If} $R5 == $R0
+
+      ; Program is running
+      Pop $R5
+      Pop $R4
+      Pop $R3
+      Pop $R2
+      Pop $R1
+      Pop $R0
+      Push 1
+      return
+
+    ${EndIf}
+
+    IntOp $R3 $R3 + 4
+
+  ${EndWhile}
+
+  Pop $R5
+  Pop $R4
+  Pop $R3
+  Pop $R2
+  Pop $R1
+  Pop $R0
+  Push 0
+
+FunctionEnd
+
+Function un.CheckIfRunning
+
+  Push "lifestuff_local.exe"
+  Call un.IsProcessRunning
+  Pop $R1
+
+  ${If} $REINSTALL_UNINSTALL == 1
+    StrCpy $R0 10
+  ${Else}
+    StrCpy $R0 2
+  ${EndIf}
+
+  ${While} $R1 == 1
+
+    ${If} $R0 == 0
+
+      ${ExitWhile}
+
+    ${EndIf}
+
+    Sleep 500
+
+    Push "lifestuff_local.exe"
+    Call un.IsProcessRunning
+    Pop $R1
+
+    IntOp $R0 $R0 - 1
+
+  ${EndWhile}
+
+  Push "lifestuff_local.exe"
+  Call un.IsProcessRunning
+  Pop $R1
+
+  ${While} $R1 == 1
+
+    MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "LifeStuff appears to be running. Please close all running instances of LifeStuff before continuing the installation." IDCANCEL cancel IDRETRY retry
+    retry:
+    Push "lifestuff_local.exe"
+    Call un.IsProcessRunning
+    Pop $R1
+
+  ${EndWhile}
+
+  Return
+
+  cancel:
+    Quit
+
+FunctionEnd
+
+Function un.onInit
+
+  Call un.GetUserInfo
+  Call un.ReadPreviousVersion
+
+  ${If} $un.REMOVE_ALL_USERS == 1
+  ${AndIf} $IS_ADMIN == 0
+    MessageBox MB_ICONSTOP "LifeStuff has been installed for all users.$\nPlease restart the uninstaller with Administrator privileges to remove it." /SD IDOK
+    Abort
+  ${EndIf}
+
+FunctionEnd
+
+Section "Uninstall"
+
+  Call un.CheckIfRunning
+
+  ${If} $un.REMOVE_ALL_USERS == 1
+    SetShellVarContext all
+  ${EndIf}
+  ${If} $un.REMOVE_CURRENT_USER == 1
+    SetShellVarContext current
+  ${EndIf}
+
+  SetDetailsPrint textonly
+  DetailPrint "Deleting service..."
+  SetDetailsPrint listonly
+  ; ExecWait '"$SYSDIR\sc.exe" delete "MaidSafeVault"'
+  nsExec::ExecToStack '"$SYSDIR\sc.exe" delete "MaidSafeVault"'
+  SetDetailsPrint textonly
+  DetailPrint "Uninstalling filesystem driver..."
+  SetDetailsPrint listonly
+  ; ExecWait '"$INSTDIR\bin\cbfs_installer.exe" uninstall' $0
+  nsExec::ExecToStack '"$INSTDIR\bin\cbfs_installer.exe" uninstall'
+  Pop $0
+  IntCmp $0 0 no_reboot ""
+  SetRebootFlag true
+  no_reboot:
+
+  @CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS@
+
+  SetDetailsPrint textonly
+  DetailPrint "Deleting registry entries..."
+  SetDetailsPrint listonly
+
+  ReadRegStr $START_MENU SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_NAME@" "StartMenu"
+  ReadRegStr $INSTALL_DESKTOP SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_NAME@" "InstallToDesktop"
+
+  DeleteRegKey SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_NAME@"
+  DeleteRegKey SHCTX "Software\${REGISTRY_KEY}"
+  DeleteRegKey SHCTX "Software\@CPACK_PACKAGE_VENDOR@"
+
+  SetDetailsPrint textonly
+  DetailPrint "Deleting files..."
+  SetDetailsPrint listonly
+
+  @CPACK_NSIS_DELETE_FILES@
+  @CPACK_NSIS_DELETE_DIRECTORIES@
+
+  Delete "$INSTDIR\Uninstall.exe"
+  RMDir /r "$INSTDIR"
+  Delete "$DESKTOP\LifeStuff.lnk"
+
+  !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
+  SetDetailsPrint textonly
+  DetailPrint "Removing start menu items..."
+  SetDetailsPrint listonly
+
+  @CPACK_NSIS_DELETE_ICONS@
+  @CPACK_NSIS_DELETE_ICONS_EXTRA@
+  Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
+
+  StrCpy $MUI_TEMP "$SMPROGRAMS\$MUI_TEMP"
+  loop1:
+    ClearErrors
+    RMDir $MUI_TEMP
+    GetFullPathName $MUI_TEMP "$MUI_TEMP\.."
+    IfErrors loop1_done
+    StrCmp "$MUI_TEMP" "$SMPROGRAMS" loop1_done loop1
+  loop1_done:
+
+  ; Attempt to remove moved shortcut.
+  StrCpy $MUI_TEMP "$START_MENU"
+  Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
+  @CPACK_NSIS_DELETE_ICONS@
+  @CPACK_NSIS_DELETE_ICONS_EXTRA@
+  StrCpy $MUI_TEMP "$SMPROGRAMS\$MUI_TEMP"
+
+  loop2:
+    ClearErrors
+    RMDir $MUI_TEMP
+    GetFullPathName $MUI_TEMP "$MUI_TEMP\.."
+    IfErrors loop2_done
+    StrCmp "$MUI_TEMP" "$SMPROGRAMS" loop2_done loop2
+  loop2_done:
+
+  SetDetailsPrint both
+
+SectionEnd
+
+Function .onInit
+
+  ${MementoSectionRestore}
+
+  StrCpy $PREVIOUS_VERSION_STATUS ""
+
+  Call GetUserInfo
+
+  ${If} $IS_ADMIN == 1
+    StrCpy $ALL_USERS 1
+  ${Else}
+    StrCpy $ALL_USERS 0
+  ${EndIf}
+
+  Call UpdateShellVarContext
+  Call ReadPreviousVersion
+
+  ${If} $ALL_USERS == 1
+    ${If} $IS_ADMIN == 0
+      ${If} $PREVIOUS_VERSION != ""
+        MessageBox MB_ICONSTOP "LifeStuff has been previously installed for all users.$\nPlease restart the installer with Administrator privileges." /SD IDOK
+        Abort
+      ${Else}
+        MessageBox MB_ICONSTOP "Cannot install LifeStuff for all users.$\nPlease restart the installer with Administrator privileges." /SD IDOK
+        Abort
+      ${EndIf}
+    ${EndIf}
+  ${EndIf}
+
+  StrCpy $ALL_USERS_DEFAULT $ALL_USERS
+  StrCpy $VAULT_LOCATION $APPDATA\maidsafe\Vault\chunkstore
+  StrCpy $VAULT_SIZE "1"
+  StrCpy $REINSTALL_UNINSTALL 0
+
+FunctionEnd
+
+Function .onInstSuccess
+
+  ${MementoSectionSave}
+
+FunctionEnd
