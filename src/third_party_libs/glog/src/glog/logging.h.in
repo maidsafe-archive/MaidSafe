@@ -1123,7 +1123,7 @@ private:
   // We keep the data in a separate struct so that each instance of
   // LogMessage uses less stack space.
   struct GOOGLE_GLOG_DLL_DECL LogMessageData {
-    LogMessageData() {};
+    LogMessageData() {}
 
     int preserved_errno_;      // preserved errno
     char* buf_;

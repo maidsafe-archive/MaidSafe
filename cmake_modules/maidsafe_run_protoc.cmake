@@ -47,7 +47,7 @@ endfunction()
 set(RAN_PROTOC FALSE PARENT_SCOPE)
 
 if(NOT PROTO_FILES)
-  message(STATUS "No proto files to be generated")
+  message(STATUS "No proto files to be generated.")
   return()
 endif()
 

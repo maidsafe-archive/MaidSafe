@@ -37,6 +37,10 @@ function(ms_add_executable EXE FOLDER_NAME)
   set(ALL_EXECUTABLES ${ALL_EXECUTABLES} ${EXE} PARENT_SCOPE)
   add_executable(${EXE} ${FILES})
   set_target_properties(${EXE} PROPERTIES FOLDER "MaidSafe/Executables/${FOLDER_NAME}")
+  string(REPLACE "Tests/" "" TEST_FOLDER_NAME ${FOLDER_NAME})
+  if(NOT ${TEST_FOLDER_NAME} STREQUAL ${FOLDER_NAME})
+    SET(TEST_FOLDER_NAME ${TEST_FOLDER_NAME} PARENT_SCOPE)
+  endif()
 endfunction()
 
 
@@ -65,12 +69,15 @@ function(add_style_test)
 endfunction()
 
 
+function(add_project_experimental)
+  add_custom_target(Exper${CamelCaseProjectName} COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION> -M Experimental -T Start -T Build -T Test -T Coverage -T Submit)
+  set_target_properties(Exper${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/Executables/Tests/${TEST_FOLDER_NAME}")
+endfunction()
+
+
 function(test_summary_output)
   list(LENGTH ALL_GTESTS GTEST_COUNT)
-  message(STATUS "${MAIDSAFE_TEST_TYPE_MESSAGE}.   ${GTEST_COUNT} Google Tests.")
-  message(STATUS "    To include all tests,                cmake . -DMAIDSAFE_TEST_TYPE=ALL")
-  message(STATUS "    To include behavioural tests,        cmake . -DMAIDSAFE_TEST_TYPE=BEH")
-  message(STATUS "    To include functional tests,         cmake . -DMAIDSAFE_TEST_TYPE=FUNC")
+  message(STATUS "${MAIDSAFE_TEST_TYPE_MESSAGE}.   ${GTEST_COUNT} Google test(s) enabled.")
 endfunction()
 
 

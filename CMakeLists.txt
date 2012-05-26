@@ -17,8 +17,8 @@ cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
 project(maidsafe)
 
 enable_testing()
-include(CTest)
 set(BUILD_SHARED_LIBS OFF)
+set(HR "================================================================================")
 
 
 set(SubModules
@@ -57,17 +57,35 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 add_subdirectory(src/third_party_libs)
 
 
+# Python library search
+message("${HR}")
+include(FindPythonInterp)
+set(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
+find_package(PythonInterp)
+if(PYTHONINTERP_FOUND)
+  execute_process(COMMAND ${PYTHON_EXECUTABLE} -V ERROR_VARIABLE PYTHON_VERSION ERROR_STRIP_TRAILING_WHITESPACE)
+  string(REPLACE "Python " "" PYTHON_VERSION ${PYTHON_VERSION})
+  message(STATUS "Found python executable v${PYTHON_VERSION} - style checking enabled.")
+else()
+  message(STATUS "Didn't find python executable: style checking disabled.")
+endif()
+
+
 # Build protoc if not already done
 set(ProtocBuildDir ${CMAKE_BINARY_DIR}/build_protoc)
 find_program(ProtocExe NAMES protoc PATHS ${ProtocBuildDir} PATH_SUFFIXES Release NO_DEFAULT_PATH)
 if(NOT ProtocExe)
+  message("${HR}")
   message(STATUS "Building protoc...")
   execute_process(COMMAND
                     ${CMAKE_COMMAND} -E make_directory ${ProtocBuildDir}
                     OUTPUT_VARIABLE OutVar
                     RESULT_VARIABLE ResVar)
+  if(NOT MSVC)
+    set(ProtocBuildType "-DCMAKE_BUILD_TYPE=Release")
+  endif()
   execute_process(COMMAND
-                    ${CMAKE_COMMAND} ${CMAKE_SOURCE_DIR}/src/third_party_libs/protobuf -G ${CMAKE_GENERATOR} -DCMAKE_BUILD_TYPE=Release
+                    ${CMAKE_COMMAND} ${CMAKE_SOURCE_DIR}/src/third_party_libs/protobuf -G ${CMAKE_GENERATOR} ${ProtocBuildType}
                     WORKING_DIRECTORY ${ProtocBuildDir}
                     OUTPUT_VARIABLE OutVar
                     RESULT_VARIABLE ResVar)
@@ -97,4 +115,13 @@ if(UNIX)
   endif()
 endif()
 
+
+message(STATUS "To include all tests,                    cmake . -DMAIDSAFE_TEST_TYPE=ALL")
+message(STATUS "To include behavioural tests,            cmake . -DMAIDSAFE_TEST_TYPE=BEH")
+message(STATUS "To include functional tests,             cmake . -DMAIDSAFE_TEST_TYPE=FUNC")
+message("${HR}")
+
+
 cleanup_temp_dir()
+
+include(CTest)

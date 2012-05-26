@@ -19,10 +19,6 @@
 
 add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_FILESYSTEM_VERSION=3)
 
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-  add_definitions(-DDEBUG)
-endif()
-
 if(MSVC)
   set(CMAKE_CXX_FLAGS)
   set(CMAKE_CXX_FLAGS_INIT)
@@ -34,6 +30,11 @@ if(OPENMP_FOUND)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
+# enable libc++ if available
+if(APPLE OR HAVE_LIBC++)
+set(LIBC++ "-stdlib=libc++")
+endif()
+  
 if(WIN32)
   add_definitions(-DWIN32 -D_WIN32 -D__WINDOWS__ -D__WIN32__ -DMAIDSAFE_WIN32)
 elseif(UNIX)
@@ -103,26 +104,15 @@ if(MSVC)
   # MTd -  Use the debug multithread, static version of the C run-time library.
   set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /D \"_DEBUG\" /D \"DEBUG\" /RTC1 /MTd")
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/MT")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MT")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MTd")
 
   set_target_properties(${ALL_LIBRARIES} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
 
   set_target_properties(${ALL_EXECUTABLES} PROPERTIES
-                          LINK_FLAGS_RELEASE "/OPT:REF /OPT:ICF /LTCG /INCREMENTAL:NO ${LINKER_LIBS_DIRS_RELEASE}"
-                          LINK_FLAGS_DEBUG "${LINKER_LIBS_DIRS_DEBUG}"
-                          LINK_FLAGS_RELWITHDEBINFO "${LINKER_LIBS_DIRS_DEBUG} /LTCG /INCREMENTAL:NO"
-                          LINK_FLAGS_MINSIZEREL "${LINKER_LIBS_DIRS_DEBUG} /LTCG")
-
-  # Given a link dir of "a/b/c", MSVC adds "a/b/c/" AND "a/b/c/CMAKE_BUILD_TYPE" as link dirs, so we
-  # can't just use "LINK_DIRECTORIES" as some Google debug libs have the same name as the release version.
-  foreach(LIBS_DIR ${LIBS_DIRS})
-    string(REPLACE "\\" "\\\\" LIBS_DIR ${LIBS_DIR})
-    set(LINKER_LIBS_DIRS_RELEASE "${LINKER_LIBS_DIRS_RELEASE} /LIBPATH:\"${LIBS_DIR}\"")
-  endforeach()
-  foreach(LIBS_DIR_DEBUG ${LIBS_DIRS_DEBUG})
-    string(REPLACE "\\" "\\\\" LIBS_DIR_DEBUG ${LIBS_DIR_DEBUG})
-    set(LINKER_LIBS_DIRS_DEBUG "${LINKER_LIBS_DIRS_DEBUG} /LIBPATH:\"${LIBS_DIR_DEBUG}\"")
-  endforeach()
+                          LINK_FLAGS_RELEASE "/OPT:REF /OPT:ICF /LTCG /INCREMENTAL:NO"
+                          LINK_FLAGS_DEBUG "/DEBUG"
+                          LINK_FLAGS_RELWITHDEBINFO "/DEBUG /LTCG /INCREMENTAL:NO"
+                          LINK_FLAGS_MINSIZEREL "/LTCG")
 elseif(UNIX)
   if(DEFINED COVERAGE)
     if(${COVERAGE})
@@ -147,7 +137,11 @@ elseif(UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1 -D_FILE_OFFSET_BITS=64)
     add_definitions(-DCRYPTOPP_DISABLE_ASM -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -Wall -Wextra -Wno-unused-parameter -fPIC -pthread -ftrapv -fcatch-undefined-behavior")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Wno-unused-parameter -fPIC -ftrapv -fcatch-undefined-behavior")
+   # if (APPLE)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LIBC++}")
+      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LIBC++}")
+   # endif()
   endif()
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
@@ -159,9 +153,13 @@ elseif(UNIX)
       message(FATAL_ERROR "Unsupported version of GCC, minimum 4.6 required")
     endif()
   endif()
+  if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    add_definitions(-DDEBUG)
+  endif()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -Wunused-parameter -Wno-system-headers -Wno-deprecated")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wwrite-strings -Wundef -D_FORTIFY_SOURCE=2")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wfloat-equal -Wstrict-overflow=5 -Wredundant-decls")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wuninitialized -Wparentheses")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wfloat-equal -Wstrict-overflow -Wstrict-overflow=5 -Wredundant-decls")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -pedantic -pedantic-errors -Weffc++")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -ggdb ${COVERAGE_FLAGS}")
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
