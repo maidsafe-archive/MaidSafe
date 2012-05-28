@@ -13,7 +13,7 @@
 #==============================================================================#
 
 # NOTE : This variable must be always used to pick binaries for package build to avoid accidental debug build inclusion.
-set(PACKAGE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/package/bin/Release)
+set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR}/package/bin/Release)
 
 #Removing the previous CPackConfig.cmake & CPackSourceConfig.cmake files
 find_file(CPACK_CONFIG_CMAKE_FILES NAMES  CPackConfig.cmake CPackSourceConfig.cmake PATHS ${CMAKE_BINARY_DIR})
@@ -76,11 +76,10 @@ elseif(WIN32)
   set(CPACK_PACKAGE_NAME "LifeStuff")
   # Set the CMAKE_MODULE_PATH to include the path to our modified NSIS.template.in file before the default CMake one.
   set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/package/Windows ${CMAKE_MODULE_PATH})
-
-  install(PROGRAMS ${PACKAGE_BINARY_DIR}/lifestuff DESTINATION bin)
-  install(PROGRAMS ${PACKAGE_BINARY_DIR}/cbfs_installer DESTINATION bin)
-  install(PROGRAMS ${PACKAGE_BINARY_DIR}/pd-vault-service DESTINATION bin)
-  install(DIRECTORY ${drive_SOURCE_DIR}/drivers/cbfs/windows DESTINATION drivers)
+  install(FILES ${PACKAGE_BINARY_DIR}/lifestuff.exe DESTINATION bin)
+  install(FILES ${PACKAGE_BINARY_DIR}/cbfs_installer.exe DESTINATION bin)
+  install(FILES ${PACKAGE_BINARY_DIR}/pd-vault-service.exe DESTINATION bin)
+  install(DIRECTORY ${drive_SOURCE_DIR}/drivers/windows/cbfs DESTINATION drivers)
   install(FILES ${OpenMP_DLL} DESTINATION bin)
   set(CPACK_PACKAGE_INSTALL_DIRECTORY "MaidSafe\\\\LifeStuff")
   set(CPACK_GENERATOR NSIS)

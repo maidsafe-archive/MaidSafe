@@ -331,10 +331,10 @@ macro(boost_add_documentation SOURCE)
 	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/boost.png ${CMAKE_CURRENT_BINARY_DIR}/html
 	)
       # Install generated documentation
-      install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html 
-        DESTINATION share/boost-${BOOST_VERSION}
-        COMPONENT ${ULIBNAME}_DOCS
-        PATTERN "*.manifest" EXCLUDE)
+      # install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html
+        # DESTINATION share/boost-${BOOST_VERSION}
+        # COMPONENT ${ULIBNAME}_DOCS
+        # PATTERN "*.manifest" EXCLUDE)
     endif ()
 
     # If requested, build Unix man pages
@@ -349,10 +349,10 @@ macro(boost_add_documentation SOURCE)
         MAKE_TARGET ${BOOST_PROJECT_NAME}-man)
 
       # Install man pages
-      install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/man
-        DESTINATION .
-        COMPONENT ${ULIBNAME}_DOCS
-        PATTERN "*.manifest" EXCLUDE)
+      # install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/man
+        # DESTINATION .
+        # COMPONENT ${ULIBNAME}_DOCS
+        # PATTERN "*.manifest" EXCLUDE)
     endif ()
   else()
     message(SEND_ERROR "Unknown documentation source kind ${SOURCE}.")

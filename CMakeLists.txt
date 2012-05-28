@@ -120,13 +120,6 @@ message(STATUS "To include behavioural tests,            cmake . -DMAIDSAFE_TEST
 message(STATUS "To include functional tests,             cmake . -DMAIDSAFE_TEST_TYPE=FUNC")
 message("${HR}")
 
-
 cleanup_temp_dir()
 
-# Package build
-if(${PACKAGE_BUILD})
-  include(${CMAKE_SOURCE_DIR}/cmake_modules/maidsafe_lifestuff_package.cmake)
-  #include(maidsafe_lifestuff_package)
-  include(CPack)
-endif()
 include(CTest)
