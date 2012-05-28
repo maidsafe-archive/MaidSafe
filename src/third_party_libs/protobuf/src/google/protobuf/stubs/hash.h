@@ -62,7 +62,7 @@ namespace protobuf {
 template <typename Key>
 struct hash {
   // Dummy, just to make derivative hash functions compile.
-  int operator()(const Key& key) {
+  int operator()(const Key& /*key*/) {
     GOOGLE_LOG(FATAL) << "Should never be called.";
     return 0;
   }
@@ -76,7 +76,7 @@ struct hash {
 template <>
 struct hash<const char*> {
   // Dummy, just to make derivative hash functions compile.
-  int operator()(const char* key) {
+  int operator()(const char* /*key*/) {
     GOOGLE_LOG(FATAL) << "Should never be called.";
     return 0;
   }

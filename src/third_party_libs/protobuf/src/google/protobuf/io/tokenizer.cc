@@ -572,7 +572,7 @@ bool Tokenizer::ParseInteger(const string& text, uint64 max_value,
 //  return strtoull(text.c_str(), NULL, 0);
 
   const char* ptr = text.c_str();
-  int base = 10;
+  google::protobuf::uint64 base = 10;
   if (ptr[0] == '0') {
     if (ptr[1] == 'x' || ptr[1] == 'X') {
       // This is hex.
@@ -586,7 +586,7 @@ bool Tokenizer::ParseInteger(const string& text, uint64 max_value,
 
   uint64 result = 0;
   for (; *ptr != '\0'; ptr++) {
-    int digit = DigitValue(*ptr);
+    google::protobuf::uint64 digit = DigitValue(*ptr);
     GOOGLE_LOG_IF(DFATAL, digit < 0 || digit >= base)
       << " Tokenizer::ParseInteger() passed text that could not have been"
          " tokenized as an integer: " << CEscape(text);

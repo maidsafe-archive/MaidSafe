@@ -53,7 +53,7 @@ UnknownFieldSet::~UnknownFieldSet() {
 
 void UnknownFieldSet::ClearFallback() {
   GOOGLE_DCHECK(fields_ != NULL);
-  for (int i = 0; i < fields_->size(); i++) {
+  for (size_t i = 0; i < fields_->size(); i++) {
     (*fields_)[i].Delete();
   }
   fields_->clear();
@@ -69,7 +69,7 @@ int UnknownFieldSet::SpaceUsedExcludingSelf() const {
   if (fields_ == NULL) return 0;
 
   int total_size = sizeof(*fields_) + sizeof(UnknownField) * fields_->size();
-  for (int i = 0; i < fields_->size(); i++) {
+  for (size_t i = 0; i < fields_->size(); i++) {
     const UnknownField& field = (*fields_)[i];
     switch (field.type()) {
       case UnknownField::TYPE_LENGTH_DELIMITED:

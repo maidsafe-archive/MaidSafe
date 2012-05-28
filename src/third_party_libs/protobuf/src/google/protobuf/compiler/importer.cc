@@ -148,13 +148,13 @@ bool SourceTreeDescriptorDatabase::FindFileByName(
 }
 
 bool SourceTreeDescriptorDatabase::FindFileContainingSymbol(
-    const string& symbol_name, FileDescriptorProto* output) {
+    const string& /*symbol_name*/, FileDescriptorProto* /*output*/) {
   return false;
 }
 
 bool SourceTreeDescriptorDatabase::FindFileContainingExtension(
-    const string& containing_type, int field_number,
-    FileDescriptorProto* output) {
+    const string& /*containing_type*/, int /*field_number*/,
+    FileDescriptorProto* /*output*/) {
   return false;
 }
 
