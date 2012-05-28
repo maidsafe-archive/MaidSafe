@@ -489,7 +489,7 @@ DescriptorPool::Tables::~Tables() {
   // Note that the deletion order is important, since the destructors of some
   // messages may refer to objects in allocations_.
   STLDeleteElements(&messages_);
-  for (int i = 0; i < allocations_.size(); i++) {
+  for (size_t i = 0; i < allocations_.size(); i++) {
     operator delete(allocations_[i]);
   }
   STLDeleteElements(&strings_);
@@ -513,13 +513,13 @@ void DescriptorPool::Tables::Checkpoint() {
 }
 
 void DescriptorPool::Tables::Rollback() {
-  for (int i = 0; i < symbols_after_checkpoint_.size(); i++) {
+  for (size_t i = 0; i < symbols_after_checkpoint_.size(); i++) {
     symbols_by_name_.erase(symbols_after_checkpoint_[i]);
   }
-  for (int i = 0; i < files_after_checkpoint_.size(); i++) {
+  for (size_t i = 0; i < files_after_checkpoint_.size(); i++) {
     files_by_name_.erase(files_after_checkpoint_[i]);
   }
-  for (int i = 0; i < extensions_after_checkpoint_.size(); i++) {
+  for (size_t i = 0; i < extensions_after_checkpoint_.size(); i++) {
     extensions_.erase(extensions_after_checkpoint_[i]);
   }
 
@@ -533,7 +533,7 @@ void DescriptorPool::Tables::Rollback() {
     messages_.begin() + messages_before_checkpoint_, messages_.end());
   STLDeleteContainerPointers(
     file_tables_.begin() + file_tables_before_checkpoint_, file_tables_.end());
-  for (int i = allocations_before_checkpoint_; i < allocations_.size(); i++) {
+  for (size_t i = allocations_before_checkpoint_; i < allocations_.size(); i++) {
     operator delete(allocations_[i]);
   }
 
@@ -721,7 +721,7 @@ string* DescriptorPool::Tables::AllocateString(const string& value) {
 }
 
 template<typename Type>
-Type* DescriptorPool::Tables::AllocateMessage(Type* dummy) {
+Type* DescriptorPool::Tables::AllocateMessage(Type* /*dummy*/) {
   Type* result = new Type;
   messages_.push_back(result);
   return result;
@@ -986,7 +986,7 @@ void DescriptorPool::FindAllExtensions(
     vector<int> numbers;
     if (fallback_database_->FindAllExtensionNumbers(extendee->full_name(),
                                                     &numbers)) {
-      for (int i = 0; i < numbers.size(); ++i) {
+      for (size_t i = 0; i < numbers.size(); ++i) {
         int number = numbers[i];
         if (tables_->FindExtension(extendee, number) == NULL) {
           TryFindExtensionInFallbackDatabase(extendee, number);
@@ -1495,7 +1495,7 @@ bool RetrieveOptions(const Message &options, vector<string> *option_entries) {
   const Reflection* reflection = options.GetReflection();
   vector<const FieldDescriptor*> fields;
   reflection->ListFields(options, &fields);
-  for (int i = 0; i < fields.size(); i++) {
+  for (size_t i = 0; i < fields.size(); i++) {
     // Doesn't make sense to have message type fields here
     if (fields[i]->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE) {
       continue;
@@ -1531,7 +1531,7 @@ bool FormatLineOptions(int depth, const Message &options, string *output) {
   string prefix(depth * 2, ' ');
   vector<string> all_options;
   if (RetrieveOptions(options, &all_options)) {
-    for (int i = 0; i < all_options.size(); i++) {
+    for (size_t i = 0; i < all_options.size(); i++) {
       strings::SubstituteAndAppend(output, "$0option $1;\n",
                                    prefix, all_options[i]);
     }
@@ -2356,7 +2356,7 @@ Symbol DescriptorBuilder::LookupSymbolNoPlaceholder(
   //   }
   // So, we look for just "Foo" first, then look for "Bar.baz" within it if
   // found.
-  int name_dot_pos = name.find_first_of('.');
+  size_t name_dot_pos = name.find_first_of('.');
   string first_part_of_name;
   if (name_dot_pos == string::npos) {
     first_part_of_name = name;
@@ -2620,7 +2620,7 @@ void DescriptorBuilder::ValidateSymbolName(
 bool DescriptorBuilder::ValidateQualifiedName(const string& name) {
   bool last_was_period = false;
 
-  for (int i = 0; i < name.size(); i++) {
+  for (size_t i = 0; i < name.size(); i++) {
     // I don't trust isalnum() due to locales.  :(
     if (('a' <= name[i] && name[i] <= 'z') ||
         ('A' <= name[i] && name[i] <= 'Z') ||
@@ -2725,7 +2725,7 @@ const FileDescriptor* DescriptorBuilder::BuildFile(
   //   mid-file, but that's pretty ugly, and I'm pretty sure there are
   //   some languages out there that do not allow recursive dependencies
   //   at all.
-  for (int i = 0; i < tables_->pending_files_.size(); i++) {
+  for (size_t i = 0; i < tables_->pending_files_.size(); i++) {
     if (tables_->pending_files_[i] == proto.name()) {
       string error_message("File recursively imports itself: ");
       for (; i < tables_->pending_files_.size(); i++) {
@@ -3303,7 +3303,7 @@ void DescriptorBuilder::BuildEnumValue(const EnumValueDescriptorProto& proto,
 }
 
 void DescriptorBuilder::BuildService(const ServiceDescriptorProto& proto,
-                                     const void* dummy,
+                                     const void* /*dummy*/,
                                      ServiceDescriptor* result) {
   string* full_name = tables_->AllocateString(file_->package());
   if (!full_name->empty()) full_name->append(1, '.');
@@ -3583,7 +3583,7 @@ void DescriptorBuilder::CrossLinkEnum(
 }
 
 void DescriptorBuilder::CrossLinkEnumValue(
-    EnumValueDescriptor* enum_value, const EnumValueDescriptorProto& proto) {
+    EnumValueDescriptor* enum_value, const EnumValueDescriptorProto& /*proto*/) {
   if (enum_value->options_ == NULL) {
     enum_value->options_ = &EnumValueOptions::default_instance();
   }
@@ -3735,7 +3735,7 @@ void DescriptorBuilder::ValidateEnumOptions(EnumDescriptor* enm,
 }
 
 void DescriptorBuilder::ValidateEnumValueOptions(
-    EnumValueDescriptor* enum_value, const EnumValueDescriptorProto& proto) {
+    EnumValueDescriptor* /*enum_value*/, const EnumValueDescriptorProto& /*proto*/) {
   // Nothing to do so far.
 }
 void DescriptorBuilder::ValidateServiceOptions(ServiceDescriptor* service,
@@ -3753,8 +3753,8 @@ void DescriptorBuilder::ValidateServiceOptions(ServiceDescriptor* service,
   VALIDATE_OPTIONS_FROM_ARRAY(service, method, Method);
 }
 
-void DescriptorBuilder::ValidateMethodOptions(MethodDescriptor* method,
-    const MethodDescriptorProto& proto) {
+void DescriptorBuilder::ValidateMethodOptions(MethodDescriptor* /*method*/,
+    const MethodDescriptorProto& /*proto*/) {
   // Nothing to do so far.
 }
 
@@ -4361,14 +4361,14 @@ class AggregateErrorCollector : public io::ErrorCollector {
  public:
   string error_;
 
-  virtual void AddError(int line, int column, const string& message) {
+  virtual void AddError(int /*line*/, int /*column*/, const string& message) {
     if (!error_.empty()) {
       error_ += "; ";
     }
     error_ += message;
   }
 
-  virtual void AddWarning(int line, int column, const string& message) {
+  virtual void AddWarning(int /*line*/, int /*column*/, const string& /*message*/) {
     // Ignore warnings
   }
 };

@@ -103,7 +103,7 @@ if (NOT BOOST_TOOLSET)
 endif (NOT BOOST_TOOLSET)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -fPIC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${LIBC++} -fPIC")
 endif()
 boost_report_pretty("Boost compiler" BOOST_COMPILER)
 boost_report_pretty("Boost toolset"  BOOST_TOOLSET)
