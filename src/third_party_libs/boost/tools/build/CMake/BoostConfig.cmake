@@ -101,6 +101,10 @@ if (NOT BOOST_TOOLSET)
     set(BOOST_COMPILER_VERSION ${INTEL_VERSION_STRING})
   endif(MSVC60)
 endif (NOT BOOST_TOOLSET)
+ # enable libc++ if available
+ if(APPLE OR HAVE_LIBC++)
+   set(LIBC++ "-stdlib=libc++")
+ endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${LIBC++} -fPIC")

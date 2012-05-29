@@ -25,8 +25,8 @@ set(SubModules
       common
       private
       transport
-#       rudp
-#       routing
+      rudp
+      routing
       dht
       encrypt
       pki

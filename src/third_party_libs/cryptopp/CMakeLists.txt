@@ -13,8 +13,15 @@
 #==============================================================================#
 
 cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
+#include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_flags.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_setup.cmake)
+
 project(Cryptopp)
 enable_testing()
+ # enable libc++ if available
+if(APPLE OR HAVE_LIBC++)
+  set(LIBC++ "-stdlib=libc++")
+endif()
 
 set(CMAKE_DEBUG_POSTFIX _d)
 set(CMAKE_RELWITHDEBINFO_POSTFIX _rwdi)
@@ -38,6 +45,8 @@ set(CTEST_START_WITH_EMPTY_BINARY_DIRECTORY true)
 
 file(GLOB cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 file(GLOB cryptopp_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+file(GLOB TESTcryptopp_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cc")
+
 
 if(CMAKE_CL_64)
   set(cryptopp_SOURCES ${cryptopp_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm ${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm)
@@ -91,9 +100,13 @@ set(cryptopp_TEST_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/bench.h
 
 add_executable(cryptest ${cryptopp_TEST_SOURCES} ${cryptopp_TEST_HEADERS})
 
+add_executable(TESTcryptopp ${TESTcryptopp_DIR})
+
 add_library(cryptopp STATIC ${cryptopp_SOURCES} ${cryptopp_HEADERS})
 
 set_target_properties(cryptest cryptopp PROPERTIES FOLDER "Third Party/Crypto++")
+
+
 
 add_custom_command(TARGET cryptest
                      POST_BUILD
@@ -118,6 +131,7 @@ add_custom_command(TARGET cryptest
 # install(TARGETS cryptopp ARCHIVE DESTINATION lib)
 
 target_link_libraries(cryptest cryptopp)
+target_link_libraries(TESTcryptopp cryptopp gtest)
 
 if(UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
