@@ -1035,6 +1035,7 @@ def GetHeaderGuardCPPVariable(filename):
 
   fileinfo = FileInfo(filename)
   repository_name = re.sub(r'^(.*/)?src/', '', fileinfo.RepositoryName())
+  repository_name = re.sub(r'^(.*/)?include/', '', repository_name)
   return re.sub(r'[-./\s]', '_', repository_name).upper() + '_'
 
 

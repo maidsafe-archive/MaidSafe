@@ -1194,7 +1194,7 @@ template<typename T> class RepeatedFieldBackInsertIterator
   RepeatedFieldBackInsertIterator<T>& operator++() {
     return *this;
   }
-  RepeatedFieldBackInsertIterator<T>& operator++(int ignores_parameter) {
+  RepeatedFieldBackInsertIterator<T>& operator++(int /*ignores_parameter*/) {
     return *this;
   }
 
@@ -1225,7 +1225,7 @@ template<typename T> class RepeatedPtrFieldBackInsertIterator
   RepeatedPtrFieldBackInsertIterator<T>& operator++() {
     return *this;
   }
-  RepeatedPtrFieldBackInsertIterator<T>& operator++(int ignores_parameter) {
+  RepeatedPtrFieldBackInsertIterator<T>& operator++(int /*ignores_parameter*/) {
     return *this;
   }
 
@@ -1254,7 +1254,7 @@ template<typename T> class AllocatedRepeatedPtrFieldBackInsertIterator
     return *this;
   }
   AllocatedRepeatedPtrFieldBackInsertIterator<T>& operator++(
-      int ignores_parameter) {
+      int /*ignores_parameter*/) {
     return *this;
   }
 
