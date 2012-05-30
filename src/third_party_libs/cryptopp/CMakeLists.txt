@@ -18,6 +18,7 @@ include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_setup.cmake)
 
 project(Cryptopp)
 enable_testing()
+
  # enable libc++ if available
 if(APPLE OR HAVE_LIBC++)
   set(LIBC++ "-stdlib=libc++")
@@ -136,11 +137,11 @@ target_link_libraries(TESTcryptopp cryptopp gtest)
 if(UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_definitions(-DCRYPTOPP_DISABLE_ASM -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION)
-    set_target_properties(cryptopp cryptest PROPERTIES
+    set_target_properties(cryptopp cryptest TESTcryptopp PROPERTIES
                             COMPILE_FLAGS "-Wno-tautological-compare -fPIC -Wno-c++11-narrowing -std=c++11 ${LIBC++}")
-if (${LIBC++})
-    set_target_properties(cryptest PROPERTIES LINK_FLAGS ${LIBC++})
-endif()    
+if (${HAVE_LIBC++})
+    set_target_properties(cryptest TESTcryptopp PROPERTIES LINK_FLAGS "${LIBC++} -ldl")
+endif()
   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
     if (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7)
