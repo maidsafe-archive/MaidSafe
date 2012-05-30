@@ -39,3 +39,5 @@ add_subdirectory(cryptopp)
 add_subdirectory(googlemock)
 add_subdirectory(glog/src)
 add_subdirectory(protobuf)
+
+include(${CMAKE_SOURCE_DIR}/cmake_modules/maidsafe_find_qt4.cmake)
