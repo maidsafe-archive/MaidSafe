@@ -101,11 +101,11 @@ set(cryptopp_TEST_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/bench.h
 
 add_executable(cryptest ${cryptopp_TEST_SOURCES} ${cryptopp_TEST_HEADERS})
 
-add_executable(TESTcryptopp ${TESTcryptopp_DIR})
+#add_executable(TESTcryptopp ${TESTcryptopp_DIR})
 
 add_library(cryptopp STATIC ${cryptopp_SOURCES} ${cryptopp_HEADERS})
 
-set_target_properties(cryptest cryptopp PROPERTIES FOLDER "Third Party/Crypto++")
+set_target_properties(cryptest cryptopp  PROPERTIES FOLDER "Third Party/Crypto++")
 
 
 
@@ -132,15 +132,15 @@ add_custom_command(TARGET cryptest
 # install(TARGETS cryptopp ARCHIVE DESTINATION lib)
 
 target_link_libraries(cryptest cryptopp)
-target_link_libraries(TESTcryptopp cryptopp gtest)
+#target_link_libraries(TESTcryptopp cryptopp gtest)
 
 if(UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_definitions(-DCRYPTOPP_DISABLE_ASM -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION)
-    set_target_properties(cryptopp cryptest TESTcryptopp PROPERTIES
+    set_target_properties(cryptopp cryptest PROPERTIES
                             COMPILE_FLAGS "-Wno-tautological-compare -fPIC -Wno-c++11-narrowing -std=c++11 ${LIBC++}")
 if (${HAVE_LIBC++})
-    set_target_properties(cryptest TESTcryptopp PROPERTIES LINK_FLAGS "${LIBC++} -ldl")
+    set_target_properties(cryptest PROPERTIES LINK_FLAGS "${LIBC++} -ldl")
 endif()
   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
