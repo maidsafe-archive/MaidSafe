@@ -855,7 +855,7 @@ Function PageVaultConfigurationLeave
   System::Int64Op $VAULT_SIZE * 1073741824
   Pop $R0
   FileWrite $0 "chunkstore_capacity = $R0$\r$\n"
-  FileWrite $0 "bootstrap = $INSTDIR\bootstrap_contacts.xml$\r$\n"
+  FileWrite $0 "bootstrap = $INSTDIR\bootstrap$\r$\n"
   FileWrite $0 "vault_id_path = $INSTDIR\vault_id.conf$\r$\n"
   FileClose $0
   done:
