@@ -111,48 +111,13 @@ function(rename_outdated_built_exes)
 endfunction()
 
 
-function(ms_install_libs)
-  install(TARGETS ${ARGV} EXPORT ${PROJECT_NAME} ARCHIVE DESTINATION lib)
+# Copies executable to <current build dir>/package/bin/<config type>/ for use by the package tool
+function(ms_copy_to_package_folder maidsafe_target)
+  add_custom_command(TARGET ${maidsafe_target}
+                       POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${maidsafe_target}>
+                         ${CMAKE_BINARY_DIR}/package/bin/$<CONFIGURATION>/$<TARGET_FILE_NAME:${maidsafe_target}>)
 endfunction()
-
-
-# Ensure all headers for a given destination folder are passed in a single call,
-# as this function clears out all existing headers from the destination folder
-# (non-recursively).
-function(ms_install_headers HEADERS_DESTINATION)
-  set(MS_HEADERS ${ARGV})
-  list(REMOVE_AT MS_HEADERS 0)
-#   foreach(HEADER ${MS_HEADERS})
-#     get_filename_component(HEADER_EXTENSION ${HEADER} EXT)
-#     get_filename_component(HEADER_NAME ${HEADER} NAME)
-#     if((NOT ${HEADER_NAME} STREQUAL "version.h") AND (NOT ${HEADER_EXTENSION} STREQUAL ".pb.h"))
-#       file(STRINGS ${HEADER} VERSION_LINE REGEX "#if ${THIS_VERSION} != ${${THIS_VERSION}}")
-#       if("${VERSION_LINE}" STREQUAL "")
-#         set(ERROR_MESSAGE "\n\n${HEADER} is missing the version guard block.\n")
-#         set(ERROR_MESSAGE "${ERROR_MESSAGE}Ensure the following code is included in the file:\n\n")
-#         set(ERROR_MESSAGE "${ERROR_MESSAGE}\t#include \"${THIS_VERSION_FILE}\"\n")
-#         set(ERROR_MESSAGE "${ERROR_MESSAGE}\t#if ${THIS_VERSION} != ${${THIS_VERSION}}\n")
-#         set(ERROR_MESSAGE "${ERROR_MESSAGE}\t#  error This API is not compatible with the installed library.\\\n")
-#         set(ERROR_MESSAGE "${ERROR_MESSAGE}\t    Please update the ${MS_PROJECT_NAME} library.\n")
-#         set(ERROR_MESSAGE "${ERROR_MESSAGE}\t#endif\n\n\n")
-#         message(FATAL_ERROR ${ERROR_MESSAGE})
-#       endif()
-#     endif()
-#   endforeach()
-  install(CODE "FILE(GLOB INSTALLED \"\${CMAKE_INSTALL_PREFIX}/${DESTINATION}/*.h*\")\nIF(INSTALLED)\nFILE(REMOVE \${INSTALLED})\nENDIF()")
-  install(FILES ${MS_HEADERS} DESTINATION include/maidsafe/${HEADERS_DESTINATION})
-endfunction()
-
-
-function(ms_install_export)
-  install(EXPORT ${ARGV0} DESTINATION share/maidsafe)
-  # Append version info to the export file.
-  install(CODE "STRING(TOLOWER \${CMAKE_INSTALL_CONFIG_NAME} CMAKE_INSTALL_CONFIG_NAME_LOWER)")
-  install(CODE "FIND_FILE(INSTALL_FILE ${MS_PROJECT_NAME}-\${CMAKE_INSTALL_CONFIG_NAME_LOWER}.cmake PATHS \${CMAKE_INSTALL_PREFIX}/share/maidsafe)")
-  install(CODE "FILE(APPEND \${INSTALL_FILE} \"\\n\\n# Definition of this library's version\\n\")")
-  install(CODE "FILE(APPEND \${INSTALL_FILE} \"SET(${THIS_VERSION} ${${THIS_VERSION}})\\n\")")
-endfunction()
-
 
 # Searches for and removes old generated .pb.cc and .pb.h files in the source tree
 function(remove_old_proto_files)

@@ -123,4 +123,10 @@ message("${HR}")
 
 cleanup_temp_dir()
 
+# Package build
+if(${PACKAGE_BUILD})
+  include(${CMAKE_SOURCE_DIR}/cmake_modules/maidsafe_lifestuff_package.cmake)
+  #include(maidsafe_lifestuff_package)
+  include(CPack)
+endif()
 include(CTest)
