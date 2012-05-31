@@ -1532,7 +1532,7 @@ GTEST_API_ AssertionResult IsNotSubstring(
     const char* needle_expr, const char* haystack_expr,
     const ::std::string& needle, const ::std::string& haystack);
 
-#if GTEST_HAS_STD_WSTRING
+#if defined(GTEST_HAS_STD_WSTRING)
 GTEST_API_ AssertionResult IsSubstring(
     const char* needle_expr, const char* haystack_expr,
     const ::std::wstring& needle, const ::std::wstring& haystack);
@@ -1742,7 +1742,7 @@ class TestWithParam : public Test, public WithParamInterface<T> {
 
 // Define this macro to 1 to omit the definition of FAIL(), which is a
 // generic name and clashes with some other libraries.
-#if !GTEST_DONT_DEFINE_FAIL
+#if !defined(GTEST_DONT_DEFINE_FAIL)
 # define FAIL() GTEST_FAIL()
 #endif
 
@@ -1751,7 +1751,7 @@ class TestWithParam : public Test, public WithParamInterface<T> {
 
 // Define this macro to 1 to omit the definition of SUCCEED(), which
 // is a generic name and clashes with some other libraries.
-#if !GTEST_DONT_DEFINE_SUCCEED
+#if !defined(GTEST_DONT_DEFINE_SUCCEED)
 # define SUCCEED() GTEST_SUCCEED()
 #endif
 
@@ -1876,27 +1876,27 @@ class TestWithParam : public Test, public WithParamInterface<T> {
 // Define macro GTEST_DONT_DEFINE_ASSERT_XY to 1 to omit the definition of
 // ASSERT_XY(), which clashes with some users' own code.
 
-#if !GTEST_DONT_DEFINE_ASSERT_EQ
+#if !defined(GTEST_DONT_DEFINE_ASSERT_EQ)
 # define ASSERT_EQ(val1, val2) GTEST_ASSERT_EQ(val1, val2)
 #endif
 
-#if !GTEST_DONT_DEFINE_ASSERT_NE
+#if !defined(GTEST_DONT_DEFINE_ASSERT_NE)
 # define ASSERT_NE(val1, val2) GTEST_ASSERT_NE(val1, val2)
 #endif
 
-#if !GTEST_DONT_DEFINE_ASSERT_LE
+#if !defined(GTEST_DONT_DEFINE_ASSERT_LE)
 # define ASSERT_LE(val1, val2) GTEST_ASSERT_LE(val1, val2)
 #endif
 
-#if !GTEST_DONT_DEFINE_ASSERT_LT
+#if !defined(GTEST_DONT_DEFINE_ASSERT_LT)
 # define ASSERT_LT(val1, val2) GTEST_ASSERT_LT(val1, val2)
 #endif
 
-#if !GTEST_DONT_DEFINE_ASSERT_GE
+#if !defined(GTEST_DONT_DEFINE_ASSERT_GE)
 # define ASSERT_GE(val1, val2) GTEST_ASSERT_GE(val1, val2)
 #endif
 
-#if !GTEST_DONT_DEFINE_ASSERT_GT
+#if !defined(GTEST_DONT_DEFINE_ASSERT_GT)
 # define ASSERT_GT(val1, val2) GTEST_ASSERT_GT(val1, val2)
 #endif
 
@@ -1985,7 +1985,7 @@ GTEST_API_ AssertionResult DoubleLE(const char* expr1, const char* expr2,
                                     double val1, double val2);
 
 
-#if GTEST_OS_WINDOWS
+#if defined(GTEST_OS_WINDOWS)
 
 // Macros that test for HRESULT failure and success, these are only useful
 // on Windows, and rely on Windows SDK macros and APIs to compile.
@@ -2107,7 +2107,7 @@ bool StaticAssertTypeEq() {
 
 // Define this macro to 1 to omit the definition of TEST(), which
 // is a generic name and clashes with some other libraries.
-#if !GTEST_DONT_DEFINE_TEST
+#if !defined(GTEST_DONT_DEFINE_TEST)
 # define TEST(test_case_name, test_name) GTEST_TEST(test_case_name, test_name)
 #endif
 

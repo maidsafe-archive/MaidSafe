@@ -58,7 +58,7 @@
 
 #include "gtest/internal/gtest-port.h"
 
-#if GTEST_OS_WINDOWS
+#if defined(GTEST_OS_WINDOWS)
 # include <windows.h>  // NOLINT
 #endif  // GTEST_OS_WINDOWS
 
@@ -387,7 +387,7 @@ class GTEST_API_ UnitTestOptions {
   static bool FilterMatchesTest(const String &test_case_name,
                                 const String &test_name);
 
-#if GTEST_OS_WINDOWS
+#if defined(GTEST_OS_WINDOWS)
   // Function for supporting the gtest_catch_exception flag.
 
   // Returns EXCEPTION_EXECUTE_HANDLER if Google Test should handle the
@@ -906,7 +906,7 @@ inline UnitTestImpl* GetUnitTestImpl() {
   return UnitTest::GetInstance()->impl();
 }
 
-#if GTEST_USES_SIMPLE_RE
+#if defined(GTEST_USES_SIMPLE_RE)
 
 // Internal helper functions for implementing the simple regular
 // expression matcher.
@@ -937,7 +937,7 @@ GTEST_API_ void ParseGoogleTestFlagsOnly(int* argc, wchar_t** argv);
 // platform.
 GTEST_API_ String GetLastErrnoDescription();
 
-# if GTEST_OS_WINDOWS
+# if defined(GTEST_OS_WINDOWS)
 // Provides leak-safe Windows kernel handle ownership.
 class AutoHandle {
  public:
@@ -981,7 +981,7 @@ bool ParseNaturalNumber(const ::std::string& str, Integer* number) {
   // BiggestConvertible is the largest integer type that system-provided
   // string-to-number conversion routines can return.
 
-# if GTEST_OS_WINDOWS && !defined(__GNUC__)
+# if defined(GTEST_OS_WINDOWS) && !defined(__GNUC__)
 
   // MSVC and C++ Builder define __int64 instead of the standard long long.
   typedef unsigned __int64 BiggestConvertible;

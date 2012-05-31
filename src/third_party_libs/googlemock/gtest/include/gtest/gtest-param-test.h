@@ -181,7 +181,7 @@ TEST_P(DerivedTest, DoesBlah) {
 
 #include "gtest/internal/gtest-port.h"
 
-#if !GTEST_OS_SYMBIAN
+#if !defined(GTEST_OS_SYMBIAN)
 # include <utility>
 #endif
 
