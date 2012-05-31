@@ -789,10 +789,10 @@ macro(boost_library_variant LIBNAME)
       #
       # tds:  componentization disabled for the moment
       #
-      install(TARGETS ${VARIANT_LIBNAME} 
-	EXPORT Boost 
-	DESTINATION ${BOOST_LIB_INSTALL_DIR}
-	COMPONENT Boost) #${LIB_COMPONENT})
+      # install(TARGETS ${VARIANT_LIBNAME}
+	# EXPORT Boost
+	# DESTINATION ${BOOST_LIB_INSTALL_DIR}
+	# COMPONENT Boost) #${LIB_COMPONENT})
 
       # set_property( 
       #      TARGET ${VARIANT_LIBNAME}

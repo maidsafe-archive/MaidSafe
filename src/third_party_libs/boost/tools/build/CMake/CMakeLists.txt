@@ -43,11 +43,11 @@ endforeach()
 #
 #  These are generated, version-specific
 #
-install(FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/install_me/BoostConfigVersion.cmake
-  ${CMAKE_CURRENT_SOURCE_DIR}/install_me/BoostConfig.cmake
-  DESTINATION ${BOOST_CMAKE_INFRASTRUCTURE_INSTALL_DIR}
-  )
+# install(FILES
+# ${CMAKE_CURRENT_SOURCE_DIR}/install_me/BoostConfigVersion.cmake
+# ${CMAKE_CURRENT_SOURCE_DIR}/install_me/BoostConfig.cmake
+# DESTINATION ${BOOST_CMAKE_INFRASTRUCTURE_INSTALL_DIR}
+# )
 
 #
 # The files that go in <prefix>/share/cmake/boost that search for
@@ -62,16 +62,16 @@ if (BOOST_INSTALL_CMAKE_DRIVERS)
   else()
     set(agnostic_infra_dir ${BOOST_CMAKE_DRIVERS_INSTALL_DIR})
   endif()
-  install(FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/install_me/BoostConfigAgnostic.cmake
-    DESTINATION ${agnostic_infra_dir}
-    RENAME BoostConfig.cmake
-    )
-  install(FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/install_me/BoostConfigVersionAgnostic.cmake
-    DESTINATION ${agnostic_infra_dir}
-    RENAME BoostConfigVersion.cmake
-    )
+# install(FILES
+#   ${CMAKE_CURRENT_SOURCE_DIR}/install_me/BoostConfigAgnostic.cmake
+#   DESTINATION ${agnostic_infra_dir}
+#   RENAME BoostConfig.cmake
+#   )
+# install(FILES
+#   ${CMAKE_CURRENT_SOURCE_DIR}/install_me/BoostConfigVersionAgnostic.cmake
+#   DESTINATION ${agnostic_infra_dir}
+#   RENAME BoostConfigVersion.cmake
+#   )
 endif()
 
 

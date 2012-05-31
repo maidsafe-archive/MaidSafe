@@ -129,7 +129,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 boost_report_pretty("Boost.CMake version" BOOST_CMAKE_VERSION)
 
 include(BoostConfig)
-set(BUILD_PROJECTS date_time;filesystem;program_options;serialization;system;thread)  # random;regex;test
+set(BUILD_PROJECTS date_time;filesystem;program_options;regex;serialization;system;thread)  # random;regex;test
 
 include(BoostCore)
 #include(BoostDocs)
@@ -231,30 +231,30 @@ set(BOOST_LIB_INSTALL_DIR
 # include(BoostExternals)
 
 
-if (BOOST_VERSION_OVERRIDE)
-  install(FILES ${CMAKE_BINARY_DIR}/version.hpp
-    DESTINATION ${BOOST_INCLUDE_INSTALL_DIR}/boost
-    RENAME version.hpp)
-  install(DIRECTORY boost
-    DESTINATION ${BOOST_INCLUDE_INSTALL_DIR}
-    PATTERN "CVS" EXCLUDE
-    PATTERN ".svn" EXCLUDE
-    PATTERN "boost/version.hpp" EXCLUDE)
-else()
-  install(DIRECTORY boost
-    DESTINATION ${BOOST_INCLUDE_INSTALL_DIR}
-    PATTERN "CVS" EXCLUDE
-    PATTERN ".svn" EXCLUDE)
-endif()
+# if (BOOST_VERSION_OVERRIDE)
+  # install(FILES ${CMAKE_BINARY_DIR}/version.hpp
+    # DESTINATION ${BOOST_INCLUDE_INSTALL_DIR}/boost
+    # RENAME version.hpp)
+  # install(DIRECTORY boost
+    # DESTINATION ${BOOST_INCLUDE_INSTALL_DIR}
+    # PATTERN "CVS" EXCLUDE
+    # PATTERN ".svn" EXCLUDE
+    # PATTERN "boost/version.hpp" EXCLUDE)
+# else()
+  # install(DIRECTORY boost
+    # DESTINATION ${BOOST_INCLUDE_INSTALL_DIR}
+    # PATTERN "CVS" EXCLUDE
+    # PATTERN ".svn" EXCLUDE)
+# endif()
 
 #
 # for testing
 #
-if (BOOST_VERSION_OVERRIDE)
-  install(FILES ${CMAKE_BINARY_DIR}/version.hpp
-    DESTINATION ${BOOST_INCLUDE_INSTALL_DIR}/boost
-    RENAME version.hpp)
-endif()
+# if (BOOST_VERSION_OVERRIDE)
+  # install(FILES ${CMAKE_BINARY_DIR}/version.hpp
+    # DESTINATION ${BOOST_INCLUDE_INSTALL_DIR}/boost
+    # RENAME version.hpp)
+# endif()
 
 
 ##########################################################################
@@ -263,78 +263,78 @@ endif()
 #
 #  CPACK_PACKAGE_NAME may not contain spaces when generating rpms
 #
-set(CPACK_PACKAGE_NAME "Boost")
-set(CPACK_PACKAGE_VENDOR "Boost.org")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Boost ${BOOST_VERSION} prerelease")
-set(CPACK_PACKAGE_FILE_NAME "boost-${BOOST_VERSION}-${BOOST_PLATFORM}-${BOOST_TOOLSET}")
+# set(CPACK_PACKAGE_NAME "Boost")
+# set(CPACK_PACKAGE_VENDOR "Boost.org")
+# set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Boost ${BOOST_VERSION} prerelease")
+# set(CPACK_PACKAGE_FILE_NAME "boost-${BOOST_VERSION}-${BOOST_PLATFORM}-${BOOST_TOOLSET}")
 
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
-  message(STATUS "Using generic cpack package description file.")
-  set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
-  set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
-endif ()
+# if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
+  # message(STATUS "Using generic cpack package description file.")
+  # set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
+  # set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
+# endif ()
 
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE_1_0.txt")
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Welcome.txt")
-  message(STATUS "Using generic cpack welcome file.")
-  set(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_CURRENT_SOURCE_DIR}/Welcome.txt")
-endif()
+# set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE_1_0.txt")
+# if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Welcome.txt")
+  # message(STATUS "Using generic cpack welcome file.")
+  # set(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_CURRENT_SOURCE_DIR}/Welcome.txt")
+# endif()
 
-set(CPACK_PACKAGE_VERSION "${BOOST_VERSION}")
-set(CPACK_PACKAGE_VERSION_MAJOR "${BOOST_VERSION_MAJOR}")
-set(CPACK_PACKAGE_VERSION_MINOR "${BOOST_VERSION_MINOR}")
-set(CPACK_PACKAGE_VERSION_PATCH "${BOOST_VERSION_SUBMINOR}")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "Boost")
+# set(CPACK_PACKAGE_VERSION "${BOOST_VERSION}")
+# set(CPACK_PACKAGE_VERSION_MAJOR "${BOOST_VERSION_MAJOR}")
+# set(CPACK_PACKAGE_VERSION_MINOR "${BOOST_VERSION_MINOR}")
+# set(CPACK_PACKAGE_VERSION_PATCH "${BOOST_VERSION_SUBMINOR}")
+# set(CPACK_PACKAGE_INSTALL_DIRECTORY "Boost")
 
-if(WIN32 AND NOT UNIX)
-  # There is a bug in NSI that does not handle full unix paths properly. Make
-  # sure there is at least one set of four (4) backlasshes.
-  # NOTE: No Boost icon yet
-  set(CPACK_MONOLITHIC_INSTALL ON) # don't be modular for now
-  set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/tools/build/CMake\\\\Boost.bmp")
-#  set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
-  set(CPACK_NSIS_DISPLAY_NAME "Boost ${BOOST_VERSION_MAJOR}.${BOOST_VERSION_MINOR}.${BOOST_VERSION_SUBMINOR} prerelease")
-  set(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.boost.org")
-  set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.boost.org")
-  set(CPACK_NSIS_CONTACT "boost-users@lists.boost.org")
-  set(CPACK_NSIS_MODIFY_PATH ON)
+# if(WIN32 AND NOT UNIX)
+  # # There is a bug in NSI that does not handle full unix paths properly. Make
+  # # sure there is at least one set of four (4) backlasshes.
+  # # NOTE: No Boost icon yet
+  # set(CPACK_MONOLITHIC_INSTALL ON) # don't be modular for now
+  # set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/tools/build/CMake\\\\Boost.bmp")
+# #  set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
+  # set(CPACK_NSIS_DISPLAY_NAME "Boost ${BOOST_VERSION_MAJOR}.${BOOST_VERSION_MINOR}.${BOOST_VERSION_SUBMINOR} prerelease")
+  # set(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.boost.org")
+  # set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.boost.org")
+  # set(CPACK_NSIS_CONTACT "boost-users@lists.boost.org")
+  # set(CPACK_NSIS_MODIFY_PATH ON)
 
-  # Encode the compiler name in the package
-  if (MSVC60)
-    set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-vc6")
-    set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual C++ 6")
-  elseif (MSVC70)
-    set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-vc7")
-    set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual Studio 2002")
-  elseif (MSVC71)
-    set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-vc71")
-    set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual Studio 2003")
-  elseif (MSVC80)
-    set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-vc8")
-    set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual Studio 2005")
-  elseif (MSVC90)
-    set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-vc9")
-    set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual Studio 2008")
-  elseif (BORLAND)
-    set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-borland")
-    set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Borland C++ Builder")
-  endif (MSVC60)
-  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${CPACK_NSIS_DISPLAY_NAME}")
-endif(WIN32 AND NOT UNIX)
-include(CPack)
+  # # Encode the compiler name in the package
+  # if (MSVC60)
+    # set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-vc6")
+    # set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual C++ 6")
+  # elseif (MSVC70)
+    # set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-vc7")
+    # set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual Studio 2002")
+  # elseif (MSVC71)
+    # set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-vc71")
+    # set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual Studio 2003")
+  # elseif (MSVC80)
+    # set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-vc8")
+    # set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual Studio 2005")
+  # elseif (MSVC90)
+    # set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-vc9")
+    # set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Microsoft Visual Studio 2008")
+  # elseif (BORLAND)
+    # set(CPACK_PACKAGE_FILE_NAME "Boost-${BOOST_VERSION}-borland")
+    # set(CPACK_NSIS_DISPLAY_NAME "${CPACK_NSIS_DISPLAY_NAME} for Borland C++ Builder")
+  # endif (MSVC60)
+  # set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${CPACK_NSIS_DISPLAY_NAME}")
+# endif(WIN32 AND NOT UNIX)
+# include(CPack)
 
-if (FALSE)
-  option(BOOST_INSTALLER_ON_THE_FLY
-    "Whether to build installers that download components on-the-fly" OFF)
+# if (FALSE)
+  # option(BOOST_INSTALLER_ON_THE_FLY
+    # "Whether to build installers that download components on-the-fly" OFF)
 
-  if (BOOST_INSTALLER_ON_THE_FLY)
-    if(COMMAND cpack_configure_downloads)
-      cpack_configure_downloads(
-	"http://www.osl.iu.edu/~dgregor/Boost-CMake/${BOOST_VERSION}/"
-	ALL ADD_REMOVE)
-    endif()
-  endif()
-endif()
+  # if (BOOST_INSTALLER_ON_THE_FLY)
+    # if(COMMAND cpack_configure_downloads)
+      # cpack_configure_downloads(
+	# "http://www.osl.iu.edu/~dgregor/Boost-CMake/${BOOST_VERSION}/"
+	# ALL ADD_REMOVE)
+    # endif()
+  # endif()
+# endif()
 ##########################################################################
 
 ##########################################################################
@@ -399,13 +399,13 @@ if(NOT BOOST_ALL_COMPONENTS)
   add_executable(this_is_a_dummy_no_libs_were_built
     ${CMAKE_CURRENT_SOURCE_DIR}/tools/build/CMake/main.cpp)
 
-  install(TARGETS this_is_a_dummy_no_libs_were_built
-    EXPORT Boost
-    DESTINATION ${BOOST_LIB_INSTALL_DIR}
-    COMPONENT Boost)
+  # install(TARGETS this_is_a_dummy_no_libs_were_built
+    # EXPORT Boost
+    # DESTINATION ${BOOST_LIB_INSTALL_DIR}
+    # COMPONENT Boost)
 
 endif()
 
-install(EXPORT Boost DESTINATION ${BOOST_EXPORTS_INSTALL_DIR})
+# install(EXPORT Boost DESTINATION ${BOOST_EXPORTS_INSTALL_DIR})
 
 add_subdirectory(tools/build/CMake)

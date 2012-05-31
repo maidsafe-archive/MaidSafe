@@ -120,7 +120,6 @@ message(STATUS "To include behavioural tests,            cmake . -DMAIDSAFE_TEST
 message(STATUS "To include functional tests,             cmake . -DMAIDSAFE_TEST_TYPE=FUNC")
 message("${HR}")
 
-
 cleanup_temp_dir()
 
 include(CTest)
