@@ -473,7 +473,7 @@ inline void PrintTo(const ::wstring& s, ::std::ostream* os) {
 }
 #endif  // GTEST_HAS_GLOBAL_WSTRING
 
-#if defined(GTEST_HAS_STD_WSTRING)
+#if GTEST_HAS_STD_WSTRING
 GTEST_API_ void PrintWideStringTo(const ::std::wstring&s, ::std::ostream* os);
 inline void PrintTo(const ::std::wstring& s, ::std::ostream* os) {
   PrintWideStringTo(s, os);

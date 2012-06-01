@@ -225,7 +225,7 @@ inline String FormatForComparisonFailureMessage(\
 }
 
 GTEST_FORMAT_IMPL_(::std::string, String::ShowCStringQuoted)
-#if defined(GTEST_HAS_STD_WSTRING)
+#if GTEST_HAS_STD_WSTRING
 GTEST_FORMAT_IMPL_(::std::wstring, String::ShowWideCStringQuoted)
 #endif  // GTEST_HAS_STD_WSTRING
 
@@ -529,7 +529,7 @@ class TestFactoryImpl : public TestFactoryBase {
   virtual Test* CreateTest() { return new TestClass; }
 };
 
-#if defined(GTEST_OS_WINDOWS)
+#if GTEST_OS_WINDOWS
 
 // Predicate-formatters for implementing the HRESULT checking macros
 // {ASSERT|EXPECT}_HRESULT_{SUCCEEDED|FAILED}

@@ -187,7 +187,7 @@ class GTEST_API_ ExitedWithCode {
   const int exit_code_;
 };
 
-# if !defined(GTEST_OS_WINDOWS)
+# if !GTEST_OS_WINDOWS
 // Tests that an exit code describes an exit due to termination by a
 // given signal.
 class GTEST_API_ KilledBySignal {

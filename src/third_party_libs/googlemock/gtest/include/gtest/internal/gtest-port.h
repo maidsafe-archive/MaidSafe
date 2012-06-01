@@ -247,12 +247,12 @@
 // Brings in definitions for functions used in the testing::internal::posix
 // namespace (read, write, close, chdir, isatty, stat). We do not currently
 // use them on Windows Mobile.
-#if !defined(GTEST_OS_WINDOWS)
+#if !GTEST_OS_WINDOWS
 // This assumes that non-Windows OSes provide unistd.h. For OSes where this
 // is not the case, we need to include headers that provide the functions
 // mentioned above.
 # include <unistd.h>
-# if !defined(GTEST_OS_NACL)
+# if !GTEST_OS_NACL
 // TODO(vladl@google.com): Remove this condition when Native Client SDK adds
 // strings.h (tracked in
 // http://code.google.com/p/nativeclient/issues/detail?id=1175).
@@ -268,7 +268,7 @@
 # define GTEST_HAS_POSIX_RE (!GTEST_OS_WINDOWS)
 #endif
 
-#if defined(GTEST_HAS_POSIX_RE)
+#if GTEST_HAS_POSIX_RE
 
 // On some platforms, <regex.h> needs someone to define size_t, and
 // won't compile otherwise.  We can #include it here as we already
@@ -531,7 +531,7 @@
 #ifndef GTEST_HAS_STREAM_REDIRECTION
 // By default, we assume that stream redirection is supported on all
 // platforms except known mobile ones.
-# if defined(GTEST_OS_WINDOWS_MOBILE) || defined(GTEST_OS_SYMBIAN)
+# if GTEST_OS_WINDOWS_MOBILE || GTEST_OS_SYMBIAN
 #  define GTEST_HAS_STREAM_REDIRECTION 0
 # else
 #  define GTEST_HAS_STREAM_REDIRECTION 1
