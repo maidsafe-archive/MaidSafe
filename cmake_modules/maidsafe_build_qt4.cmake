@@ -14,26 +14,39 @@
 #                                                                              #
 #  Module used to configure and build Qt.                                      #
 #                                                                              #
-#  Module will be invoked only if BUILD_QT is set on the command line.         #
+#  Module will be invoked only if BUILD_QT or BUILD_QT_IN_SOURCE are set ON.   #
 #                                                                              #
 #==============================================================================#
 
 
 
+unset(QtConfigureExe CACHE)
 find_program(QtConfigureExe NAMES configure PATHS ${QT_SRC_DIR} NO_DEFAULT_PATH)
 if(NOT QtConfigureExe)
   message(FATAL_ERROR "Failed to find configure exe.${QT_ERROR_MESSAGE}")
 endif()
 
+
 if(BUILD_QT)
+  # Building to current project's build tree - create new directory for Qt binaries
   set(QT_BUILD_DIR ${PROJECT_BINARY_DIR}/build_qt)
   execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${QT_BUILD_DIR})
   execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${QT_BUILD_DIR})
-else()  # In-source Qt build
+elseif(BUILD_QT_IN_SOURCE)
+  # Building inside Qt source tree - run "confclean" in case the source has been built to previously
   set(QT_BUILD_DIR ${QT_SRC_DIR})
+  if(WIN32)
+    execute_process(COMMAND cmd /c "nmake /S /NOLOGO confclean" WORKING_DIRECTORY ${QT_BUILD_DIR})
+  else()
+    execute_process(COMMAND make confclean WORKING_DIRECTORY ${QT_BUILD_DIR})
+  endif()
+else()
+  message(FATAL_ERROR "This module should not be invoked.")
 endif()
 
 if(WIN32)
+  # Modify the qmake.conf to link to static CRT, to identify VS11 as the version, and to
+  # build a 64-bit version if required.
   find_file(QmakeConf NAMES qmake.conf PATHS ${QT_SRC_DIR}/mkspecs/win32-msvc2010 NO_DEFAULT_PATH)
   file(READ ${QmakeConf} QmakeConfContents)
   string(REGEX REPLACE "_MSC_VER=[0-9]+ " "_MSC_VER=1700 " QmakeConfContents ${QmakeConfContents})
@@ -86,8 +99,6 @@ if(WIN32)
   set(QtConfigureCommand "${QtConfigureCommand} -audio-backend")
   set(QtConfigureCommand "${QtConfigureCommand} -script")
   set(QtConfigureCommand "${QtConfigureCommand} -scripttools")
-  set(QtConfigureCommand "${QtConfigureCommand} -declarative")
-  set(QtConfigureCommand "${QtConfigureCommand} -declarative-debug")
   set(QtConfigureCommand "${QtConfigureCommand} -no-directwrite")
   set(QtConfigureCommand "${QtConfigureCommand} -arch windows")
   set(QtConfigureCommand "${QtConfigureCommand} -qt-style-windows")
@@ -107,28 +118,32 @@ if(WIN32)
 
   set(QtReleaseConfigureCommand "${QtConfigureCommand} -release")
   set(QtReleaseConfigureCommand "${QtReleaseConfigureCommand} -ltcg")
+  set(QtReleaseConfigureCommand "${QtReleaseConfigureCommand} -declarative")
   set(QtReleaseConfigureCommand "${QtReleaseConfigureCommand} -webkit")
 
   set(QtDebugConfigureCommand "${QtConfigureCommand} -debug")
+  set(QtDebugConfigureCommand "${QtDebugConfigureCommand} -declarative-debug")
   set(QtDebugConfigureCommand "${QtDebugConfigureCommand} -webkit-debug")
 
   set(QtNmakeCommand "nmake /S /NOLOGO")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-tools-bootstrap")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-moc")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-rcc")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-uic")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-winmain")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-corelib")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-xml")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-network")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-sql")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-testlib")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-gui")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-xmlpatterns")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-svg")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-script")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-declarative")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-webkit")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-tools-bootstrap")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-moc")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-rcc")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-uic")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-winmain")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-corelib")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-plugins")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-xml")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-network")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-sql")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-testlib")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-gui")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-xmlpatterns")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-svg")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-opengl")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-script")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-declarative")
+#   set(QtNmakeCommand "${QtNmakeCommand} sub-webkit")
 
 
   message(STATUS "Configuring Qt for a Release build.")
@@ -180,6 +195,7 @@ if(WIN32)
   endif()
 
 else()
+
   if(APPLE)
     set(QtConfigurePlatform "-platform")
     set(QtConfigurePlatformValue "unsupported/macx-clang")
@@ -201,7 +217,6 @@ else()
                                             -qt-libtiff
                                             -qt-libjpeg
                                             -webkit
-                                            -no-opengl
                                             -no-multimedia
                                             -no-phonon
                                             -no-phonon-backend
