@@ -26,7 +26,6 @@ if(NOT QtConfigureExe)
   message(FATAL_ERROR "Failed to find configure exe.${QT_ERROR_MESSAGE}")
 endif()
 
-
 if(BUILD_QT)
   # Building to current project's build tree - create new directory for Qt binaries
   set(QT_BUILD_DIR ${PROJECT_BINARY_DIR}/build_qt)
@@ -45,12 +44,10 @@ else()
 endif()
 
 if(WIN32)
-  # Modify the qmake.conf to link to static CRT, to identify VS11 as the version, and to
-  # build a 64-bit version if required.
+  # Modify the qmake.conf to identify VS11 as the version, and to build a 64-bit version if required.
   find_file(QmakeConf NAMES qmake.conf PATHS ${QT_SRC_DIR}/mkspecs/win32-msvc2010 NO_DEFAULT_PATH)
   file(READ ${QmakeConf} QmakeConfContents)
   string(REGEX REPLACE "_MSC_VER=[0-9]+ " "_MSC_VER=1700 " QmakeConfContents ${QmakeConfContents})
-  string(REGEX REPLACE "-MD" "-MT" QmakeConfContents ${QmakeConfContents})
   if(CMAKE_CL_64)
     string(REGEX REPLACE " /MACHINE:X64" "" QmakeConfContents ${QmakeConfContents})
     string(REGEX REPLACE "QMAKE_LFLAGS ([^\n]+)" "QMAKE_LFLAGS \\1 /MACHINE:X64" QmakeConfContents ${QmakeConfContents})
