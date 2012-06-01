@@ -63,8 +63,8 @@ endforeach(DOC)
 add_custom_target(doc ALL
   DEPENDS ${PBGL_DOC_TARGETS})
 
-install(FILES ${PBGL_DOC_TARGETS} ${PBGL_IMAGES}
-  DESTINATION "doc/pbgl-${PBGL_VERSION}"
-  COMPONENT "Documentation"
-  OPTIONAL
-  )
+# install(FILES ${PBGL_DOC_TARGETS} ${PBGL_IMAGES}
+  # DESTINATION "doc/pbgl-${PBGL_VERSION}"
+  # COMPONENT "Documentation"
+  # OPTIONAL
+  # )

@@ -13,8 +13,16 @@
 #==============================================================================#
 
 cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
+#include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_flags.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_setup.cmake)
+
 project(Cryptopp)
 enable_testing()
+
+ # enable libc++ if available
+if(APPLE OR HAVE_LIBC++)
+  set(LIBC++ "-stdlib=libc++")
+endif()
 
 set(CMAKE_DEBUG_POSTFIX _d)
 set(CMAKE_RELWITHDEBINFO_POSTFIX _rwdi)
@@ -38,6 +46,8 @@ set(CTEST_START_WITH_EMPTY_BINARY_DIRECTORY true)
 
 file(GLOB cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 file(GLOB cryptopp_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+file(GLOB TESTcryptopp_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cc")
+
 
 if(CMAKE_CL_64)
   set(cryptopp_SOURCES ${cryptopp_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm ${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm)
@@ -91,9 +101,13 @@ set(cryptopp_TEST_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/bench.h
 
 add_executable(cryptest ${cryptopp_TEST_SOURCES} ${cryptopp_TEST_HEADERS})
 
+#add_executable(TESTcryptopp ${TESTcryptopp_DIR})
+
 add_library(cryptopp STATIC ${cryptopp_SOURCES} ${cryptopp_HEADERS})
 
-set_target_properties(cryptest cryptopp PROPERTIES FOLDER "Third Party/Crypto++")
+set_target_properties(cryptest cryptopp  PROPERTIES FOLDER "Third Party/Crypto++")
+
+
 
 add_custom_command(TARGET cryptest
                      POST_BUILD
@@ -118,15 +132,16 @@ add_custom_command(TARGET cryptest
 # install(TARGETS cryptopp ARCHIVE DESTINATION lib)
 
 target_link_libraries(cryptest cryptopp)
+#target_link_libraries(TESTcryptopp cryptopp gtest)
 
 if(UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_definitions(-DCRYPTOPP_DISABLE_ASM -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION)
     set_target_properties(cryptopp cryptest PROPERTIES
                             COMPILE_FLAGS "-Wno-tautological-compare -fPIC -Wno-c++11-narrowing -std=c++11 ${LIBC++}")
-if (${LIBC++})
-    set_target_properties(cryptest PROPERTIES LINK_FLAGS ${LIBC++})
-endif()    
+if (${HAVE_LIBC++})
+    set_target_properties(cryptest PROPERTIES LINK_FLAGS "${LIBC++} -ldl")
+endif()
   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
     if (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7)
@@ -146,8 +161,8 @@ elseif(MSVC)
                           LINK_FLAGS_RELEASE "/OPT:REF /OPT:ICF /LTCG"
                           LINK_FLAGS_RELWITHDEBINFO "/LTCG"
                           LINK_FLAGS_MINSIZEREL "/LTCG")
-  set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2 /Oi /Oy /GL /DNDEBUG /GF /MT /Gy /Zi")
-  set(CMAKE_CXX_FLAGS_DEBUG "/Od /Oi /D_DEBUG /MTd /Zi")
+  set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2 /Oi /Oy /GL /DNDEBUG /GF /MD /Gy /Zi")
+  set(CMAKE_CXX_FLAGS_DEBUG "/Od /Oi /D_DEBUG /MDd /Zi")
   list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/dll.cpp") # this file doesn't use precompiled headers
   list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/iterhash.cpp") # this file doesn't use precompiled headers
   list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/pch.cpp") # this file is used to create precompiled headers
