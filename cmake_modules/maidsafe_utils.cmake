@@ -23,7 +23,7 @@ function(ms_add_static_library LIB_OUTPUT_NAME)
   list(REMOVE_AT FILES 0)
   string(TOLOWER ${LIB_OUTPUT_NAME} LIB)
   set(ALL_LIBRARIES ${ALL_LIBRARIES} maidsafe_${LIB} PARENT_SCOPE)
-  add_library(maidsafe_${LIB} SHARED ${FILES})
+  add_library(maidsafe_${LIB} STATIC ${FILES})
   set_target_properties(maidsafe_${LIB} PROPERTIES FOLDER "MaidSafe/Libraries")
 endfunction()
 
