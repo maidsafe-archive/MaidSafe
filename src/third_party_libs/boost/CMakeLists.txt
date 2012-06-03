@@ -183,11 +183,11 @@ if (MSVC)
   # the values of the variables for all other platforms.
   option(ENABLE_STATIC_RUNTIME
     "Whether to build libraries linking against the static runtime"
-    ON)
+    OFF)
 
   option(ENABLE_DYNAMIC_RUNTIME
     "Whether to build libraries linking against the dynamic runtime"
-    OFF)
+    ON)
 
   boost_add_default_variant(DYNAMIC_RUNTIME STATIC_RUNTIME)
 endif()

@@ -94,7 +94,7 @@ if(MSVC)
   #          packaged functions)
   # GL - Whole program optimisation
   # MT - Use the multithread, static version of the C run-time library.
-  set(CMAKE_CXX_FLAGS_RELEASE "/O2 /GL /D \"NDEBUG\" /MT")
+  set(CMAKE_CXX_FLAGS_RELEASE "/O2 /GL /D \"NDEBUG\" /MD")
 
   # Zi -   Produce a program database (.pdb) that contains type information and
   #        symbolic debugging information.
@@ -102,9 +102,9 @@ if(MSVC)
   # RTC1 - Enables stack frame run-time error checking and checking for
   #        unintialised variables.
   # MTd -  Use the debug multithread, static version of the C run-time library.
-  set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /D \"_DEBUG\" /D \"DEBUG\" /RTC1 /MTd")
-  set(CMAKE_CXX_FLAGS_MINSIZEREL "/MT")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MTd")
+  set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /D \"_DEBUG\" /D \"DEBUG\" /RTC1 /MDd")
+  set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MDd")
 
   set_target_properties(${ALL_LIBRARIES} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
 
