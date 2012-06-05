@@ -13,36 +13,16 @@
 #==============================================================================#
 
 cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
-#include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_flags.cmake)
-include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_setup.cmake)
 
 project(Cryptopp)
-enable_testing()
+#include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_flags.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake_modules/maidsafe_standard_setup.cmake)
 
  # enable libc++ if available
 if(APPLE OR HAVE_LIBC++)
   set(LIBC++ "-stdlib=libc++")
 endif()
 
-set(CMAKE_DEBUG_POSTFIX _d)
-set(CMAKE_RELWITHDEBINFO_POSTFIX _rwdi)
-set(CMAKE_MINSIZEREL_POSTFIX _msr)
-
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-  set(TEST_POSTFIX ${CMAKE_DEBUG_POSTFIX})
-elseif(CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
-  set(TEST_POSTFIX ${CMAKE_RELWITHDEBINFO_POSTFIX})
-elseif(CMAKE_BUILD_TYPE MATCHES "MinSizeRel")
-  set(TEST_POSTFIX ${CMAKE_MINSIZEREL_POSTFIX})
-endif()
-
-include(CTest)
-
-set(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 50000)
-set(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE 50000)
-set(CTEST_CONTINUOUS_DURATION 600)
-set(CTEST_CONTINUOUS_MINIMUM_INTERVAL 10)
-set(CTEST_START_WITH_EMPTY_BINARY_DIRECTORY true)
 
 file(GLOB cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 file(GLOB cryptopp_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
@@ -121,15 +101,6 @@ add_custom_command(TARGET cryptest
 add_custom_command(TARGET cryptest
                      POST_BUILD
                      COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestVectors ${CMAKE_BINARY_DIR}/TestVectors)
-# if(NOT MSVC)
-#   set_target_properties(cryptest PROPERTIES
-#                           DEBUG_OUTPUT_NAME cryptest${CMAKE_DEBUG_POSTFIX}
-#                           RELWITHDEBINFO_OUTPUT_NAME cryptest${CMAKE_RELWITHDEBINFO_POSTFIX}
-#                           MINSIZEREL_OUTPUT_NAME cryptest${CMAKE_MINSIZEREL_POSTFIX})
-# 
-# endif()
-
-# install(TARGETS cryptopp ARCHIVE DESTINATION lib)
 
 target_link_libraries(cryptest cryptopp)
 #target_link_libraries(TESTcryptopp cryptopp gtest)
