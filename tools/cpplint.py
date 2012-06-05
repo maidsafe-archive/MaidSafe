@@ -1378,7 +1378,7 @@ def CheckForNonStandardConstructs(filename, clean_lines, linenum,
     error(filename, linenum, 'build/deprecated', 3,
           '>? and <? (max and min) operators are non-standard and deprecated.')
 
-  if Search(r'^\s*const\s*string\s*&\s*\w+\s*;', line):
+#  if Search(r'^\s*const\s*string\s*&\s*\w+\s*;', line):
     # TODO(unknown): Could it be expanded safely to arbitrary references,
     # without triggering too many false positives? The first
     # attempt triggered 5 warnings for mostly benign code in the regtest, hence
@@ -1386,9 +1386,9 @@ def CheckForNonStandardConstructs(filename, clean_lines, linenum,
     # Here's the original regexp, for the reference:
     # type_name = r'\w+((\s*::\s*\w+)|(\s*<\s*\w+?\s*>))?'
     # r'\s*const\s*' + type_name + '\s*&\s*\w+\s*;'
-    error(filename, linenum, 'runtime/member_string_references', 2,
-          'const string& members are dangerous. It is much better to use '
-          'alternatives, such as pointers or simple constants.')
+#    error(filename, linenum, 'runtime/member_string_references', 2,
+#          'const string& members are dangerous. It is much better to use '
+#          'alternatives, such as pointers or simple constants.')
 
   # Track class entry and exit, and attempt to find cases within the
   # class declaration that don't meet the C++ style
@@ -2429,14 +2429,14 @@ def CheckIncludeLine(filename, clean_lines, linenum, include_state, error):
               'Include "%s" not in alphabetical order' % include)
 
   # Look for any of the stream classes that are part of standard C++.
-  match = _RE_PATTERN_INCLUDE.match(line)
-  if match:
-    include = match.group(2)
-    if Match(r'(f|ind|io|i|o|parse|pf|stdio|str|)?stream$', include):
-      # Many unit tests use cout, so we exempt them.
-      if not _IsTestFilename(filename):
-        error(filename, linenum, 'readability/streams', 3,
-              'Streams are highly discouraged.')
+  #match = _RE_PATTERN_INCLUDE.match(line)
+  #if match:
+  #  include = match.group(2)
+  #  if Match(r'(f|ind|io|i|o|parse|pf|stdio|str|)?stream$', include):
+  #    # Many unit tests use cout, so we exempt them.
+  #    if not  _IsTestFilename(filename):
+  #      error(filename, linenum, 'readability/streams', 3,
+  #            'Streams are highly discouraged.')
 
 
 def _GetTextInside(text, start_pattern):
@@ -2550,18 +2550,18 @@ def CheckLanguage(filename, clean_lines, linenum, file_extension, include_state,
 
     # We allow non-const references in a few standard places, like functions
     # called "swap()" or iostream operators like "<<" or ">>".
-    if not Search(
-        r'(swap|Swap|operator[<>][<>])\s*\(\s*(?:[\w:]|<.*>)+\s*&',
-        fnline):
-      error(filename, linenum, 'runtime/references', 2,
-            'Is this a non-const reference? '
-            'If so, make const or use a pointer.')
+   # if not Search(
+   #     r'(swap|Swap|operator[<>][<>])\s*\(\s*(?:[\w:]|<.*>)+\s*&',
+   #     fnline):
+   #   error(filename, linenum, 'runtime/references', 2,
+   #         'Is this a non-const reference? '
+   #         'If so, make const or use a pointer.')
 
   # Check to see if they're using an conversion function cast.
   # I just try to capture the most common basic types, though there are more.
   # Parameterless conversion functions, such as bool(), are allowed as they are
   # probably a member operator declaration or default constructor.
-  match = Search(
+    match = Search(
       r'(\bnew\s+)?\b'  # Grab 'new' operator, if it's there
       r'(int|float|double|bool|char|int32|uint32|int64|uint64)\([^)]', line)
   if match:
