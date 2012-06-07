@@ -4,6 +4,7 @@ if (%1)==() (call :set_default_rootpath) else (set rootpath=%1)
 echo Checking files - each "." represents a single file.
 dir %rootpath%\src\*.cc /s /b >%temp%\filelist.txt
 dir %rootpath%\src\*.h /s /b >>%temp%\filelist.txt
+dir %rootpath%\include\*.h /s /b >>%temp%\filelist.txt
 findstr /i /v "\boost sqlite3.h \cryptopp \libupnp \widgets \qwt_widgets .pb. qt_push_headers.h qt_pop_headers.h" %temp%\filelist.txt > %temp%\filelist2.txt
 echo Setup>%temp%\code_style_errors.txt
 set count=0

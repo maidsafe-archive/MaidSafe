@@ -17,6 +17,7 @@
 #==============================================================================#
 
 
+add_definitions(-DCOMPANY_NAME=maidsafe -DAPPLICATION_NAME=lifestuff)
 add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_FILESYSTEM_VERSION=3)
 
 if(MSVC)
