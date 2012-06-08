@@ -24,17 +24,15 @@ set(HR "========================================================================
 set(SubModules
       common
       private
-#      transport
       rudp
       routing
-#       dht
-#       encrypt
-#       pki
-#       passport
-#       pd
-#       drive
-#       lifestuff
-#       lifestuff-gui
+      encrypt
+      pki
+      passport
+      pd
+      drive
+      lifestuff
+      lifestuff-gui
       )
 
 # Check the submodules are initialised
