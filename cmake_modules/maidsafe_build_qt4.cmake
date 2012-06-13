@@ -70,9 +70,11 @@ if(WIN32)
   endif()
 
   set(QtConfigureCommand "${QtConfigureExe}")
+  set(QtConfigureCommand "${QtConfigureCommand} -debug-and-release")
   set(QtConfigureCommand "${QtConfigureCommand} -opensource")
   set(QtConfigureCommand "${QtConfigureCommand} -confirm-license") 
   set(QtConfigureCommand "${QtConfigureCommand} -shared")
+  set(QtConfigureCommand "${QtConfigureCommand} -ltcg")
   set(QtConfigureCommand "${QtConfigureCommand} -no-qt3support")
   set(QtConfigureCommand "${QtConfigureCommand} -platform win32-msvc2010")
   set(QtConfigureCommand "${QtConfigureCommand} -qt-zlib")
@@ -85,77 +87,27 @@ if(WIN32)
   set(QtConfigureCommand "${QtConfigureCommand} -nomake demos")
   set(QtConfigureCommand "${QtConfigureCommand} -nomake examples")
 
-  set(QtReleaseConfigureCommand "${QtConfigureCommand} -release")
-  set(QtReleaseConfigureCommand "${QtReleaseConfigureCommand} -ltcg")
-
-  set(QtDebugConfigureCommand "${QtConfigureCommand} -debug")
+  message(STATUS "Configuring Qt.")
+  execute_process(COMMAND cmd /c "${QtSetupCommand} && ${QtConfigureCommand}"
+                  WORKING_DIRECTORY ${QT_BUILD_DIR}
+                  RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
+  if(NOT ResultVar EQUAL 0)
+    message("\n${HR}\n${ErrorVar}\n\n\n${HR}\n${OutputVar}\n\n\n${HR}\n")
+    message(FATAL_ERROR "\nConfiguring Qt failed.  Command was:\n${QtSetupCommand} && ${QtConfigureCommand}")
+  endif()
 
   set(QtNmakeCommand "nmake /S /NOLOGO")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-tools-bootstrap")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-moc")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-rcc")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-uic")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-winmain")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-corelib")
-#  set(QtNmakeCommand "${QtNmakeCommand} sub-plugins")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-xml")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-network")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-sql")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-testlib")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-gui")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-opengl")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-xmlpatterns")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-svg")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-script")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-declarative")
-  set(QtNmakeCommand "${QtNmakeCommand} sub-webkit")
-
-
-  message(STATUS "Configuring Qt for a Release build.")
-  execute_process(COMMAND cmd /c "${QtSetupCommand} && ${QtReleaseConfigureCommand}"
-                  WORKING_DIRECTORY ${QT_BUILD_DIR}
-                  RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
-  if(NOT ResultVar EQUAL 0)
-    message("\n${HR}\n${ErrorVar}\n\n\n${HR}\n${OutputVar}\n\n\n${HR}\n")
-    message(FATAL_ERROR "\nConfiguring Qt for Release failed.  Command was:\n${QtSetupCommand} && ${QtReleaseConfigureCommand}")
-  endif()
-
-  message(STATUS "Building Release Qt.  Go get a cup of coffee.")
-  execute_process(COMMAND cmd /c "${QtSetupCommand} && ${QtNmakeCommand}"
-                  WORKING_DIRECTORY ${QT_BUILD_DIR}
-                  RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
-  if(NOT ResultVar EQUAL 0)
-    message("\n${HR}\n${ErrorVar}\n\n\n${HR}\n${OutputVar}\n\n\n${HR}\n")
-    message(FATAL_ERROR "\nBuilding Release Qt failed.  Command was:\n${QtSetupCommand} && ${QtNmakeCommand}")
-  endif()
-
-  
-  message(STATUS "Cleaning Qt configuration.")
-  execute_process(COMMAND cmd /c "${QtSetupCommand} && nmake /S /NOLOGO confclean"
-                  WORKING_DIRECTORY ${QT_BUILD_DIR}
-                  RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
-  if(NOT ResultVar EQUAL 0)
-    message("\n${HR}\n${ErrorVar}\n\n\n${HR}\n${OutputVar}\n\n\n${HR}\n")
-    message(FATAL_ERROR "\nCleaning Qt configuration failed.  Command was:\n${QtSetupCommand} && nmake /S /NOLOGO confclean")
-  endif()
-
-  message(STATUS "Configuring Qt for a Debug build.")
-  execute_process(COMMAND cmd /c "${QtSetupCommand} && ${QtDebugConfigureCommand}"
-                  WORKING_DIRECTORY ${QT_BUILD_DIR}
-                  RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
-  if(NOT ResultVar EQUAL 0)
-    message("\n${HR}\n${ErrorVar}\n\n\n${HR}\n${OutputVar}\n\n\n${HR}\n")
-    message(FATAL_ERROR "\nConfiguring Qt for Debug failed.  Command was:\n${QtSetupCommand} && ${QtDebugConfigureCommand}")
-  endif()
-
-  message(STATUS "Building Debug Qt.  Go get another cup of coffee.")
-  execute_process(COMMAND cmd /c "${QtSetupCommand} && ${QtNmakeCommand}"
-                  WORKING_DIRECTORY ${QT_BUILD_DIR}
-                  RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
-  if(NOT ResultVar EQUAL 0)
-    message("\n${HR}\n${ErrorVar}\n\n\n${HR}\n${OutputVar}\n\n\n${HR}\n")
-    message(FATAL_ERROR "\nBuilding Debug Qt failed.  Command was:\n${QtSetupCommand} && ${QtNmakeCommand}")
-  endif()
+  set(QtSubModules tools-bootstrap moc rcc uic winmain corelib xml network sql testlib gui opengl xmlpatterns svg script declarative webkit) # plugins)
+  foreach(QtSubModule ${QtSubModules})
+    message(STATUS "Building Qt submodule ${QtSubModule}.")
+    execute_process(COMMAND cmd /c "${QtSetupCommand} && ${QtNmakeCommand} sub-${QtSubModule}"
+                    WORKING_DIRECTORY ${QT_BUILD_DIR}
+                    RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
+    if(NOT ResultVar EQUAL 0)
+      message("\n${HR}\n${ErrorVar}\n\n\n${HR}\n${OutputVar}\n\n\n${HR}\n")
+      message(FATAL_ERROR "\nBuilding Qt failed.  Command was:\n${QtSetupCommand} && ${QtNmakeCommand} sub-${QtSubModule}")
+    endif()
+  endforeach()
 
 else()
 
