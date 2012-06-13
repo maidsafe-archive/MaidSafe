@@ -21,7 +21,7 @@
 #==============================================================================#
 
 
-unset(OpenMP_DLL CACHE)
+# unset(OpenMP_DLL CACHE)
 
 include(FindOpenMP)
 
