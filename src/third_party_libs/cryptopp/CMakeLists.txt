@@ -13,36 +13,11 @@
 #==============================================================================#
 
 cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
-#include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_flags.cmake)
-include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_setup.cmake)
 
 project(Cryptopp)
-enable_testing()
+#include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_flags.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake_modules/maidsafe_standard_setup.cmake)
 
- # enable libc++ if available
-if(APPLE OR HAVE_LIBC++)
-  set(LIBC++ "-stdlib=libc++")
-endif()
-
-set(CMAKE_DEBUG_POSTFIX _d)
-set(CMAKE_RELWITHDEBINFO_POSTFIX _rwdi)
-set(CMAKE_MINSIZEREL_POSTFIX _msr)
-
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-  set(TEST_POSTFIX ${CMAKE_DEBUG_POSTFIX})
-elseif(CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
-  set(TEST_POSTFIX ${CMAKE_RELWITHDEBINFO_POSTFIX})
-elseif(CMAKE_BUILD_TYPE MATCHES "MinSizeRel")
-  set(TEST_POSTFIX ${CMAKE_MINSIZEREL_POSTFIX})
-endif()
-
-include(CTest)
-
-set(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 50000)
-set(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE 50000)
-set(CTEST_CONTINUOUS_DURATION 600)
-set(CTEST_CONTINUOUS_MINIMUM_INTERVAL 10)
-set(CTEST_START_WITH_EMPTY_BINARY_DIRECTORY true)
 
 file(GLOB cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 file(GLOB cryptopp_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
@@ -121,36 +96,27 @@ add_custom_command(TARGET cryptest
 add_custom_command(TARGET cryptest
                      POST_BUILD
                      COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestVectors ${CMAKE_BINARY_DIR}/TestVectors)
-# if(NOT MSVC)
-#   set_target_properties(cryptest PROPERTIES
-#                           DEBUG_OUTPUT_NAME cryptest${CMAKE_DEBUG_POSTFIX}
-#                           RELWITHDEBINFO_OUTPUT_NAME cryptest${CMAKE_RELWITHDEBINFO_POSTFIX}
-#                           MINSIZEREL_OUTPUT_NAME cryptest${CMAKE_MINSIZEREL_POSTFIX})
-# 
-# endif()
-
-# install(TARGETS cryptopp ARCHIVE DESTINATION lib)
 
 target_link_libraries(cryptest cryptopp)
 #target_link_libraries(TESTcryptopp cryptopp gtest)
 
 if(UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    if(APPLE OR HAVE_LIBC++)
+      set(LibCXX "-stdlib=libc++")
+      set_target_properties(cryptest PROPERTIES LINK_FLAGS "${LibCXX} -ldl")
+    endif()
     add_definitions(-DCRYPTOPP_DISABLE_ASM -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION)
     set_target_properties(cryptopp cryptest PROPERTIES
-                            COMPILE_FLAGS "-Wno-tautological-compare -fPIC -Wno-c++11-narrowing -std=c++11 ${LIBC++}")
-if (${HAVE_LIBC++})
-    set_target_properties(cryptest PROPERTIES LINK_FLAGS "${LIBC++} -ldl")
-endif()
+                            COMPILE_FLAGS "-Wno-tautological-compare -fPIC -Wno-c++11-narrowing -std=c++11 ${LibCXX}")
   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
     if (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7)
-        set_target_properties(cryptopp cryptest PROPERTIES COMPILE_FLAGS "-O2 -fPIC -w -pipe -finline-functions -std=c++11")
-        
+      set_target_properties(cryptopp cryptest PROPERTIES COMPILE_FLAGS "-O2 -fPIC -w -pipe -finline-functions -std=c++11")
     elseif(GCC_VERSION VERSION_GREATER 4.6 OR GCC_VERSION VERSION_EQUAL 4.6)
-        set_target_properties(cryptopp cryptest PROPERTIES COMPILE_FLAGS "-O2 -fPIC -w -pipe -finline-functions -std=c++0x")
+      set_target_properties(cryptopp cryptest PROPERTIES COMPILE_FLAGS "-O2 -fPIC -w -pipe -finline-functions -std=c++0x")
     else()
-      message(FATAL "Unsupported verion of GCC, minimum 4.6 required")
+      message(FATAL_ERROR "Unsupported verion of GCC, minimum 4.6 required")
     endif()
   endif()
 elseif(MSVC)
@@ -163,6 +129,8 @@ elseif(MSVC)
                           LINK_FLAGS_MINSIZEREL "/LTCG")
   set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2 /Oi /Oy /GL /DNDEBUG /GF /MD /Gy /Zi")
   set(CMAKE_CXX_FLAGS_DEBUG "/Od /Oi /D_DEBUG /MDd /Zi")
+  # Reduce compiler's heap allocation from 1000% of default to 500% to avoid errors when compiling precompiled headers
+  string(REPLACE "Zm1000" "Zm500" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
   list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/dll.cpp") # this file doesn't use precompiled headers
   list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/iterhash.cpp") # this file doesn't use precompiled headers
   list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/pch.cpp") # this file is used to create precompiled headers

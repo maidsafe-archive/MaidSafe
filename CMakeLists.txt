@@ -24,17 +24,15 @@ set(HR "========================================================================
 set(SubModules
       common
       private
-#      transport
       rudp
       routing
-#       dht
-#       encrypt
-#       pki
-#       passport
-#       pd
-#       drive
-#       lifestuff
-#       lifestuff-gui
+      encrypt
+      pki
+      passport
+      pd
+      drive
+      lifestuff
+      lifestuff-gui
       )
 
 # Check the submodules are initialised
@@ -54,6 +52,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 # set(MAIDSAFE_INCLUDE_DIR "${MAIDSAFE_INSTALL_PREFIX}/include")
 
 
+include(cmake_modules/maidsafe_find_openmp.cmake)
 add_subdirectory(src/third_party_libs)
 
 

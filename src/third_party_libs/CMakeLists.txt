@@ -38,5 +38,4 @@ endif()
 
 add_subdirectory(cryptopp)
 add_subdirectory(googlemock)
-add_subdirectory(glog/src)
 add_subdirectory(protobuf)

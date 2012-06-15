@@ -126,6 +126,15 @@ if(WIN32)
   endforeach()
 endif()
 
+# Re-include Qt dirs using -isystem to override the -I applied by "include(${QT_USE_FILE})" above.
+if(NOT WIN32)
+  include_directories(SYSTEM ${QT_QTCORE_INCLUDE_DIR}
+                             ${QT_QTGUI_INCLUDE_DIR}
+                             ${QT_QTWEBKIT_INCLUDE_DIR}
+                             ${QT_QTSQL_INCLUDE_DIR}
+                             ${QT_QTXML_INCLUDE_DIR}
+                             ${QT_INCLUDE_DIR})
+endif()
 
 function(maidsafe_qt4_wrap_ui UIC_FILES_OUT UIC_FILES_IN)
   set(COMPILED_UI_FILES_DIR ${CMAKE_CURRENT_BINARY_DIR}/compiled_ui_files)

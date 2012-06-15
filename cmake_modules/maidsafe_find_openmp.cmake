@@ -21,24 +21,15 @@
 #==============================================================================#
 
 
-unset(OpenMP_DLL CACHE)
+# unset(OpenMP_DLL CACHE)
 
 include(FindOpenMP)
 
 if(MSVC)
-  set(VC_DIR ${CMAKE_C_COMPILER})
-  get_filename_component(VC_DIR ${VC_DIR} PATH)
-  get_filename_component(VC_DIR ${VC_DIR} PATH)
-  get_filename_component(VC_DIR_NAME ${VC_DIR} NAME)
-  if(VC_DIR_NAME MATCHES "VC")
-    set(OPENMP_ROOT ${VC_DIR})
-  else()
-    get_filename_component(OPENMP_ROOT ${VC_DIR} PATH)
-  endif()
   if(CMAKE_CL_64)
-    set(OPENMP_ROOT "${OPENMP_ROOT}/redist/x64/Microsoft.VC110.OpenMP")
+    set(OPENMP_ROOT "$ENV{VCInstallDir}/redist/x64/Microsoft.VC110.OpenMP")
   else()
-    set(OPENMP_ROOT "${OPENMP_ROOT}/redist/x86/Microsoft.VC110.OPENMP")
+    set(OPENMP_ROOT "$ENV{VCInstallDir}/redist/x86/Microsoft.VC110.OPENMP")
   endif()
   find_file(OpenMP_DLL NAMES vcomp110.dll PATHS ${OPENMP_ROOT} NO_DEFAULT_PATH)
   if(OpenMP_DLL)
