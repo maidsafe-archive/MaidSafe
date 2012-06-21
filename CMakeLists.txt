@@ -27,7 +27,6 @@ set(SubModules
       rudp
       routing
       encrypt
-      pki
       passport
       pd
       drive

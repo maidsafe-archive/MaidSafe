@@ -22,9 +22,6 @@
 [submodule "src/pd"]
 	path = src/pd
 	url = git@github.com:maidsafe/MaidSafe-PD.git
-[submodule "src/pki"]
-	path = src/pki
-	url = git@github.com:maidsafe/MaidSafe-PKI.git
 [submodule "src/private"]
 	path = src/private
 	url = git@github.com:maidsafe/MaidSafe-Private.git
