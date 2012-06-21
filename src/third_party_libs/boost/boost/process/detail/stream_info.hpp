@@ -151,6 +151,7 @@ struct stream_info
 #if defined(BOOST_POSIX_API) 
                 file_ = out ? "/dev/null" : "/dev/zero"; 
 #elif defined(BOOST_WINDOWS_API) 
+                (void)out;
                 file_ = "NUL"; 
 #endif 
                 break; 

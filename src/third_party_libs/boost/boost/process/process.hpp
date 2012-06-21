@@ -104,6 +104,7 @@ public:
         if (::kill(id_, force ? SIGKILL : SIGTERM) == -1) 
             boost::throw_exception(boost::system::system_error(boost::system::error_code(errno, boost::system::get_system_category()), "boost::process::process::terminate: kill(2) failed")); 
 #elif defined(BOOST_WINDOWS_API) 
+        (void)force;
         HANDLE h = ::OpenProcess(PROCESS_TERMINATE, FALSE, id_); 
         if (h == NULL) 
             boost::throw_exception(boost::system::system_error(boost::system::error_code(::GetLastError(), boost::system::get_system_category()), "boost::process::process::terminate: OpenProcess failed")); 

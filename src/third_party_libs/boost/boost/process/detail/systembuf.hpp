@@ -163,7 +163,14 @@ protected:
 
         if (!traits_type::eq_int_type(c, traits_type::eof())) 
         { 
+#ifdef __MSVC__
+#  pragma warning(push)
+#  pragma warning(disable: 4244)
+#endif
             traits_type::assign(*pptr(), c); 
+#ifdef __MSVC__
+#  pragma warning(pop)
+#endif
             pbump(1); 
         } 
 
