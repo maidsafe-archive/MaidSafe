@@ -1533,10 +1533,10 @@ def CheckSpacingForFunctionCall(filename, line, linenum, error):
     if Search(r'[^)]\s+\)\s*[^{\s]', fncall):
       # If the closing parenthesis is preceded by only whitespaces,
       # try to give a more descriptive error message.
-      if Search(r'^\s+\)', fncall):
-        error(filename, linenum, 'whitespace/parens', 2,
-              'Closing ) should be moved to the previous line')
-      else:
+      if not Search(r'^\s+\)', fncall):
+      #  error(filename, linenum, 'whitespace/parens', 2,
+      #        'Closing ) should be moved to the previous line')
+      #else:
         error(filename, linenum, 'whitespace/parens', 2,
               'Extra space before )')
 
@@ -2005,9 +2005,9 @@ def CheckBraces(filename, clean_lines, linenum, error):
     # just don't complain if the last non-whitespace character on the
     # previous non-blank line is ';', ':', '{', or '}'.
     prevline = GetPreviousNonBlankLine(clean_lines, linenum)[0]
-    if not Search(r'[;:}{]\s*$', prevline):
-      error(filename, linenum, 'whitespace/braces', 4,
-            '{ should almost always be at the end of the previous line')
+    #if not Search(r'[;:}{]\s*$', prevline):
+    #  error(filename, linenum, 'whitespace/braces', 4,
+     #       '{ should almost always be at the end of the previous line')
 
   # An else clause should be on the same line as the preceding closing brace.
   if Match(r'\s*else\s*', line):
