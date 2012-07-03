@@ -2530,7 +2530,7 @@ static internal::String PrintTestPartResultToString(
 static void PrintTestPartResult(const TestPartResult& test_part_result) {
   const internal::String& result =
       PrintTestPartResultToString(test_part_result);
-  TLOG(kDefaultColour) << result << '\n';
+  TLOG(kRed) << result << '\n';
   // If the test program runs in Visual Studio or a debugger, the
   // following statements add the test part result message to the Output
   // window such that the user can double-click on it to jump to the
