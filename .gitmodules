@@ -3,31 +3,31 @@
 	url = git@github.com:maidsafe/MaidSafe-Common
 [submodule "src/docs"]
 	path = src/docs
-	url = git@github.com:maidsafe/MaidSafe-Documents.git
+	url = git@github.com:maidsafe/MaidSafe-Documents
 [submodule "src/drive"]
 	path = src/drive
-	url = git@github.com:maidsafe/MaidSafe-Drive.git
+	url = git@github.com:maidsafe/MaidSafe-Drive
 [submodule "src/encrypt"]
 	path = src/encrypt
-	url = git@github.com:maidsafe/MaidSafe-Encrypt.git
+	url = git@github.com:maidsafe/MaidSafe-Encrypt
 [submodule "src/lifestuff"]
 	path = src/lifestuff
-	url = git@github.com:maidsafe/LifeStuff.git
+	url = git@github.com:maidsafe/LifeStuff
 [submodule "src/lifestuff-gui"]
 	path = src/lifestuff-gui
 	url = git@github.com:maidsafe/LifeStuff-GUI
 [submodule "src/passport"]
 	path = src/passport
-	url = git@github.com:maidsafe/MaidSafe-Passport.git
+	url = git@github.com:maidsafe/MaidSafe-Passport
 [submodule "src/pd"]
 	path = src/pd
-	url = git@github.com:maidsafe/MaidSafe-PD.git
+	url = git@github.com:maidsafe/MaidSafe-PD
 [submodule "src/private"]
 	path = src/private
-	url = git@github.com:maidsafe/MaidSafe-Private.git
+	url = git@github.com:maidsafe/MaidSafe-Private
 [submodule "src/routing"]
 	path = src/routing
-	url = git@github.com:maidsafe/MaidSafe-Routing.git
+	url = git@github.com:maidsafe/MaidSafe-Routing
 [submodule "src/rudp"]
 	path = src/rudp
-	url = git@github.com:maidsafe/MaidSafe-RUDP.git
+	url = git@github.com:maidsafe/MaidSafe-RUDP
