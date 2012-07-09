@@ -80,12 +80,6 @@ include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/boost")
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/protobuf/src")
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/googlemock/gtest/include")
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/googlemock/include")
-if(WIN32)
-  include_directories(SYSTEM "${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/glog/src/windows")
-else()
-  include_directories(SYSTEM "${MAIDSAFE_SOURCE_DIR}/src/third_party_libs/glog/src")
-endif()
-
 
 
 include(maidsafe_utils)
