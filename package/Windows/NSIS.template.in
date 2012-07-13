@@ -282,7 +282,7 @@ Function LoadPreviousSettings
       StrCpy "$STARTMENU_FOLDER" ""
     ${endif}
 
-    !undef ID
+  !undef ID
 
   !endif
 
@@ -387,8 +387,7 @@ Function EnumProcesses
   Push $R2
   Push $R3
 
-  ; Double size of array each time EnumProcesses fills it completely so that
-  ; we do get all processes
+  ; Double size of array each time EnumProcesses fills it completely so that we do get all processes
 
   StrCpy $R1 1024
 
