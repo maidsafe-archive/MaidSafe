@@ -34,7 +34,7 @@ public:
   //typedef overflow_type_ overflow_type;
   static int_type wrap_value() {return wrap_val;}
   //!Add, return true if wrapped
-  wrapping_int(int_type v) : value_(v) {};
+  wrapping_int(int_type v) : value_(v) {}
   //! Explicit converion method
   int_type as_int()   const   {return value_;}
   operator int_type() const   {return value_;}

@@ -40,7 +40,7 @@ namespace date_time {
     typedef std::input_iterator_tag iterator_category;
 
     date_itr_base(date_type d) : current_(d) {}
-    virtual ~date_itr_base() {};
+    virtual ~date_itr_base() {}
     date_itr_base& operator++() 
     {
       current_ = current_ + get_offset(current_);
@@ -53,8 +53,8 @@ namespace date_time {
     }
     virtual duration_type get_offset(const date_type& current) const=0;
     virtual duration_type get_neg_offset(const date_type& current) const=0;
-    date_type operator*() {return current_;};
-    date_type* operator->() {return &current_;};
+    date_type operator*() {return current_;}
+    date_type* operator->() {return &current_;}
     bool operator<  (const date_type& d) {return current_ < d;}
     bool operator<= (const date_type& d) {return current_ <= d;}
     bool operator>  (const date_type& d) {return current_ > d;}

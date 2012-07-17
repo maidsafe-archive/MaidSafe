@@ -34,8 +34,8 @@ namespace date_time {
   public:
     typedef typename date_type::calendar_type calendar_type;
     typedef typename calendar_type::year_type        year_type;
-    year_based_generator() {};
-    virtual ~year_based_generator() {};
+    year_based_generator() {}
+    virtual ~year_based_generator() {}
     virtual date_type get_date(year_type y) const = 0;
     //! Returns a string for use in a POSIX time_zone string
     virtual std::string to_string() const =0;

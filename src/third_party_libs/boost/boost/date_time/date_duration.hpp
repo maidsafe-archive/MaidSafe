@@ -32,7 +32,7 @@ namespace date_time {
     typedef typename duration_rep_traits::impl_type duration_rep;
     
     //! Construct from a day count
-    explicit date_duration(duration_rep day_count) : days_(day_count) {};
+    explicit date_duration(duration_rep day_count) : days_(day_count) {}
     
     /*! construct from special_values - only works when
      * instantiated with duration_traits_adapted */
@@ -125,7 +125,7 @@ namespace date_time {
   {
     typedef long int_type;
     typedef long impl_type;
-    static int_type as_number(impl_type i) { return i; };
+    static int_type as_number(impl_type i) { return i; }
   };
 
   /*! Struct for instantiating date_duration <b>WITH</b> special values
@@ -135,7 +135,7 @@ namespace date_time {
   {
     typedef long int_type;
     typedef boost::date_time::int_adapter<long> impl_type;
-    static int_type as_number(impl_type i) { return i.as_number(); };
+    static int_type as_number(impl_type i) { return i.as_number(); }
   };
   
 

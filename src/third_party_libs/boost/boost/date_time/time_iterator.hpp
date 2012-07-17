@@ -19,7 +19,7 @@ namespace date_time {
   class time_itr {
   public:
     typedef typename time_type::time_duration_type time_duration_type;
-    time_itr(time_type t, time_duration_type d) : current_(t), offset_(d) {};
+    time_itr(time_type t, time_duration_type d) : current_(t), offset_(d) {}
     time_itr& operator++() 
     {
       current_ = current_ + offset_;
@@ -30,14 +30,14 @@ namespace date_time {
       current_ = current_ - offset_;
       return *this;
     }
-    time_type operator*() {return current_;};
-    time_type* operator->() {return &current_;};
-    bool operator<  (const time_type& t) {return current_ < t;};
-    bool operator<= (const time_type& t) {return current_ <= t;};
-    bool operator!=  (const time_type& t) {return current_ != t;};
-    bool operator== (const time_type& t) {return current_ == t;};
-    bool operator>  (const time_type& t) {return current_ > t;};
-    bool operator>= (const time_type& t) {return current_ >= t;};
+    time_type operator*() {return current_;}
+    time_type* operator->() {return &current_;}
+    bool operator<  (const time_type& t) {return current_ < t;}
+    bool operator<= (const time_type& t) {return current_ <= t;}
+    bool operator!=  (const time_type& t) {return current_ != t;}
+    bool operator== (const time_type& t) {return current_ == t;}
+    bool operator>  (const time_type& t) {return current_ > t;}
+    bool operator>= (const time_type& t) {return current_ >= t;}
     
   private:
     time_type current_;

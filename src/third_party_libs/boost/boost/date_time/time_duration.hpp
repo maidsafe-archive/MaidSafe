@@ -251,7 +251,7 @@ namespace date_time {
     }
 
   protected:
-    explicit time_duration(impl_type in) : ticks_(in) {};
+    explicit time_duration(impl_type in) : ticks_(in) {}
     impl_type ticks_;
   };
 
