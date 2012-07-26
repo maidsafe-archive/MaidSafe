@@ -12,9 +12,18 @@
 #                                                                              #
 #==============================================================================#
 
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  message(FATAL_ERROR "\n Package build is not allowed in Debug build type !!!
+          \n-- To build the package, use: \n cmake . -DCMAKE_BUILD_TYPE=Release -DPACKAGE_BUILD=ON \n")
+endif()
+
 # NOTE : This variable must be always used to pick binaries for package build to avoid accidental debug build inclusion.
 #set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR}/package/bin/Release)
-set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR})
+if (MSVC)
+  set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR}/Release)
+else()
+  set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR})
+endif()
 
 if(MSVC)
   if(CMAKE_CL_64)
@@ -60,7 +69,8 @@ if(UNIX AND NOT APPLE)
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/vault-manager DESTINATION ../vault)
   install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/lifestuff_client.desktop DESTINATION .)
   install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/common/icons/WinLinux/app_icon.ico DESTINATION .)
-  install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/common/bootstrap DESTINATION .)
+  install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/common/bootstrap DESTINATION $ENV{HOME}/.config/maidsafe/lifestuff)
+  install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/common/bootstrap RENAME bootstrap.vault_manager DESTINATION /usr/share/maidsafe/lifestuff)
   install(PROGRAMS ${pd_SOURCE_DIR}/installer/linux/scripts/postinst RENAME vault_postinst DESTINATION ../vault)
   install(PROGRAMS ${pd_SOURCE_DIR}/installer/linux/scripts/prem RENAME vault_prem DESTINATION ../vault)
   install(PROGRAMS ${pd_SOURCE_DIR}/installer/linux/scripts/daemoniser RENAME vault_daemoniser DESTINATION ../vault)
@@ -84,7 +94,7 @@ if(UNIX AND NOT APPLE)
     set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/postinst;${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/prerm") # postinstall and before remove
     set(CPACK_DEBIAN_PACKAGE_SECTION "Network")
     set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
-    set(CPACK_GENERATOR DEB;TGZ)
+    set(CPACK_GENERATOR DEB)
   endif()
   #message(STATUS "Package install directory is set to \"${CPACK_PACKAGE_INSTALL_DIRECTORY}\"")
 elseif(APPLE)#TODO
