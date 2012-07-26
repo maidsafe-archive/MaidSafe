@@ -14,7 +14,7 @@
 
 # NOTE : This variable must be always used to pick binaries for package build to avoid accidental debug build inclusion.
 #set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR}/package/bin/Release)
-set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR}/Release)
+set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR})
 
 if(MSVC)
   if(CMAKE_CL_64)
@@ -57,12 +57,16 @@ if(UNIX AND NOT APPLE)
   set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/lifestuff_local DESTINATION .)
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/pd-vault DESTINATION ../vault)
+  install(PROGRAMS ${PACKAGE_BINARY_DIR}/vault-manager DESTINATION ../vault)
   install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/lifestuff_client.desktop DESTINATION .)
   install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/common/icons/WinLinux/app_icon.ico DESTINATION .)
-  install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/common/bootstrap DESTINATION ../)
+  install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/common/bootstrap DESTINATION .)
   install(PROGRAMS ${pd_SOURCE_DIR}/installer/linux/scripts/postinst RENAME vault_postinst DESTINATION ../vault)
   install(PROGRAMS ${pd_SOURCE_DIR}/installer/linux/scripts/prem RENAME vault_prem DESTINATION ../vault)
   install(PROGRAMS ${pd_SOURCE_DIR}/installer/linux/scripts/daemoniser RENAME vault_daemoniser DESTINATION ../vault)
+  install(PROGRAMS ${private_SOURCE_DIR}/installer/linux/scripts/postinst RENAME vault_manager_postinst DESTINATION ../vault)
+  install(PROGRAMS ${private_SOURCE_DIR}/installer/linux/scripts/prem RENAME vault_manager_prem DESTINATION ../vault)
+  install(PROGRAMS ${private_SOURCE_DIR}/installer/linux/scripts/daemoniser RENAME vault_manager_daemoniser DESTINATION ../vault)
   execute_process(
     COMMAND /usr/bin/dpkg --print-architecture
     OUTPUT_VARIABLE CPACK_DEBIAN_PACKAGE_ARCHITECTURE
