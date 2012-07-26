@@ -896,7 +896,7 @@ inline uint8* CodedOutputStream::GetDirectBufferForNBytesAndAdvance(int size) {
 }
 
 inline uint8* CodedOutputStream::WriteVarint32ToArray(uint32 value,
-                                                        uint8* target) {
+                                                      uint8* target) {
   if (value < 0x80) {
     *target = value;
     return target + 1;
