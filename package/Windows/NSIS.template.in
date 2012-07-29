@@ -1014,6 +1014,7 @@ Section -post
   DetailPrint "Creating service..."
   SetDetailsPrint listonly
   nsExec::ExecToStack '"$SYSDIR\sc.exe" create "MaidSafeVaultManager" type= "own" start= "auto" binpath= "$INSTDIR\bin\vault-manager.exe" DisplayName= "MaidSafeVaultManager"'
+  ; nsExec::ExecToStack '"$SYSDIR\sc.exe" start "MaidSafeVaultManager"'
   SetDetailsPrint textonly
   DetailPrint "Installing filesystem driver..."
   SetDetailsPrint listonly
