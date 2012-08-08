@@ -25,15 +25,9 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS_INIT)
 endif()
 
-# Enable OpenMP if available
-if(OPENMP_FOUND)
-  add_definitions(-DMAIDSAFE_OMP_ENABLED)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-endif()
-
 # enable libc++ if available
 if(APPLE OR HAVE_LIBC++)
-set(LIBC++ "-stdlib=libc++")
+  set(LIBC++ "-stdlib=libc++")
 endif()
   
 if(WIN32)
@@ -146,9 +140,9 @@ elseif(UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
     if(GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fopenmp -static-libstdc++")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -static-libstdc++")
     elseif(GCC_VERSION VERSION_GREATER 4.6 OR GCC_VERSION VERSION_EQUAL 4.6)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -fopenmp -static-libstdc++")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -static-libstdc++")
     else()
       message(FATAL_ERROR "Unsupported version of GCC, minimum 4.6 required")
     endif()
