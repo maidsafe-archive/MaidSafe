@@ -133,8 +133,8 @@ elseif(UNIX)
     add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1 -D_FILE_OFFSET_BITS=64)
     add_definitions(-DCRYPTOPP_DISABLE_ASM -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -Wno-unused-parameter ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC  ${LIBC++} ")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -fdiagnostics-format=clang -fdiagnostics-show-option -fdiagnostics-fixit-info -ftrapv -fcatch-undefined-behavior") #  -faddress-sanitizer")default
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC ${LIBC++}")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fdiagnostics-format=clang -fdiagnostics-show-option -fdiagnostics-fixit-info -ftrapv -fcatch-undefined-behavior") #  -faddress-sanitizer")default
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LIBC++} -ldl")
   endif()
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
