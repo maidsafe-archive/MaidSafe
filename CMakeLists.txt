@@ -28,10 +28,10 @@ set(SubModules
       routing
       encrypt
       passport
-      #pd
-      #drive
-      #lifestuff
-      #lifestuff-gui
+      pd
+      drive
+      lifestuff
+      lifestuff-gui
       )
 
 # Check the submodules are initialised
