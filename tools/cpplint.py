@@ -243,6 +243,10 @@ _CPP_HEADERS = frozenset([
     'ropeimpl.h', 'SFile.h', 'slist', 'slist.h', 'stack.h', 'stdexcept',
     'stdiostream.h', 'streambuf.h', 'stream.h', 'strfile.h', 'string',
     'strstream', 'strstream.h', 'tempbuf.h', 'tree.h', 'typeinfo', 'valarray',
+    'atomic', 'type_traits', 'chrono', 'initializer_list', 'tuple',
+    'scoped_allocator', 'array', 'forward_list', 'unordered_set', 'unordered_map',
+    'ratio', 'cfenv', 'codecvt', 'regex', 'thread', 'mutex', 'future', 'condition_variable',
+    'cstdint', 
     ])
 
 
@@ -2241,6 +2245,9 @@ def CheckStyle(filename, clean_lines, linenum, file_extension, class_state,
        GetPreviousNonBlankLine(clean_lines, linenum)[0].find(';') != -1) and
       # It's ok to have many commands in a switch case that fits in 1 line
       not ((cleansed_line.find('case ') != -1 or
+            cleansed_line.find('; };') != -1 or
+            cleansed_line.find(';};') != -1 or
+            cleansed_line.find('});') != -1 or
             cleansed_line.find('default:') != -1) and
            cleansed_line.find('break;') != -1)):
     error(filename, linenum, 'whitespace/newline', 4,
