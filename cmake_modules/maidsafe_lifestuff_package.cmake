@@ -12,9 +12,18 @@
 #                                                                              #
 #==============================================================================#
 
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  message(FATAL_ERROR "\n Package build is not allowed in Debug build type !!!
+          \n-- To build the package, use: \n cmake . -DCMAKE_BUILD_TYPE=Release -DPACKAGE_BUILD=ON \n")
+endif()
+
 # NOTE : This variable must be always used to pick binaries for package build to avoid accidental debug build inclusion.
 #set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR}/package/bin/Release)
-set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR}/Release)
+if (MSVC)
+  set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR}/Release)
+else()
+  set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR})
+endif()
 
 if(MSVC)
   if(CMAKE_CL_64)
@@ -57,12 +66,11 @@ if(UNIX AND NOT APPLE)
   set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/lifestuff_local DESTINATION .)
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/pd-vault DESTINATION ../vault)
+  install(PROGRAMS ${PACKAGE_BINARY_DIR}/vault-manager DESTINATION ../vault)
   install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/lifestuff_client.desktop DESTINATION .)
   install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/common/icons/WinLinux/app_icon.ico DESTINATION .)
-  install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/common/bootstrap DESTINATION ../)
-  install(PROGRAMS ${pd_SOURCE_DIR}/installer/linux/scripts/postinst RENAME vault_postinst DESTINATION ../vault)
-  install(PROGRAMS ${pd_SOURCE_DIR}/installer/linux/scripts/prem RENAME vault_prem DESTINATION ../vault)
-  install(PROGRAMS ${pd_SOURCE_DIR}/installer/linux/scripts/daemoniser RENAME vault_daemoniser DESTINATION ../vault)
+  install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/common/bootstrap DESTINATION $ENV{HOME}/.config/maidsafe/lifestuff)
+  install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/common/bootstrap RENAME bootstrap.vault_manager DESTINATION /usr/share/maidsafe/lifestuff)
   execute_process(
     COMMAND /usr/bin/dpkg --print-architecture
     OUTPUT_VARIABLE CPACK_DEBIAN_PACKAGE_ARCHITECTURE
@@ -71,16 +79,22 @@ if(UNIX AND NOT APPLE)
     ERROR_QUIET)
   if(EXECUTE_RESULT)
     message(STATUS "Unable to determine current dpkg architecture: ${EXECUTE_RESULT} - will try RPM")
-    set(CPACK_RPM_POST_INSTALL_SCRIPT_FILE ${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/postinst)
-    set(CPACK_RPM_PRE_UNINSTALL_SCRIPT_FILE ${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/prerm)
+    install(PROGRAMS ${private_SOURCE_DIR}/installer/linux/scripts/fedora/postinst RENAME vault_manager_postinst DESTINATION ../vault)
+    install(PROGRAMS ${private_SOURCE_DIR}/installer/linux/scripts/fedora/prerm RENAME vault_manager_prerm DESTINATION ../vault)
+    install(PROGRAMS ${private_SOURCE_DIR}/installer/linux/scripts/fedora/vault_manager.service DESTINATION ../vault)
+    set(CPACK_RPM_POST_INSTALL_SCRIPT_FILE ${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/fedora/postinst)
+    set(CPACK_RPM_PRE_UNINSTALL_SCRIPT_FILE ${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/fedora/prerm)
     set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
-    set(CPACK_GENERATOR RPM;TGZ)
+    set(CPACK_GENERATOR RPM)
   else()
     message("Debian package architecture: ${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
-    set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/postinst;${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/prerm") # postinstall and before remove
+    install(PROGRAMS ${private_SOURCE_DIR}/installer/linux/scripts/ubuntu/postinst RENAME vault_manager_postinst DESTINATION ../vault)
+    install(PROGRAMS ${private_SOURCE_DIR}/installer/linux/scripts/ubuntu/prerm RENAME vault_manager_prerm DESTINATION ../vault)
+    install(PROGRAMS ${private_SOURCE_DIR}/installer/linux/scripts/ubuntu/daemoniser RENAME vault_manager_daemoniser DESTINATION ../vault)
+    set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/ubuntu/postinst;${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/ubuntu/prerm") # postinstall and before remove
     set(CPACK_DEBIAN_PACKAGE_SECTION "Network")
     set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
-    set(CPACK_GENERATOR DEB;TGZ)
+    set(CPACK_GENERATOR DEB)
   endif()
   #message(STATUS "Package install directory is set to \"${CPACK_PACKAGE_INSTALL_DIRECTORY}\"")
 elseif(APPLE)#TODO
@@ -96,7 +110,8 @@ elseif(WIN32)
   set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/package/Windows ${CMAKE_MODULE_PATH})
   install(FILES ${PACKAGE_BINARY_DIR}/lifestuff_local.exe DESTINATION bin)
   install(FILES ${PACKAGE_BINARY_DIR}/cbfs_installer.exe DESTINATION bin)
-#  install(FILES ${PACKAGE_BINARY_DIR}/pd-vault-service.exe DESTINATION bin)
+  install(FILES ${PACKAGE_BINARY_DIR}/vault-manager.exe DESTINATION bin)
+  install(FILES ${PACKAGE_BINARY_DIR}/pd-vault.exe DESTINATION bin)
   install(FILES ${drive_SOURCE_DIR}/drivers/windows/cbfs/cbfs.cab DESTINATION drivers/cbfs)
   if(CMAKE_CL_64)
     install(FILES ${drive_SOURCE_DIR}/drivers/windows/cbfs/64bit/x64/cbfsinst.dll DESTINATION drivers/cbfs)

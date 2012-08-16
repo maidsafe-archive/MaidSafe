@@ -19,6 +19,9 @@
 #==============================================================================#
 
 
+if(UNIX AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  message(FATAL_ERROR "Don't build Qt from source, follow the instructions at\n   https://sites.google.com/a/maidsafe.net/staff/developers/build-instructions\n\n")
+endif()
 
 unset(QtConfigureExe CACHE)
 find_program(QtConfigureExe NAMES configure PATHS ${QT_SRC_DIR} NO_DEFAULT_PATH)
@@ -26,26 +29,13 @@ if(NOT QtConfigureExe)
   message(FATAL_ERROR "Failed to find configure exe.${QT_ERROR_MESSAGE}")
 endif()
 
-
-# Find Perl.exe
-if(WIN32)
-  find_program(PerlExe NAMES perl PATHS ${PERL_DIR})
-  if(PerlExe)
-    get_filename_component(PerlDir ${PerlExe} PATH)
-  else()
-    set(PERL_ERROR_MESSAGE "\nperl.exe not found. If Perl is already installed, run:\n")
-    set(PERL_ERROR_MESSAGE "${PERL_ERROR_MESSAGE}   cmake . -DPERL_DIR=<Path to perl.exe directory>\n")
-    message(FATAL_ERROR "${PERL_ERROR_MESSAGE}")
-  endif()
-endif()
-
 set(QtNeedsConfigured TRUE)
 if(BUILD_QT)
   # Building to current project's build tree - create new directory for Qt binaries
   if(WIN32)
     # Out of Source builds Disabled Currently for Win32
-    set(BUILD_ERROR_MESSAGE "\nQt Out-of-Source builds are currently not possible, run:\n")
-    set(BUILD_ERROR_MESSAGE "${BUILD_ERROR_MESSAGE}   cmake . -DBUILD_QT_IN_SOURCE=ON -DBUILD_QT=OFF\n")
+    set(BUILD_ERROR_MESSAGE "\nQt builds are currently not possible, run:\n")
+    set(BUILD_ERROR_MESSAGE "${BUILD_ERROR_MESSAGE}   cmake . -DBUILT_QT_INPUT_DIR=\"<Path to Built Qt root directory>" -DBUILD_QT=OFF -DBUILD_QT_IN_SOURCE=OFF\n")
     message(FATAL_ERROR "${BUILD_ERROR_MESSAGE}")
   endif()
   set(QT_BUILD_DIR ${PROJECT_BINARY_DIR}/build_qt)
@@ -58,6 +48,12 @@ if(BUILD_QT)
   message(STATUS "To build Qt in-source instead, run cmake . -DBUILD_QT_IN_SOURCE=ON")
 elseif(BUILD_QT_IN_SOURCE)
   # Building inside Qt source tree - run "confclean" in case the source has been built to previously
+  if(WIN32)
+    # Qt Custom builds Disabled Currently for Win32
+    set(BUILD_ERROR_MESSAGE "\nQt builds are currently not possible, run:\n")
+    set(BUILD_ERROR_MESSAGE "${BUILD_ERROR_MESSAGE}   cmake . -DBUILT_QT_INPUT_DIR=\"<Path to Built Qt root directory>" -DBUILD_QT=OFF -DBUILD_QT_IN_SOURCE=OFF\n")
+    message(FATAL_ERROR "${BUILD_ERROR_MESSAGE}")
+  endif()
   set(QT_BUILD_DIR ${QT_SRC_DIR})
   message(STATUS "About to build Qt in-source.")
 #  message(STATUS "To build Qt to ${PROJECT_BINARY_DIR}/build_qt instead, run cmake . -DBUILD_QT=ON")
@@ -68,6 +64,8 @@ elseif(BUILD_QT_IN_SOURCE)
   else()
     execute_process(COMMAND make confclean WORKING_DIRECTORY ${QT_BUILD_DIR})
   endif()
+elseif(BUILT_QT_INPUT_DIR)
+  set(QT_BUILD_DIR ${QT_SRC_DIR})
 else()
   message(FATAL_ERROR "This module should not be invoked.")
 endif()
@@ -83,16 +81,7 @@ if(WIN32)
   endif()
   file(WRITE ${QmakeConf} "${QmakeConfContents}")
 
-  # Modify WebCore.pro for x64 builds
-  if(CMAKE_CL_64)
-    execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/win_qt_files/WebCore.pro" "${QT_SRC_DIR}/src/3rdparty/webkit/Source/WebCore/WebCore.pro")
-  endif()
-
-  # Modify HashSet.h & TextEncodingRegistry.cpp
-  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/win_qt_files/HashSet.h" "${QT_SRC_DIR}/src/3rdparty/webkit/Source/JavaScriptCore/wtf/HashSet.h")
-  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/win_qt_files/TextEncodingRegistry.cpp" "${QT_SRC_DIR}/src/3rdparty/webkit/Source/WebCore/platform/text/TextEncodingRegistry.cpp")
-
-  set(QtSetupCommand "set PATH=${PerlDir};%PATH%;${QT_SRC_DIR}\\bin;")
+  set(QtSetupCommand "set PATH=%PATH%;${QT_SRC_DIR}\\bin;")
   if(CMAKE_CL_64)
     set(QtSetupCommand "${QtSetupCommand} && set TARGET_CPU=x64")
   endif()
@@ -115,99 +104,29 @@ if(WIN32)
   set(QtConfigureCommand "${QtConfigureCommand} -webkit-debug")
   set(QtConfigureCommand "${QtConfigureCommand} -mp")
 
-  # User Warning
-  message(STATUS "This installation takes about 2-4hours.")
-
-  # Configure Qt
-  if(QtNeedsConfigured)
-    message(STATUS "Configuring Qt.")
-    execute_process(COMMAND cmd /c "${QtSetupCommand} && ${QtConfigureCommand}"
-                    WORKING_DIRECTORY ${QT_BUILD_DIR}
-                    RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
-    if(NOT ResultVar EQUAL 0)
-      message("\n${HR}\n${ErrorVar}\n\n\n${HR}\n${OutputVar}\n\n\n${HR}\n")
-      message(FATAL_ERROR "\nConfiguring Qt failed.  Command was:\n${QtSetupCommand} && ${QtConfigureCommand}")
-    endif()
-  else()
-    message(STATUS "Qt has already been configured (found ${ConfigureCache})")
-    message(STATUS "To force reconfiguration, delete ${QT_BUILD_DIR}")
-  endif()
-
-  execute_process(COMMAND cmd /c "devenv ${QT_BUILD_DIR}/projects.sln /upgrade"
-                  WORKING_DIRECTORY ${QT_BUILD_DIR}
-                  RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
-
-  # We ignore the result variable b'coz of the error we know we are going to get from qm_phony_target
-
-  set(QtVcProjs "QtCore.vcxproj" "QtGui.vcxproj" "QtNetwork.vcxproj" "QtWebKit.vcxproj") # "webcore.vcxproj")
-  set(QtVcProjDirs
-        "${QT_BUILD_DIR}/src/corelib"
-        "${QT_BUILD_DIR}/src/gui"
-        "${QT_BUILD_DIR}/src/network"
-        "${QT_BUILD_DIR}/src/3rdparty/webkit/Source/WebKit/qt")
-
-  # Update vcproj files
-  foreach(QtVcProj ${QtVcProjs})
-    set(QtVcProjFile ${QtVcProjFile}-NOTFOUND)
-    find_file(QtVcProjFile NAMES ${QtVcProj} PATHS ${QtVcProjDirs} NO_DEFAULT_PATH)
-    set(QtVcProjFileContents ${QtVcProjFileContents}-NOTFOUND)
-    file(READ ${QtVcProjFile} QtVcProjFileContents)
-    string(REGEX REPLACE "<TargetName>[^<]*</TargetName>" "" QtVcProjFileContents "${QtVcProjFileContents}")
-    if(CMAKE_CL_64)
-      set(BuildType "x64")
-    else()
-      set(BuildType "Win32")
-    endif()
-      set(ProjName ${ProjName}-NOTFOUND)
-      get_filename_component(ProjName ${QtVcProjFile} NAME_WE)
-      string(REGEX
-               REPLACE
-               "\n    <ResourceCompile Include=[^\n]*\n      <ExcludedFromBuild Condition=\"'\\$\\(Configuration\\)\\|\\$\\(Platform\\)'=='Debug\\|(x64|Win32)'\">true</ExcludedFromBuild>\n    </ResourceCompile>"
-               ""
-               QtVcProjFileContents
-               "${QtVcProjFileContents}")
-      string(REGEX
-               REPLACE
-               "<Project DefaultTargets=\"Build\" ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n"
-               "<Project DefaultTargets=\"Build\" ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Debug|${BuildType}'\">\n    <TargetName>${ProjName}d4</TargetName>\n  </PropertyGroup>\n  <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Release|${BuildType}'\">\n    <TargetName>${ProjName}4</TargetName>\n  </PropertyGroup>\n"
-               QtVcProjFileContents
-               "${QtVcProjFileContents}")
-    file(WRITE ${QtVcProjFile} "${QtVcProjFileContents}")
-  endforeach()
-
-  message(STATUS "Building Qt submodule: webkit")
-  set(PROCESSOR_COUNT "$ENV{NUMBER_OF_PROCESSORS}")
-  execute_process(COMMAND cmd /c "msbuild ${QT_BUILD_DIR}/projects.sln /t:QtCore:Rebuild;QtGui:Rebuild;QtNetwork:Rebuild;QtWebKit:Rebuild /maxcpucount:${PROCESSOR_COUNT} /p:Configuration=Release"
-                  WORKING_DIRECTORY ${QT_BUILD_DIR}
+  message(STATUS "Configuring Qt.")
+  execute_process(COMMAND cmd /c "${QtSetupCommand} && ${QtConfigureCommand}"
+                  WORKING_DIRECTORY ${QT_SRC_DIR}
                   RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
   if(NOT ResultVar EQUAL 0)
-    file(WRITE ${QT_BUILD_DIR}/webkit4_build_output.txt "ErrorVar: ${ErrorVar}\n\n${OutputVar}")
-    message("\nOutput Saved to File ${QT_BUILD_DIR}/webkit4_build_output.txt")
-    message(FATAL_ERROR "\nBuilding QtWebKit4.dll failed.  Command was:\nmsbuild ${QT_BUILD_DIR}/projects.sln /t:QtCore:Rebuild;QtGui:Rebuild;QtWebKit:Rebuild /maxcpucount:${PROCESSOR_COUNT} /p:Configuration=Release")
+    message("\n${HR}\n${ErrorVar}\n\n\n${HR}\n${OutputVar}\n\n\n${HR}\n")
+    message(FATAL_ERROR "\nConfiguring Qt failed.  Command was:\n${QtSetupCommand} && ${QtConfigureCommand}")
   endif()
-
-  execute_process(COMMAND cmd /c "msbuild ${QT_BUILD_DIR}/projects.sln /t:QtCore:Rebuild;QtGui:Rebuild;QtNetwork:Rebuild;QtWebKit:Rebuild /maxcpucount:${PROCESSOR_COUNT} /p:Configuration=Debug"
-                  WORKING_DIRECTORY ${QT_BUILD_DIR}
+   
+  # Build moc rcc uic via nmake
+  message(STATUS "Building Qt moc rcc uic executables.")
+  set(QtNmakeCommand "nmake /S /NOLOGO sub-tools-bootstrap sub-moc sub-rcc sub-uic")
+  execute_process(COMMAND cmd /c "${QtSetupCommand} && ${QtNmakeCommand}"
+                  WORKING_DIRECTORY ${QT_SRC_DIR}
                   RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
   if(NOT ResultVar EQUAL 0)
-    file(WRITE ${QT_BUILD_DIR}/webkit4d_build_output.txt "ErrorVar: ${ErrorVar}\n\n${OutputVar}")
-    message("\nOutput Saved to File ${QT_BUILD_DIR}/webkit4d_build_output.txt")
-    message(FATAL_ERROR "\nBuilding QtWebKit4d.dll failed.  Command was:\nmsbuild ${QT_BUILD_DIR}/projects.sln /t:QtCore:Rebuild;QtGui:Rebuild;QtNetwork:Rebuild;QtWebKit:Rebuild /maxcpucount:${PROCESSOR_COUNT} /p:Configuration=Debug")
+    message("\n${HR}\n${ErrorVar}\n\n\n${HR}\n${OutputVar}\n\n\n${HR}\n")
+    message(FATAL_ERROR "\nBuilding bootstrap, moc, rcc, uic failed.  Command was:\n${QtSetupCommand} && ${QtConfigureCommand}")
   endif()
-
-  # Build Qt-Plugins and Qt-XmlPatterns with dependencies via nmake
-  set(QtNmakeCommand "nmake /S /NOLOGO")
-  set(QtSubModules tools-bootstrap moc rcc uic winmain corelib gui xmlpatterns sql svg xml opengl phonon script declarative plugins)
-  foreach(QtSubModule ${QtSubModules})
-    message(STATUS "Building Qt submodule: ${QtSubModule}")
-    execute_process(COMMAND cmd /c "${QtSetupCommand} && ${QtNmakeCommand} sub-${QtSubModule}"
-                    WORKING_DIRECTORY ${QT_BUILD_DIR}
-                    RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
-    if(NOT ResultVar EQUAL 0)
-      message("\n${HR}\n${ErrorVar}\n\n\n${HR}\n${OutputVar}\n\n\n${HR}\n")
-      message(FATAL_ERROR "\nBuilding Qt failed.  Command was:\n${QtSetupCommand} && ${QtNmakeCommand} sub-${QtSubModule}")
-    endif()
-  endforeach()
+  
+  # Transfer built Libs to Qt Src Dir
+  message(STATUS "Transferring Qt Libraries from ${BUILT_QT_INPUT_DIR}")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${BUILT_QT_INPUT_DIR} ${QT_SRC_DIR})
 else()
 
   if(APPLE)
@@ -259,6 +178,7 @@ else()
   endif()
 
 endif()
+
 
 set(QT_ROOT_DIR ${QT_BUILD_DIR} CACHE PATH "Path to built Qt libraries' root directory" FORCE)
 unset(QT_SRC_DIR CACHE)

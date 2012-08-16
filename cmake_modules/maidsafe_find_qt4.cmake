@@ -41,21 +41,8 @@ unset(QT_INCLUDE_DIR CACHE)
 unset(QT_INCLUDES CACHE)
 
 
-set(QT_ERROR_MESSAGE "\nYou can download Qt at http://qt.nokia.com/downloads\n\n")
-set(QT_ERROR_MESSAGE "${QT_ERROR_MESSAGE}If Qt is already installed, run:\n")
-set(QT_ERROR_MESSAGE "${QT_ERROR_MESSAGE}   cmake . -DQT_SRC_DIR=<Path to Qt source directory>")
-if(WIN32)
-  set(QT_ERROR_MESSAGE "${QT_ERROR_MESSAGE}\n(such that qmake.exe is in \"<Path to Qt source directory>\\bin\").")
-else()
-  set(QT_ERROR_MESSAGE "${QT_ERROR_MESSAGE}\n(such that qmake is in \"<Path to Qt source directory>/bin\").")
-endif()
-set(QT_ERROR_MESSAGE "${QT_ERROR_MESSAGE}\n\nIf Qt is downloaded, but not built, run:\n")
-set(QT_ERROR_MESSAGE "${QT_ERROR_MESSAGE}   cmake . -DBUILD_QT=ON -DQT_SRC_DIR=<Path to Qt source directory>\n\nor\n\n")
-set(QT_ERROR_MESSAGE "${QT_ERROR_MESSAGE}   cmake . -DBUILD_QT_IN_SOURCE=ON -DQT_SRC_DIR=<Path to Qt source directory>\n\n")
-
-
 set(QT_USE_IMPORTED_TARGETS FALSE)
-if(BUILD_QT OR BUILD_QT_IN_SOURCE)
+if(BUILD_QT OR BUILD_QT_IN_SOURCE OR BUILT_QT_INPUT_DIR)
   # Clean out old Qt dlls from binary directory
   file(GLOB QtReleaseDlls "${CMAKE_BINARY_DIR}/Release/q*.dll")
   file(GLOB QtDebugDlls "${CMAKE_BINARY_DIR}/Debug/q*.dll")
@@ -63,6 +50,9 @@ if(BUILD_QT OR BUILD_QT_IN_SOURCE)
     file(REMOVE ${QtReleaseDlls} ${QtDebugDlls})
   endif()
   include(${CMAKE_SOURCE_DIR}/cmake_modules/maidsafe_build_qt4.cmake)
+  unset(BUILD_QT CACHE)
+  unset(BUILD_QT_IN_SOURCE CACHE)
+  unset(BUILT_QT_INPUT_DIR CACHE)
 elseif(QT_SRC_DIR)
   set(QT_ROOT_DIR ${QT_SRC_DIR} CACHE PATH "Path to Qt source and built libraries' root directory" FORCE)
   unset(QT_SRC_DIR CACHE)
@@ -79,7 +69,7 @@ if(NOT QT_QMAKE_EXECUTABLE)
   else()
     set(ERROR_MESSAGE "${ERROR_MESSAGE}(Tried to find qmake in ${QT_ROOT_DIR}/bin and the system path.)")
   endif()
-  message(FATAL_ERROR "${ERROR_MESSAGE}${QT_ERROR_MESSAGE}")
+  message(FATAL_ERROR "${ERROR_MESSAGE}\nFollow the instructions at\n   https://sites.google.com/a/maidsafe.net/staff/developers/build-instructions\n\n")
 endif()
 
 
@@ -102,7 +92,7 @@ foreach(MS_QT_REQUIRED_LIBRARY ${MS_QT_REQUIRED_LIBRARIES})
   endif()
 endforeach()
 if(NOT ALL_QT_LIBRARIES_FOUND)
-  message(FATAL_ERROR "${ERROR_MESSAGE}${QT_ERROR_MESSAGE}")
+  message(FATAL_ERROR "${ERROR_MESSAGE}\nFollow the instructions at\n   https://sites.google.com/a/maidsafe.net/staff/developers/build-instructions\n\n")
 endif()
 
 
@@ -128,15 +118,6 @@ if(WIN32)
   endforeach()
 endif()
 
-# Re-include Qt dirs using -isystem to override the -I applied by "include(${QT_USE_FILE})" above.
-if(NOT WIN32)
-  include_directories(SYSTEM ${QT_QTCORE_INCLUDE_DIR}
-                             ${QT_QTGUI_INCLUDE_DIR}
-                             ${QT_QTWEBKIT_INCLUDE_DIR}
-                             ${QT_QTSQL_INCLUDE_DIR}
-                             ${QT_QTXML_INCLUDE_DIR}
-                             ${QT_INCLUDE_DIR})
-endif()
 
 function(maidsafe_qt4_wrap_ui UIC_FILES_OUT UIC_FILES_IN)
   set(COMPILED_UI_FILES_DIR ${CMAKE_CURRENT_BINARY_DIR}/compiled_ui_files)
@@ -144,7 +125,7 @@ function(maidsafe_qt4_wrap_ui UIC_FILES_OUT UIC_FILES_IN)
   set(CMAKE_CURRENT_BINARY_DIR_BEFORE ${CMAKE_CURRENT_BINARY_DIR})
   set(CMAKE_CURRENT_BINARY_DIR ${COMPILED_UI_FILES_DIR})
   QT4_WRAP_UI(${UIC_FILES_OUT} ${${UIC_FILES_IN}})
-  include_directories(BEFORE SYSTEM ${COMPILED_UI_FILES_DIR})
+  include_directories(${COMPILED_UI_FILES_DIR})
   set(${UIC_FILES_OUT} ${${UIC_FILES_OUT}} PARENT_SCOPE)
   set(CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR_BEFORE})
 endfunction()
