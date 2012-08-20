@@ -85,7 +85,8 @@
   !define MUI_WELCOMEPAGE_TITLE "Welcome to the LifeStuff ${VERSION} Setup Wizard"
   ; !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of LifeStuff.$\r$\n$\r$\n$_CLICK"
   !define MUI_WELCOMEPAGE_TEXT "LifeStuff gives you everything you need, messaging, photos, music, videos, contacts, documents and your diary, in one place, on one screen!$\n$\nYou can synchronize all your files across multiple devices making them accessible anytime, anywhere.$\n$\nOn a world first, totally secure, distributed network, free from corporate controls or data protection risks, LifeStuff allows you to self authenticate your data.$\n$\nClick Next and you'll be up and running in minutes..."
-  ; !define MUI_WELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\orange.bmp"
+  !define MUI_WELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\Installer-Image.bmp"
+  !define MUI_UNWELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\Installer-Image.bmp"
   !insertmacro MUI_PAGE_WELCOME
   !insertmacro MUI_PAGE_LICENSE "@CPACK_RESOURCE_FILE_LICENSE@"
   ; !insertmacro MUI_PAGE_DIRECTORY
