@@ -23,7 +23,7 @@
   !define INST_DIR "@CPACK_TEMPORARY_DIRECTORY@"
   !define REGISTRY_KEY @CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@
 
-  !define MUI_HEADERIMAGE
+  ; !define MUI_HEADERIMAGE
   !define MUI_ABORTWARNING
   !define MUI_COMPONENTSPAGE_SMALLDESC
 
@@ -82,6 +82,10 @@
   @CPACK_NSIS_INSTALLER_MUI_COMPONENTS_DESC@
   @CPACK_NSIS_INSTALLER_MUI_FINISHPAGE_RUN_CODE@
 
+  !define MUI_HEADERIMAGE
+  !define MUI_HEADERIMAGE_LEFT
+  !define MUI_HEADERIMAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Header\top_left_image.bmp"
+  !define MUI_HEADERIMAGE_UNBITMAP "${NSISDIR}\Contrib\Graphics\Header\top_left_image.bmp"
   !define MUI_WELCOMEPAGE_TITLE "Welcome to the LifeStuff ${VERSION} Setup Wizard"
   ; !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of LifeStuff.$\r$\n$\r$\n$_CLICK"
   !define MUI_WELCOMEPAGE_TEXT "LifeStuff gives you everything you need, messaging, photos, music, videos, contacts, documents and your diary, in one place, on one screen!$\n$\nYou can synchronize all your files across multiple devices making them accessible anytime, anywhere.$\n$\nOn a world first, totally secure, distributed network, free from corporate controls or data protection risks, LifeStuff allows you to self authenticate your data.$\n$\nClick Next and you'll be up and running in minutes..."
@@ -811,6 +815,7 @@ Section -post
   SetDetailsPrint listonly
 
   WriteRegStr SHCTX "Software\${REGISTRY_KEY}" "" $INSTDIR
+  WriteRegStr SHCTX "Software\${REGISTRY_KEY}" "InstallRoot" @CPACK_NSIS_INSTALL_ROOT@
   WriteRegStr SHCTX "Software\${REGISTRY_KEY}" "Version" "${VERSION}"
   WriteRegStr SHCTX "Software\${REGISTRY_KEY}" "VersionMajor" "${VERSION_MAJOR}"
   WriteRegStr SHCTX "Software\${REGISTRY_KEY}" "VersionMinor" "${VERSION_MINOR}"
