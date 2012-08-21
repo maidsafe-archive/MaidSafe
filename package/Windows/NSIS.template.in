@@ -7,7 +7,6 @@
 
   !include "MUI2.nsh"
   !include "nsDialogs.nsh"
-  !include "Memento.nsh"
   !include "LogicLib.nsh"
   !include "Sections.nsh"
   !include "WordFunc.nsh"
@@ -22,10 +21,6 @@
   !define VERSION_PATCH "@CPACK_PACKAGE_VERSION_PATCH@"
   !define INST_DIR "@CPACK_TEMPORARY_DIRECTORY@"
   !define REGISTRY_KEY @CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@
-
-  ; !define MUI_HEADERIMAGE
-  !define MUI_ABORTWARNING
-  !define MUI_COMPONENTSPAGE_SMALLDESC
 
   @CPACK_NSIS_DEFINES@
 
@@ -45,14 +40,11 @@
 
   OutFile "@CPACK_TOPLEVEL_DIRECTORY@/@CPACK_OUTPUT_FILE_NAME@"
 
-  !define MEMENTO_REGISTRY_ROOT SHELL_CONTEXT
-  !define MEMENTO_REGISTRY_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
-
   SetCompressor @CPACK_NSIS_COMPRESSOR@
 
   InstallDir "@CPACK_NSIS_INSTALL_ROOT@\@CPACK_PACKAGE_INSTALL_DIRECTORY@"
 
-  ; RequestExecutionLevel admin
+  RequestExecutionLevel admin
 
 ;--------------------------------
 ; Variables
@@ -82,6 +74,7 @@
   @CPACK_NSIS_INSTALLER_MUI_COMPONENTS_DESC@
   @CPACK_NSIS_INSTALLER_MUI_FINISHPAGE_RUN_CODE@
 
+  !define MUI_ABORTWARNING
   !define MUI_HEADERIMAGE
   !define MUI_HEADERIMAGE_LEFT
   !define MUI_HEADERIMAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Header\top_left_image.bmp"
@@ -153,16 +146,6 @@ Function GetUserInfo
 
 FunctionEnd
 
-Function UpdateShellVarContext
-
-  ${If} $ALL_USERS == 1
-    SetShellVarContext all
-  ${Else}
-    SetShellVarContext current
-  ${EndIf}
-
-FunctionEnd
-
 Function CheckPreviousInstallDirectoryExists
 
   ${If} $PREVIOUS_INSTALL_DIRECTORY != ""
@@ -187,55 +170,10 @@ FunctionEnd
 
 Function ReadPreviousVersion
 
-  ReadRegStr $PREVIOUS_INSTALL_DIRECTORY HKLM "Software\${REGISTRY_KEY}" ""
-
+  ReadRegStr $PREVIOUS_INSTALL_DIRECTORY SHCTX "Software\${REGISTRY_KEY}" ""
   Call CheckPreviousInstallDirectoryExists
-
   ${If} $PREVIOUS_INSTALL_DIRECTORY != ""
-    ReadRegStr $PREVIOUS_VERSION HKLM "Software\${REGISTRY_KEY}" "Version"
-    ${If} $PREVIOUS_VERSION != ""
-      StrCpy $ALL_USERS 1
-      SetShellVarContext all
-      return
-    ${EndIf}
-  ${EndIf}
-
-  ReadRegStr $PREVIOUS_INSTALL_DIRECTORY HKCU "Software\${REGISTRY_KEY}" ""
-
-  Call CheckPreviousInstallDirectoryExists
-
-  ${If} $PREVIOUS_INSTALL_DIRECTORY != ""
-    ReadRegStr $PREVIOUS_VERSION HKCU "Software\${REGISTRY_KEY}" "Version"
-    ${If} $PREVIOUS_VERSION != ""
-      StrCpy $ALL_USERS 0
-      SetShellVarContext current
-      return
-    ${EndIf}
-  ${EndIf}
-
-FunctionEnd
-
-Function LoadPreviousSettings
-
-  ; Startmenu
-  !define ID "Application"
-
-  !ifdef MUI_STARTMENUPAGE_${ID}_REGISTRY_ROOT & MUI_STARTMENUPAGE_${ID}_REGISTRY_KEY & MUI_STARTMENUPAGE_${ID}_REGISTRY_VALUENAME
-
-    ReadRegStr $mui.StartMenuPage.RegistryLocation "${MUI_STARTMENUPAGE_${ID}_REGISTRY_ROOT}" "${MUI_STARTMENUPAGE_${ID}_REGISTRY_KEY}" "${MUI_STARTMENUPAGE_${ID}_REGISTRY_VALUENAME}"
-
-    ${if} $mui.StartMenuPage.RegistryLocation != ""
-      StrCpy "$STARTMENU_FOLDER" $mui.StartMenuPage.RegistryLocation
-    ${else}
-      StrCpy "$STARTMENU_FOLDER" ""
-    ${endif}
-
-  !undef ID
-
-  !endif
-
-  ${If} $PREVIOUS_INSTALL_DIRECTORY != ""
-    StrCpy $INSTDIR $PREVIOUS_INSTALL_DIRECTORY
+    ReadRegStr $PREVIOUS_VERSION SHCTX "Software\${REGISTRY_KEY}" "Version"
   ${EndIf}
 
 FunctionEnd
@@ -709,7 +647,7 @@ Function PageInstallationOptionsLeave
     ${Else}
       StrCpy $ALL_USERS 0
     ${EndIf}
-    Call UpdateShellVarContext
+  ;  Call UpdateShellVarContext
 
   ${Else}
 
@@ -775,21 +713,6 @@ FunctionEnd
 
 ;--------------------------------
 ; Installer Sections
-
-${MementoSection} "LifeStuff (required)" LifeStuff
-
-  SetDetailsPrint textonly
-  DetailPrint "Installing LifeStuff Files..."
-  SetDetailsPrint listonly
-
-  SectionIn 1 2 RO
-  SetOutPath $INSTDIR
-  @CPACK_NSIS_FULL_INSTALL@
-  RMDir /r "$SMPROGRAMS\@CPACK_NSIS_PACKAGE_NAME@"
-
-${MementoSectionEnd}
-
-${MementoSectionDone}
 
 Section -post
 
@@ -877,7 +800,7 @@ Section -post
   no_reboot:
   Pop $0
 
-  CreateDirectory $APPDATA\Maidsafe\Vault\chunkstore
+  CreateDirectory $APPDATA\Maidsafe\Vault
   FileOpen $0 $APPDATA\Maidsafe\Vault\global_config_file.dat w
   FileClose $0
 
@@ -886,14 +809,9 @@ Section -post
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
   @CPACK_NSIS_EXTRA_INSTALL_COMMANDS@
-  ${MementoSectionSave}
   SetDetailsPrint both
 
 SectionEnd
-
-!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${LifeStuff} "LifeStuff essentials."
-!insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
 ; Uninstaller Section
@@ -1268,40 +1186,38 @@ SectionEnd
 
 Function .onInit
 
-  ${MementoSectionRestore}
-
   StrCpy $PREVIOUS_VERSION_STATUS ""
 
   Call GetUserInfo
 
-  ${If} $IS_ADMIN == 1
-    StrCpy $ALL_USERS 1
-  ${Else}
-    StrCpy $ALL_USERS 0
+  ${If} $IS_ADMIN == 0
+    MessageBox MB_ICONSTOP "LifeStuff cannot be installed.$\nPlease restart the installer with Administrator privileges." /SD IDOK
+    Abort
   ${EndIf}
 
-  Call UpdateShellVarContext
+  SetShellVarContext all
   Call ReadPreviousVersion
 
-  ${If} $ALL_USERS == 1
-    ${If} $IS_ADMIN == 0
-      ${If} $PREVIOUS_VERSION != ""
-        MessageBox MB_ICONSTOP "LifeStuff has been previously installed for all users.$\nPlease restart the installer with Administrator privileges." /SD IDOK
-        Abort
-      ${Else}
-        MessageBox MB_ICONSTOP "Cannot install LifeStuff for all users.$\nPlease restart the installer with Administrator privileges." /SD IDOK
-        Abort
-      ${EndIf}
-    ${EndIf}
-  ${EndIf}
+  ${If} $PREVIOUS_VERSION != ""  
+	Call CheckIfRunning
+	Call CompareVersion
+    ${If} $PREVIOUS_VERSION_STATUS == 0
 
+    ${ElseIf} $PREVIOUS_VERSION_STATUS == 1
+
+    ${ElseIf} $PREVIOUS_VERSION_STATUS == 2
+
+    ${Else}
+      Abort
+    ${EndIf}
+
+  ${EndIf}
+   
   StrCpy $ALL_USERS_DEFAULT $ALL_USERS
   StrCpy $REINSTALL_UNINSTALL 0
 
 FunctionEnd
 
 Function .onInstSuccess
-
-  ${MementoSectionSave}
 
 FunctionEnd
