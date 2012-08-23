@@ -77,16 +77,11 @@
   !define MUI_ABORTWARNING
   !define MUI_HEADERIMAGE
   !define MUI_HEADERIMAGE_LEFT
-  !define MUI_HEADERIMAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Header\top_left_image.bmp"
-  !define MUI_HEADERIMAGE_UNBITMAP "${NSISDIR}\Contrib\Graphics\Header\top_left_image.bmp"
+  @CPACK_NSIS_EXTRA_INSTALL_COMMANDS@
   !define MUI_WELCOMEPAGE_TITLE "Welcome to the LifeStuff ${VERSION} Setup Wizard"
-  ; !define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of LifeStuff.$\r$\n$\r$\n$_CLICK"
-  !define MUI_WELCOMEPAGE_TEXT "LifeStuff gives you everything you need, messaging, photos, music, videos, contacts, documents and your diary, in one place, on one screen!$\n$\nYou can synchronize all your files across multiple devices making them accessible anytime, anywhere.$\n$\nOn a world first, totally secure, distributed network, free from corporate controls or data protection risks, LifeStuff allows you to self authenticate your data.$\n$\nClick Next and you'll be up and running in minutes..."
-  !define MUI_WELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\Installer-Image.bmp"
-  !define MUI_UNWELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\Installer-Image.bmp"
+  !define MUI_WELCOMEPAGE_TEXT "LifeStuff enables you to store unlimited data, like movies, photos and music on the world's most secure private cloud.$\r$\n$\r$\nLifeStuff ensures your data will never get corrupted, never get lost, never get hacked and never get a virus.$\r$\n$\r$\nAnd here’s the really cool bit...$\r$\n$\r$\nIt’s totally free!$\r$\n$\r$\nIt wont cost you a cent!$\r$\n$\r$\nClick $\"next$\" to install LifeStuff now..."
   !insertmacro MUI_PAGE_WELCOME
   !insertmacro MUI_PAGE_LICENSE "@CPACK_RESOURCE_FILE_LICENSE@"
-  ; !insertmacro MUI_PAGE_DIRECTORY
   !define MUI_PAGE_CUSTOMFUNCTION_SHOW PreInstallPage
   !define MUI_PAGE_CUSTOMFUNCTION_LEAVE PostInstallPage
   !insertmacro MUI_PAGE_INSTFILES
@@ -112,7 +107,7 @@
   
   VIProductVersion "${VERSION}.0"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "@CPACK_NSIS_PACKAGE_NAME@"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "@CPACK_NSIS_PACKAGE_NAME@ is..." ; TODO finish comment
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "@CPACK_NSIS_PACKAGE_NAME@"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "@CPACK_PACKAGE_VENDOR@"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" "@CPACK_PACKAGE_VENDOR@"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Copyright (C) maidsafe.net limited 2012"
@@ -232,34 +227,6 @@ Function CompareVersion
   Pop $3
   Pop $2
   Pop $1
-
-FunctionEnd
-
-Function RunUninstaller
-
-  ReadRegStr $R1 SHCTX "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_NAME@" "UninstallString"
-
-  ${If} $R1 == ""
-    Return
-  ${EndIf}
-
-  HideWindow
-
-    ClearErrors
-    ExecWait '$R1 _?=$INSTDIR'
-
-    IfErrors no_remove_uninstaller
-    IfFileExists "$INSTDIR\@CPACK_NSIS_INSTALLED_ICON_NAME@" no_remove_uninstaller
-
-      Delete $R1
-      RMDir $INSTDIR
-
-    no_remove_uninstaller:
-
-    StrCmp $R0 "2" 0 +2
-      Quit
-
-  BringToFront
 
 FunctionEnd
 
@@ -470,7 +437,7 @@ Function CheckIfRunning
 
   ${While} $R1 == 1
 
-    MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "LifeStuff appears to be running. Please close all running instances of LifeStuff before continuing the installation." IDCANCEL cancel IDRETRY retry
+    MessageBox MB_RETRYCANCEL|MB_USERICON|MB_DEFBUTTON1 "LifeStuff appears to be running. Please close all running instances of LifeStuff before continuing the installation." IDCANCEL cancel IDRETRY retry
     retry:
     Push "lifestuff.exe"
     Call IsProcessRunning
@@ -487,15 +454,6 @@ FunctionEnd
 
 Function PreInstallPage
 
-  Call CheckIfRunning
-
-  ${If} $REINSTALL_UNINSTALL == 1
-
-    Call RunUninstaller
-    BringToFront
-
-  ${EndIf}
-
 FunctionEnd
 
 Function PostInstallPage
@@ -508,170 +466,6 @@ Function PostInstallPage
 
   StrCmp $R0 0 +2
   SetAutoClose false
-
-FunctionEnd
-
-;--------------------------------
-; Custom Pages
-
-Function PageInstallationOptions
-
-  ${If} $PREVIOUS_VERSION == ""
-
-	!insertmacro MUI_HEADER_TEXT "Installation Options" "Who should this application be installed for?"
-
-    nsDialogs::Create 1018
-    Pop $R4
-
-    ${NSD_CreateLabel} 0 0 100% 24u "Please select whether you wish to make this software available to all users or just yourself. Installation for all users requires Administrator privileges."
-    Pop $R1
-
-    ${NSD_CreateRadioButton} 30u 50u -30u 8u "&Anyone who uses this computer."
-    Pop $R2
-    ${NSD_OnClick} $R2 UsersSelection
-
-	${If} $USER_NAME != ""
-      StrCpy $R3 "&Only for me, $USER_NAME."
-    ${Else}
-      StrCpy $R3 "&Only for me."
-    ${EndIf}
-
-    ${NSD_CreateRadioButton} 30u 70u -30u 8u $R3
-    Pop $R3
-    ${NSD_OnClick} $R3 UsersSelection
-
-	${If} $IS_ADMIN == 1
-      ${If} $ALL_USERS == 1
-        SendMessage $R2 ${BM_SETCHECK} ${BST_CHECKED} 0
-      ${Else}
-        SendMessage $R3 ${BM_SETCHECK} ${BST_CHECKED} 0
-      ${EndIf}
-	  ${NSD_SetFocus} $R2
-	${Else}
-	  EnableWindow $R2 0
-      SendMessage $R3 ${BM_SETCHECK} ${BST_CHECKED} 0
-	  ${NSD_SetFocus} $R3
-	${EndIf}
-
-    nsDialogs::Show
-
-  ${Else}
-
-    Call CompareVersion
-    ${If} $PREVIOUS_VERSION_STATUS == 0
-      StrCpy $R1 "LifeStuff ${VERSION} is already installed. Select the operation you want to perform and click Next to continue."
-      StrCpy $R2 "Reinstall LifeStuff"
-      StrCpy $R3 "Uninstall LifeStuff"
-      !insertmacro MUI_HEADER_TEXT "Installation Options" "Choose an option to perform."
-      StrCpy $R0 "2"
-    ${ElseIf} $PREVIOUS_VERSION_STATUS == 1
-	 ; Abort
-      StrCpy $R1 "An older version of LifeStuff is installed on your system. It's recommended that you uninstall the current version before installing. Select the operation you want to perform and click Next to continue."
-      StrCpy $R2 "Uninstall before installing"
-      StrCpy $R3 "Do not uninstall"
-      !insertmacro MUI_HEADER_TEXT "Upgrade Options" "Choose how you want to install LifeStuff."
-      StrCpy $R0 "1"
-    ${ElseIf} $PREVIOUS_VERSION_STATUS == 2
-      StrCpy $R1 "A newer version of LifeStuff is already installed! It is not recommended that you install an older version. If you really want to install this older version, it's better to uninstall the current version first. Select the operation you want to perform and click Next to continue."
-      StrCpy $R2 "Uninstall before installing"
-      StrCpy $R3 "Do not uninstall"
-      !insertmacro MUI_HEADER_TEXT "Reinstallation Options" "Choose how you want to install LifeStuff."
-      StrCpy $R0 "1"
-    ${Else}
-      Abort
-    ${EndIf}
-
-	nsDialogs::Create 1018
-    Pop $R4
-
-    ${NSD_CreateLabel} 0 0 100% 24u $R1
-    Pop $R1
-
-    ${NSD_CreateRadioButton} 30u 50u -30u 8u $R2
-    Pop $R2
-    ${NSD_OnClick} $R2 ReinstallSelection
-
-    ${NSD_CreateRadioButton} 30u 70u -30u 8u $R3
-    Pop $R3
-    ${NSD_OnClick} $R3 ReinstallSelection
-
-    ${If} $REINSTALL_STATE != 2
-      SendMessage $R2 ${BM_SETCHECK} ${BST_CHECKED} 0
-    ${Else}
-      SendMessage $R3 ${BM_SETCHECK} ${BST_CHECKED} 0
-    ${EndIf}
-
-    ${NSD_SetFocus} $R2
-
-    nsDialogs::Show
-
-  ${EndIf}
-
-FunctionEnd
-
-Function UsersSelection
-
-  Pop $R1
-
-  ${NSD_GetState} $R2 $R1
-
-  ${If} $R1 == ${BST_CHECKED}
-    StrCpy $ALL_USERS 1
-  ${Else}
-    StrCpy $ALL_USERS 0
-  ${EndIf}
-
-FunctionEnd
-
-Function ReinstallSelection
-
-  Pop $R1
-
-  ${NSD_GetState} $R2 $R1
-
-  ${If} $R1 == ${BST_CHECKED}
-    StrCpy $REINSTALL_STATE 1
-  ${Else}
-    StrCpy $REINSTALL_STATE 2
-  ${EndIf}
-
-FunctionEnd
-
-Function PageInstallationOptionsLeave
-
-  ${If} $PREVIOUS_VERSION_STATUS == ""
-
-	${NSD_GetState} $R2 $R1
-	${If} $R1 == ${BST_CHECKED}
-      StrCpy $ALL_USERS 1
-    ${Else}
-      StrCpy $ALL_USERS 0
-    ${EndIf}
-  ;  Call UpdateShellVarContext
-
-  ${Else}
-
-	${NSD_GetState} $R2 $R1
-
-    StrCmp $R0 "1" 0 +2
-      StrCmp $R1 "1" reinstall_uninstall reinstall_done
-
-    StrCmp $R0 "2" 0 +3
-      StrCmp $R1 "1" reinstall_done do_uninstall
-
-    do_uninstall:
-
-    Call CheckIfRunning
-    Call RunUninstaller
-    Quit
-
-    reinstall_uninstall:
-
-    StrCpy $REINSTALL_UNINSTALL 1
-
-    reinstall_done:
-
-  ${EndIf}
 
 FunctionEnd
 
@@ -715,6 +509,12 @@ FunctionEnd
 ; Installer Sections
 
 Section -post
+
+  SetDetailsPrint textonly
+  DetailPrint "Installing LifeStuff Files..."
+  SetDetailsPrint listonly
+  SetOutPath $INSTDIR
+  @CPACK_NSIS_FULL_INSTALL@
 
   SetDetailsPrint textonly
   DetailPrint "Creating start menu items..."
@@ -808,7 +608,6 @@ Section -post
   
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
-  @CPACK_NSIS_EXTRA_INSTALL_COMMANDS@
   SetDetailsPrint both
 
 SectionEnd
@@ -1086,7 +885,7 @@ Function un.CheckIfRunning
 
   ${While} $R1 == 1
 
-    MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "LifeStuff appears to be running. Please close all running instances of LifeStuff before continuing the installation." IDCANCEL cancel IDRETRY retry
+    MessageBox MB_RETRYCANCEL|MB_USERICON|MB_DEFBUTTON1 "LifeStuff appears to be running. Please close all running instances of LifeStuff before continuing the installation." IDCANCEL cancel IDRETRY retry
     retry:
     Push "lifestuff.exe"
     Call un.IsProcessRunning
@@ -1189,30 +988,34 @@ Function .onInit
   StrCpy $PREVIOUS_VERSION_STATUS ""
 
   Call GetUserInfo
-
   ${If} $IS_ADMIN == 0
     MessageBox MB_ICONSTOP "LifeStuff cannot be installed.$\nPlease restart the installer with Administrator privileges." /SD IDOK
     Abort
   ${EndIf}
 
   SetShellVarContext all
+  StrCpy $ALL_USERS 1
   Call ReadPreviousVersion
 
   ${If} $PREVIOUS_VERSION != ""  
 	Call CheckIfRunning
 	Call CompareVersion
     ${If} $PREVIOUS_VERSION_STATUS == 0
-
+      MessageBox MB_OKCANCEL|MB_USERICON|MB_DEFBUTTON1 "LifeStuff ${VERSION} is already installed. Click Ok to reinstall LifeStuff or Cancel to stop the installation." IDOK ok IDCANCEL cancel
+      cancel:
+        Quit
+      ok:
+        nsExec::ExecToStack '"$SYSDIR\sc.exe" stop "MaidSafeVaultManager"'
     ${ElseIf} $PREVIOUS_VERSION_STATUS == 1
-
+      nsExec::ExecToStack '"$SYSDIR\sc.exe" stop "MaidSafeVaultManager"'
     ${ElseIf} $PREVIOUS_VERSION_STATUS == 2
-
+      MessageBox MB_OK|MB_USERICON|MB_DEFBUTTON1 "A newer version of LifeStuff is already installed! It is not recommended that you install an older version. If you really want to install this version, please uninstall the current version first."
+      Quit
     ${Else}
       Abort
     ${EndIf}
-
   ${EndIf}
-   
+
   StrCpy $ALL_USERS_DEFAULT $ALL_USERS
   StrCpy $REINSTALL_UNINSTALL 0
 

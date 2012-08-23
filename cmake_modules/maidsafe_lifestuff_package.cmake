@@ -134,7 +134,12 @@ elseif(WIN32)
   set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "LifeStuff")
   set(CPACK_NSIS_MUI_ICON "${lifestuff_gui_SOURCE_DIR}/installer/common/icons/WinLinux/install_icon.ico")
   set(CPACK_NSIS_MUI_UNIICON "${lifestuff_gui_SOURCE_DIR}/installer/common/icons/WinLinux/uninstall_icon.ico")
-  set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "")
+  set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+    !define MUI_HEADERIMAGE_BITMAP \\\"${lifestuff_gui_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\top_left_image.bmp\\\"
+    !define MUI_HEADERIMAGE_UNBITMAP \\\"${lifestuff_gui_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\top_left_image.bmp\\\"
+    !define MUI_WELCOMEFINISHPAGE_BITMAP \\\"${lifestuff_gui_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\Installer-Image.bmp\\\"
+    !define MUI_UNWELCOMEFINISHPAGE_BITMAP \\\"${lifestuff_gui_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\Installer-Image.bmp\\\"
+  ")
   set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "")
   set(CPACK_NSIS_MODIFY_PATH ON)
   set(CPACK_NSIS_DISPLAY_NAME "LifeStuff")
