@@ -1001,7 +1001,7 @@ Function .onInit
 	Call CheckIfRunning
 	Call CompareVersion
     ${If} $PREVIOUS_VERSION_STATUS == 0
-      MessageBox MB_OKCANCEL|MB_USERICON|MB_DEFBUTTON1 "LifeStuff ${VERSION} is already installed. Click Ok to reinstall LifeStuff or Cancel to stop the installation." IDOK ok IDCANCEL cancel
+      MessageBox MB_OKCANCEL|MB_USERICON|MB_DEFBUTTON2 "LifeStuff ${VERSION} is already installed. Click OK to reinstall LifeStuff or Cancel to stop the installation." IDOK ok IDCANCEL cancel
       cancel:
         Quit
       ok:
