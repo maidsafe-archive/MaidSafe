@@ -18,6 +18,9 @@
 
 
 add_definitions(-DCOMPANY_NAME=maidsafe -DAPPLICATION_NAME=lifestuff)
+add_definitions(-DAPPLICATION_VERSION_MAJOR="0"
+                -DAPPLICATION_VERSION_MINOR="09"
+                -DAPPLICATION_VERSION_PATCH="00")
 add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_FILESYSTEM_VERSION=3)
 
 if(MSVC)
@@ -29,7 +32,7 @@ endif()
 if(APPLE OR HAVE_LIBC++)
   set(LIBC++ "-stdlib=libc++")
 endif()
-  
+
 if(WIN32)
   add_definitions(-DWIN32 -D_WIN32 -D__WINDOWS__ -D__WIN32__ -DMAIDSAFE_WIN32)
 elseif(UNIX)
@@ -40,7 +43,6 @@ elseif(UNIX)
     add_definitions(-DMAIDSAFE_LINUX -DHAVE_PTHREAD)
   endif()
 endif()
-
 
 if(MSVC)
   add_definitions(-D__MSVC__ -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=0x501)
