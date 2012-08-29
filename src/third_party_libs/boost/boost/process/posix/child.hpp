@@ -2,21 +2,31 @@
 // Copyright (c) 2008 Ilya Sokolov, Boris Schaeling
 // Copyright (c) 2009 Boris Schaeling
 // Copyright (c) 2010 Felipe Tanus, Boris Schaeling
-// Copyright (c) 2011 Jeff Flinn, Boris Schaeling
-// Copyright (c) 2012 Boris Schaeling
+// Copyright (c) 2011, 2012 Jeff Flinn, Boris Schaeling
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- * \file boost/process.hpp
+ * \file boost/process/posix/child.hpp
  *
- * Convenience header which includes all public Boost.Process header files.
+ * Defines a child process class.
  */
 
-#ifndef BOOST_PROCESS_HPP
-#define BOOST_PROCESS_HPP
+#ifndef BOOST_PROCESS_POSIX_CHILD_HPP
+#define BOOST_PROCESS_POSIX_CHILD_HPP
 
-#include <boost/process/all.hpp>
+#include <sys/types.h>
+
+namespace boost { namespace process { namespace posix {
+
+struct child
+{
+    pid_t pid;
+
+    explicit child(pid_t p) : pid(p) {}
+};
+
+}}}
 
 #endif
