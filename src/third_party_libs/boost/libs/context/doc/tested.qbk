@@ -1,0 +1,74 @@
+[/
+          Copyright Oliver Kowalke 2009.
+ Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at
+          http://www.boost.org/LICENSE_1_0.txt
+]
+
+[section:tested Tested Platforms]
+
+[table
+    [[Platform] [OS] [Compiler] [ABI]]
+    [
+        [ARM (ARM926EJ-S)]
+        [Debian GNU/Linux (Lenny)]
+        [GCC 4.4.4]
+        [ARM APCS (Linux)]
+    ]
+    [
+        [MIPS (MIPS 24K)]
+        [Debian GNU/Linux (Lenny)]
+        [GCC 4.3.2]
+        [O32]
+    ]
+    [
+        [MIPS (O2 / MIPS R5000)]
+        [Debian GNU/Linux (Lenny)]
+        [GCC 4.3.2]
+        [O32]
+    ]
+    [
+        [PowerPC (7400)]
+        [Debian GNU/Linux (Lenny)]
+        [GCC 4.3.2]
+        [SYSV]
+    ]
+    [
+        [X86_64 (Intel Core2 Quad)]
+        [Ubuntu GNU/Linux (Lucid Lynx)]
+        [GCC 4.4.3]
+        [SYSV]
+    ]
+    [
+        [X86_64]
+        [Windows 7]
+        [MS VC 10.0]
+        [PE]
+    ]
+    [
+        [I386]
+        [Debian GNU/Linux (Lenny)]
+        [GCC 4.4.3]
+        [SYSV]
+    ]
+    [
+        [I386]
+        [FreeBSD 8.0]
+        [GCC 4.2.1]
+        [SYSV]
+    ]
+    [
+        [I386]
+        [OpenSolaris 2009.06]
+        [GCC 4.3.2]
+        [SYSV]
+    ]
+    [
+        [I386]
+        [Windows XP]
+        [MSVC 9.0]
+        [PE]
+    ]
+]
+
+[endsect]
