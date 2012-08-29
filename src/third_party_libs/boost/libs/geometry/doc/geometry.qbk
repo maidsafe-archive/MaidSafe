@@ -110,6 +110,7 @@ Boost.Geometry contains contributions by:
 * Alfredo Correa (adaption of Boost.Array)
 * Adam Wulkiewicz (spatial indexes) [footnote Currently an extension]
 * Federico Fern\u00E1ndez (spatial indexes) [footnote Currently an extension]
+* Karsten Ahnert (patch for cross-track distance)
 
 [include imports.qbk]
 

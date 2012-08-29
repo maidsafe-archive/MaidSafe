@@ -111,7 +111,7 @@ There are two ways you can use this header:
 the default user.hpp provided by boost. This option allows only one
 configure-generated setup; boost developers should avoid this option,
 as it incurs the danger of accidentally committing a configure-modified
-__BOOST_CONFIG_USER_HEADER__ to the cvs repository (something you will not
+__BOOST_CONFIG_USER_HEADER__ to the svn repository (something you will not
 be thanked for!).
 
 * [*Option 2:]  give the header a more memorable name, and place it somewhere
@@ -237,7 +237,7 @@ than static libraries on Microsoft Windows (this macro is used to turn on
 to look for in a dll rather than in a static library).
 Note that there may be some libraries that can only be statically linked
 (Boost.Test for example) and others which may only be dynamically linked
-(Boost.Threads for example), in these cases this macro has no effect.
+(Boost.Thread for example), in these cases this macro has no effect.
 ]]
 [[`BOOST_`['WHATEVER]`_DYN_LINK`][
 Forces library "whatever" to be linked as a dll rather than a static library
@@ -248,7 +248,7 @@ to turn on `__declspec(dllimport)` modifiers, so that the compiler knows
 which symbols to look for in a dll rather than in a static library).
 Note that there may be some libraries that can only be statically linked
 (Boost.Test for example) and others which may only be dynamically linked
-(Boost.Threads for example), in these cases this macro is unsupported.
+(Boost.Thread for example), in these cases this macro is unsupported.
 ]]
 [[`BOOST_ALL_NO_LIB`][
 Tells the config system not to automatically select which libraries to link
@@ -307,7 +307,7 @@ boost macro being set implies that another must be set also.
 
 The following usage examples represent just a few of the possibilities:
 
-[section Example 1, creating our own frozen configuration]
+[section Example 1: creating our own frozen configuration]
 
 Lets suppose that we're building boost with Visual C++ 6, and STLport 4.0. Lets
 suppose also that we don't intend to update our compiler or standard library
@@ -346,8 +346,8 @@ configuration macros setting. In a case like this, you can define
 `BOOST_NO_COMPILER_CONFIG` either on the command line, or in __BOOST_CONFIG_USER_HEADER__,
 and miss out the compiler configuration header altogether (actually you miss out
 two headers, one which works out what the compiler is, and one that configures
-boost for it). This has two consequences: the first is that less code has to be c
-ompiled, and the second that you have removed a dependency on two boost headers.
+boost for it). This has two consequences: the first is that less code has to be
+compiled, and the second that you have removed a dependency on two boost headers.
 
 [endsect]
 

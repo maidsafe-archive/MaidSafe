@@ -25,13 +25,13 @@
 # include <crtdbg.h>
 #endif
 
-#ifndef BOOST_XPRESSIVE_NO_WREGEX
+#if defined(BOOST_XPRESSIVE_TEST_WREGEX) && !defined(BOOST_XPRESSIVE_NO_WREGEX)
 namespace std
 {
     inline std::ostream &operator <<(std::ostream &sout, std::wstring const &wstr)
     {
         for(std::size_t n = 0; n < wstr.size(); ++n)
-            sout.put(sout.narrow(wstr[n], '?'));
+            sout.put(BOOST_USE_FACET(std::ctype<wchar_t>, std::locale()).narrow(wstr[n], '?'));
         return sout;
     }
 }
@@ -95,7 +95,7 @@ struct test_case_formatter
 
 test_case_formatter const case_ = {};
 
-#ifndef BOOST_XPRESSIVE_NO_WREGEX
+#if defined(BOOST_XPRESSIVE_TEST_WREGEX) && !defined(BOOST_XPRESSIVE_NO_WREGEX)
 ///////////////////////////////////////////////////////////////////////////////
 // widen
 //  make a std::wstring from a std::string by widening according to the
@@ -316,7 +316,7 @@ void run_test_impl(xpr_test_case<Char> const &test)
 
                 for(std::size_t i = 0; i < br.size() && i < test.br.size(); ++i)
                 {
-                    BOOST_XPR_CHECK(!br[i].matched && test.br[i] == empty || test.br[i] == br[i].str());
+                    BOOST_XPR_CHECK((!br[i].matched && test.br[i] == empty) || test.br[i] == br[i].str());
                 }
             }
 
@@ -355,7 +355,7 @@ void run_test_impl(xpr_test_case<Char> const &test)
 
                 for(std::size_t i = 0; i < what.size() && i < test.br.size(); ++i)
                 {
-                    BOOST_XPR_CHECK(!what[i].matched && test.br[i] == empty || test.br[i] == what[i].str());
+                    BOOST_XPR_CHECK((!what[i].matched && test.br[i] == empty) || test.br[i] == what[i].str());
                 }
             }
             else
@@ -374,28 +374,14 @@ void run_test_impl(xpr_test_case<Char> const &test)
 ///////////////////////////////////////////////////////////////////////////////
 // run_test_impl
 //   run the current test
-void run_test_a()
-{
-    run_test_impl(test);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// run_test_u
-//   widen the current test and run it
-void run_test_u()
-{
-    #ifndef BOOST_XPRESSIVE_NO_WREGEX
-    xpr_test_case<wchar_t> wtest = ::widen(test);
-    run_test_impl(wtest);
-    #endif
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// run_test
 void run_test()
 {
-    run_test_a();
-    run_test_u();
+    #ifdef BOOST_XPRESSIVE_TEST_WREGEX
+    xpr_test_case<wchar_t> wtest = ::widen(test);
+    run_test_impl(wtest);
+    #else
+    run_test_impl(test);
+    #endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -425,6 +411,7 @@ bool open_test()
 //   read the tests from the input file and execute them
 void test_main()
 {
+    #if !defined(BOOST_XPRESSIVE_TEST_WREGEX) || !defined(BOOST_XPRESSIVE_NO_WREGEX)
     if(!open_test())
     {
         BOOST_ERROR("Error: unable to open input file.");
@@ -435,6 +422,7 @@ void test_main()
         run_test();
         ++test_count;
     }
+    #endif
 
     std::cout << test_count << " tests completed." << std::endl;
 }

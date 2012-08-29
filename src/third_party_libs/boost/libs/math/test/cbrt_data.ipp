@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 2>, 85> cbrt_data = { {
+   static const boost::array<boost::array<typename table_type<T>::type, 2>, 85> cbrt_data = { {
       {{ SC_(0.266297021326439287136622624529991298914e-12), SC_(0.1888421455001568264216782004847867296461e-37) }}, 
       {{ SC_(0.5920415525016708979677559909760020673275e-12), SC_(0.2075183790343685754527643464587844863336e-36) }}, 
       {{ SC_(0.155163989296047688526414276566356420517e-11), SC_(0.3735707037930203997047439019589434984292e-35) }}, 

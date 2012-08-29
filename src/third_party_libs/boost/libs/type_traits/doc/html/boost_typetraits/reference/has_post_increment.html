@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>has_post_increment</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.TypeTraits">
 <link rel="up" href="../reference.html" title="Alphabetical Reference">
 <link rel="prev" href="has_post_decrement.html" title="has_post_decrement">
@@ -22,7 +22,7 @@
 <div class="spirit-nav">
 <a accesskey="p" href="has_post_decrement.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="has_pre_decrement.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
-<div class="section">
+<div class="section boost_typetraits_reference_has_post_increment">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_typetraits.reference.has_post_increment"></a><a class="link" href="has_post_increment.html" title="has_post_increment">has_post_increment</a>
 </h3></div></div></div>
@@ -46,7 +46,7 @@
         type, the return value is checked to be convertible to <code class="computeroutput"><span class="identifier">Ret</span></code>.
         Convertible to <code class="computeroutput"><span class="identifier">Ret</span></code> means
         that the return value of the operator can be used as argument to a function
-        expecting <code class="computeroutput"><span class="identifier">Ret</span></code>: 
+        expecting <code class="computeroutput"><span class="identifier">Ret</span></code>:
 </p>
 <pre class="programlisting"><span class="keyword">void</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">Ret</span><span class="special">);</span>
 <span class="identifier">Lhs</span> <span class="identifier">lhs</span><span class="special">;</span>
@@ -128,7 +128,7 @@
             then instantiating <code class="computeroutput"><span class="identifier">has_post_increment</span><span class="special">&lt;</span><span class="identifier">Lhs</span><span class="special">&gt;</span></code> will produce a compiler error. For
             this reason <code class="computeroutput"><span class="identifier">has_post_increment</span></code>
             cannot be used to determine whether a type has a public <code class="computeroutput"><span class="keyword">operator</span><span class="special">++</span></code>
-            or not. 
+            or not.
 <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">A</span> <span class="special">{</span> <span class="keyword">private</span><span class="special">:</span> <span class="keyword">void</span> <span class="keyword">operator</span><span class="special">++(</span><span class="keyword">int</span><span class="special">);</span> <span class="special">};</span>
 <span class="identifier">boost</span><span class="special">::</span><span class="identifier">has_post_increment</span><span class="special">&lt;</span><span class="identifier">A</span><span class="special">&gt;::</span><span class="identifier">value</span><span class="special">;</span> <span class="comment">// error: A::operator++(int) is private</span>
 </pre>
@@ -136,7 +136,7 @@
 <li class="listitem">
             There is an issue if the operator exists only for type <code class="computeroutput"><span class="identifier">A</span></code> and <code class="computeroutput"><span class="identifier">B</span></code>
             is convertible to <code class="computeroutput"><span class="identifier">A</span></code>.
-            In this case, the compiler will report an ambiguous overload. 
+            In this case, the compiler will report an ambiguous overload.
 <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">A</span> <span class="special">{</span> <span class="special">};</span>
 <span class="keyword">void</span> <span class="keyword">operator</span><span class="special">++(</span><span class="keyword">const</span> <span class="identifier">A</span><span class="special">&amp;,</span> <span class="keyword">int</span><span class="special">);</span>
 <span class="keyword">struct</span> <span class="identifier">B</span> <span class="special">{</span> <span class="keyword">operator</span> <span class="identifier">A</span><span class="special">();</span> <span class="special">};</span>
@@ -149,7 +149,6 @@
             is defined but does not bind for a given template type, it is still detected
             by the trait which returns <code class="computeroutput"><span class="keyword">true</span></code>
             instead of <code class="computeroutput"><span class="keyword">false</span></code>. Example:
-            
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">type_traits</span><span class="special">/</span><span class="identifier">has_post_increment</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">iostream</span><span class="special">&gt;</span>
 

@@ -124,8 +124,8 @@ class convex_topology
   struct point 
   {
     point() { }
-    double& operator[](std::size_t i) {return values[i];}
-    const double& operator[](std::size_t i) const {return values[i];}
+    double&amp; operator[](std::size_t i) {return values[i];}
+    const double&amp; operator[](std::size_t i) const {return values[i];}
 
   private:
     double values[Dims];
@@ -157,7 +157,7 @@ class hypercube_topology : public <a href="#convex_topology">convex_topology</a>
 {
 public:
   explicit hypercube_topology(double scaling = 1.0);
-  hypercube_topology(RandomNumberGenerator& gen, double scaling = 1.0);
+  hypercube_topology(RandomNumberGenerator&amp; gen, double scaling = 1.0);
   point_type random_point() const;
 };
 </pre>
@@ -173,13 +173,13 @@ class square_topology : public <a href="#hypercube_topology">hypercube_topology<
 {
  public:
   explicit square_topology(double scaling = 1.0);
-  square_topology(RandomNumberGenerator& gen, double scaling = 1.0);
+  square_topology(RandomNumberGenerator&amp; gen, double scaling = 1.0);
 };
 </pre>
 
 <a name="cube_topology"><h3>Class template <tt>cube_topology</tt></h3></a>
 
-<p>Class template <tt>cube_topology</tt> is a two-dimensional
+<p>Class template <tt>cube_topology</tt> is a three-dimensional
 hypercube topology.
 
 <pre>
@@ -188,7 +188,7 @@ class cube_topology : public <a href="#hypercube_topology">hypercube_topology</a
 {
  public:
   explicit cube_topology(double scaling = 1.0);
-  cube_topology(RandomNumberGenerator& gen, double scaling = 1.0);
+  cube_topology(RandomNumberGenerator&amp; gen, double scaling = 1.0);
 };
 </pre>
 
@@ -209,7 +209,7 @@ class ball_topology : public <a href="#convex_topology">convex_topology</a>&lt;D
 {
 public:
   explicit ball_topology(double radius = 1.0);
-  ball_topology(RandomNumberGenerator& gen, double radius = 1.0); 
+  ball_topology(RandomNumberGenerator&amp; gen, double radius = 1.0); 
   point_type random_point() const;
 };
 </pre>
@@ -225,13 +225,13 @@ class circle_topology : public <a href="#ball_topology">ball_topology</a>&lt;2, 
 {
  public:
   explicit circle_topology(double radius = 1.0);
-  circle_topology(RandomNumberGenerator& gen, double radius = 1.0);
+  circle_topology(RandomNumberGenerator&amp; gen, double radius = 1.0);
 };
 </pre>
 
 <a name="sphere_topology"><h3>Class template <tt>sphere_topology</tt></h3></a>
 
-<p>Class template <tt>sphere_topology</tt> is a two-dimensional
+<p>Class template <tt>sphere_topology</tt> is a three-dimensional
 ball topology.
 
 <pre>
@@ -240,7 +240,7 @@ class sphere_topology : public <a href="#ball_topology">ball_topology</a>&lt;3, 
 {
  public:
   explicit sphere_topology(double radius = 1.0);
-  sphere_topology(RandomNumberGenerator& gen, double radius = 1.0);
+  sphere_topology(RandomNumberGenerator&amp; gen, double radius = 1.0);
 };
 </pre>
 
@@ -258,7 +258,7 @@ class heart_topology
   typedef <em>unspecified</em> point_type;
 
   heart_topology();
-  heart_topology(RandomNumberGenerator& gen);
+  heart_topology(RandomNumberGenerator&amp; gen);
   point_type random_point() const;
   double distance(point_type a, point_type b) const;
   point_type move_position_toward(point_type a, double fraction, point_type b) const;

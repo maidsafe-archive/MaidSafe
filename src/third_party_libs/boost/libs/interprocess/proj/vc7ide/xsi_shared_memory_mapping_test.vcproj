@@ -35,7 +35,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="winmm.lib"
-				OutputFile="$(OutDir)/mapped_file_test_d.exe"
+				OutputFile="$(OutDir)/xsi_shared_memory_mapping_test_d.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../../../../stage/lib"
 				GenerateDebugInformation="TRUE"

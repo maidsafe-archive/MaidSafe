@@ -46,6 +46,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_covered_by", "algorit
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_convert", "algorithms\multi_convert.vcproj", "{21B7EF55-23C3-4FD2-9F2F-FD8F0F3FE167}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_disjoint", "algorithms\multi_disjoint.vcproj", "{5DEA6558-9DF7-42D4-AF10-4D6D8BB7EAD1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "multi_touches", "algorithms\multi_touches.vcproj", "{108173B8-B6F4-4366-8018-2BF282ED4881}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -144,6 +148,14 @@ Global
 		{21B7EF55-23C3-4FD2-9F2F-FD8F0F3FE167}.Debug|Win32.Build.0 = Debug|Win32
 		{21B7EF55-23C3-4FD2-9F2F-FD8F0F3FE167}.Release|Win32.ActiveCfg = Release|Win32
 		{21B7EF55-23C3-4FD2-9F2F-FD8F0F3FE167}.Release|Win32.Build.0 = Release|Win32
+		{5DEA6558-9DF7-42D4-AF10-4D6D8BB7EAD1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5DEA6558-9DF7-42D4-AF10-4D6D8BB7EAD1}.Debug|Win32.Build.0 = Debug|Win32
+		{5DEA6558-9DF7-42D4-AF10-4D6D8BB7EAD1}.Release|Win32.ActiveCfg = Release|Win32
+		{5DEA6558-9DF7-42D4-AF10-4D6D8BB7EAD1}.Release|Win32.Build.0 = Release|Win32
+		{108173B8-B6F4-4366-8018-2BF282ED4881}.Debug|Win32.ActiveCfg = Debug|Win32
+		{108173B8-B6F4-4366-8018-2BF282ED4881}.Debug|Win32.Build.0 = Debug|Win32
+		{108173B8-B6F4-4366-8018-2BF282ED4881}.Release|Win32.ActiveCfg = Release|Win32
+		{108173B8-B6F4-4366-8018-2BF282ED4881}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

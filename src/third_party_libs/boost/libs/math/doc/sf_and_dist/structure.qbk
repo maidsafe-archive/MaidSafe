@@ -1,37 +1,93 @@
 [section:navigation Navigation]
 
-Used in combination with the configured browser key, the
-following keys act as handy shortcuts for common navigation tasks.
+[indexterm1 navigation]
 
-[h5 Shortcuts]
-[:
-[^[*p]] - Previous page
+Boost.Math documentation is provided in both HTML and PDF formats.
 
-[^[*n]] - Next page
+* [*Tutorials] are listed in the ['Table of Contents] and
+include many examples that should help you get started quickly.
+* [*Source code] of the many ['Examples] will often be your quickest starting point.
+* [*Index] (general) includes all entries. 
+* [*Specific Indexes] list only functions, class signatures, macros and typedefs. 
 
-[^[*h]] - home
+[h5 Using the Indexes]
 
-[^[*u]] - Up
-]
+The main index will usually help,
+especially if you know a word describing what it does,
+without needing to know the exact name chosen for the function.
 
-The following table shows how to access these from common browsers:
+[tip When using the index, keep in mind that clicking on an index term
+only takes you to the [*section] containing the index entry.
+This section may be several pages long,
+so you may need to use the [*find] facility of your browser or PDF reader
+to get to the index term itself.]
 
-[table
-[[Browser][Access Method]]
-[[Internet Explorer]
-   [Alt+Key highlights the link only, so for example to move to the next topic
-   you would need "Alt+n" followed by "Enter".]]
-[[Firefox 2.0 and later][Alt+Shift+Key follows the link, so for example
-   "Alt+Shift+n" will take you to the next topic.]]
-[[Opera][Press Shift+Esc followed by the access key.]]
-[[Konqueror][Press and release the Ctrl key, followed by the access key]]
-]
+[tip A PDF reader usually allows a [*global] find; this can be really useful
+if the term you expect to be indexed is not the one chosen by the authors.
+You might find searching the PDF version and viewing the HTML version
+will locate an elusive item.]
 
-Some browsers also make these links available in their site-navigation
-toolbars: in Opera for example you can use Ctrl plus the left and right
-arrow keys to move between "next" and "previous" topics.
+[endsect] [/section:navigation Navigation]
 
-[endsect]
+[section:conventions Document Conventions]
+
+[indexterm1 conventions]
+
+This documentation aims to use of the following naming and formatting conventions.
+
+* C++ Code is in `fixed width font` and is syntax-highlighted in color, for example `double`.
+* Other code is in block [^teletype fixed-width font].
+* Replaceable text that [*you] will need to supply is in [~italics].
+* If a name refers to a free function, it is specified like this:
+  `free_function()`; that is, it is in [~code font] and its name is followed by `()`
+  to indicate that it is a free function.
+* If a name refers to a class template, it is specified like this:
+  `class_template<>`; that is, it is in code font and its name is followed by `<>`
+  to indicate that it is a class template.
+* If a name refers to a function-like macro, it is specified like this: `MACRO()`;
+  that is, it is uppercase in code font and its name is followed by `()` to
+  indicate that it is a function-like macro. Object-like macros appear without the
+  trailing `()`.
+* Names that refer to ['concepts] in the generic programming sense 
+(like template parameter names) are specified in CamelCase.
+
+
+[endsect] [/section:conventions Document Conventions]
+
+[section:hints Other Hints and tips]
+
+* If you have a feature request,
+or if it appears that the implementation is in error,
+please search first in the [@https://svn.boost.org/trac/boost/ Boost Trac].
+
+* [@https://svn.boost.org/trac/boost/ Trac] entries may indicate that
+updates or corrections that solve your problem are in 
+[@http://svn.boost.org/svn/boost/trunk Boost-trunk]
+where changes are being assembled and tested ready for the next release.
+You may, at your own risk, download new versions from there.
+
+* If you do not understand why things work the way they do, see the ['rationale] section.
+
+* If you do not find your idea/feature/complaint,
+please reach the author preferably through the Boost
+development list, or email the author(s) direct.
+
+[h5 Admonishments]
+
+[note In addition, notes such as this one specify non-essential information that
+provides additional background or rationale.]
+
+[tip These blocks contain information that you may find helpful while coding.]
+
+[important These contain information that is imperative to understanding a concept.
+Failure to follow suggestions in these blocks will probably result in undesired behavior.
+Read all of these you find.]
+
+[warning Failure to heed this will lead to incorrect,
+and very likely undesired, results.]
+
+[endsect] [/section:hints Other Hints and tips]
+
 
 [section:directories Directory and File Structure]
 
@@ -44,7 +100,8 @@ arrow keys to move between "next" and "previous" topics.
    as the RealType (and short `typedef` names of distributions are 
    reserved for this type where possible), a few will use `float` or 
    `long double`, but it is also possible to use higher precision types 
-   like __NTL_RR that conform to the requirements specified by real_concept.]]
+   like __NTL_RR, __GMP, __MPFR
+that conform to the requirements specified by real_concept.]]
 
 [[\/constants\/]
    [Templated definition of some highly accurate math 
@@ -93,7 +150,7 @@ arrow keys to move between "next" and "previous" topics.
    (and vital) extra features.]]
 ]
 
-[endsect]
+[endsect] [/section:directories Directory and File Structure]
    
 [section:namespaces Namespaces]
    
@@ -109,7 +166,7 @@ and can be instantiated with the help of the reserved name `students_t`(for `Rea
    
    student_t mydist(10);
    
-[note Some distribution names are also used in std random library,
+[warning Some distribution names are also used in std random library,
 so to avoid the risk of ambiguity it is better to make explicit using declarations,
 for example: `using boost::math::students_t_distribution`]
    
@@ -121,10 +178,15 @@ Functions that may have more general use, like `digits`
 
 __Policy and configuration information is in namespace `boost::math::policies`.
 
-[endsect]
+[tip Many code snippets assume implicit namespace(s),
+for example, `std::` or `boost::math`.]
+
+
+[endsect] [/section:namespaces Namespaces]
+
 
 [/ structure.qbk
-  Copyright 2006, 2010 John Maddock and Paul A. Bristow.
+  Copyright 2006, 2010, 2012 John Maddock and Paul A. Bristow.
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or copy at
   http://www.boost.org/LICENSE_1_0.txt).

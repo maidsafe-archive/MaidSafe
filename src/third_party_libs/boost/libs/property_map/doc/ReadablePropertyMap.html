@@ -20,8 +20,8 @@
 Readable Property Map
 </H2>
 
-A Readable Property Map provides read-access to the value object associated with a given key via a call to the <tt>get()</tt> function.
-The <tt>get()</tt> function returns a copy of the value object.
+A Readable Property Map provides read-access to the value  associated with a given key via a call to the <tt>get()</tt> function.
+The return type of the <tt>get()</tt>function   is either the <tt>value_type</tt> of the property map or a (const or non-const) reference to that type.
 
 <h3>Refinement of</h3>
 
@@ -95,7 +95,7 @@ The category of the property: a type convertible to
 <td>Get Property Value </td>
 <TD><TT>get(pmap, key)</TT></TD>
 <TD><TT>reference</TT></TD>
-<TD>Lookup the property of the object identified by <TT>key</TT>.</TD>
+<TD>Lookup the value associated with <TT>key</TT>.</TD>
 </TR>
 
 </TABLE>

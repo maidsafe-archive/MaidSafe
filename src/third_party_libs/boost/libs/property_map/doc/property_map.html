@@ -245,6 +245,7 @@ functions are defined in <tt>&lt;boost/property_map/property_map.hpp&gt;</tt>.
   struct property_traits {
      typedef typename PropertyMap::key_type key_type;
      typedef typename PropertyMap::value_type value_type;
+     typedef typename PropertyMap::reference reference;
      typedef typename PropertyMap::category category;
   };
 
@@ -268,6 +269,7 @@ functions are defined in <tt>&lt;boost/property_map/property_map.hpp&gt;</tt>.
   template &lt;typename T&gt;
   struct property_traits&lt;T*&gt; {
     typedef T value_type;
+    typedef T&amp; reference;
     typedef std::ptrdiff_t key_type;
     typedef random_access_iterator_pa_tag category;
   };
@@ -281,13 +283,15 @@ functions are defined in <tt>&lt;boost/property_map/property_map.hpp&gt;</tt>.
 
 }</PRE>
   </li>
-  <li><a href="./identity_property_map.html">identity_property_map</a> </li>
+  <li><a href="./identity_property_map.html">identity_property_map and typed_identity_property_map</a> </li>
+  <li><a href="./function_property_map.html">function_property_map</a> </li>
   <li><a href="./iterator_property_map.html">iterator_property_map</a></li>
   <li><a href="./shared_array_property_map.html">shared_array_property_map</a></li>
   <li><a href="./associative_property_map.html">associative_property_map</a></li>
   <li><a href="./const_assoc_property_map.html">const_associative_property_map</a></li>
   <li><a href="./vector_property_map.html">vector_property_map</a></li>
   <li><a href="./ref_property_map.html">ref_property_map</a> </li>
+  <li><a href="./transform_value_property_map.html">transform_value_property_map</a> </li>
 </ul>
 
 <h3>History</h3>
@@ -317,7 +321,7 @@ passed by value.
 <HR>
 <TABLE>
 <TR valign=top>
-<TD nowrap>Copyright &copy 2000-2002</TD><TD>
+<TD nowrap>Copyright &copy; 2000-2002</TD><TD>
 <a HREF="http://www.boost.org/people/jeremy_siek.htm">Jeremy Siek</a>, Indiana University (<A HREF="mailto:jsiek@osl.iu.edu">jsiek@osl.iu.edu</A>)
 </TD></TR></TABLE>
 

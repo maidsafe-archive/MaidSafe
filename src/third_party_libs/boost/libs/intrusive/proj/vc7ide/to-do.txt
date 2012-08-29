@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga  2006-2009
+// (C) Copyright Ion Gaztanaga  2006-2012
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -18,6 +18,8 @@
 -> Take all pointers by const reference to optimize shared memory pointers
 -> Return pointers by const reference if node traits return them by const reference to optimize shared memory pointers
 -> Detect call signatures by has_member_function_callable_with instead of exact match to allow taking by const reference
+-> Optimize operations taking const_node_pointer using template parameters and SFINAE to allow node_ptr
+
 
 
 The article explains it quite well: Linear Hashing The cost of hash table expansion is spread out across each hash table insertion operation, as opposed to being incurred all at once. Linear hashing is therefore well suited for interactive applications.
@@ -28,6 +30,7 @@ For more information on hashing alternatives see the original standard hashing c
 
 http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2003/n1456.html
 
-Now, intrusive containers don't allocate memory at all, so incremental rehashing must be trigered by the user using 
+Now, intrusive containers don't allocate memory at all, so incremental rehashing must be trigered by the user using
 "incremental_rehash(bool)" (use an additional bucket, that is, incremental rehash) and "incremental_rehash(bucket_traits)" (to update the new bucket array with an array that should be twice/half the size of the previous one). I admit that this is not explained at all with an example, so I will note this issue in my to do list.
 
+Review throwing conditions in trees. Searches say nothrow, but if comparison throws the function will throw.

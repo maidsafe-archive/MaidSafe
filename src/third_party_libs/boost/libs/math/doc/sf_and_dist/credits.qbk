@@ -64,6 +64,8 @@ Thanks to Mark Coleman and Georgi Boshnakov for spot test values
 from __Mathematica, and of course,
 to Eric Weissten for nurturing __Mathworld, an invaluable resource. 
 
+The Skew-normal distribution and Owen's t function were written by Benjamin Sobotta.
+
 Plots of the functions and distributions were prepared in
 [@http://www.w3.org/ W3C] standard
 [@http://www.svg.org/ Scalable Vector Graphic (SVG)] format

@@ -401,7 +401,7 @@ td.is_neg_infinity(); // --> true</screen></entry>
             <entry>Returns true if time_duration is positive infinity</entry>
           </row>
           <row>
-            <entry><screen>time_duration td(neg_infin); 
+            <entry><screen>time_duration td(pos_infin); 
 td.is_pos_infinity(); // --> true</screen></entry>
           </row>
           

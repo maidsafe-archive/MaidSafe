@@ -309,6 +309,21 @@
 					RelativePath="..\..\..\..\boost\interprocess\sync\windows\mutex.hpp">
 				</File>
 				<File
+					RelativePath="..\..\..\..\boost\interprocess\sync\windows\named_condition.hpp">
+				</File>
+				<File
+					RelativePath="..\..\..\..\boost\interprocess\sync\windows\named_mutex.hpp">
+				</File>
+				<File
+					RelativePath="..\..\..\..\boost\interprocess\sync\windows\named_recursive_mutex.hpp">
+				</File>
+				<File
+					RelativePath="..\..\..\..\boost\interprocess\sync\windows\named_semaphore.hpp">
+				</File>
+				<File
+					RelativePath="..\..\..\..\boost\interprocess\sync\windows\named_sync.hpp">
+				</File>
+				<File
 					RelativePath="..\..\..\..\boost\interprocess\sync\windows\recursive_mutex.hpp">
 				</File>
 				<File
@@ -316,6 +331,12 @@
 				</File>
 				<File
 					RelativePath="..\..\..\..\boost\interprocess\sync\windows\sync_utils.hpp">
+				</File>
+				<File
+					RelativePath="..\..\..\..\boost\interprocess\sync\windows\winapi_mutex_wrapper.hpp">
+				</File>
+				<File
+					RelativePath="..\..\..\..\boost\interprocess\sync\windows\winapi_semaphore_wrapper.hpp">
 				</File>
 			</Filter>
 			<Filter
@@ -338,6 +359,13 @@
 				</File>
 				<File
 					RelativePath="..\..\..\..\boost\interprocess\sync\shm\named_upgradable_mutex.hpp">
+				</File>
+			</Filter>
+			<Filter
+				Name="detail"
+				Filter="">
+				<File
+					RelativePath="..\..\..\..\boost\interprocess\sync\detail\condition_algorithm_8a.hpp">
 				</File>
 			</Filter>
 		</Filter>
@@ -436,6 +464,9 @@
 				RelativePath="..\..\..\..\boost\interprocess\detail\config_end.hpp">
 			</File>
 			<File
+				RelativePath="..\..\..\..\boost\interprocess\detail\file_locking_helpers.hpp">
+			</File>
+			<File
 				RelativePath="..\..\..\..\boost\interprocess\detail\file_wrapper.hpp">
 			</File>
 			<File
@@ -449,6 +480,12 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\boost\interprocess\detail\intersegment_ptr.hpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\boost\interprocess\detail\lock_file_utilities.hpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\boost\interprocess\detail\managed_global_memory.hpp">
 			</File>
 			<File
 				RelativePath="..\..\..\..\boost\interprocess\detail\managed_memory_impl.hpp">
@@ -528,6 +565,19 @@
 			<File
 				RelativePath="..\..\..\..\boost\interprocess\detail\xsi_shared_memory_file_wrapper.hpp">
 			</File>
+			<Filter
+				Name="intermodule"
+				Filter="">
+				<File
+					RelativePath="..\..\..\..\boost\interprocess\detail\intermodule_singleton_common.hpp">
+				</File>
+				<File
+					RelativePath="..\..\..\..\boost\interprocess\detail\portable_intermodule_singleton.hpp">
+				</File>
+				<File
+					RelativePath="..\..\..\..\boost\interprocess\detail\windows_intermodule_singleton.hpp">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Documentation"

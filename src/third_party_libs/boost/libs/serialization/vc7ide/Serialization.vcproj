@@ -357,6 +357,9 @@
 				RelativePath="..\..\..\boost\serialization\shared_ptr_132.hpp">
 			</File>
 			<File
+				RelativePath="..\..\..\boost\archive\shared_ptr_helper.hpp">
+			</File>
+			<File
 				RelativePath="..\..\..\boost\serialization\slist.hpp">
 			</File>
 			<File
@@ -385,9 +388,6 @@
 				</File>
 				<File
 					RelativePath="..\..\..\boost\serialization\detail\shared_ptr_132.hpp">
-				</File>
-				<File
-					RelativePath="..\..\..\boost\archive\shared_ptr_helper.hpp">
 				</File>
 			</Filter>
 		</Filter>
@@ -744,6 +744,12 @@
 			</File>
 			<File
 				RelativePath="..\src\basic_iarchive.cpp">
+				<FileConfiguration
+					Name="Debug runtime-static|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						WarningLevel="4"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\src\basic_iserializer.cpp">

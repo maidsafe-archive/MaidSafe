@@ -31,7 +31,7 @@ __header ` #include <boost/type_traits/decay.hpp>` or ` #include <boost/type_tra
 
 [[`decay<int(&)(double)>::type`] [`int(*)(double)`]]
 
-[[`int(*)(double`] [`int(*)(double)`]]
+[[`int(*)(double)`] [`int(*)(double)`]]
 [[`int(double)`] [`int(*)(double)`]]
 
 ]

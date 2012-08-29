@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 4>, 400> assoc_legendre_p = {{
+   static const boost::array<boost::array<typename table_type<T>::type, 4>, 400> assoc_legendre_p = {{
       {{ SC_(3.755727291107177734375), SC_(-3), SC_(0.264718532562255859375), SC_(0.018682285998021253444483874168352748715136623066073) }}, 
       {{ SC_(3.755727291107177734375), SC_(-3), SC_(0.67001712322235107421875), SC_(0.0085227010576716344744906184676725516467064196759033) }}, 
       {{ SC_(3.755727291107177734375), SC_(-3), SC_(0.91501367092132568359375), SC_(0.0013678553914178941694232605088191864494205442141689) }}, 

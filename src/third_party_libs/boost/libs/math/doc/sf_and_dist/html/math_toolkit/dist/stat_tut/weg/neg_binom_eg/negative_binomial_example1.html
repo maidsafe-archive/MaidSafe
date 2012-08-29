@@ -73,7 +73,8 @@
 <p>
 </p>
 <pre class="programlisting"><span class="preprocessor">#define</span> <span class="identifier">BOOST_MATH_OVERFLOW_ERROR_POLICY</span> <span class="identifier">ignore_error</span>
-<span class="preprocessor">#define</span> <span class="identifier">BOOST_MATH_DISCRETE_QUANTILE_POLICY</span> <span class="identifier">real</span></pre>
+<span class="preprocessor">#define</span> <span class="identifier">BOOST_MATH_DISCRETE_QUANTILE_POLICY</span> <span class="identifier">real</span>
+</pre>
 <p>
             </p>
 <p>
@@ -124,7 +125,8 @@
 <p>
 </p>
 <pre class="programlisting"><span class="keyword">try</span>
-<span class="special">{</span></pre>
+<span class="special">{</span>
+</pre>
 <p>
             </p>
 <p>
@@ -134,7 +136,8 @@
             </p>
 <p>
 </p>
-<pre class="programlisting"><span class="keyword">double</span> <span class="identifier">sales_quota</span> <span class="special">=</span> <span class="number">5</span><span class="special">;</span> <span class="comment">// Pat's sales quota - successes (r).</span></pre>
+<pre class="programlisting"><span class="keyword">double</span> <span class="identifier">sales_quota</span> <span class="special">=</span> <span class="number">5</span><span class="special">;</span> <span class="comment">// Pat's sales quota - successes (r).</span>
+</pre>
 <p>
             </p>
 <p>
@@ -143,7 +146,8 @@
             </p>
 <p>
 </p>
-<pre class="programlisting"><span class="keyword">double</span> <span class="identifier">success_fraction</span> <span class="special">=</span> <span class="number">0.4</span><span class="special">;</span> <span class="comment">// success_fraction (p) - so failure_fraction is 0.6.</span></pre>
+<pre class="programlisting"><span class="keyword">double</span> <span class="identifier">success_fraction</span> <span class="special">=</span> <span class="number">0.4</span><span class="special">;</span> <span class="comment">// success_fraction (p) - so failure_fraction is 0.6.</span>
+</pre>
 <p>
             </p>
 <p>
@@ -160,7 +164,8 @@
             </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">negative_binomial</span> <span class="identifier">nb</span><span class="special">(</span><span class="identifier">sales_quota</span><span class="special">,</span> <span class="identifier">success_fraction</span><span class="special">);</span> <span class="comment">// type double by default.</span></pre>
+<pre class="programlisting"><span class="identifier">negative_binomial</span> <span class="identifier">nb</span><span class="special">(</span><span class="identifier">sales_quota</span><span class="special">,</span> <span class="identifier">success_fraction</span><span class="special">);</span> <span class="comment">// type double by default.</span>
+</pre>
 <p>
             </p>
 <p>
@@ -178,7 +183,8 @@
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"With a success rate of "</span> <span class="special">&lt;&lt;</span> <span class="identifier">nb</span><span class="special">.</span><span class="identifier">success_fraction</span><span class="special">()</span>
   <span class="special">&lt;&lt;</span> <span class="string">", he might expect, on average,\n"</span>
     <span class="string">"to need to visit about "</span> <span class="special">&lt;&lt;</span> <span class="identifier">success_fraction</span> <span class="special">*</span> <span class="identifier">all_houses</span>
-    <span class="special">&lt;&lt;</span> <span class="string">" houses in order to sell all "</span> <span class="special">&lt;&lt;</span> <span class="identifier">nb</span><span class="special">.</span><span class="identifier">successes</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="string">" bars. "</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+    <span class="special">&lt;&lt;</span> <span class="string">" houses in order to sell all "</span> <span class="special">&lt;&lt;</span> <span class="identifier">nb</span><span class="special">.</span><span class="identifier">successes</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="string">" bars. "</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Pat has a sales per house success rate of 0.4.
@@ -200,7 +206,8 @@ to need to visit about 12 houses in order to sell all 5 bars.
 <p>
 </p>
 <pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability that Pat finishes on the "</span> <span class="special">&lt;&lt;</span> <span class="identifier">sales_quota</span> <span class="special">&lt;&lt;</span> <span class="string">"th house is "</span>
-  <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">5</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// == pdf(nb, 0)</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">5</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// == pdf(nb, 0)</span>
+</pre>
 <p>
             </p>
 <p>
@@ -220,7 +227,8 @@ to need to visit about 12 houses in order to sell all 5 bars.
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability that Pat finishes on the 7th house is "</span>
   <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">7</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability that Pat finishes on the 8th house is "</span>
-  <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">8</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">8</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability that Pat finishes on the 6th house is 0.03072
@@ -240,7 +248,8 @@ Probability that Pat finishes on the 8th house is 0.077414
     <span class="special">+</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">6</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="comment">// 1 failure.</span>
     <span class="special">+</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">7</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="comment">// 2 failures.</span>
     <span class="special">+</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">8</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="comment">// 3 failures.</span>
-  <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">pdf(sales_quota) + pdf(6) + pdf(7) + pdf(8) = 0.17367
@@ -253,7 +262,8 @@ Probability that Pat finishes on the 8th house is 0.077414
 </p>
 <pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"\nProbability of selling his quota of "</span> <span class="special">&lt;&lt;</span> <span class="identifier">sales_quota</span>
   <span class="special">&lt;&lt;</span> <span class="string">" bars\non or before the "</span> <span class="special">&lt;&lt;</span> <span class="number">8</span> <span class="special">&lt;&lt;</span> <span class="string">"th house is "</span>
-  <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">8</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">8</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of selling his quota of 5 bars on or before the 8th house is 0.17367
@@ -264,7 +274,8 @@ Probability that Pat finishes on the 8th house is 0.077414
   <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">10</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"\nProbability of selling his quota of "</span> <span class="special">&lt;&lt;</span> <span class="identifier">sales_quota</span>
   <span class="special">&lt;&lt;</span> <span class="string">" bars\non or before the "</span> <span class="special">&lt;&lt;</span> <span class="number">10</span> <span class="special">&lt;&lt;</span> <span class="string">"th house is "</span>
-  <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">10</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">10</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability that Pat finishes exactly on the 10th house is 0.10033
@@ -276,7 +287,8 @@ Probability of selling his quota of 5 bars on or before the 10th house is 0.3669
   <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">11</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"\nProbability of selling his quota of "</span> <span class="special">&lt;&lt;</span> <span class="identifier">sales_quota</span>
   <span class="special">&lt;&lt;</span> <span class="string">" bars\non or before the "</span> <span class="special">&lt;&lt;</span> <span class="number">11</span> <span class="special">&lt;&lt;</span> <span class="string">"th house is "</span>
-  <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">11</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">11</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability that Pat finishes on the 11th house is 0.10033
@@ -290,7 +302,8 @@ on or before the 11th house is 0.46723
 
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"\nProbability of selling his quota of "</span> <span class="special">&lt;&lt;</span> <span class="identifier">sales_quota</span>
   <span class="special">&lt;&lt;</span> <span class="string">" bars\non or before the "</span> <span class="special">&lt;&lt;</span> <span class="number">12</span> <span class="special">&lt;&lt;</span> <span class="string">"th house is "</span>
-  <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">12</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">12</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability that Pat finishes on the 12th house is 0.094596
@@ -306,7 +319,8 @@ on or before the 12th house is 0.56182
 <p>
 </p>
 <pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability that Pat finishes on the "</span> <span class="special">&lt;&lt;</span> <span class="identifier">all_houses</span>
-  <span class="special">&lt;&lt;</span> <span class="string">" house is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="identifier">all_houses</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="string">" house is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="identifier">all_houses</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <p>
@@ -326,7 +340,8 @@ on or before the 12th house is 0.56182
 </p>
 <pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"\nProbability of selling his quota of "</span> <span class="special">&lt;&lt;</span> <span class="identifier">sales_quota</span>
   <span class="special">&lt;&lt;</span> <span class="string">" bars\non or before the "</span> <span class="special">&lt;&lt;</span> <span class="identifier">all_houses</span> <span class="special">&lt;&lt;</span> <span class="string">"th house is "</span>
-  <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="identifier">all_houses</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="identifier">all_houses</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of selling his quota of 5 bars
@@ -367,7 +382,8 @@ on or before the 30th house is 0.99849
 </p>
 <pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"\nProbability of failing to sell his quota of "</span> <span class="special">&lt;&lt;</span> <span class="identifier">sales_quota</span>
   <span class="special">&lt;&lt;</span> <span class="string">" bars\neven after visiting all "</span> <span class="special">&lt;&lt;</span> <span class="identifier">all_houses</span> <span class="special">&lt;&lt;</span> <span class="string">" houses is "</span>
-  <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="identifier">all_houses</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="identifier">all_houses</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of failing to sell his quota of 5 bars
@@ -380,7 +396,8 @@ even after visiting all 30 houses is 0.0015101
 <p>
 </p>
 <pre class="programlisting"><span class="keyword">double</span> <span class="identifier">p</span> <span class="special">=</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="special">(</span><span class="number">8</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">));</span>
-<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of meeting sales quota on or before 8th house is "</span><span class="special">&lt;&lt;</span> <span class="identifier">p</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of meeting sales quota on or before 8th house is "</span><span class="special">&lt;&lt;</span> <span class="identifier">p</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of meeting sales quota on or before 8th house is 0.174
@@ -390,7 +407,8 @@ even after visiting all 30 houses is 0.0015101
 <pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"If the confidence of meeting sales quota is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">p</span>
     <span class="special">&lt;&lt;</span> <span class="string">", then the finishing house is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="identifier">p</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">sales_quota</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
 
-<span class="identifier">cout</span><span class="special">&lt;&lt;</span> <span class="string">" quantile(nb, p) = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="identifier">p</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+<span class="identifier">cout</span><span class="special">&lt;&lt;</span> <span class="string">" quantile(nb, p) = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="identifier">p</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">If the confidence of meeting sales quota is 0.17367, then the finishing house is 8
@@ -405,7 +423,8 @@ even after visiting all 30 houses is 0.0015101
 </p>
 <pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"If the confidence of meeting sales quota is "</span> <span class="special">&lt;&lt;</span> <span class="number">1.</span>
     <span class="special">&lt;&lt;</span> <span class="string">", then the finishing house is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">1</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">sales_quota</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
-<span class="comment">//  1.#INF == infinity.</span></pre>
+<span class="comment">//  1.#INF == infinity.</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">If the confidence of meeting sales quota is 1, then the finishing house is 1.#INF
@@ -422,7 +441,8 @@ even after visiting all 30 houses is 0.0015101
     <span class="special">&lt;&lt;</span> <span class="string">", then the finishing house is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">0.5</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">sales_quota</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
 
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"If the confidence of meeting sales quota is "</span> <span class="special">&lt;&lt;</span> <span class="number">1</span> <span class="special">-</span> <span class="number">0.00151</span> <span class="comment">// 30 th</span>
-    <span class="special">&lt;&lt;</span> <span class="string">", then the finishing house is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">1</span> <span class="special">-</span> <span class="number">0.00151</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">sales_quota</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+    <span class="special">&lt;&lt;</span> <span class="string">", then the finishing house is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">1</span> <span class="special">-</span> <span class="number">0.00151</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">sales_quota</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">If the confidence of meeting sales quota is 0, then the finishing house is 5
@@ -441,7 +461,8 @@ If the confidence of meeting sales quota is 0.99849, then the finishing house is
 <p>
 </p>
 <pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"If confidence of meeting quota is zero\n(we assume all houses are successful sales)"</span>
-  <span class="string">", then finishing house is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">sales_quota</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="string">", then finishing house is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">sales_quota</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">If confidence of meeting quota is zero (we assume all houses are successful sales), then finishing house is 5
@@ -460,7 +481,8 @@ If confidence of meeting quota is 0, then finishing house is 5
    <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"If confidence of meeting quota is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">ps</span><span class="special">[</span><span class="identifier">i</span><span class="special">]</span>
      <span class="special">&lt;&lt;</span> <span class="string">", then finishing house is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="identifier">ps</span><span class="special">[</span><span class="identifier">i</span><span class="special">])</span> <span class="special">+</span> <span class="identifier">sales_quota</span>
      <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
-<span class="special">}</span></pre>
+<span class="special">}</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">If confidence of meeting quota is 0, then finishing house is 5
@@ -514,7 +536,8 @@ If confidence of meeting quota is 0.95, then finishing house is 21
 <span class="special">{</span>
   <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">left</span> <span class="special">&lt;&lt;</span> <span class="identifier">setw</span><span class="special">(</span><span class="number">3</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">i</span> <span class="special">&lt;&lt;</span> <span class="string">"                             "</span> <span class="special">&lt;&lt;</span> <span class="identifier">setw</span><span class="special">(</span><span class="number">8</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="identifier">i</span> <span class="special">-</span> <span class="identifier">sales_quota</span><span class="special">)</span>  <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
 <span class="special">}</span>
-<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">House for 5 th (last) sale.  Probability (%)
@@ -555,7 +578,8 @@ If confidence of meeting quota is 0.95, then finishing house is 21
 <span class="keyword">catch</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">exception</span><span class="special">&amp;</span> <span class="identifier">e</span><span class="special">)</span>
 <span class="special">{</span> <span class="comment">// Since we have set an overflow policy of ignore_error,</span>
   <span class="comment">// an overflow exception should never be thrown.</span>
-   <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"\nMessage from thrown exception was:\n "</span> <span class="special">&lt;&lt;</span> <span class="identifier">e</span><span class="special">.</span><span class="identifier">what</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span></pre>
+   <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"\nMessage from thrown exception was:\n "</span> <span class="special">&lt;&lt;</span> <span class="identifier">e</span><span class="special">.</span><span class="identifier">what</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <p>
@@ -573,7 +597,7 @@ If confidence of meeting quota is 0.95, then finishing house is 21
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
 <td align="right"><div class="copyright-footer">Copyright &#169; 2006-2010 John Maddock, Paul A. Bristow, Hubert Holin, Xiaogang Zhang, Bruno
-      Lalande, Johan R&#229;de, Gautam Sewani and Thijs van den Berg<p>
+      Lalande, Johan R&#229;de, Gautam Sewani, Thijs van den Berg and Benjamin Sobotta<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

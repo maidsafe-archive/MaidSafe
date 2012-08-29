@@ -453,19 +453,22 @@ changed to:
 ]
 
 Note that unlike the sample config file supplied with SVGMath, this does not
-make use of the Mathematica 7 font as this lacks sufficient Unicode information
+make use of the [@http://support.wolfram.com/technotes/fonts/windows/latestfonts.html Mathematica 7 font]
+as this lacks sufficient Unicode information
 for it to be used with either SVGMath or XEP "as is".
 
 Also note that the SVG files in the repository are almost certainly
 Windows-specific since they reference various Windows Fonts.
 
-PNG files can be created from the SVG's using
+PNG files can be created from the SVGs using
 [@http://xmlgraphics.apache.org/batik/tools/rasterizer.html Batik]
 and a command such as:
 
 [pre java -jar 'C:\download\open\batik-1.7\batik-rasterizer.jar' -dpi 120 *.svg]
 
-Or using Inkscape and a command such as:
+Or using Inkscape (File, Export bitmap, Drawing tab, bitmap size (default size, 100 dpi), Filename (default). png)
+
+or Using Cygwin, a command such as:
 
 [pre for file in *.svg; do
   /cygdrive/c/progra~1/Inkscape/inkscape -d 120 -e $(cygpath -a -w $(basename $file .svg).png) $(cygpath -a -w $file);

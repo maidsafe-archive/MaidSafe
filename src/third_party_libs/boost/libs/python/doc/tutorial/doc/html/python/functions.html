@@ -372,8 +372,8 @@ Namespaces are one honking great idea -- let's do more of those!
         or writing thin wrappers:
       </p>
 <pre class="programlisting"><span class="comment">// write "thin wrappers"</span>
-<span class="keyword">int</span> <span class="identifier">f1</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">x</span><span class="special">)</span> <span class="special">{</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">x</span><span class="special">);</span> <span class="special">}</span>
-<span class="keyword">int</span> <span class="identifier">f2</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">x</span><span class="special">,</span> <span class="keyword">double</span> <span class="identifier">y</span><span class="special">)</span> <span class="special">{</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">x</span><span class="special">,</span><span class="identifier">y</span><span class="special">);</span> <span class="special">}</span>
+<span class="keyword">int</span> <span class="identifier">f1</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">x</span><span class="special">)</span> <span class="special">{</span> <span class="keyword">return</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">x</span><span class="special">);</span> <span class="special">}</span>
+<span class="keyword">int</span> <span class="identifier">f2</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">x</span><span class="special">,</span> <span class="keyword">double</span> <span class="identifier">y</span><span class="special">)</span> <span class="special">{</span> <span class="keyword">return</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">x</span><span class="special">,</span><span class="identifier">y</span><span class="special">);</span> <span class="special">}</span>
 
 <span class="comment">/*...*/</span>
 

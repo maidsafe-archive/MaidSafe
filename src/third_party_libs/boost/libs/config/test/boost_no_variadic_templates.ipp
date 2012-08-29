@@ -5,11 +5,11 @@
 
 //  See http://www.boost.org/libs/config for most recent version.
 
-//  MACRO:         BOOST_NO_VARIADIC_TEMPLATES
+//  MACRO:         BOOST_NO_CXX11_VARIADIC_TEMPLATES
 //  TITLE:         C++0x variadic templates unavailable
 //  DESCRIPTION:   The compiler does not support C++0x variadic templates
 
-namespace boost_no_variadic_templates {
+namespace boost_no_cxx11_variadic_templates {
 
 template<typename... Elements> struct tuple {};
 

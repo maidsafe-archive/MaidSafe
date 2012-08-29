@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 2>, 500> digamma_data = { {
+   static const boost::array<boost::array<typename table_type<T>::type, 2>, 500> digamma_data = { {
       {{ SC_(2.818432331085205078125), SC_(0.8484115700906551606307984398000472347785) }}, 
       {{ SC_(4.6342258453369140625), SC_(1.421713669467331557347601964119226105014) }}, 
       {{ SC_(4.783483982086181640625), SC_(1.457016504476551729585831562031964212238) }}, 

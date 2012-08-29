@@ -22,7 +22,7 @@
 <div class="spirit-nav">
 <a accesskey="p" href="../index.html"><img src="../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="guidelines_for_boost_authors.html"><img src="../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
-<div class="section">
+<div class="section boost_config_boost_macro_reference">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="boost_config.boost_macro_reference"></a><a class="link" href="boost_macro_reference.html" title="Boost Macro Reference">Boost Macro Reference</a>
 </h2></div></div></div>
@@ -41,10 +41,12 @@
       Helper Macros</a></span></dt>
 <dt><span class="section"><a href="boost_macro_reference.html#boost_config.boost_macro_reference.boost_informational_macros">Boost
       Informational Macros</a></span></dt>
+<dt><span class="section"><a href="boost_macro_reference.html#boost_config.boost_macro_reference.boost_deprecated_macros">Boost
+      Deprecated Macros</a></span></dt>
 <dt><span class="section"><a href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_for_libraries_with_separate_source_code">Macros
       for libraries with separate source code</a></span></dt>
 </dl></div>
-<div class="section">
+<div class="section boost_config_boost_macro_reference_macros_that_describe_c__03_defects">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_config.boost_macro_reference.macros_that_describe_c__03_defects"></a><a name="config_defects"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__03_defects" title="Macros that describe C++03 defects">Macros
       that describe C++03 defects</a>
@@ -315,7 +317,7 @@
 <td>
                 <p>
                   The compiler fails to compile a nested class that has a dependent
-                  base class: 
+                  base class:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span>
 <span class="keyword">struct</span> <span class="identifier">foo</span> <span class="special">:</span> <span class="special">{</span>
@@ -341,9 +343,8 @@
 <td>
                 <p>
                   Template value parameters cannot have a dependent type, for example:
-                  
 </p>
-<pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">T</span><span class="special">::</span><span class="identifier">type</span> <span class="identifier">value</span><span class="special">&gt;</span> 
+<pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">T</span><span class="special">::</span><span class="identifier">type</span> <span class="identifier">value</span><span class="special">&gt;</span>
 <span class="keyword">class</span> <span class="identifier">X</span> <span class="special">{</span> <span class="special">...</span> <span class="special">};</span>
 </pre>
 <p>
@@ -422,7 +423,7 @@
 <td>
                 <p>
                   The compiler does not perform function template ordering or its
-                  function template ordering is incorrect. 
+                  function template ordering is incorrect.
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="comment">// #1</span>
 <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span> <span class="keyword">void</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">T</span><span class="special">);</span>
@@ -1314,7 +1315,7 @@
 <td>
                 <p>
                   The compiler does not allow a void function to return the result
-                  of calling another void function. 
+                  of calling another void function.
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">void</span> <span class="identifier">f</span><span class="special">()</span> <span class="special">{}</span>
 <span class="keyword">void</span> <span class="identifier">g</span><span class="special">()</span> <span class="special">{</span> <span class="keyword">return</span> <span class="identifier">f</span><span class="special">();</span> <span class="special">}</span>
@@ -1326,7 +1327,7 @@
 </tbody>
 </table></div>
 </div>
-<div class="section">
+<div class="section boost_config_boost_macro_reference_macros_that_describe_optional_features">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_config.boost_macro_reference.macros_that_describe_optional_features"></a><a name="config_features"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_optional_features" title="Macros that describe optional features">Macros
       that describe optional features</a>
@@ -2235,7 +2236,7 @@
 </tbody>
 </table></div>
 </div>
-<div class="section">
+<div class="section boost_config_boost_macro_reference_macros_that_describe_possible_c___future_features">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_config.boost_macro_reference.macros_that_describe_possible_c___future_features"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_possible_c___future_features" title="Macros that describe possible C++ future features">Macros
       that describe possible C++ future features</a>
@@ -2275,7 +2276,7 @@
 </tr></tbody>
 </table></div>
 </div>
-<div class="section">
+<div class="section boost_config_boost_macro_reference_macros_that_describe_c__11_features_not_supported">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_config.boost_macro_reference.macros_that_describe_c__11_features_not_supported"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_describe_c__11_features_not_supported" title="Macros that describe C++11 features not supported">Macros
       that describe C++11 features not supported</a>
@@ -2305,7 +2306,32 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_ARRAY</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_ALLOCATOR</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The standard library does not provide a C++11 version of <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">allocator</span></code> in &lt;memory&gt;.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_ATOMIC_SP</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The standard library &lt;memory&gt; does not support atomic smart
+                  pointer operations.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_ARRAY</span></code>
                 </p>
               </td>
 <td>
@@ -2317,7 +2343,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_CHRONO</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_CHRONO</span></code>
                 </p>
               </td>
 <td>
@@ -2329,7 +2355,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_CODECVT</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_CODECVT</span></code>
                 </p>
               </td>
 <td>
@@ -2341,7 +2367,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_CONDITION_VARIABLE</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_CONDITION_VARIABLE</span></code>
                 </p>
               </td>
 <td>
@@ -2353,7 +2379,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_FORWARD_LIST</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_FORWARD_LIST</span></code>
                 </p>
               </td>
 <td>
@@ -2365,7 +2391,20 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_FUTURE</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_FUNCTIONAL</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The standard library does not provide a C++11 compatible version
+                  of &lt;functional&gt;.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_FUTURE</span></code>
                 </p>
               </td>
 <td>
@@ -2377,7 +2416,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_INITIALIZER_LIST</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_INITIALIZER_LIST</span></code>
                 </p>
               </td>
 <td>
@@ -2389,7 +2428,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_MUTEX</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_MUTEX</span></code>
                 </p>
               </td>
 <td>
@@ -2401,7 +2440,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_RANDOM</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_RANDOM</span></code>
                 </p>
               </td>
 <td>
@@ -2413,7 +2452,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_RATIO</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_RATIO</span></code>
                 </p>
               </td>
 <td>
@@ -2425,7 +2464,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_REGEX</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_REGEX</span></code>
                 </p>
               </td>
 <td>
@@ -2437,7 +2476,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_SYSTEM_ERROR</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_SYSTEM_ERROR</span></code>
                 </p>
               </td>
 <td>
@@ -2449,7 +2488,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_THREAD</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_THREAD</span></code>
                 </p>
               </td>
 <td>
@@ -2461,7 +2500,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_TUPLE</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_TUPLE</span></code>
                 </p>
               </td>
 <td>
@@ -2473,7 +2512,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_TYPEINDEX</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_TYPEINDEX</span></code>
                 </p>
               </td>
 <td>
@@ -2485,7 +2524,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_TYPE_TRAITS</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_TYPE_TRAITS</span></code>
                 </p>
               </td>
 <td>
@@ -2497,7 +2536,7 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_UNORDERED_MAP</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_UNORDERED_MAP</span></code>
                 </p>
               </td>
 <td>
@@ -2509,12 +2548,25 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_UNORDERED_SET</span></code>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_UNORDERED_SET</span></code>
                 </p>
               </td>
 <td>
                 <p>
                   The standard library does not provide header &lt;unordered_set&gt;.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_SMART_PTR</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The standard library header &lt;memory&gt; has no shared_ptr and
+                  unique_ptr.
                 </p>
               </td>
 </tr>
@@ -2692,24 +2744,26 @@
 <tr>
 <td>
                 <p>
-                  <code class="computeroutput"><span class="identifier">BOOST_NO_INITIALIZER_LISTS</span></code>
-                </p>
-              </td>
-<td>
-                <p>
-                  The C++ compiler does not support C++0x initializer lists.
-                </p>
-              </td>
-</tr>
-<tr>
-<td>
-                <p>
                   <code class="computeroutput"><span class="identifier">BOOST_NO_LAMBDAS</span></code>
                 </p>
               </td>
 <td>
                 <p>
                   The compiler does not support Lambdas.
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_LOCAL_CLASS_TEMPLATE_PARAMETERS</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  The compiler does not allow to pass local classes as template parameters
+                  (this macro intentionally does not control passing of unnamed types
+                  as template parameters, see also <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2008/n2657.htm" target="_top">N2657</a>).
                 </p>
               </td>
 </tr>
@@ -2876,7 +2930,7 @@
 </tbody>
 </table></div>
 </div>
-<div class="section">
+<div class="section boost_config_boost_macro_reference_macros_that_allow_use_of_c__11_features_with_c__03_compilers">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_config.boost_macro_reference.macros_that_allow_use_of_c__11_features_with_c__03_compilers"></a><a name="config_11_for_03"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_that_allow_use_of_c__11_features_with_c__03_compilers" title="Macros that allow use of C++11 features with C++03 compilers">Macros
       that allow use of C++11 features with C++03 compilers</a>
@@ -2898,11 +2952,6 @@
               </th>
 <th>
                 <p>
-                  Section
-                </p>
-              </th>
-<th>
-                <p>
                   Description
                 </p>
               </th>
@@ -2918,12 +2967,12 @@
                 <p>
                   Some compilers don't support the use of <code class="computeroutput"><span class="identifier">constexpr</span></code>.
                   This macro expands to nothing on those compilers, and <code class="computeroutput"><span class="identifier">constexpr</span></code> elsewhere. For example,
-                  when defining a constexpr function or constructor replace: 
+                  when defining a constexpr function or constructor replace:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="identifier">constexpr</span> <span class="identifier">tuple</span><span class="special">();</span>
 </pre>
 <p>
-                  with: 
+                  with:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="identifier">BOOST_CONSTEXPR</span> <span class="identifier">tuple</span><span class="special">();</span>
 </pre>
@@ -2943,12 +2992,11 @@
                   This macro expands to <code class="computeroutput"><span class="keyword">const</span></code>
                   on those compilers, and <code class="computeroutput"><span class="identifier">constexpr</span></code>
                   elsewhere. For example, when defining const expr variables replace:
-                  
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">static</span> <span class="identifier">constexpr</span> <span class="identifier">UIntType</span> <span class="identifier">xor_mask</span> <span class="special">=</span> <span class="identifier">a</span><span class="special">;</span>
 </pre>
 <p>
-                  with: 
+                  with:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">static</span> <span class="identifier">BOOST_CONSTEXPR_OR_CONST</span> <span class="identifier">UIntType</span> <span class="identifier">xor_mask</span> <span class="special">=</span> <span class="identifier">a</span><span class="special">;</span>
 </pre>
@@ -2965,13 +3013,13 @@
 <td>
                 <p>
                   This is a shortcut for <code class="computeroutput"><span class="keyword">static</span>
-                  <span class="identifier">BOOST_CONSTEXPR_OR_CONST</span></code>For
-                  example, when defining const expr variables replace: 
+                  <span class="identifier">BOOST_CONSTEXPR_OR_CONST</span></code>.
+                  For example, when defining const expr variables replace:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">static</span> <span class="identifier">constexpr</span> <span class="identifier">UIntType</span> <span class="identifier">xor_mask</span> <span class="special">=</span> <span class="identifier">a</span><span class="special">;</span>
 </pre>
 <p>
-                  with: 
+                  with:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="identifier">BOOST_STATIC_CONSTEXPR</span> <span class="identifier">UIntType</span> <span class="identifier">xor_mask</span> <span class="special">=</span> <span class="identifier">a</span><span class="special">;</span>
 </pre>
@@ -2982,7 +3030,6 @@
 <tr>
 <td>
                 <p>
-                  
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="identifier">BOOST_NOEXCEPT</span>
 <span class="identifier">BOOST_NOEXCEPT_IF</span><span class="special">(</span><span class="identifier">Predicate</span><span class="special">)</span>
@@ -2999,7 +3046,6 @@
                 </p>
                 <div class="blockquote"><blockquote class="blockquote">
 <p>
-                    
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="preprocessor">#define</span> <span class="identifier">BOOST_NOEXCEPT</span>
 <span class="preprocessor">#define</span> <span class="identifier">BOOST_NOEXCEPT_IF</span><span class="special">(</span><span class="identifier">Predicate</span><span class="special">)</span>
@@ -3015,7 +3061,6 @@
                 </p>
                 <div class="blockquote"><blockquote class="blockquote">
 <p>
-                    
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="preprocessor">#define</span> <span class="identifier">BOOST_NOEXCEPT</span> <span class="identifier">noexcept</span>
 <span class="preprocessor">#define</span> <span class="identifier">BOOST_NOEXCEPT_IF</span><span class="special">(</span><span class="identifier">Predicate</span><span class="special">)</span> <span class="identifier">noexcept</span><span class="special">((</span><span class="identifier">Predicate</span><span class="special">))</span>
@@ -3029,7 +3074,7 @@
 </tbody>
 </table></div>
 </div>
-<div class="section">
+<div class="section boost_config_boost_macro_reference_boost_helper_macros">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_config.boost_macro_reference.boost_helper_macros"></a><a name="config_helpers"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.boost_helper_macros" title="Boost Helper Macros">Boost
       Helper Macros</a>
@@ -3066,12 +3111,12 @@
                 <p>
                   This macro is used where a compiler specific workaround is required
                   that is not otherwise described by one of the other Boost.Config
-                  macros. To use the macro you must first 
+                  macros. To use the macro you must first
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">detail</span><span class="special">/</span><span class="identifier">workaround</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 </pre>
 <p>
-                  usage is then: 
+                  usage is then:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="preprocessor">#if</span> <span class="identifier">BOOST_WORKAROUND</span><span class="special">(</span><span class="identifier">MACRONAME</span><span class="special">,</span> <span class="identifier">CONDITION</span><span class="special">)</span>
    <span class="comment">// workaround code goes here...</span>
@@ -3114,12 +3159,12 @@
                   Sometimes you have a function name with the same name as a C macro,
                   for example "min" and "max" member functions,
                   in which case one can prevent the function being expanded as a
-                  macro using: 
+                  macro using:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="identifier">someclass</span><span class="special">.</span><span class="identifier">min</span> <span class="identifier">BOOST_PREVENT_MACRO_SUBSTITUTION</span><span class="special">(</span><span class="identifier">arg1</span><span class="special">,</span> <span class="identifier">arg2</span><span class="special">);</span>
 </pre>
 <p>
-                  The following also works in most, but not all, contexts: 
+                  The following also works in most, but not all, contexts:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="special">(</span><span class="identifier">someclass</span><span class="special">.</span><span class="identifier">max</span><span class="special">)(</span><span class="identifier">arg1</span><span class="special">,</span> <span class="identifier">arg2</span><span class="special">);</span>
 </pre>
@@ -3214,14 +3259,14 @@
                   integral constant members, we must use enums as a workaround if
                   we want the constants to be available at compile-time. This macro
                   gives us a convenient way to declare such constants. For example
-                  instead of: 
+                  instead of:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">struct</span> <span class="identifier">foo</span><span class="special">{</span>
    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">int</span> <span class="identifier">value</span> <span class="special">=</span> <span class="number">2</span><span class="special">;</span>
 <span class="special">};</span>
 </pre>
 <p>
-                  use: 
+                  use:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">struct</span> <span class="identifier">foo</span><span class="special">{</span>
    <span class="identifier">BOOST_STATIC_CONSTANT</span><span class="special">(</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">value</span> <span class="special">=</span> <span class="number">2</span><span class="special">);</span>
@@ -3254,7 +3299,7 @@
                 <p>
                   Some compilers silently "fold" different function template
                   instantiations if some of the template parameters don't appear
-                  in the function parameter list. For instance: 
+                  in the function parameter list. For instance:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">iostream</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">ostream</span><span class="special">&gt;</span>
@@ -3278,7 +3323,7 @@
                   incorrectly outputs <code class="literal">2 2 double double</code> on VC++
                   6. These macros, to be used in the function parameter list, fix
                   the problem without effects on the calling syntax. For instance,
-                  in the case above write: 
+                  in the case above write:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">int</span> <span class="identifier">n</span><span class="special">&gt;</span>
 <span class="keyword">void</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">BOOST_EXPLICIT_TEMPLATE_NON_TYPE</span><span class="special">(</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">n</span><span class="special">))</span> <span class="special">{</span> <span class="special">...</span> <span class="special">}</span>
@@ -3313,7 +3358,7 @@
               </td>
 <td>
                 <p>
-                  When the standard library does not have a comforming <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">use_facet</span></code> there are various workarounds
+                  When the standard library does not have a conforming <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">use_facet</span></code> there are various workarounds
                   available, but they differ from library to library. This macro
                   provides a consistent way to access a locale's facets. For example,
                   replace: <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">use_facet</span><span class="special">&lt;</span><span class="identifier">Type</span><span class="special">&gt;(</span><span class="identifier">loc</span><span class="special">);</span></code>
@@ -3404,7 +3449,7 @@
                   techniques.
                 </p>
                 <p>
-                  Usage example: 
+                  Usage example:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span>
 <span class="identifier">BOOST_FORCEINLINE</span> <span class="identifier">T</span><span class="special">&amp;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">T</span><span class="special">&amp;</span> <span class="identifier">t</span><span class="special">)</span>
@@ -3425,7 +3470,7 @@
 </tbody>
 </table></div>
 </div>
-<div class="section">
+<div class="section boost_config_boost_macro_reference_boost_informational_macros">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_config.boost_macro_reference.boost_informational_macros"></a><a name="config_info_macros"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.boost_informational_macros" title="Boost Informational Macros">Boost
       Informational Macros</a>
@@ -3703,7 +3748,429 @@
 </tbody>
 </table></div>
 </div>
-<div class="section">
+<div class="section boost_config_boost_macro_reference_boost_deprecated_macros">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boost_config.boost_macro_reference.boost_deprecated_macros"></a><a name="deprecated_macros"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.boost_deprecated_macros" title="Boost Deprecated Macros">Boost
+      Deprecated Macros</a>
+</h3></div></div></div>
+<p>
+        The following have been deprecated; please use the replacements instead.
+        They will be removed in a future version of boost.
+      </p>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Deprecated Macro
+                </p>
+              </th>
+<th>
+                <p>
+                  Replacement
+                </p>
+              </th>
+<th>
+                <p>
+                  When deprecated
+                </p>
+              </th>
+<th>
+                <p>
+                  When removed
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_ARRAY</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_ARRAY</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_CHRONO</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_CHRONO</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_CODECVT</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_CODECVT</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_CONDITION_VARIABLE</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_CONDITION_VARIABLE</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_FORWARD_LIST</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_FORWARD_LIST</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_FUTURE</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_FUTURE</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_INITIALIZER_LIST</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_INITIALIZER_LIST</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_INITIALIZER_LISTS</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_INITIALIZER_LIST</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_MUTEX</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_MUTEX</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_RANDOM</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_RANDOM</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_RATIO</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_RATIO</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_REGEX</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_REGEX</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_SYSTEM_ERROR</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_SYSTEM_ERROR</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_THREAD</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_THREAD</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_TUPLE</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_TUPLE</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_TYPE_TRAITS</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_TYPE_TRAITS</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_TYPEINDEX</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_TYPEINDEX</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_UNORDERED_SET</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_UNORDERED_SET</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_0X_HDR_UNORDERED_MAP</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_UNORDERED_MAP</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_STD_UNORDERED</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">BOOST_NO_CXX11_HDR_UNORDERED_SET</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  Boost 1.50
+                </p>
+              </td>
+<td>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="section boost_config_boost_macro_reference_macros_for_libraries_with_separate_source_code">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_config.boost_macro_reference.macros_for_libraries_with_separate_source_code"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_for_libraries_with_separate_source_code" title="Macros for libraries with separate source code">Macros
       for libraries with separate source code</a>
@@ -3736,7 +4203,7 @@
         See <a href="http://svn.boost.org/trac/boost/wiki/Guidelines/Separate" target="_top">Guidelines
         for Authors of Boost Libraries Containing Separate Source</a>
       </p>
-<div class="section">
+<div class="section boost_config_boost_macro_reference_macros_for_libraries_with_separate_source_code_macros_controlling_shared_library_symbol_visibility">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="boost_config.boost_macro_reference.macros_for_libraries_with_separate_source_code.macros_controlling_shared_library_symbol_visibility"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_for_libraries_with_separate_source_code.macros_controlling_shared_library_symbol_visibility" title="Macros controlling shared library symbol visibility">Macros
         controlling shared library symbol visibility</a>
@@ -3822,7 +4289,7 @@
                     RTTI. Examples include class for objects that will be thrown
                     as exceptions or used in dynamic_casts, across shared library
                     boundaries. For example, a header-only exception class might
-                    look like this: 
+                    look like this:
 </p>
 <pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><span class="keyword">class</span> <span class="identifier">BOOST_SYMBOL_VISIBLE</span> <span class="identifier">my_exception</span> <span class="special">:</span> <span class="keyword">public</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">runtime_error</span> <span class="special">{</span> <span class="special">...</span> <span class="special">};</span>
 </pre>
@@ -3860,7 +4327,7 @@
 <span class="preprocessor">#if</span> <span class="identifier">defined</span><span class="special">(</span><span class="identifier">BOOST_ALL_DYN_LINK</span><span class="special">)</span> <span class="special">||</span> <span class="identifier">defined</span><span class="special">(</span><span class="identifier">BOOST_FOO_DYN_LINK</span><span class="special">)</span>
 <span class="preprocessor"># if</span> <span class="identifier">defined</span><span class="special">(</span><span class="identifier">BOOST_FOO_SOURCE</span><span class="special">)</span>
 <span class="preprocessor">#   define</span> <span class="identifier">BOOST_FOO_DECL</span> <span class="identifier">BOOST_SYMBOL_EXPORT</span>
-<span class="preprocessor"># else</span> 
+<span class="preprocessor"># else</span>
 <span class="preprocessor">#   define</span> <span class="identifier">BOOST_FOO_DECL</span> <span class="identifier">BOOST_SYMBOL_IMPORT</span>
 <span class="preprocessor"># endif</span>
 <span class="preprocessor">#else</span>
@@ -3882,7 +4349,7 @@
           <span class="bold"><strong>boost/libs/foo/src/foo.cpp</strong></span>
         </p>
 <pre class="programlisting"><span class="preprocessor">#define</span> <span class="identifier">BOOST_FOO_SOURCE</span>
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">foo</span><span class="special">/</span><span class="identifier">foo</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>    
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">foo</span><span class="special">/</span><span class="identifier">foo</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="special">...</span>
 <span class="keyword">void</span> <span class="identifier">BOOST_FOO_DECL</span> <span class="identifier">f</span><span class="special">()</span>
 <span class="special">{</span>
@@ -3891,7 +4358,7 @@
 <span class="special">...</span>
 </pre>
 </div>
-<div class="section">
+<div class="section boost_config_boost_macro_reference_macros_for_libraries_with_separate_source_code_abi_fixing">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="boost_config.boost_macro_reference.macros_for_libraries_with_separate_source_code.abi_fixing"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_for_libraries_with_separate_source_code.abi_fixing" title="ABI Fixing">ABI
         Fixing</a>
@@ -3949,7 +4416,7 @@
           to point to their own prefix/suffix headers if they so wish.
         </p>
 </div>
-<div class="section">
+<div class="section boost_config_boost_macro_reference_macros_for_libraries_with_separate_source_code_automatic_library_selection">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="boost_config.boost_macro_reference.macros_for_libraries_with_separate_source_code.automatic_library_selection"></a><a class="link" href="boost_macro_reference.html#boost_config.boost_macro_reference.macros_for_libraries_with_separate_source_code.automatic_library_selection" title="Automatic library selection">Automatic
         library selection</a>

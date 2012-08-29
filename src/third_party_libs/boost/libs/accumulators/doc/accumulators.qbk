@@ -1730,7 +1730,7 @@ For more implementation details, see
 ]
 
 [*Header]
-[def _P_SQUARE_CUMULATIVE_DISTRIBUTION_HPP_ [headerref boost/accumulators/statistics/p_square_cumulative_distribution.hpp]]
+[def _P_SQUARE_CUMULATIVE_DISTRIBUTION_HPP_ [headerref boost/accumulators/statistics/p_square_cumul_dist.hpp]]
 
     #include <_P_SQUARE_CUMULATIVE_DISTRIBUTION_HPP_>
 
@@ -3323,7 +3323,7 @@ For more implementation details, see
 ]
 
 [*Header]
-[def _WEIGHTED_P_SQUARE_CUMULATIVE_DISTRIBUTION_HPP_ [headerref boost/accumulators/statistics/weighted_p_square_cumulative_distribution.hpp]]
+[def _WEIGHTED_P_SQUARE_CUMULATIVE_DISTRIBUTION_HPP_ [headerref boost/accumulators/statistics/weighted_p_square_cumul_dist.hpp]]
 
     #include <_WEIGHTED_P_SQUARE_CUMULATIVE_DISTRIBUTION_HPP_>
 

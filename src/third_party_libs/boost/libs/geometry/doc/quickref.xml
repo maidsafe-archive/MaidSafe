@@ -112,8 +112,6 @@
    </entry>
    <entry valign="top">
     <bridgehead renderas="sect3">1-dimensional (adapted)</bridgehead>
-    <simplelist type="vert" columns="1">
-    </simplelist>
    </entry>
    <entry valign="top">
     <bridgehead renderas="sect3">2-dimensional (adapted)</bridgehead>
@@ -324,6 +322,7 @@
      <member><link linkend="geometry.reference.algorithms.equals">equals</link></member>
      <member><link linkend="geometry.reference.algorithms.intersects">intersects</link></member>
      <member><link linkend="geometry.reference.algorithms.overlaps">overlaps</link></member>
+     <member><link linkend="geometry.reference.algorithms.touches">touches</link></member>
      <member><link linkend="geometry.reference.algorithms.within">within</link></member>
      </simplelist>
    </entry>

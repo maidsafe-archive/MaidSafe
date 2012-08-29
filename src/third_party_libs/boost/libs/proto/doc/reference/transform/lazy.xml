@@ -64,9 +64,17 @@
                   <listitem>
                     <para>
                       If <computeroutput>T</computeroutput> if of the form
-                      <computeroutput>O(A<subscript>0</subscript>,...A<subscript>n</subscript>)</computeroutput>, then let <computeroutput>O'</computeroutput>
+                      <computeroutput>O(A<subscript>0</subscript>,…A<subscript>n</subscript>)</computeroutput>, then let <computeroutput>O'</computeroutput>
                       be <computeroutput>boost::result_of&lt;<classname>proto::make</classname>&lt;O&gt;(Expr, State, Data)&gt;::type</computeroutput>
-                      and let <computeroutput>T'</computeroutput> be <computeroutput>O'(A<subscript>0</subscript>,...A<subscript>n</subscript>)</computeroutput>.
+                      and let <computeroutput>T'</computeroutput> be <computeroutput>O'(A<subscript>0</subscript>,…A<subscript>n</subscript>)</computeroutput>.
+                    </para>
+                  </listitem>
+                  <listitem>
+                    <para>
+                      If <computeroutput>T</computeroutput> if of the form
+                      <computeroutput>O(A<subscript>0</subscript>,…A<subscript>n</subscript> ...)</computeroutput>, then let <computeroutput>O'</computeroutput>
+                      be <computeroutput>boost::result_of&lt;<classname>proto::make</classname>&lt;O&gt;(Expr, State, Data)&gt;::type</computeroutput>
+                      and let <computeroutput>T'</computeroutput> be <computeroutput>O'(A<subscript>0</subscript>,…A<subscript>n</subscript> ...)</computeroutput>.
                     </para>
                   </listitem>
                   <listitem>
@@ -104,9 +112,17 @@
                     <listitem>
                       <para>
                         If <computeroutput>T</computeroutput> if of the form
-                        <computeroutput>O(A<subscript>0</subscript>,...A<subscript>n</subscript>)</computeroutput>, then let <computeroutput>O'</computeroutput>
+                        <computeroutput>O(A<subscript>0</subscript>,…A<subscript>n</subscript>)</computeroutput>, then let <computeroutput>O'</computeroutput>
                         be <computeroutput>boost::result_of&lt;<classname>proto::make</classname>&lt;O&gt;(Expr, State, Data)&gt;::type</computeroutput>
-                        and let <computeroutput>T'</computeroutput> be <computeroutput>O'(A<subscript>0</subscript>,...A<subscript>n</subscript>)</computeroutput>.
+                        and let <computeroutput>T'</computeroutput> be <computeroutput>O'(A<subscript>0</subscript>,…A<subscript>n</subscript>)</computeroutput>.
+                      </para>
+                    </listitem>
+                    <listitem>
+                      <para>
+                        If <computeroutput>T</computeroutput> if of the form
+                        <computeroutput>O(A<subscript>0</subscript>,…A<subscript>n</subscript> ...)</computeroutput>, then let <computeroutput>O'</computeroutput>
+                        be <computeroutput>boost::result_of&lt;<classname>proto::make</classname>&lt;O&gt;(Expr, State, Data)&gt;::type</computeroutput>
+                        and let <computeroutput>T'</computeroutput> be <computeroutput>O'(A<subscript>0</subscript>,…A<subscript>n</subscript> ...)</computeroutput>.
                       </para>
                     </listitem>
                     <listitem>

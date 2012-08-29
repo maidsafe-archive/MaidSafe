@@ -34,7 +34,7 @@ namespace std {
   template <>
   struct numeric_limits<Rep>
   {
-    static BOOST_CHRONO_CONSTEXPR Rep max BOOST_PREVENT_MACRO_SUBSTITUTION ()
+    static BOOST_CONSTEXPR Rep max BOOST_PREVENT_MACRO_SUBSTITUTION ()
     {
       return Rep((std::numeric_limits<int>::max)());
     }
@@ -47,13 +47,13 @@ namespace chrono {
 template <>
 struct duration_values<Rep>
 {
-  static BOOST_CHRONO_CONSTEXPR Rep zero() {return Rep(0);}
-  static BOOST_CHRONO_CONSTEXPR Rep max BOOST_PREVENT_MACRO_SUBSTITUTION ()
+  static BOOST_CONSTEXPR Rep zero() {return Rep(0);}
+  static BOOST_CONSTEXPR Rep max BOOST_PREVENT_MACRO_SUBSTITUTION ()
   {
     return Rep((std::numeric_limits<int>::max)());
   }
   
-  static BOOST_CHRONO_CONSTEXPR Rep min BOOST_PREVENT_MACRO_SUBSTITUTION ()
+  static BOOST_CONSTEXPR Rep min BOOST_PREVENT_MACRO_SUBSTITUTION ()
   {
     return Rep(detail::numeric_limits<Rep>::lowest());
   }

@@ -105,13 +105,24 @@
                   <listitem>
                     <para>
                       If <computeroutput>T</computeroutput> is of the form
-                      <computeroutput><conceptname>PolymorphicFunctionObject</conceptname>(A<subscript>0</subscript>,...A<subscript>n</subscript>)</computeroutput>, then
+                      <computeroutput><conceptname>PolymorphicFunctionObject</conceptname>(A<subscript>0</subscript>,…A<subscript>n</subscript>)</computeroutput>, then
                       <computeroutput>result_type</computeroutput> is:
                       <programlisting>typename boost::result_of&lt;PolymorphicFunctionObject(
   typename boost::result_of&lt;<classname>when</classname>&lt;<classname>_</classname>,A<subscript>0</subscript>&gt;(Expr, State, Data)&gt;::type,
-  ...
+  …
   typename boost::result_of&lt;<classname>when</classname>&lt;<classname>_</classname>,A<subscript>n</subscript>&gt;(Expr, State, Data)&gt;::type
 &gt;::type</programlisting>
+                    </para>
+                  </listitem>
+                  <listitem>
+                    <para>
+                      If <computeroutput>T</computeroutput> is of the form
+                      <computeroutput><conceptname>PolymorphicFunctionObject</conceptname>(A<subscript>0</subscript>,…A<subscript>n</subscript> ...)</computeroutput>, then
+                      let <computeroutput>T&apos;</computeroutput> be <computeroutput><conceptname>PolymorphicFunctionObject</conceptname>(A<subscript>0</subscript>,…A<subscript>n-1</subscript>, <replaceable>S</replaceable>)</computeroutput>,
+                      where <replaceable>S</replaceable> is a type sequence computed from the unpacking expression <computeroutput>A<subscript>n</subscript></computeroutput>
+                      as described in the reference for <computeroutput><classname>proto::pack</classname></computeroutput>.
+                      Then, <computeroutput>result_type</computeroutput> is:
+                      <programlisting><computeroutput>typename <classname>proto::call</classname>&lt;T&apos;&gt;::impl&lt;Expr,State,Data&gt;::result_type</computeroutput></programlisting>
                     </para>
                   </listitem>
                 </itemizedlist>
@@ -188,7 +199,7 @@
                     <listitem>
                       <para>
                         If <computeroutput>T</computeroutput> is of the form
-                        <computeroutput><conceptname>PolymorphicFunctionObject</conceptname>(A<subscript>0</subscript>,...A<subscript>n</subscript>)</computeroutput>, then
+                        <computeroutput><conceptname>PolymorphicFunctionObject</conceptname>(A<subscript>0</subscript>,…A<subscript>n</subscript>)</computeroutput>, then
                         return:
                         <programlisting>PolymorphicFunctionObject()(
   <classname>when</classname>&lt;<classname>_</classname>,A<subscript>0</subscript>&gt;()(expr, state, data),
@@ -197,6 +208,17 @@
 )</programlisting>
                       </para>
                     </listitem>
+                  <listitem>
+                    <para>
+                      If <computeroutput>T</computeroutput> is of the form
+                      <computeroutput><conceptname>PolymorphicFunctionObject</conceptname>(A<subscript>0</subscript>,…A<subscript>n</subscript> ...)</computeroutput>, then
+                      let <computeroutput>T&apos;</computeroutput> be <computeroutput><conceptname>PolymorphicFunctionObject</conceptname>(A<subscript>0</subscript>,…A<subscript>n-1</subscript>, <replaceable>S</replaceable>)</computeroutput>,
+                      where <replaceable>S</replaceable> is a type sequence computed from the unpacking expression <computeroutput>A<subscript>n</subscript></computeroutput>
+                      as described in the reference for <computeroutput><classname>proto::pack</classname></computeroutput>.
+                      Then, return:
+                      <programlisting><computeroutput><classname>proto::call</classname>&lt;T&apos;&gt;()(expr, state, data)</computeroutput></programlisting>
+                    </para>
+                  </listitem>
                   </itemizedlist>
                 </para>
               </description>

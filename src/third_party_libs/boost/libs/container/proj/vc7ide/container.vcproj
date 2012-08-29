@@ -180,6 +180,9 @@
 			Name="container"
 			Filter="">
 			<File
+				RelativePath="..\..\..\..\boost\container\allocator_traits.hpp">
+			</File>
+			<File
 				RelativePath="..\..\..\..\boost\container\container_fwd.hpp">
 			</File>
 			<File
@@ -196,6 +199,12 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\boost\container\map.hpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\boost\container\scoped_allocator.hpp">
+			</File>
+			<File
+				RelativePath="..\..\..\..\boost\container\scoped_allocator_fwd.hpp">
 			</File>
 			<File
 				RelativePath="..\..\..\..\boost\container\set.hpp">
@@ -215,19 +224,6 @@
 			<File
 				RelativePath="..\..\..\..\boost\container\vector.hpp">
 			</File>
-			<Filter
-				Name="allocator"
-				Filter="">
-				<File
-					RelativePath="..\..\..\..\boost\container\allocator\allocator_traits.hpp">
-				</File>
-				<File
-					RelativePath="..\..\..\..\boost\container\allocator\memory_util.hpp">
-				</File>
-				<File
-					RelativePath="..\..\..\..\boost\container\allocator\scoped_allocator.hpp">
-				</File>
-			</Filter>
 			<Filter
 				Name="detail"
 				Filter="">
@@ -263,6 +259,9 @@
 				</File>
 				<File
 					RelativePath="..\..\..\..\boost\container\detail\math_functions.hpp">
+				</File>
+				<File
+					RelativePath="..\..\..\..\boost\container\allocator\memory_util.hpp">
 				</File>
 				<File
 					RelativePath="..\..\..\..\boost\container\detail\mpl.hpp">

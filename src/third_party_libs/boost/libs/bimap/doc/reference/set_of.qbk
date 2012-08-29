@@ -105,7 +105,7 @@ look at it as a whole, you will be using a set view.
         public:
 
         typedef ``['-unspecified-]`` key_type;
-        typedef ``['-unspecified-]`` value_type;
+		typedef ``['-unspecified-]`` value_type;
         typedef ``['-unspecified-]`` key_compare;
         typedef ``['-unspecified-]`` value_compare;
         typedef ``['-unspecified-]`` allocator_type;
@@ -239,22 +239,23 @@ look at it as a whole, you will be using a set view.
         std::pair<const_iterator,const_iterator> ``[link reference_set_of_range_lower_upper range]``(
             LowerBounder lower, UpperBounder upper) const;
 
-        typedef ``['-unspecified-]`` data_type;
-
+        typedef ``['-unspecified-]`` mapped_type;
+        typedef ``['-unspecified-]`` data_type; // Equal to mapped_type
+        
           // Only in for `set_of` collection type
           // {
 
           template< class CompatibleKey >
-          const data_type & ``[link reference_set_of_at_key_const at]``(const CompatibleKey & k) const;
+          const mapped_type & ``[link reference_set_of_at_key_const at]``(const CompatibleKey & k) const;
 
             // Only if the other collection type is mutable
             // {
 
             template< class CompatibleKey >
-            data_type & ``[link reference_set_of_operator_bracket_key operator\[\]]``(const CompatibleKey & k);
+            mapped_type & ``[link reference_set_of_operator_bracket_key operator\[\]]``(const CompatibleKey & k);
 
             template< class CompatibleKey >
-            data_type & ``[link reference_set_of_at_key at]``(const CompatibleKey & k);
+            mapped_type & ``[link reference_set_of_at_key at]``(const CompatibleKey & k);
 
             // }
 
@@ -343,14 +344,14 @@ In the set view:
 In the left map view:
 
     typedef  Left  key_type;
-    typedef  ...   data_type;
+    typedef  ...   mapped_type;
 
     typedef signature-compatible with std::pair< const Left, ... > value_type;
 
 In the right map view:
 
     typedef  ...  key_type;
-    typedef  Left data_type;
+    typedef  Left mapped_type;
 
     typedef signature-compatible with std::pair< ... ,const Left > value_type;
 
@@ -541,7 +542,7 @@ its original state.
     bool replace_data(iterator position, const CompatibleData & x);
 
 * [*Requires: ] `position` is a valid dereferenceable iterator of the set view.
-`CompatibleKey` can be assigned to `data_type`.
+`CompatibleKey` can be assigned to `mapped_type`.
 * [*Effects:] Assigns the value `x` to `e.second`, where `e` is the element pointed 
 to by `position` into the `bimap` to which the set view belongs if,
     * the map view is non-unique OR no other element with equivalent key exists
@@ -584,7 +585,7 @@ operation (except possibly mod), then the element pointed to by position is eras
     bool modify_data(iterator position, DataModifier mod);
 
 * [*Requires: ] `DataModifier` is a model of __SGI_UNARY_FUNCTION__ accepting arguments of
-type: `data_type&`; `position` is a valid dereferenceable iterator of the view.
+type: `mapped_type&`; `position` is a valid dereferenceable iterator of the view.
 * [*Effects:] Calls `mod(e.second)` where e is the element pointed to by position and 
 rearranges `*position` into all the views of the `bimap`.
 If the rearrangement fails, the element is erased.
@@ -807,10 +808,10 @@ all values of type `key_type` satisfy.
 [#reference_set_of_at_key_const]
 
     template< class CompatibleKey >
-    const data_type & at(const CompatibleKey & k) const;
+    const mapped_type & at(const CompatibleKey & k) const;
 
 * [*Requires: ] `CompatibleKey` is a compatible key of `key_compare`.
-* [*Effects:] Returns the `data_type` reference that is associated with `k`, or
+* [*Effects:] Returns the `mapped_type` reference that is associated with `k`, or
 throws `std::out_of_range` if such key does not exist.
 * [*Complexity:] O(log(n)).
 * [*Note:] Only provided when `set_of` is used.
@@ -823,10 +824,10 @@ Tey are only provided if the other collection type is mutable
 [#reference_set_of_operator_bracket_key]
 
     template< class CompatibleKey >
-    data_type & operator[](const CompatibleKey & k);
+    mapped_type & operator[](const CompatibleKey & k);
 
 * [*Requires: ] `CompatibleKey` is a compatible key of `key_compare`.
-* [*Effects: ] `return insert(value_type(k,data_type()))->second;`
+* [*Effects: ] `return insert(value_type(k,mapped_type()))->second;`
 * [*Complexity:] O(log(n)).
 * [*Note:] Only provided when `set_of` is used and the other collection
 type is mutable.
@@ -834,10 +835,10 @@ type is mutable.
 [#reference_set_of_at_key]
 
     template< class CompatibleKey >
-    data_type & at(const CompatibleKey & k);
+    mapped_type & at(const CompatibleKey & k);
 
 * [*Requires: ] `CompatibleKey` is a compatible key of `key_compare`.
-* [*Effects: ] Returns the `data_type` reference that is associated with `k`, or
+* [*Effects: ] Returns the `mapped_type` reference that is associated with `k`, or
 throws `std::out_of_range` if such key does not exist.
 * [*Complexity:] O(log(n)).
 * [*Note:] Only provided when `set_of` is used and the other collection
@@ -853,17 +854,17 @@ a non-existent key: this behaviour differs from that of `std::map`, which
 automatically assigns a default value to non-existent keys referred to
 by `operator[]`.
 
-    const data_type & operator[](const typename key_type & k) const;
+    const mapped_type & operator[](const typename key_type & k) const;
 
-* [*Effects:] Returns the `data_type` reference that is associated with `k`, or
+* [*Effects:] Returns the `mapped_type` reference that is associated with `k`, or
 throws `bimap::value_not_found` if such an element does not exist.
 * [*Complexity:] O(log(n)).
 
 
-    ``['-unspecified data_type proxy-]`` operator[](const typename key_type & k);
+    ``['-unspecified mapped_type proxy-]`` operator[](const typename key_type & k);
 
-* [*Effects:] Returns a proxy to a `data_type` associated with `k` and the
-bimap. The proxy behaves as a reference to the `data_type` object. If this
+* [*Effects:] Returns a proxy to a `mapped_type` associated with `k` and the
+bimap. The proxy behaves as a reference to the `mapped_type` object. If this
 proxy is read and `k` was not in the bimap, the bimap::value_not_found is
 thrown. If it is written then `bimap::duplicate_value` is thrown if the
 assignment is not allowed by one of the other views of the `bimap`.

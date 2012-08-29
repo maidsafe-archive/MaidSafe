@@ -298,7 +298,7 @@ functions that are expected for `DomainT`, if the default order
 
 A domain type `DomainT` for intervals and interval containers
 has to satisfy the requirements of concept  
-[@http://www.generic-programming.org/languages/conceptcpp/issues/concepts-closed.html `Regular`]
+[@http://www.informit.com/guides/content.aspx?g=cplusplus&seqNum=314 `Regular`]
 which
 implies among other properties the existence of a copy and
 a default constructor. In addition `IsIncrementable`
@@ -386,7 +386,8 @@ depend on the usage of their aggregation functionality. If aggregation on overla
 is never used, that is to say that none of the addition, subtraction and intersection
 operations (`+, +=, add`, `-, -=, subtract`, &, &=, add_intersection) are used on the 
 __itv_map__, then `CodomainT` only needs to be 
-[@http://www.generic-programming.org/languages/conceptcpp/issues/concepts-closed.html Regular].
+[@http://www.informit.com/guides/content.aspx?g=cplusplus&seqNum=314 Regular].
+
 ['*Regular*]
 object semantics implies `DefaultConstructible` and
 `EqualityComparable` which means it has 
@@ -506,8 +507,7 @@ sets and maps are provided.
 In this section a single ['*matrix*] is given, that shows all ['*functions*]
 with shared names and identical or analogous semantics and their 
 polymorphical overloads across the class templates of the *icl*.
-Associated are the corresponding functions of the *stl* for easy
-comparison. In order to achieve a concise representation, a series
+In order to achieve a concise representation, a series
 of ['*placeholders*] are used throughout the function matrix.
 
 The ['*placeholder's*] purpose is to express the polymorphic

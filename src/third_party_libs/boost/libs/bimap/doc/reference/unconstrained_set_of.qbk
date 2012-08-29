@@ -63,14 +63,14 @@ In the set view:
 In the left map view:
 
     typedef  Left  key_type;
-    typedef  ...   data_type;
+    typedef  ...   mapped_type;
 
     typedef signature-compatible with std::pair< Left, ... > value_type;
 
 In the right map view:
 
     typedef  ...  key_type;
-    typedef  Left data_type;
+    typedef  Left mapped_type;
 
     typedef signature-compatible with std::pair< ... , Left > value_type;
 

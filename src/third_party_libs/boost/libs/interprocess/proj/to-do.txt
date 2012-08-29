@@ -120,7 +120,7 @@ All Fine
 -> map::node_ptr p = m.create_node(my_special_cheap_key_value, mv1, mv2);
 //We would need to unconst-cast...
 const_cast<Key&>(p->first) = modify( p->second );
-m.insert( boost::move(p) ); 
+m.insert( boost::move(p) );
 
 ->  I found some bug in the interprocess library. I use
  boost::interprocess::managed_mapped_file class and
@@ -164,7 +164,7 @@ LOCK
       }
     }
   }
-  
+ 
 
 UNLOCK
   if (fixing_mode){

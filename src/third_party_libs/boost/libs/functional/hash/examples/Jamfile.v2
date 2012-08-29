@@ -6,3 +6,4 @@
 run books.cpp ;
 run point.cpp ;
 run portable.cpp ;
+run template.cpp ;

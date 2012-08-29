@@ -143,6 +143,10 @@
 [include generated/sym_difference.qbk]
 [/endsect]
 
+[section:touches touches]
+[include generated/touches.qbk]
+[endsect]
+
 [section:transform transform]
 [include generated/transform.qbk]
 [endsect]

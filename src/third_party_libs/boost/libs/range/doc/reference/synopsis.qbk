@@ -20,10 +20,10 @@ namespace boost
 
     template< class T >
     struct range_reference;
-    
+
     template< class T >
     struct range_pointer;
-    
+
     template< class T >
     struct range_category;
 
@@ -92,11 +92,11 @@ namespace boost
     template< class T >
     typename range_reverse_iterator<const T>::type
     rend( const T& r );
-    
+
     //
     // Random Access Range functions
     //
-    
+
     template< class T >
     typename range_difference<T>::type
     size( const T& r );
@@ -106,42 +106,42 @@ namespace boost
     //
 
     template< class T >
-    typename range_iterator<const T>::type 
+    typename range_iterator<const T>::type
     const_begin( const T& r );
 
     template< class T >
-    typename range_iterator<const T>::type 
+    typename range_iterator<const T>::type
     const_end( const T& r );
 
     template< class T >
-    typename range_reverse_iterator<const T>::type 
+    typename range_reverse_iterator<const T>::type
     const_rbegin( const T& r );
 
     template< class T >
-    typename range_reverse_iterator<const T>::type 
+    typename range_reverse_iterator<const T>::type
     const_rend( const T& r );
-    
+
     //
     // String utilities
     //
-    
+
     template< class T >
     iterator_range< ... see below ... >
     as_literal( T& r );
-    
+
     template< class T >
     iterator_range< ... see below ... >
     as_literal( const T& r );
-    
+
     template< class T >
     iterator_range< typename range_iterator<T>::type >
     as_array( T& r );
-    
+
     template< class T >
     iterator_range< typename range_iterator<const T>::type >
     as_array( const T& r );
 
-} // namespace 'boost' 
+} // namespace 'boost'
 ``
 
 [endsect]

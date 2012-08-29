@@ -43,6 +43,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "list_test", "list_test.vcpr
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scoped_allocator_adaptor_test", "scoped_allocator_adaptor.vcproj", "{B4E9FB12-7D7C-4461-83A9-5EB2C78E608F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scoped_allocator_usage_test", "scoped_allocator_usage_test.vcproj", "{B4E9FB12-7D7C-4461-83A9-5EB2C78E608F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -95,6 +103,14 @@ Global
 		{58CCE183-6092-48FE-A4F7-BA0D3A792632}.Debug.Build.0 = Debug|Win32
 		{58CCE183-6092-48FE-A4F7-BA0D3A792632}.Release.ActiveCfg = Release|Win32
 		{58CCE183-6092-48FE-A4F7-BA0D3A792632}.Release.Build.0 = Release|Win32
+		{B4E9FB12-7D7C-4461-83A9-5EB2C78E608F}.Debug.ActiveCfg = Debug|Win32
+		{B4E9FB12-7D7C-4461-83A9-5EB2C78E608F}.Debug.Build.0 = Debug|Win32
+		{B4E9FB12-7D7C-4461-83A9-5EB2C78E608F}.Release.ActiveCfg = Release|Win32
+		{B4E9FB12-7D7C-4461-83A9-5EB2C78E608F}.Release.Build.0 = Release|Win32
+		{B4E9FB12-7D7C-4461-83A9-5EB2C78E608F}.Debug.ActiveCfg = Debug|Win32
+		{B4E9FB12-7D7C-4461-83A9-5EB2C78E608F}.Debug.Build.0 = Debug|Win32
+		{B4E9FB12-7D7C-4461-83A9-5EB2C78E608F}.Release.ActiveCfg = Release|Win32
+		{B4E9FB12-7D7C-4461-83A9-5EB2C78E608F}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

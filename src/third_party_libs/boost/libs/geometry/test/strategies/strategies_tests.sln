@@ -18,6 +18,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spherical_side", "spherical
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "within", "within.vcproj", "{AB13D2AC-FD34-4DE4-BD8E-4D463050E5DD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "transform_cs", "transform_cs.vcproj", "{2128A5D9-C67E-4C00-A917-A79058C78FCC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -60,6 +62,10 @@ Global
 		{AB13D2AC-FD34-4DE4-BD8E-4D463050E5DD}.Debug|Win32.Build.0 = Debug|Win32
 		{AB13D2AC-FD34-4DE4-BD8E-4D463050E5DD}.Release|Win32.ActiveCfg = Release|Win32
 		{AB13D2AC-FD34-4DE4-BD8E-4D463050E5DD}.Release|Win32.Build.0 = Release|Win32
+		{2128A5D9-C67E-4C00-A917-A79058C78FCC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2128A5D9-C67E-4C00-A917-A79058C78FCC}.Debug|Win32.Build.0 = Debug|Win32
+		{2128A5D9-C67E-4C00-A917-A79058C78FCC}.Release|Win32.ActiveCfg = Release|Win32
+		{2128A5D9-C67E-4C00-A917-A79058C78FCC}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

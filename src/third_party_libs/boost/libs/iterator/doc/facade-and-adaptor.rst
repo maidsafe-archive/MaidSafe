@@ -10,7 +10,7 @@
 :Contact: dave@boost-consulting.com, jsiek@osl.iu.edu, witt@styleadvisor.com
 :organization: `Boost Consulting`_, Indiana University `Open Systems
                Lab`_, `Zephyr Associates, Inc.`_
-:date: $Date$
+:date: $Date: 2006-09-11 15:27:29 -0700 (Mon, 11 Sep 2006) $
 
 :Number: This is a revised version of N1530_\ =03-0113, which was
          accepted for Technical Report 1 by the C++ standard

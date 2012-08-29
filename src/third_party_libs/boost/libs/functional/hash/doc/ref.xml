@@ -55,6 +55,10 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
               is defined. The specializations are still defined, so only the specializations
               required by TR1 are defined.
             </para>
+            <para>
+              Forward declared in
+              <code>&lt;boost/functional/hash_fwd.hpp&gt;</code>
+            </para>
           </notes>
           <throws><para>
             Only throws if
@@ -451,6 +455,10 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
           <para><functionname>hash_value</functionname> is called without
           qualification, so that overloads can be found via ADL.</para>
           <para>This is an extension to TR1</para>
+          <para>
+            Forward declared in
+            <code>&lt;boost/functional/hash_fwd.hpp&gt;</code>
+          </para>
         </notes>
         <throws>
           Only throws if <functionname>hash_value</functionname>(T) throws.
@@ -499,15 +507,14 @@ for(; first != last; ++first)
 
 return seed;
 </programlisting>
-          </para>For the three arguments overload:
+          </para>
+          <para>For the three arguments overload:</para>
 <programlisting>
 for(; first != last; ++first)
 {
     <functionname>hash_combine</functionname>(seed, *first);
 }
 </programlisting>
-          <para>
-          </para>
         </effects>
         <notes>
           <para>
@@ -516,6 +523,10 @@ for(; first != last; ++first)
             container.
           </para>
           <para>This is an extension to TR1</para>
+          <para>
+            Forward declared in
+            <code>&lt;boost/functional/hash_fwd.hpp&gt;</code>
+          </para>
         </notes>
         <throws><para>
           Only throws if <code><functionname>hash_value</functionname>(std::iterator_traits&lt;It&gt;::value_type)</code>
@@ -744,6 +755,25 @@ for(; first != last; ++first)
           <parameter name="val"><paramtype>std::type_index</paramtype></parameter>
         </signature>
 
+        <signature>
+          <template>
+            <template-type-parameter name="T"/>
+            <template-nontype-parameter name="N">
+              <type>std::size_t</type>
+            </template-nontype-parameter>
+          </template>
+          <type>std::size_t</type>
+          <parameter name="val"><paramtype>std::array&lt;T, N&gt; const&amp;</paramtype></parameter>
+        </signature>
+
+        <signature>
+          <template>
+            <template-type-parameter name="T" pack="1"/>
+          </template>
+          <type>std::size_t</type>
+          <parameter name="val"><paramtype>std::tuple&lt;T...&gt;</paramtype></parameter>
+        </signature>
+
         <description><para>
           Generally shouldn't be called directly by users, instead they should use
           <classname>boost::hash</classname>, <functionname>boost::hash_range</functionname>
@@ -809,7 +839,8 @@ for(; first != last; ++first)
                     <code>std::set&lt;K,&#160;C,&#160;A&gt;</code>,
                     <code>std::multiset&lt;K,&#160;C,&#160;A&gt;</code>,
                     <code>std::map&lt;K,&#160;T,&#160;C,&#160;A&gt;</code>,
-                    <code>std::multimap&lt;K,&#160;T,&#160;C,&#160;A&gt;</code>
+                    <code>std::multimap&lt;K,&#160;T,&#160;C,&#160;A&gt;</code>,
+                    <code>std::array&lt;T,&#160;N&gt;</code>
                   </entry>
                   <entry><code>hash_range(val.begin(), val.end())</code></entry>
                 </row>
@@ -818,6 +849,14 @@ for(; first != last; ++first)
                   <entry><programlisting>size_t seed = 0;
 <functionname>hash_combine</functionname>(seed, val.first);
 <functionname>hash_combine</functionname>(seed, val.second);
+return seed;</programlisting></entry>
+                </row>
+                <row>
+                  <entry><code>std::tuple&lt;T...&gt;</code></entry>
+                  <entry><programlisting>size_t seed = 0;
+<functionname>hash_combine</functionname>(seed, get&lt;0&gt;(val));
+<functionname>hash_combine</functionname>(seed, get&lt;1&gt;(val));
+// ....
 return seed;</programlisting></entry>
                 </row>
                 <row>

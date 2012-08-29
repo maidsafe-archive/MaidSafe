@@ -128,7 +128,7 @@
     ]
     [
         [`size(x)`]
-        [`range_difference<X>::type`]
+        [`range_size<X>::type`]
         [`range_calculate_size(x)` which by default is `boost::end(x) - boost::begin(x)`. Users may supply alternative implementations by implementing `range_calculate_size(x)` so that it will be found via ADL]
         [constant time]
     ]

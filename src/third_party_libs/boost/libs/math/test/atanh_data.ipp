@@ -5,8 +5,8 @@
 // (See accompanying file LICENSE_1_0.txt
 // or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#define SC_(x) static_cast<T>(BOOST_JOIN(x, L))
-   static const boost::array<boost::array<T, 2>, 260> atanh_data = {{
+#define SC_(x) static_cast<typename table_type<T>::type>(BOOST_JOIN(x, L))
+   static const boost::array<boost::array<typename table_type<T>::type, 2>, 260> atanh_data = {{
       {{ SC_(-0.9999983310699462890625), SC_(-6.998237084679026894944012639589359039154) }}, 
       {{ SC_(-0.9999978542327880859375), SC_(-6.872579751329170618373487147465365112113) }}, 
       {{ SC_(-0.999992847442626953125), SC_(-6.270592097465752658938563627507298840894) }}, 

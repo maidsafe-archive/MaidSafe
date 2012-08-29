@@ -1,5 +1,5 @@
 [/
- / Copyright (c) 2009-2011 Ion Gazta\u00F1aga
+ / Copyright (c) 2009-2012 Ion Gazta\u00F1aga
  /
  / Distributed under the Boost Software License, Version 1.0. (See accompanying
  / file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -8,7 +8,7 @@
 [library Boost.Container
     [quickbook 1.5]
     [authors [Gaztanaga, Ion]]
-    [copyright 2009-2011 Ion Gaztanaga]
+    [copyright 2009-2012 Ion Gaztanaga]
     [id container]
     [dirname container]
     [purpose Containers library]
@@ -37,9 +37,9 @@ In short, what does [*Boost.Container] offer?
   (they can be safely placed in shared memory).
 * The library offers new useful containers:
   * [classref boost::container::flat_map flat_map],
-    [classref boost::container::flat_map flat_set],
-    [classref boost::container::flat_map flat_multiset] and
-    [classref boost::container::flat_map flat_multiset]: drop-in
+    [classref boost::container::flat_set flat_set],
+    [classref boost::container::flat_multiset flat_multiset] and
+    [classref boost::container::flat_multiset flat_multiset]: drop-in
     replacements for standard associative containers but more memory friendly and with faster
     searches.
   * [classref boost::container::stable_vector stable_vector]: a std::list and std::vector hybrid
@@ -225,7 +225,7 @@ want to advance it by n positions, we simply do:
 
    it.p = *(it.p->up+n);
 
-That is, we go "up" to the pointer array, add n there and then go "down" to the resulting node. 
+That is, we go "up" to the pointer array, add n there and then go "down" to the resulting node.
 
 [*General properties]. `stable_vector` satisfies all the requirements of a container, a reversible container and a sequence
 and provides all the optional operations present in vector. Like vector, iterators are random access. `stable_vector`
@@ -291,8 +291,8 @@ C++ world. Matt Austern's  classic article
 
 ["['Red-black trees aren't the only way to organize data that permits lookup in logarithmic time.  One of the basic
 algorithms of computer science is binary search, which works by successively dividing a range in half. Binary
-search is log N and it doesn't require any fancy data structures, just a sorted collection of elements. 
-(...) You can use whatever data structure is convenient, so long as it provides STL iterator; 
+search is log N and it doesn't require any fancy data structures, just a sorted collection of elements.
+(...) You can use whatever data structure is convenient, so long as it provides STL iterator;
 usually it's easiest to use a C array, or a vector.]]
 
 ["['Both std::lower_bound and set::find take time proportional to log N, but the constants of proportionality
@@ -317,12 +317,12 @@ showed `AssocVector`, a `std::map` drop-in
 replacement designed in his [@http://loki-lib.sourceforge.net/ Loki] library:
 
 ["['It seems as if we're better off with a sorted vector. The disadvantages of a sorted
-vector are linear-time insertions and linear-time deletions (...). In exchange, a vector 
-offers about twice the lookup speed and a much smaller working set (...). 
-Loki saves the trouble of maintaining a sorted vector by hand by defining an AssocVector class 
-template. AssocVector is a drop-in replacement for std::map (it supports the same set of member 
-functions), implemented on top of std::vector. AssocVector differs from a map in the behavior of 
-its erase functions (AssocVector::erase invalidates all iterators into the object) and in the 
+vector are linear-time insertions and linear-time deletions (...). In exchange, a vector
+offers about twice the lookup speed and a much smaller working set (...).
+Loki saves the trouble of maintaining a sorted vector by hand by defining an AssocVector class
+template. AssocVector is a drop-in replacement for std::map (it supports the same set of member
+functions), implemented on top of std::vector. AssocVector differs from a map in the behavior of
+its erase functions (AssocVector::erase invalidates all iterators into the object) and in the
 complexity guarantees of insert and erase (linear as opposed to constant). ]]
 
 [*Boost.Container] `flat_[multi]map/set` containers are ordered-vector based associative containers
@@ -378,9 +378,9 @@ adequate for your needs, and that you often need to use insert and erase in the 
 should probably use list instead of slist.]]
 
 [*Boost.Container] updates the classic `slist` container with C++11 features like move semantics and placement
-insertion and implements it a bit differently for the standard C++11 `forward_list`. `forward_list` has no `size()`
+insertion and implements it a bit differently than the standard C++ `forward_list`. `forward_list` has no `size()`
 method, so it's been designed to allow (or in practice, encourage) implementations without tracking list size
-with every insertion/erasure, allowing constant-time 
+with every insertion/erasure, allowing constant-time
 `splice_after(iterator, forward_list &, iterator, iterator)`-based list merging. On the other hand `slist` offers
 constant-time `size()` for those that don't care about linear-time `splice_after(iterator, slist &, iterator, iterator)`
 `size()` and offers an additional `splice_after(iterator, slist &, iterator, iterator, size_type)` method that
@@ -422,18 +422,47 @@ to suppose two allocators of the same type always compare equal (that means that
 by one allocator object could be deallocated by another instance of the same type) and
 allocators were not swapped when the container was swapped.
 
-C++11 further improves stateful allocator support through the
-[@http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2008/n2554.pdf
-Scoped Allocators model]. [@http://en.cppreference.com/w/cpp/memory/allocator_traits
-`std::allocator_traits`] is the protocol between a container and an allocator, and
+C++11 further improves stateful allocator support through
+[@http://en.cppreference.com/w/cpp/memory/allocator_traits `std::allocator_traits`].
+`std::allocator_traits` is the protocol between a container and an allocator, and
 an allocator writer can customize its behaviour (should the container propagate it in
 move constructor, swap, etc.?) following `allocator_traits` requirements. [*Boost.Container]
-not only supports this model with C++11 but also [*backports it to C++03]. 
+not only supports this model with C++11 but also [*backports it to C++03].
 
-If possible, a single allocator is hold to construct `value_type`. If the container needs an auxiliary 
-allocator (e.g. a array allocator used by `deque` or `stable_vector`), that allocator is also 
-constructed from the user-supplied allocator when the container is constructed (i.e. it's 
+If possible, a single allocator is hold to construct `value_type`. If the container needs an auxiliary
+allocator (e.g. a array allocator used by `deque` or `stable_vector`), that allocator is also
+constructed from the user-supplied allocator when the container is constructed (i.e. it's
 not constructed on the fly when auxiliary memory is needed).
+
+[endsect]
+
+[section:scoped_allocator Scoped allocators]
+
+C++11 improves stateful allocators with the introduction of
+[@http://en.cppreference.com/w/cpp/memory/scoped_allocator_adaptor `std::scoped_allocator_adaptor`]
+class template. `scoped_allocator_adaptor` is instantiated with one outer allocator and zero or more inner
+allocators.
+
+A scoped allocator is a mechanism to automatically propagate the state of the allocator to the subobjects
+of a container in a controlled way. If instantiated with only one allocator type, the inner allocator
+becomes the `scoped_allocator_adaptor` itself, thus using the same allocator
+resource for the container and every element within the container and, if the elements themselves are
+containers, each of their elements recursively. If instantiated with more than one allocator, the first allocator
+is the outer allocator for use by the container, the second allocator is passed to the constructors of the
+container's elements, and, if the elements themselves are containers, the third allocator is passed to the
+elements' elements, and so on.
+
+[*Boost.Container] implements its own `scoped_allocator_adaptor` class and [*backports this feature also
+to C++03 compilers]. Due to C++03 limitations, in those compilers
+the allocator propagation implemented by `scoped_allocator_adaptor::construct` functions
+will be based on traits([classref boost::container::constructible_with_allocator_suffix constructible_with_allocator_suffix]
+and [classref boost::container::constructible_with_allocator_prefix constructible_with_allocator_prefix])
+proposed in [@http://www.open-std.org/jtc1/sc22/WG21/docs/papers/2008/n2554.pdf
+N2554: The Scoped Allocator Model (Rev 2) proposal]. In conforming C++11 compilers or compilers supporting SFINAE
+expressions (when `BOOST_NO_SFINAE_EXPR` is NOT defined), traits are ignored and C++11 rules
+(`is_constructible<T, Args..., inner_allocator_type>::value` and
+`is_constructible<T, allocator_arg_t, inner_allocator_type, Args...>::value`)
+will be used to detect if the allocator must be propagated with suffix or prefix allocator arguments.
 
 [endsect]
 
@@ -458,7 +487,7 @@ versions.
 unsuccessful tries to deprecate or remove it from the standard. [*Boost.Container] does not implement it
 as there is a superior [@http://www.boost.org/libs/dynamic_bitset/ Boost.DynamicBitset]
 solution. For issues with `vector<bool>` see papers
-[@http://www.gotw.ca/publications/N1211.pdf vector<bool>: N1211: More Problems, Better Solutions], 
+[@http://www.gotw.ca/publications/N1211.pdf vector<bool>: N1211: More Problems, Better Solutions],
 [@http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2160.html N2160: Library Issue 96: Fixing vector<bool>],
 [@http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2204.html N2204 A Specification to deprecate vector<bool>].
 
@@ -510,7 +539,7 @@ code tweaked to support non-raw `allocator::pointer` types and stateful allocato
 Shmem was accepted as [@http://www.boost.org/libs/interprocess/ Boost.Interprocess] and this library
 continued to refine and improve those containers.
 
-In 2007, container code from node containers (`map`, `list`, `slist`) was rewritten, refactored 
+In 2007, container code from node containers (`map`, `list`, `slist`) was rewritten, refactored
 and expanded to build the intrusive container library [@http://www.boost.org/libs/intrusive/ Boost.Intrusive].
 [*Boost.Interprocess] containers were refactored to take advantage of [*Boost.Intrusive] containers and
 code duplication was minimized. Both libraries continued to gain support and bug fixes for years.
@@ -574,7 +603,7 @@ use [*Boost.Container]? There are several reasons for that:
    [@http://bannalia.blogspot.com/2008/09/introducing-stablevector.html Joaqu\u00EDn M. L\u00F3pez Mu\u00F1oz],
    then adapted for [*Boost.Interprocess]. Thanks for such a great container.
 
-*  Howard Hinnant's help and advices were essential when implementing move semantics, 
+*  Howard Hinnant's help and advices were essential when implementing move semantics,
    improving allocator support or implementing small string optimization. Thanks Howard
    for your wonderful standard library implementations.
 
@@ -584,6 +613,33 @@ use [*Boost.Container]? There are several reasons for that:
 [endsect]
 
 [section:release_notes Release Notes]
+
+[section:release_notes_boost_1_51_00 Boost 1.51 Release]
+
+*  Fixed bugs
+  [@https://svn.boost.org/trac/boost/ticket/6763 #6763],
+  [@https://svn.boost.org/trac/boost/ticket/6803 #6803],
+  [@https://svn.boost.org/trac/boost/ticket/7114 #7114],
+  [@https://svn.boost.org/trac/boost/ticket/7103 #7103].
+  [@https://svn.boost.org/trac/boost/ticket/7123 #7123],
+
+
+[endsect]
+
+[section:release_notes_boost_1_50_00 Boost 1.50 Release]
+
+*  Added Scoped Allocator Model support.
+
+*  Fixed bugs
+  [@https://svn.boost.org/trac/boost/ticket/6533 #6533],
+  [@https://svn.boost.org/trac/boost/ticket/6536 #6536],
+  [@https://svn.boost.org/trac/boost/ticket/6566 #6566],
+  [@https://svn.boost.org/trac/boost/ticket/6575 #6575],
+  [@https://svn.boost.org/trac/boost/ticket/6606 #6606],
+  [@https://svn.boost.org/trac/boost/ticket/6615 #6615],
+  
+[endsect]
+
 
 [section:release_notes_boost_1_49_00 Boost 1.49 Release]
 

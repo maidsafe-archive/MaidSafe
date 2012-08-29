@@ -36,7 +36,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="winmm.lib"
-				OutputFile="$(OutDir)/mapped_file_test_d.exe"
+				OutputFile="$(OutDir)/anonymous_shared_memory_test_d.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../../../../stage/lib"
 				GenerateDebugInformation="TRUE"

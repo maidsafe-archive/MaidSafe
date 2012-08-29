@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>common_type</title>
 <link rel="stylesheet" href="../../../../../../doc/src/boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.TypeTraits">
 <link rel="up" href="../reference.html" title="Alphabetical Reference">
 <link rel="prev" href="conditional.html" title="conditional">
@@ -22,7 +22,7 @@
 <div class="spirit-nav">
 <a accesskey="p" href="conditional.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="decay.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
-<div class="section">
+<div class="section boost_typetraits_reference_common_type">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_typetraits.reference.common_type"></a><a class="link" href="common_type.html" title="common_type">common_type</a>
 </h3></div></div></div>
@@ -74,9 +74,9 @@
         macro BOOST_NO_VARIADIC_TEMPLATES is defined) then the maximum number of
         template arguments is 3.
       </p>
-<a name="boost_typetraits.reference.common_type.configuration_macros"></a><h5>
-<a name="boost_typetraits.reference.common_type.configuration_macros-heading"></a>
-        <a class="link" href="common_type.html#boost_typetraits.reference.common_type.configuration_macros">Configuration
+<h5>
+<a name="boost_typetraits.reference.common_type.h0"></a>
+        <span><a name="boost_typetraits.reference.common_type.configuration_macros"></a></span><a class="link" href="common_type.html#boost_typetraits.reference.common_type.configuration_macros">Configuration
         macros</a>
       </h5>
 <p>
@@ -104,9 +104,9 @@
         When possible common_type is implemented using <code class="computeroutput"><span class="identifier">decltype</span></code>.
         Otherwise when BOOST_COMMON_TYPE_DONT_USE_TYPEOF is not defined it uses Boost.TypeOf.
       </p>
-<a name="boost_typetraits.reference.common_type.tutorial"></a><h5>
-<a name="boost_typetraits.reference.common_type.tutorial-heading"></a>
-        <a class="link" href="common_type.html#boost_typetraits.reference.common_type.tutorial">Tutorial</a>
+<h5>
+<a name="boost_typetraits.reference.common_type.h1"></a>
+        <span><a name="boost_typetraits.reference.common_type.tutorial"></a></span><a class="link" href="common_type.html#boost_typetraits.reference.common_type.tutorial">Tutorial</a>
       </h5>
 <p>
         In a nutshell, <a class="link" href="common_type.html" title="common_type">common_type</a>
@@ -139,9 +139,9 @@
 <p>
         This is a very useful and broadly applicable utility.
       </p>
-<a name="boost_typetraits.reference.common_type.how_to_get_the_common_type_of_types_with_explicit_conversions_"></a><h5>
-<a name="boost_typetraits.reference.common_type.how_to_get_the_common_type_of_types_with_explicit_conversions_-heading"></a>
-        <a class="link" href="common_type.html#boost_typetraits.reference.common_type.how_to_get_the_common_type_of_types_with_explicit_conversions_">How
+<h5>
+<a name="boost_typetraits.reference.common_type.h2"></a>
+        <span><a name="boost_typetraits.reference.common_type.how_to_get_the_common_type_of_types_with_explicit_conversions_"></a></span><a class="link" href="common_type.html#boost_typetraits.reference.common_type.how_to_get_the_common_type_of_types_with_explicit_conversions_">How
         to get the common type of types with explicit conversions?</a>
       </h5>
 <p>
@@ -161,9 +161,9 @@
     <span class="keyword">typedef</span> <span class="identifier">complex</span><span class="special">&lt;</span> <a class="link" href="common_type.html" title="common_type">common_type</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">,</span> <span class="identifier">U</span><span class="special">&gt;</span> <span class="special">&gt;</span> <span class="identifier">type</span><span class="special">;</span>
 <span class="special">};</span>
 </pre>
-<a name="boost_typetraits.reference.common_type.how_important_is_the_order_of_the_common_type_lt__gt__template_arguments_"></a><h5>
-<a name="boost_typetraits.reference.common_type.how_important_is_the_order_of_the_common_type_lt__gt__template_arguments_-heading"></a>
-        <a class="link" href="common_type.html#boost_typetraits.reference.common_type.how_important_is_the_order_of_the_common_type_lt__gt__template_arguments_">How
+<h5>
+<a name="boost_typetraits.reference.common_type.h3"></a>
+        <span><a name="boost_typetraits.reference.common_type.how_important_is_the_order_of_the_common_type_lt__gt__template_arguments_"></a></span><a class="link" href="common_type.html#boost_typetraits.reference.common_type.how_important_is_the_order_of_the_common_type_lt__gt__template_arguments_">How
         important is the order of the common_type&lt;&gt; template arguments?</a>
       </h5>
 <p>
@@ -215,7 +215,7 @@
 <span class="keyword">template</span> <span class="special">&lt;&gt;</span>
 <span class="keyword">struct</span> <span class="identifier">common_type</span><span class="special">&lt;</span><span class="identifier">A</span><span class="special">,</span> <span class="identifier">B</span><span class="special">&gt;</span> <span class="special">{</span><span class="keyword">typedef</span> <span class="identifier">C</span> <span class="identifier">type</span><span class="special">;};</span>
 
-<span class="special">}</span> 
+<span class="special">}</span>
 </pre>
 <p>
         Now this client can ask for <code class="computeroutput"><span class="identifier">common_type</span><span class="special">&lt;</span><span class="identifier">A</span><span class="special">,</span>
@@ -233,7 +233,7 @@
 <span class="keyword">template</span> <span class="special">&lt;&gt;</span> <span class="keyword">struct</span> <span class="identifier">common_type</span><span class="special">&lt;</span><span class="identifier">B</span><span class="special">,</span> <span class="identifier">A</span><span class="special">&gt;</span>
 <span class="special">:</span> <span class="keyword">public</span> <span class="identifier">common_type</span><span class="special">&lt;</span><span class="identifier">A</span><span class="special">,</span> <span class="identifier">B</span><span class="special">&gt;</span> <span class="special">{};</span>
 
-<span class="special">}</span> 
+<span class="special">}</span>
 </pre>
 <p>
         This is needed as the specialization of <code class="computeroutput"><span class="identifier">common_type</span><span class="special">&lt;</span><span class="identifier">A</span><span class="special">,</span>
@@ -241,9 +241,9 @@
         is not be used implicitly for <code class="computeroutput"><span class="identifier">common_type</span><span class="special">&lt;</span><span class="identifier">B</span><span class="special">,</span>
         <span class="identifier">A</span><span class="special">&gt;</span></code>.
       </p>
-<a name="boost_typetraits.reference.common_type.can_the_common_type_of_two_types_be_a_third_type_"></a><h5>
-<a name="boost_typetraits.reference.common_type.can_the_common_type_of_two_types_be_a_third_type_-heading"></a>
-        <a class="link" href="common_type.html#boost_typetraits.reference.common_type.can_the_common_type_of_two_types_be_a_third_type_">Can
+<h5>
+<a name="boost_typetraits.reference.common_type.h4"></a>
+        <span><a name="boost_typetraits.reference.common_type.can_the_common_type_of_two_types_be_a_third_type_"></a></span><a class="link" href="common_type.html#boost_typetraits.reference.common_type.can_the_common_type_of_two_types_be_a_third_type_">Can
         the common_type of two types be a third type?</a>
       </h5>
 <p>
@@ -262,15 +262,15 @@
 <span class="keyword">template</span> <span class="special">&lt;&gt;</span> <span class="keyword">struct</span> <span class="identifier">common_type</span><span class="special">&lt;</span><span class="identifier">B</span><span class="special">,</span> <span class="identifier">A</span><span class="special">&gt;</span>
 <span class="special">:</span> <span class="keyword">public</span> <span class="identifier">common_type</span><span class="special">&lt;</span><span class="identifier">A</span><span class="special">,</span> <span class="identifier">B</span><span class="special">&gt;</span> <span class="special">{};</span>
 
-<span class="special">}</span> 
+<span class="special">}</span>
 </pre>
 <p>
         Now this client can ask for <code class="computeroutput"><span class="identifier">common_type</span><span class="special">&lt;</span><span class="identifier">A</span><span class="special">,</span>
         <span class="identifier">B</span><span class="special">&gt;</span></code>.
       </p>
-<a name="boost_typetraits.reference.common_type.how_common_type_behaves_with_pointers_"></a><h5>
-<a name="boost_typetraits.reference.common_type.how_common_type_behaves_with_pointers_-heading"></a>
-        <a class="link" href="common_type.html#boost_typetraits.reference.common_type.how_common_type_behaves_with_pointers_">How
+<h5>
+<a name="boost_typetraits.reference.common_type.h5"></a>
+        <span><a name="boost_typetraits.reference.common_type.how_common_type_behaves_with_pointers_"></a></span><a class="link" href="common_type.html#boost_typetraits.reference.common_type.how_common_type_behaves_with_pointers_">How
         common_type behaves with pointers?</a>
       </h5>
 <p>
@@ -304,9 +304,9 @@
 <p>
         Of course the user can always make this specialization.
       </p>
-<a name="boost_typetraits.reference.common_type.can_you_explain_the_pros_cons_of_common_type_against_boost_typeof_"></a><h5>
-<a name="boost_typetraits.reference.common_type.can_you_explain_the_pros_cons_of_common_type_against_boost_typeof_-heading"></a>
-        <a class="link" href="common_type.html#boost_typetraits.reference.common_type.can_you_explain_the_pros_cons_of_common_type_against_boost_typeof_">Can
+<h5>
+<a name="boost_typetraits.reference.common_type.h6"></a>
+        <span><a name="boost_typetraits.reference.common_type.can_you_explain_the_pros_cons_of_common_type_against_boost_typeof_"></a></span><a class="link" href="common_type.html#boost_typetraits.reference.common_type.can_you_explain_the_pros_cons_of_common_type_against_boost_typeof_">Can
         you explain the pros/cons of common_type against Boost.Typeof?</a>
       </h5>
 <p>

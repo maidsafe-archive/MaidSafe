@@ -420,6 +420,28 @@
       </listitem>
     </itemizedlist>
   </section>
+  <section id="list_test.list_immediately_following_mark0">
+    <title><link linkend="list_test.list_immediately_following_mark0">List immediately
+    following markup 2</link></title>
+    <itemizedlist>
+      <listitem>
+        <simpara>
+          One
+        </simpara>
+      </listitem>
+    </itemizedlist>
+    <section id="list_test.list_immediately_following_mark0.nested_section">
+      <title><link linkend="list_test.list_immediately_following_mark0.nested_section">Nested
+      section</link></title>
+      <itemizedlist>
+        <listitem>
+          <simpara>
+            Two
+          </simpara>
+        </listitem>
+      </itemizedlist>
+    </section>
+  </section>
   <section id="list_test.paragraphs_in_list_items">
     <title><link linkend="list_test.paragraphs_in_list_items">Paragraphs in list
     items</link></title>
@@ -469,6 +491,34 @@
           <para>
             D2
           </para>
+        </simpara>
+      </listitem>
+    </itemizedlist>
+  </section>
+  <section id="list_test.indented_code_blocks_in_lists">
+    <title><link linkend="list_test.indented_code_blocks_in_lists">Indented code
+    blocks in lists</link></title>
+    <itemizedlist>
+      <listitem>
+        <simpara>
+          A
+<programlisting><phrase role="identifier">B</phrase>
+</programlisting>
+          <para>
+            C
+          </para>
+        </simpara>
+      </listitem>
+      <listitem>
+        <simpara>
+          D
+<programlisting><phrase role="identifier">E</phrase>
+</programlisting>
+        </simpara>
+      </listitem>
+      <listitem>
+        <simpara>
+          F
         </simpara>
       </listitem>
     </itemizedlist>

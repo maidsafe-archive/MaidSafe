@@ -53,7 +53,8 @@
 <p>
 </p>
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">special_functions</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
-<span class="comment">//using boost::math::tgamma; // Not needed because using C::tgamma.</span></pre>
+<span class="comment">//using boost::math::tgamma; // Not needed because using C::tgamma.</span>
+</pre>
 <p>
         </p>
 <p>
@@ -82,7 +83,8 @@
      <span class="identifier">pole_error</span><span class="special">&lt;</span><span class="identifier">errno_on_error</span><span class="special">&gt;,</span>
      <span class="identifier">overflow_error</span><span class="special">&lt;</span><span class="identifier">errno_on_error</span><span class="special">&gt;,</span>
      <span class="identifier">evaluation_error</span><span class="special">&lt;</span><span class="identifier">errno_on_error</span><span class="special">&gt;</span>
-  <span class="special">&gt;</span> <span class="identifier">c_policy</span><span class="special">;</span></pre>
+  <span class="special">&gt;</span> <span class="identifier">c_policy</span><span class="special">;</span>
+</pre>
 <p>
         </p>
 <p>
@@ -93,7 +95,8 @@
 </p>
 <pre class="programlisting"><span class="identifier">BOOST_MATH_DECLARE_SPECIAL_FUNCTIONS</span><span class="special">(</span><span class="identifier">c_policy</span><span class="special">)</span>
 
-<span class="special">}</span> <span class="comment">// close namespace C</span></pre>
+<span class="special">}</span> <span class="comment">// close namespace C</span>
+</pre>
 <p>
         </p>
 <p>
@@ -127,7 +130,8 @@
    <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Result of tgamma(-10) is: "</span>
       <span class="special">&lt;&lt;</span> <span class="identifier">C</span><span class="special">::</span><span class="identifier">tgamma</span><span class="special">(-</span><span class="number">10</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
    <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"errno = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">errno</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// errno = 33, overwriting previous value of 34.</span>
-<span class="special">}</span></pre>
+<span class="special">}</span>
+</pre>
 <p>
         </p>
 <p>
@@ -167,7 +171,8 @@ errno = 33
    <span class="identifier">evaluation_error</span><span class="special">&lt;</span><span class="identifier">errno_on_error</span><span class="special">&gt;</span>
 <span class="special">&gt;</span> <span class="identifier">c_policy</span><span class="special">;</span>
 
-<span class="identifier">BOOST_MATH_DECLARE_SPECIAL_FUNCTIONS</span><span class="special">(</span><span class="identifier">c_policy</span><span class="special">)</span></pre>
+<span class="identifier">BOOST_MATH_DECLARE_SPECIAL_FUNCTIONS</span><span class="special">(</span><span class="identifier">c_policy</span><span class="special">)</span>
+</pre>
 <p>
         </p>
 <p>
@@ -191,7 +196,6 @@ errno = 33
    <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"errno = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">errno</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
    <span class="comment">// Default tgamma policy would throw an exception, and abort.</span>
 <span class="special">}</span>
-
 </pre>
 <p>
         </p>
@@ -230,7 +234,8 @@ errno = 33
         </p>
 <p>
 </p>
-<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">distributions</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></pre>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">distributions</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+</pre>
 <p>
         </p>
 <p>
@@ -252,7 +257,8 @@ errno = 33
      <span class="identifier">promote_double</span><span class="special">&lt;</span><span class="keyword">false</span><span class="special">&gt;,</span>
      <span class="comment">// Return the closest integer result for discrete quantiles:</span>
      <span class="identifier">discrete_quantile</span><span class="special">&lt;</span><span class="identifier">integer_round_nearest</span><span class="special">&gt;</span>
-  <span class="special">&gt;</span> <span class="identifier">my_policy</span><span class="special">;</span></pre>
+  <span class="special">&gt;</span> <span class="identifier">my_policy</span><span class="special">;</span>
+</pre>
 <p>
         </p>
 <p>
@@ -265,7 +271,8 @@ errno = 33
 </p>
 <pre class="programlisting"><span class="identifier">BOOST_MATH_DECLARE_DISTRIBUTIONS</span><span class="special">(</span><span class="keyword">double</span><span class="special">,</span> <span class="identifier">my_policy</span><span class="special">)</span>
 
-<span class="special">}</span> <span class="comment">// close namespace my_namespace</span></pre>
+<span class="special">}</span> <span class="comment">// close namespace my_namespace</span>
+</pre>
 <p>
         </p>
 <p>
@@ -307,7 +314,8 @@ errno = 33
       <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">binom</span><span class="special">,</span> <span class="number">0.05</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// To check we get integer results.</span>
    <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Result of quantile(complement(binom, 0.05)) is: "</span>
       <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">binom</span><span class="special">,</span> <span class="number">0.05</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
-<span class="special">}</span></pre>
+<span class="special">}</span>
+</pre>
 <p>
         </p>
 <p>
@@ -387,7 +395,6 @@ Result of quantile(complement(binom, 0.05)) is: 8
    <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Result of quantile(complement(binom, 0.05)) is: "</span>
       <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">binom</span><span class="special">,</span> <span class="number">0.05</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
 <span class="special">}</span>
-
 </pre>
 <p>
         </p>
@@ -395,7 +402,7 @@ Result of quantile(complement(binom, 0.05)) is: 8
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
 <td align="right"><div class="copyright-footer">Copyright &#169; 2006-2010 John Maddock, Paul A. Bristow, Hubert Holin, Xiaogang Zhang, Bruno
-      Lalande, Johan R&#229;de, Gautam Sewani and Thijs van den Berg<p>
+      Lalande, Johan R&#229;de, Gautam Sewani, Thijs van den Berg and Benjamin Sobotta<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

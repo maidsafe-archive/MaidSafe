@@ -6,7 +6,7 @@
 
 //  See http://www.boost.org/libs/config for more information.
 
-//  MACRO:         BOOST_NO_EXPLICIT_CONVERSION_OPERATORS 
+//  MACRO:         BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS 
 //  TITLE:         C++0x explicit conversion operators unavailable
 //  DESCRIPTION:   The compiler does not support C++0x explicit conversion operators
 
@@ -14,7 +14,7 @@
 #  error This feature is not available in non-C++0x mode
 #endif
 
-namespace boost_no_explicit_conversion_operators {
+namespace boost_no_cxx11_explicit_conversion_operators {
 
 void quiet_warning(int){}
 

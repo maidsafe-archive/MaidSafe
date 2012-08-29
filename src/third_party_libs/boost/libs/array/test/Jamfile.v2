@@ -12,4 +12,5 @@ test-suite array :
     [ run array4.cpp ]
     [ run array5.cpp ]
     [ run array6.cpp ]
+    [ run array_hash.cpp ]
     ;

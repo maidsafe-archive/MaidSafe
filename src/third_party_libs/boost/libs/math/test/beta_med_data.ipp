@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 3>, 1830> beta_med_data = { {
+   static const boost::array<boost::array<typename table_type<T>::type, 3>, 1830> beta_med_data = { {
       {{ SC_(0.4883005917072296142578125), SC_(0.4883005917072296142578125), SC_(3.245912809500479157065104747353807392371) }}, 
       {{ SC_(3.5808107852935791015625), SC_(0.4883005917072296142578125), SC_(1.007653173802923954909901438393379243537) }}, 
       {{ SC_(3.5808107852935791015625), SC_(3.5808107852935791015625), SC_(0.01354763979296020361276499134253466025558) }}, 

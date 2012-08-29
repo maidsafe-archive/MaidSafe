@@ -130,15 +130,19 @@
 </ul></div>
 <h5>
 <a name="math_toolkit.status.issues.h5"></a>
-        <span><a name="math_toolkit.status.issues.bessel_functions"></a></span><a class="link" href="issues.html#math_toolkit.status.issues.bessel_functions">Bessel
-        Functions</a>
+        <span><a name="math_toolkit.status.issues.owen_s_t_function"></a></span><a class="link" href="issues.html#math_toolkit.status.issues.owen_s_t_function">Owen's
+        T Function</a>
       </h5>
 <p>
-        We should implement the Hankel H1 and H2 functions as linear combinations
-        of Bessel functions. Requires refactoring the internals so we can reliably
-        calculate pairs of Bessel functions at the same time. We may also be able
-        to improve performance of the Bessel series evaluation by accelerating the
-        alternating series. This may also increase the scope of the series form.
+        There is a problem area at arbitrary precision when <span class="emphasis"><em>a</em></span>
+        is very close to 1. However, note that the value for <span class="emphasis"><em>T(h, 1)</em></span>
+        is well known and easy to compute, and if we replaced the <span class="emphasis"><em>a<sup>k</sup></em></span>
+        terms in series T1, T2 or T4 by <span class="emphasis"><em>(a<sup>k</sup> - 1)</em></span> then we would
+        have the difference between <span class="emphasis"><em>T(h, a)</em></span> and <span class="emphasis"><em>T(h,
+        1)</em></span>. Unfortunately this doesn't improve the convergence of those
+        series in that area. It certainly looks as though a new series in terms of
+        <span class="emphasis"><em>(1-a)<sup>k</sup></em></span> is both possible and desirable in this area,
+        but it remains elusive at present.
       </p>
 <h5>
 <a name="math_toolkit.status.issues.h6"></a>
@@ -1226,7 +1230,7 @@
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
 <td align="right"><div class="copyright-footer">Copyright &#169; 2006-2010 John Maddock, Paul A. Bristow, Hubert Holin, Xiaogang Zhang, Bruno
-      Lalande, Johan R&#229;de, Gautam Sewani and Thijs van den Berg<p>
+      Lalande, Johan R&#229;de, Gautam Sewani, Thijs van den Berg and Benjamin Sobotta<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

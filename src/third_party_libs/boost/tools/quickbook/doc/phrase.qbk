@@ -14,7 +14,8 @@
     [source-mode teletype]
 ]
 
-[section Font Styles]
+[#quickbook.ref.font_styles]
+[section:font_styles Font Styles]
 
 ```
 ['italic], [*bold], [_underline], [^teletype], [-strikethrough]
@@ -34,9 +35,10 @@ will generate:
 
 [*['bold-italic]]
 
-[endsect] [/Font Styles]
+[endsect] [/font_styles]
 
-[section Replaceable]
+[#quickbook.ref.replaceable]
+[section:replaceable Replaceable]
 
 When you want content that may or must be replaced by the user, use the syntax:
 
@@ -48,9 +50,10 @@ This will generate:
 
 [~replacement]
 
-[endsect] [/Replaceable]
+[endsect] [/replaceable]
 
-[section Quotations]
+[#quickbook.ref.quotations]
+[section:quotations Quotations]
 
 ```
 ["A question that sometimes drives me hazy: am I or are the others crazy?]--Einstein
@@ -76,9 +79,10 @@ will generate:
 ["Here's the rule for bargains: ["Do other men, for they would do you.]
 That's the true business precept.]
 
-[endsect] [/Quotations]
+[endsect] [/quotations]
 
-[section Simple formatting]
+[#quickbook.ref.simple_formatting]
+[section:simple_formatting Simple formatting]
 
 Simple markup for formatting text, common in many applications, is now supported:
 
@@ -159,9 +163,10 @@ Yes sir, yes sir, three bags full!
 One for the master, one for the dame,
 And one for the little boy who lives down the lane.
 
-[endsect] [/Simple Formatting]
+[endsect] [/simple_formatting]
 
-[section Inline code]
+[#quickbook.ref.inline_code]
+[section:inline_code Inline code]
 
 Inlining code in paragraphs is quite common when writing C++ documentation. We
 provide a very simple markup for this. For example, this:
@@ -179,9 +184,10 @@ syntax highlighted.
 single quote: `"'"`. Note too that [^\`some code\`] is preferred over
 `[^some code]`. ]
 
-[endsect] [/Inline Code]
+[endsect] [/inline_code]
 
-[section Code blocks]
+[#quickbook.ref.code_blocks]
+[section:code_blocks Code blocks]
 
 Preformatted code simply starts with a space or a tab (See __code__).
 However, such a simple syntax cannot be used as phrase elements in lists
@@ -235,9 +241,10 @@ will generate:
 
 [teletype]
 
-[endsect] [/Code blocks]
+[endsect] [/code_blocks]
 
-[section Source Mode]
+[#quickbook.ref.source_mode]
+[section:source_mode Source Mode]
 
 If a document contains more than one type of source code then the source
 mode may be changed dynamically as the document is processed. All QuickBook
@@ -270,10 +277,10 @@ C++ comment `// looks like this` whereas a Python comment [python]
 
 [note The source mode strings are lowercase.]
 
-[endsect] [/Source Mode]
+[endsect] [/source_mode]
 
-[#ref-line-break]
-[section line-break]
+[#quickbook.ref.line_break]
+[section:line_break line-break]
 
 ```
 [br]
@@ -283,9 +290,10 @@ C++ comment `// looks like this` whereas a Python comment [python]
 there might be problems, especially when using an alternative docbook
 processor.]
 
-[endsect] [/Line break]
+[endsect] [/line_break]
 
-[section Anchors]
+[#quickbook.ref.anchors]
+[section:anchors Anchors]
 
 ```
 [#named_anchor]
@@ -299,9 +307,10 @@ These anchors are global and can be accessed from anywhere in the
 quickbook documentation. Be careful to avoid clashes with anchors in
 other sections.
 
-[endsect] [/Anchors]
+[endsect] [/anchors]
 
-[section Links]
+[#quickbook.ref.links]
+[section:links Links]
 
 ```
 [@http://www.boost.org this is [*boost's] website....]
@@ -339,9 +348,10 @@ will generate: [@boost:/libs/spirit/index.html the Boost.Spirit documentation]
 Note that this is only available when using BoostBook, and only for links
 - it can't be used for images.
 
-[endsect] [/Links]
+[endsect] [/links]
 
-[section Anchor links]
+[#quickbook.ref.anchor_links]
+[section:anchor_links Anchor links]
 
 You can link within a document using:
 
@@ -351,9 +361,10 @@ You can link within a document using:
 
 See sections __section__ and __heading__ for more info.
 
-[endsect] [/Anchor links]
+[endsect] [/anchor_links]
 
-[section refentry links]
+[#quickbook.ref.refentry_links]
+[section:refentry_links refentry links]
 
 In addition, you can link internally to an XML refentry like:
 
@@ -372,8 +383,9 @@ automatically be the refentry. Example:
 
 This gets converted into [^<link linkend="xml.refentry">xml.refentry</link>].
 
-[endsect] [/refentry links]
+[endsect] [/refentry_links]
 
+[#quickbook.ref.code_links]
 [section:code_links Code Links]
 
 If you want to link to a function, class, member, enum, concept, global, or header in
@@ -400,9 +412,10 @@ Example:
 
 would have "boost::bar::baz" as the link text.
 
-[endsect] [/Code Links]
+[endsect] [/code_links]
 
-[section Escape]
+[#quickbook.ref.escape]
+[section:escape Escape]
 
 The escape mark-up is used when we don't want to do any processing.
 
@@ -427,9 +440,10 @@ Escaping allows us to pass XML markup to __boostbook__ or __docbook__. For examp
 [important Be careful when using the escape. The text must conform to
 __boostbook__/__docbook__ syntax.]
 
-[endsect] [/Escape]
+[endsect] [/escape]
 
-[section Single char escape]
+[#quickbook.ref.single_char_escape]
+[section:single_char_escape Single char escape]
 
 The backslash may be used to escape a single punctuation character. The
 punctuation immediately after the backslash is passed without any processing.
@@ -439,15 +453,16 @@ For example, how do you escape the triple quote? Simple: [^\\'\\'\\']
 
 `\n` has a special meaning. It is used to generate line breaks.
 
-[warning `\n` is now deprecated, use [link ref-line-break `[br]`]
+[warning `\n` is now deprecated, use [link quickbook.ref.line_break `[br]`]
 instead. Although, use it sparingly as it can generated invalid docbook]
 
 The escaped space: `\ ` also has a special meaning. The escaped space is removed
 from the output.
 
-[endsect] [/Single char escape]
+[endsect] [/single_char_escape]
 
-[section Unicode escape]
+[#quickbook.ref.unicode_escape]
+[section:unicode_escape Unicode escape]
 
 You can enter any 16-bit unicode character by using `\u` followed by its 4 digit
 hexadecimal code, or a 32-bit character by using `\U` followed by an 8 digit
@@ -463,9 +478,10 @@ will generate:
 \u03B1 + \u03B2
 ]
 
-[endsect] [/Unicode escape]
+[endsect] [/unicode_escape]
 
-[section Images]
+[#quickbook.ref.images]
+[section:images Images]
 
 ```
 [$image.jpg]
@@ -479,9 +495,10 @@ DocBook imagedata attributes]:
 [$image.jpg [width 200in] [height 200in]]
 ```
 
-[endsect] [/Images]
+[endsect] [/images]
 
-[section Footnotes]
+[#quickbook.ref.footnotes]
+[section:footnotes Footnotes]
 
 As of version 1.3, QuickBook supports footnotes. Just put the text of the
 footnote in a `[footnote]` block, and the text will be put at the bottom
@@ -493,9 +510,10 @@ of the current page. For example, this:
 
 will generate this[footnote A sample footnote].
 
-[endsect] [/Footnotes]
+[endsect] [/footnotes]
 
-[section Macro Expansion]
+[#quickbook.ref.macro_expansion]
+[section:macro_expansion Macro Expansion]
 
 ```
 __a_macro_identifier__
@@ -503,9 +521,10 @@ __a_macro_identifier__
 
 See __macros__ for details.
 
-[endsect] [/Macro Expansion]
+[endsect] [/macro_expansion]
 
-[section Template Expansion]
+[#quickbook.ref.template_expansion]
+[section:template_expansion Template Expansion]
 
 ```
 [a_template_identifier]
@@ -513,8 +532,9 @@ See __macros__ for details.
 
 See __templates__ for details.
 
-[endsect] [/Template Expansion]
+[endsect] [/template_expansion]
 
+[#quickbook.ref.cond]
 [section:cond Conditional Generation]
 
 Like C++ `#ifdef`, you can generate phrases depending on the presence of
@@ -543,4 +563,4 @@ And try again:
 
 Yes!
 
-[endsect] [/Condition Generation]
+[endsect] [/cond]

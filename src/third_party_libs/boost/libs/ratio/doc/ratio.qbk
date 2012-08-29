@@ -1596,12 +1596,29 @@ The specialization relays on the __ratio_greater_equal template class.
 [section:history Appendix A: History]
 [/==================================]
 
-[section [*Version 1.0.1, Jan 8, 2011] ]
+[section [*Version 1.0.3, August 1, 2012 - 1.51] ]
+
+[*Fixes:]
+
+* [@http://svn.boost.org/trac/boost/ticket/7075 #7075] Workaround for error: the type of partial specialization template parameter constant "n1" depends on another template parameter.
+
+[endsect]
+
+[section [*Version 1.0.2, April 1, 2012 - 1.50] ]
+
+[*Fixes:]
+
+* [@http://svn.boost.org/trac/boost/ticket/6498 #6498] boost::ratio won't compile with default settings.
+
+[endsect]
+
+[section [*Version 1.0.1, Jan 8, 2011 ] ]
+
+[*Features:]
 
 * Added MPL Rational Constant and the associated numeric metafunction specializations.
 
 [endsect]
- 
 
 [section [*Version 1.0.0, Jan 2, 2011] ]
 

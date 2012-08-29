@@ -531,7 +531,7 @@ and =(?+1)= recurses to the next sub-expression to be declared.
 the /condition/ is true, otherwise attempts to match /no-pattern/.
 
 =(?(condition)yes-pattern)= attempts to match /yes-pattern/ if the /condition/ 
-is true, otherwise fails.
+is true, otherwise matches the NULL string.
 
 /condition/ may be either: a forward lookahead assert, the index of 
 a marked sub-expression (the condition becomes true if the sub-expression 
@@ -544,9 +544,17 @@ Here is a summary of the possible predicates:
 executes /no-pattern/.
 * =(?(?!assert)yes-pattern|no-pattern)=  Executes /yes-pattern/ if the forward look-ahead assert does not match, otherwise
 executes /no-pattern/.
+* =(?(['N])yes-pattern|no-pattern)=  Executes /yes-pattern/ if subexpression /N/ has been matched, otherwise
+executes /no-pattern/.
+* =(?(<['name]>)yes-pattern|no-pattern)=  Executes /yes-pattern/ if named subexpression /name/ has been matched, otherwise
+executes /no-pattern/.
+* =(?('['name]')yes-pattern|no-pattern)=  Executes /yes-pattern/ if named subexpression /name/ has been matched, otherwise
+executes /no-pattern/.
 * =(?(R)yes-pattern|no-pattern)=  Executes /yes-pattern/ if we are executing inside a recursion, otherwise
 executes /no-pattern/.
 * [^(?(R['N])yes-pattern|no-pattern)]  Executes /yes-pattern/ if we are executing inside a recursion to sub-expression /N/, otherwise
+executes /no-pattern/.
+* [^(?(R&['name])yes-pattern|no-pattern)]  Executes /yes-pattern/ if we are executing inside a recursion to named sub-expression /name/, otherwise
 executes /no-pattern/.
 * [^(?(DEFINE)never-exectuted-pattern)]  Defines a block of code that is never executed and matches no characters:
 this is usually used to define one or more named sub-expressions which are refered to from elsewhere in the pattern.

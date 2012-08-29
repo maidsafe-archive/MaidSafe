@@ -35,12 +35,21 @@ is known as the ['Standard Normal Distribution].
 
 Given mean [mu][space]and standard deviation [sigma][space]it has the PDF:
 
-[equation normal_ref1]
+[space] [equation normal_ref1]
 
 The variation the PDF with its parameters is illustrated
 in the following graph:
 
 [graph normal_pdf]
+
+The cumulative distribution function is given by
+
+[space] [equation normal_cdf]
+
+and illustrated by this graph
+
+[graph normal_cdf]
+
 
 [h4 Member Functions]
 
@@ -94,6 +103,7 @@ and /s/ is its standard deviation.
 [[quantile from the complement][Using the relation: x = m + s * sqrt(2) * __erfc_inv(2*p)]]
 [[mean and standard deviation][The same as `dist.mean()` and `dist.standard_deviation()`]]
 [[mode][The same as the mean.]]
+[[median][The same as the mean.]]
 [[skewness][0]]
 [[kurtosis][3]]
 [[kurtosis excess][0]]
@@ -102,7 +112,7 @@ and /s/ is its standard deviation.
 [endsect][/section:normal_dist Normal]
 
 [/ normal.qbk
-  Copyright 2006, 2007 John Maddock and Paul A. Bristow.
+  Copyright 2006, 2007, 2012 John Maddock and Paul A. Bristow.
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or copy at
   http://www.boost.org/LICENSE_1_0.txt).

@@ -5,11 +5,11 @@
 
 //  See http://www.boost.org/libs/config for the most recent version.
 
-//  MACRO:         BOOST_NO_FUNCTION_TEMPLATE_DEFAULT_ARGS
+//  MACRO:         BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS
 //  TITLE:         Default template arguments for function templates
 //  DESCRIPTION:   Default template arguments for function templates are not supported.
 
-namespace boost_no_function_template_default_args
+namespace boost_no_cxx11_function_template_default_args
 {
 
 template<typename T = int>

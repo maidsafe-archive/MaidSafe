@@ -26,7 +26,7 @@ quickbook allows you to use it now, it isn't recommended as it is
 currently a work in progress and subject to change.
 ]
 
-[#ref-docinfo]
+[#quickbook.ref.docinfo]
 [section:docinfo Document Info]
 
 Every document must begin with a Document Info section, which looks something
@@ -73,6 +73,7 @@ So the documentation for the 'foo' library might start:
 ]
 ```
 
+[#quickbook.ref.attributes]
 [section:attributes Document Info Attributes]
 
 The document info block has a few different types of attributes.
@@ -145,6 +146,7 @@ that's just ignored by the style sheets.
 
 [endsect] [/docinfo]
 
+[#quickbook.ref.section]
 [section:section Sections]
 
 Quickbook documents are structured using 'sections'. These are used
@@ -173,11 +175,12 @@ A sectioned document might look like:
 ```
 
 Sections start with the `section` tag, and end with the `[endsect]` tag.
-(`[/...]` is a comment, [link quickbook.syntax.comments described later]).
+(`[/...]` is a comment, [link quickbook.ref.comments described later]).
 
 Sections can be given an optional id:
 
 ```
+[#quickbook.ref.id]
 [section:id The Section Title]
 ```
 

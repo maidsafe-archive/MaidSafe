@@ -846,6 +846,18 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
                 <para>The function has no effect if an exception is thrown, unless it is thrown by the container's hash function or comparison function.</para>
               </throws>
             </method>
+            <method name="reserve">
+              <parameter name="n">
+                <paramtype>size_type</paramtype>
+              </parameter>
+              <type>void</type>
+              <description>
+                <para>Invalidates iterators, and changes the order of elements. Pointers and references to elements are not invalidated.</para>
+              </description>
+              <throws>
+                <para>The function has no effect if an exception is thrown, unless it is thrown by the container's hash function or comparison function.</para>
+              </throws>
+            </method>
           </method-group>
           <free-function-group name="Equality Comparisons">
             <function name="operator==">
@@ -1791,6 +1803,18 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
               <type>void</type>
               <description>
                 <para>Changes the number of buckets so that there at least <code>n</code> buckets, and so that the load factor is less than the maximum load factor.</para>
+                <para>Invalidates iterators, and changes the order of elements. Pointers and references to elements are not invalidated.</para>
+              </description>
+              <throws>
+                <para>The function has no effect if an exception is thrown, unless it is thrown by the container's hash function or comparison function.</para>
+              </throws>
+            </method>
+            <method name="reserve">
+              <parameter name="n">
+                <paramtype>size_type</paramtype>
+              </parameter>
+              <type>void</type>
+              <description>
                 <para>Invalidates iterators, and changes the order of elements. Pointers and references to elements are not invalidated.</para>
               </description>
               <throws>
@@ -2793,6 +2817,18 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
                 <para>The function has no effect if an exception is thrown, unless it is thrown by the container's hash function or comparison function.</para>
               </throws>
             </method>
+            <method name="reserve">
+              <parameter name="n">
+                <paramtype>size_type</paramtype>
+              </parameter>
+              <type>void</type>
+              <description>
+                <para>Invalidates iterators, and changes the order of elements. Pointers and references to elements are not invalidated.</para>
+              </description>
+              <throws>
+                <para>The function has no effect if an exception is thrown, unless it is thrown by the container's hash function or comparison function.</para>
+              </throws>
+            </method>
           </method-group>
           <free-function-group name="Equality Comparisons">
             <function name="operator==">
@@ -3752,6 +3788,18 @@ file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
               <type>void</type>
               <description>
                 <para>Changes the number of buckets so that there at least <code>n</code> buckets, and so that the load factor is less than the maximum load factor.</para>
+                <para>Invalidates iterators, and changes the order of elements. Pointers and references to elements are not invalidated.</para>
+              </description>
+              <throws>
+                <para>The function has no effect if an exception is thrown, unless it is thrown by the container's hash function or comparison function.</para>
+              </throws>
+            </method>
+            <method name="reserve">
+              <parameter name="n">
+                <paramtype>size_type</paramtype>
+              </parameter>
+              <type>void</type>
+              <description>
                 <para>Invalidates iterators, and changes the order of elements. Pointers and references to elements are not invalidated.</para>
               </description>
               <throws>

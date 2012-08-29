@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE library PUBLIC "-//Boost//DTD BoostBook XML V1.0//EN"
   "http://www.boost.org/tools/boostbook/dtd/boostbook.dtd">
-<library name="Array" dirname="array" id="array" last-revision="$Date$">
+<library name="Array" dirname="array" id="array" last-revision="$Date: 2012-06-14 09:01:03 -0700 (Thu, 14 Jun 2012) $">
   <libraryinfo>
     <author>
       <firstname>Nicolai</firstname>
@@ -69,6 +69,11 @@
     <para>Note that this class is suggested to be part of the next
     Technical Report, which will extend the C++ Standard (see
     <ulink url="http://std.dkuug.dk/jtc1/sc22/wg21/docs/papers/2003/n1548.htm">http://std.dkuug.dk/jtc1/sc22/wg21/docs/papers/2003/n1548.htm</ulink>).</para>
+
+    <para>Update: <code>std::array</code> is (as of C++11) part of the C++ standard.
+    The differences between <code>boost::array</code> and <code>std::array</code> are minimal.
+    If you are using C++11, you should consider using <code>std::array</code> instead of <code>boost::array</code>.
+    </para>
 
     <para>Class <code><classname>array</classname></code> fulfills most
     but not all of the requirements of "reversible containers" (see

@@ -29,6 +29,7 @@ exe c02_custom_box_example : c02_custom_box_example.cpp ;
 exe c03_custom_linestring_example : c03_custom_linestring_example.cpp ;
 exe c04_a_custom_triangle_example : c04_a_custom_triangle_example.cpp ;
 exe c04_b_custom_triangle_example : c04_b_custom_triangle_example.cpp ;
+exe c05_custom_point_pointer_example : c05_custom_point_pointer_example.cpp  ;
 exe c06_custom_polygon_example : c06_custom_polygon_example.cpp  ;
 exe c07_custom_ring_pointer_example : c07_custom_ring_pointer_example.cpp ;
 exe c08_custom_non_std_example : c08_custom_non_std_example.cpp ;

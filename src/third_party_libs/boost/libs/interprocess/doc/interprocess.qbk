@@ -37,7 +37,7 @@ and synchronization mechanisms and offers a wide range of them:
 [*Boost.Interprocess] also offers higher-level interprocess mechanisms to allocate
 dynamically portions of a shared memory or a memory mapped file (in general,
 to allocate portions of a fixed size memory segment). Using these mechanisms,
-[*Boost.Interprocess] offers useful tools to construct C++ objects, including 
+[*Boost.Interprocess] offers useful tools to construct C++ objects, including
 STL-like containers, in shared memory and memory mapped files:
 
 * Dynamic creation of anonymous and named objects in a shared memory or memory
@@ -85,8 +85,8 @@ your system's documentation to know which library implements them.
 
 [section:qg_memory_pool Using shared memory as a pool of unnamed memory blocks]
 
-You can just allocate a portion of a shared memory segment, copy the 
-message to that buffer, send the offset of that portion of shared 
+You can just allocate a portion of a shared memory segment, copy the
+message to that buffer, send the offset of that portion of shared
 memory to another process, and you are done. Let's see the example:
 
 [import ../example/doc_ipc_message.cpp]
@@ -96,8 +96,8 @@ memory to another process, and you are done. Let's see the example:
 
 [section:qg_named_interprocess Creating named shared memory objects]
 
-You want to create objects in a shared memory segment, giving a string name to them so that 
-any other process can find, use and delete them from the segment when the objects are not 
+You want to create objects in a shared memory segment, giving a string name to them so that
+any other process can find, use and delete them from the segment when the objects are not
 needed anymore. Example:
 
 [import ../example/doc_named_alloc.cpp]
@@ -107,16 +107,16 @@ needed anymore. Example:
 
 [section:qg_offset_ptr Using an offset smart pointer for shared memory]
 
-[*Boost.Interprocess] offers offset_ptr smart pointer family 
-as an offset pointer that stores the distance between the address of 
-the offset pointer itself and the address of the pointed object.  
-When offset_ptr is placed in a shared memory segment, it 
-can point safely objects stored in the same shared 
-memory segment, even if the segment is mapped in 
+[*Boost.Interprocess] offers offset_ptr smart pointer family
+as an offset pointer that stores the distance between the address of
+the offset pointer itself and the address of the pointed object.
+When offset_ptr is placed in a shared memory segment, it
+can point safely objects stored in the same shared
+memory segment, even if the segment is mapped in
 different base addresses in different processes.
 
-This allows placing objects with pointer members 
-in shared memory. For example, if we want to create 
+This allows placing objects with pointer members
+in shared memory. For example, if we want to create
 a linked list in shared memory:
 
 [import ../example/doc_offset_ptr.cpp]
@@ -171,7 +171,7 @@ For a more advanced example including containers of containers, see the section
 [section:processes_and_threads Processes And Threads]
 
 [*Boost.Interprocess] does not work only with processes but also with threads.
-[*Boost.Interprocess] synchronization mechanisms can synchronize threads 
+[*Boost.Interprocess] synchronization mechanisms can synchronize threads
 from different processes, but also threads from the same process.
 
 [endsect]
@@ -216,7 +216,7 @@ system. In [*Boost.Interprocess], we can have 3 types of persistence:
   deleted.
 
 Some native POSIX and Windows IPC mechanisms have different persistence so it's
-difficult to achieve portability between Windows and POSIX native mechanisms. 
+difficult to achieve portability between Windows and POSIX native mechanisms.
 [*Boost.Interprocess] classes have the following persistence:
 
 [table Boost.Interprocess Persistence Table
@@ -239,7 +239,7 @@ communication implementations. One could, for example, implement
 shared memory using memory mapped files and obtain filesystem persistence (for example,
 there is no proper known way to emulate kernel persistence with a user library
 for Windows shared memory using native shared memory,
-or process persistence for POSIX shared memory, so the only portable way is to 
+or process persistence for POSIX shared memory, so the only portable way is to
 define "Kernel or Filesystem" persistence).
 
 [endsect]
@@ -311,7 +311,7 @@ allocated by the system for use by the process for the named resource.
 Named resources offered by [*Boost.Interprocess] must cope with platform-dependant
 permission issues also present when creating files. If a programmer wants to
 shared shared memory, memory mapped files or named synchronization mechanisms
-(mutexes, semaphores, etc...) between users, it's necessary to specify 
+(mutexes, semaphores, etc...) between users, it's necessary to specify
 those permissions. Sadly, traditional UNIX and Windows permissions are very
 different and [*Boost.Interprocess] does not try to standardize permissions,
 but does not ignore them.
@@ -324,7 +324,7 @@ Since each mechanism can be emulated through diferent mechanisms
 (a semaphore might be implement using mapped files or native semaphores)
 permissions types could vary when the implementation of a named resource
 changes (eg.: in Windows mutexes require `synchronize permissions`, but
-that's not the case of files). 
+that's not the case of files).
 To avoid this, [*Boost.Interprocess] relies on file-like permissions,
 requiring file read-write-delete permissions to open named synchronization mechanisms
 (mutex, semaphores, etc.) and appropiate read or read-write-delete permissions for
@@ -343,8 +343,8 @@ and the programmer does not need to know how the named resource is implemented.
 
 Shared memory is the fastest interprocess communication mechanism.
 The operating system maps a memory segment in the address space of several
-processes, so that several processes can read and write in that memory segment 
-without calling operating system functions. However, we need some kind of 
+processes, so that several processes can read and write in that memory segment
+without calling operating system functions. However, we need some kind of
 synchronization between processes that read and write shared memory.
 
 Consider what happens when a server process wants to send an HTML file to a client process
@@ -358,7 +358,7 @@ that resides in the same machine using network mechanisms:
 
 As we can see, there are two copies, one from memory to the network and another one
 from the network to memory. And those copies are made using operating system calls
-that normally are expensive. Shared memory avoids this overhead, but we need to 
+that normally are expensive. Shared memory avoids this overhead, but we need to
 synchronize both processes:
 
 * The server maps a shared memory in its address space and also gets access to a
@@ -379,7 +379,7 @@ To use shared memory, we have to perform 2 basic steps:
 
 * Request to the operating system a memory segment that can be shared between
 processes. The user can create/destroy/open this memory using a [*shared memory object]:
-['An object that represents memory that can be mapped concurrently into the 
+['An object that represents memory that can be mapped concurrently into the
   address space of more than one process.].
 
 * Associate a part of that memory or the whole memory with the address space of the
@@ -454,7 +454,7 @@ call, in a shared memory that has been opened with read-write attributes:
 
 As shared memory has kernel or filesystem persistence, the user must explicitly
 destroy it. The `remove` operation might fail returning
-false if the shared memory does not exist, the file is open or the file is 
+false if the shared memory does not exist, the file is open or the file is
 still memory mapped by other processes:
 
 [c++]
@@ -463,7 +463,7 @@ still memory mapped by other processes:
       shared_memory_object::remove("shared_memory");
 
 
-For more details regarding `shared_memory_object` see the 
+For more details regarding `shared_memory_object` see the
 [classref boost::interprocess::shared_memory_object] class reference.
 
 [endsect]
@@ -490,7 +490,7 @@ is a `memory_mappable` object:
          , ShmSize/2                //Offset from the beginning of shm
          , ShmSize-ShmSize/2        //Length of the region
          );
-      
+
       //Get the address of the region
       region.get_address();
 
@@ -503,7 +503,7 @@ the whole mappable object (in this case, shared memory) is mapped. If the offset
 is specified, but not the size, the mapped region covers from the offset until
 the end of the mappable object.
 
-For more details regarding `mapped_region` see the 
+For more details regarding `mapped_region` see the
 [classref boost::interprocess::mapped_region] class reference.
 
 [endsect]
@@ -511,7 +511,7 @@ For more details regarding `mapped_region` see the
 [section:shared_memory_a_simple_example A Simple Example]
 
 Let's see a simple example of shared memory use. A server process creates a
-shared memory object, maps it and initializes all the bytes to a value. After that, 
+shared memory object, maps it and initializes all the bytes to a value. After that,
 a client process opens the shared memory, maps it, and checks
 that the data is correctly initialized:
 
@@ -554,7 +554,7 @@ provides a static `remove` function to remove a shared memory objects.
 
 This function [*can] fail if the shared memory objects does not exist or
 it's opened by another process. Note that this function is similar to the
-standard C `int remove(const char *path)` function. In UNIX systems, 
+standard C `int remove(const char *path)` function. In UNIX systems,
 `shared_memory_object::remove` calls `shm_unlink`:
 
 *  The function will remove the name of the shared memory object
@@ -580,7 +580,7 @@ be deleted when the last open handle is closed].
 [section:anonymous_shared_memory Anonymous shared memory for UNIX systems]
 
 Creating a shared memory segment and mapping it can be a bit tedious when several
-processes are involved. When processes are related via `fork()` operating system 
+processes are involved. When processes are related via `fork()` operating system
 call in UNIX systems a simpler method is available using anonymous shared memory.
 
 This feature has been implemented in UNIX systems mapping the device `\dev\zero` or
@@ -613,7 +613,7 @@ shared memory using memory mapped files. This assures portability between POSIX
 and Windows operating systems.
 
 However, accessing native windows shared memory is a common request of
-[*Boost.Interprocess] users because they want to access 
+[*Boost.Interprocess] users because they want to access
 to shared memory created with other process that don't use
 [*Boost.Interprocess]. In order to manage the native windows shared memory
 [*Boost.Interprocess] offers the
@@ -639,11 +639,11 @@ the shared memory in the global namespace. Then a client session can use the "Gl
 to open that memory.
 
 The creation of a shared memory object in the global namespace from a session other than
-session zero is a privileged operation. 
+session zero is a privileged operation.
 
 Let's repeat the same example presented for the portable shared memory object:
 A server process creates a
-shared memory object, maps it and initializes all the bytes to a value. After that, 
+shared memory object, maps it and initializes all the bytes to a value. After that,
 a client process opens the shared memory, maps it, and checks
 that the data is correctly initialized. Take in care that [*if the server exits before
 the client connects to the shared memory the client connection will fail], because
@@ -677,9 +677,9 @@ shared memory classes to ease the use of XSI shared memory. It also wraps key cr
 simple [classref boost::interprocess::xsi_key xsi_key] class.
 
 Let's repeat the same example presented for the portable shared memory object:
-A server process creates a shared memory object, maps it and initializes all the bytes to a value. After that, 
+A server process creates a shared memory object, maps it and initializes all the bytes to a value. After that,
 a client process opens the shared memory, maps it, and checks
-that the data is correctly initialized. 
+that the data is correctly initialized.
 
 This is the server process:
 
@@ -694,23 +694,23 @@ This is the server process:
 
 [section:mapped_file_what_is What is a memory mapped file?]
 
-File mapping is the association of a file's contents with a portion of the address space 
-of a process. The system creates a file mapping to associate the file and the address 
-space of the process. A mapped region is the portion of address space that the process 
-uses to access the file's contents. A single file mapping can have several mapped regions, 
-so that the user can associate parts of the file with the address space of the process 
+File mapping is the association of a file's contents with a portion of the address space
+of a process. The system creates a file mapping to associate the file and the address
+space of the process. A mapped region is the portion of address space that the process
+uses to access the file's contents. A single file mapping can have several mapped regions,
+so that the user can associate parts of the file with the address space of the process
 without mapping the entire file in the address space, since the file can be bigger
 than the whole address space of the process (a 9GB DVD image file in a usual 32
-bit systems). Processes read from and write to 
-the file using pointers, just like with dynamic memory. File mapping has the following 
-advantages: 
+bit systems). Processes read from and write to
+the file using pointers, just like with dynamic memory. File mapping has the following
+advantages:
 
-* Uniform resource use. Files and memory can be treated using the same functions. 
-* Automatic file data synchronization and cache from the OS. 
-* Reuse of C++ utilities (STL containers, algorithms) in files. 
-* Shared memory between two or more applications. 
-* Allows efficient work with a large files, without mapping the whole file into memory 
-* If several processes use the same file mapping to create mapped regions of a file, each 
+* Uniform resource use. Files and memory can be treated using the same functions.
+* Automatic file data synchronization and cache from the OS.
+* Reuse of C++ utilities (STL containers, algorithms) in files.
+* Shared memory between two or more applications.
+* Allows efficient work with a large files, without mapping the whole file into memory
+* If several processes use the same file mapping to create mapped regions of a file, each
   process' views contain identical copies of the file on disk.
 
 File mapping is not only used for interprocess communication, it can be used also to
@@ -774,7 +774,7 @@ achieved in [*Boost.Interprocess] creating a `file_mapping` object:
          );
 
 Now we can use the newly created object to create mapped regions. For more details
-regarding this class see the 
+regarding this class see the
 [classref boost::interprocess::file_mapping] class reference.
 
 [endsect]
@@ -785,7 +785,7 @@ After creating a file mapping, a process just has to map the shared memory in th
 process' address space. The user can map the whole shared memory or just part of it.
 The mapping process is done using the `mapped_region` class. as we have said before
 The class represents a memory region that has been mapped from a shared memory or from other
-devices that have also mapping capabilities: 
+devices that have also mapping capabilities:
 
 [c++]
 
@@ -799,7 +799,7 @@ devices that have also mapping capabilities:
          , FileSize/2               //Offset from the beginning of shm
          , FileSize-FileSize/2      //Length of the region
          );
-      
+
       //Get the address of the region
       region.get_address();
 
@@ -809,7 +809,7 @@ devices that have also mapping capabilities:
 
 The user can specify the offset from the file where the mapped region
 should start and the size of the mapped region. If no offset or size is specified,
-the whole file is mapped. If the offset is specified, but not the size, 
+the whole file is mapped. If the offset is specified, but not the size,
 the mapped region covers from the offset until the end of the file.
 
 If several processes map the same file, and a process modifies a memory range
@@ -836,7 +836,7 @@ Remember that the offset is [*not] an offset on the file, but an offset in the
 mapped region. If a region covers the second half of a file and flushes the
 whole region, only the half of the file is guaranteed to have been flushed.
 
-For more details regarding `mapped_region` see the 
+For more details regarding `mapped_region` see the
 [classref boost::interprocess::mapped_region] class reference.
 
 [endsect]
@@ -845,7 +845,7 @@ For more details regarding `mapped_region` see the
 
 Let's reproduce the same example described in the shared memory section, using
 memory mapped files. A server process creates a shared
-memory segment, maps it and initializes all the bytes to a value. After that, 
+memory segment, maps it and initializes all the bytes to a value. After that,
 a client process opens the shared memory, maps it, and checks
 that the data is correctly initialized::
 
@@ -882,8 +882,8 @@ in a different way (allocation of more or less dynamic memory, for example), the
 no guarantee that the file/shared memory is going to be mapped in the same address.
 
 If two processes map the same object in different addresses, this invalids the use
-of pointers in that memory, since the pointer (which is an absolute address) would 
-only make sense for the process that wrote it. The solution for this is to use offsets 
+of pointers in that memory, since the pointer (which is an absolute address) would
+only make sense for the process that wrote it. The solution for this is to use offsets
 (distance) between objects instead of pointers: If two objects are placed in the same
 shared memory segment by one process, [*the address of each object will be different]
 in another process but [*the distance between them (in bytes) will be the same].
@@ -917,7 +917,7 @@ To map an object in a fixed address, the user can specify that address in the
                         );
 
 However, the user can't map the region in any address, even if the address is not
-being used. The offset parameter that marks the start of the mapping region 
+being used. The offset parameter that marks the start of the mapping region
 is also limited. These limitations are explained in the next section.
 
 [endsect]
@@ -928,10 +928,10 @@ As mentioned, the user can't map the memory mappable object at any address and i
 specify the offset of the mappable object that is equivalent to the start of the mapping
 region to an arbitrary value.
 Most operating systems limit the mapping address and the offset of the mappable object
-to a multiple of a value called [*page size]. This is due to the fact that the 
+to a multiple of a value called [*page size]. This is due to the fact that the
 [*operating system performs mapping operations over whole pages].
 
-If fixed mapping address is used, ['offset] and ['address] 
+If fixed mapping address is used, ['offset] and ['address]
 parameters should be multiples of that value.
 This value is, typically, 4KB or 8KB for 32 bit operating systems.
 
@@ -1029,7 +1029,7 @@ When two processes create a mapped region of the same mappable object, two proce
 can communicate writing and reading that memory. A process could construct a C++ object
 in that memory so that the second process can use it. However, a mapped region shared
 by multiple processes, can't hold any C++ object, because not every class is ready
-to be a process-shared object, specially, if the mapped region is mapped in different 
+to be a process-shared object, specially, if the mapped region is mapped in different
 address in each process.
 
 [section:offset_pointer Offset pointers instead of raw pointers]
@@ -1054,12 +1054,12 @@ processes may crash when accessing to that address.
 
 [section:references_forbidden References forbidden]
 
-References suffer from the same problem as pointers 
+References suffer from the same problem as pointers
 (mainly because they are implemented as pointers).
-However, it is not possible to create a fully workable 
+However, it is not possible to create a fully workable
 smart reference currently in C++ (for example,
 `operator .()` can't be overloaded). Because of this,
-if the user wants to put an object in shared memory, 
+if the user wants to put an object in shared memory,
 the object can't have any (smart or not) reference
 as a member.
 
@@ -1093,7 +1093,7 @@ and virtual inheritance in mapped regions shared between processes.
 
 [section:statics_warning Be careful with static class members]
 
-Static members of classes are global objects shared by 
+Static members of classes are global objects shared by
 all instances of the class. Because of this, static
 members are implemented as global variables in processes.
 
@@ -1135,15 +1135,15 @@ processes the memory segment can be mapped in a different address in each proces
    mapped_region region
       ( shm                         //Memory-mappable object
       , read_write                  //Access mode
-      );   
+      );
 
    //This address can be different in each process
    void *addr = region.get_address();
 
 This makes the creation of complex objects in mapped regions difficult: a C++
 class instance placed in a mapped region might have a pointer pointing to
-another object also placed in the mapped region. Since the pointer stores an 
-absolute address, that address is only valid for the process that placed 
+another object also placed in the mapped region. Since the pointer stores an
+absolute address, that address is only valid for the process that placed
 the object there unless all processes map the mapped region in the same
 address.
 
@@ -1151,12 +1151,12 @@ To be able to simulate pointers in mapped regions, users must use [*offsets]
 (distance between objects) instead of absolute addresses. The offset between
 two objects in a mapped region is the same for any process that maps the
 mapped region, even if that region is placed in different base addresses.
-To facilitate the use of offsets, [*Boost.Interprocess] offers 
+To facilitate the use of offsets, [*Boost.Interprocess] offers
 [classref boost::interprocess::offset_ptr offset_ptr].
 
 [classref boost::interprocess::offset_ptr offset_ptr]
-wraps all the background operations 
-needed to offer a pointer-like interface. The class interface is 
+wraps all the background operations
+needed to offer a pointer-like interface. The class interface is
 inspired in Boost Smart Pointers and this smart pointer
 stores the offset (distance in bytes)
 between the pointee's address and it's own `this` pointer.
@@ -1175,20 +1175,20 @@ Imagine a structure in a common
    //...
 
    structure s;
-   
+
    //Assign the address of "integer1" to "ptr".
-   //"ptr" will store internally "-4": 
+   //"ptr" will store internally "-4":
    //    (char*)&s.integer1 - (char*)&s.ptr;
    s.ptr = &s.integer1;
 
    //Assign the address of "integer2" to "ptr".
-   //"ptr" will store internally "4": 
+   //"ptr" will store internally "4":
    //    (char*)&s.integer2 - (char*)&s.ptr;
    s.ptr = &s.integer2;
 
 
-One of the big problems of 
-`offset_ptr` is the representation of the null pointer. The null pointer 
+One of the big problems of
+`offset_ptr` is the representation of the null pointer. The null pointer
 can't be safely represented like an offset, since the absolute address 0
 is always outside of the mapped region. Due to the fact that the segment can be mapped
 in a different base address in each process the distance between the address 0
@@ -1196,10 +1196,10 @@ and `offset_ptr` is different for every process.
 
 Some implementations choose the offset 0 (that is, an `offset_ptr`
 pointing to itself) as the null pointer pointer representation
-but this is not valid for many use cases 
+but this is not valid for many use cases
 since many times structures like linked lists or nodes from STL containers
-point to themselves (the 
-end node in an empty container, for example) and 0 offset value 
+point to themselves (the
+end node in an empty container, for example) and 0 offset value
 is needed. An alternative is to store, in addition to the offset, a boolean
 to indicate if the pointer is null. However, this increments the size of the
 pointer and hurts performance.
@@ -1214,7 +1214,7 @@ after its own ['this] pointer:
    using namespace boost::interprocess;
 
    offset_ptr<char> ptr;
-   
+
    //Pointing to the next byte of it's own address
    //marks the smart pointer as null.
    ptr = (char*)&ptr + 1;
@@ -1234,7 +1234,7 @@ wants to point to this address.
 
 [classref boost::interprocess::offset_ptr offset_ptr]
 offers all pointer-like operations and
-random_access_iterator typedefs, so it can be used in STL 
+random_access_iterator typedefs, so it can be used in STL
 algorithms requiring random access iterators and detected via traits.
 For more information about the members and operations of the class, see
 [classref boost::interprocess::offset_ptr offset_ptr reference].
@@ -1246,7 +1246,7 @@ For more information about the members and operations of the class, see
 [section:synchronization_mechanisms_overview Synchronization mechanisms overview]
 
 As mentioned before, the ability to shared memory between processes through memory
-mapped files or shared memory objects is not very useful if the access to that 
+mapped files or shared memory objects is not very useful if the access to that
 memory can't be effectively synchronized. This is the same problem that happens with
 thread-synchronization mechanisms, where heap memory and global variables are
 shared between threads, but the access to these resources needs to be synchronized
@@ -1262,7 +1262,7 @@ implements similar mechanisms to synchronize threads from different processes.
   to create an object of such type, both processes must ['create] or ['open] an object
   using the same name. This is similar to creating or opening files: a process creates
   a file with using a `fstream` with the name ['filename] and another process opens
-  that file using another `fstream` with the same ['filename] argument. 
+  that file using another `fstream` with the same ['filename] argument.
   [*Each process uses a different object to access to the resource, but both processes
   are using the same underlying resource].
 
@@ -1278,7 +1278,7 @@ Each type has it's own advantages and disadvantages:
 
 * Named utilities are easier to handle for simple synchronization tasks, since both process
   don't have to create a shared memory region and construct the synchronization mechanism there.
-  
+
 * Anonymous utilities can be serialized to disk when using memory mapped objects obtaining
   automatic persistence of synchronization utilities. One could construct a synchronization
   utility in a memory mapped file, reboot the system, map the file again, and use the
@@ -1287,7 +1287,7 @@ Each type has it's own advantages and disadvantages:
 
 The main interface difference between named and anonymous utilities are the constructors.
 Usually anonymous utilities have only one constructor, whereas the named utilities have
-several constructors whose first argument is a special type that requests creation, 
+several constructors whose first argument is a special type that requests creation,
 opening or opening or creation of the underlying resource:
 
 [c++]
@@ -1341,7 +1341,7 @@ synchronization utilities:
 ['Mutex] stands for [*mut]ual [*ex]clusion and it's the most basic form of
 synchronization between processes.
 Mutexes guarantee that only one thread can lock a given mutex. If a code section
-is surrounded by a mutex locking and unlocking, it's guaranteed that only a thread 
+is surrounded by a mutex locking and unlocking, it's guaranteed that only a thread
 at a time executes that section of code.
 When that thread [*unlocks] the mutex, other threads can enter to that code
 region:
@@ -1363,7 +1363,7 @@ A mutex can also be [*recursive] or [*non-recursive]:
   mutex, the thread has to unlock the mutex the same times it has locked it.
 
 * Non-recursive mutexes can't be locked several times by the same thread. If a mutex
-  is locked twice by a thread, the result is undefined, it might throw an error or 
+  is locked twice by a thread, the result is undefined, it might throw an error or
   the thread could be blocked forever.
 
 [endsect]
@@ -1455,7 +1455,7 @@ even when an exception occurs. To use a scoped lock just include:
 
 Basically, a scoped lock calls [*unlock()] in its destructor, and a mutex is always
 unlocked when an exception occurs. Scoped lock has many constructors to lock,
-try_lock, timed_lock a mutex or not to lock it at all. 
+try_lock, timed_lock a mutex or not to lock it at all.
 
 
 [c++]
@@ -1468,7 +1468,7 @@ try_lock, timed_lock a mutex or not to lock it at all.
    {
       //This will lock the mutex
       scoped_lock<MutexType> lock(mutex);
-      
+
       //Some code
 
       //The mutex will be unlocked here
@@ -1477,30 +1477,30 @@ try_lock, timed_lock a mutex or not to lock it at all.
    {
       //This will try_lock the mutex
       scoped_lock<MutexType> lock(mutex, try_to_lock);
-      
+
       //Check if the mutex has been successfully locked
       if(lock){
          //Some code
       }
-   
+
       //If the mutex was locked it will be unlocked
    }
-   
+
    {
       boost::posix_time::ptime abs_time = ...
 
       //This will timed_lock the mutex
       scoped_lock<MutexType> lock(mutex, abs_time);
-      
+
       //Check if the mutex has been successfully locked
       if(lock){
          //Some code
       }
-   
+
       //If the mutex was locked it will be unlocked
    }
 
-For more information, check the 
+For more information, check the
 [classref boost::interprocess::scoped_lock scoped_lock's reference].
 
 [important `boost::posix_time::ptime` absolute time points used by Boost.Interprocess synchronization mechanisms
@@ -1522,7 +1522,7 @@ will write a flag when ends writing the traces
 [import ../example/doc_anonymous_mutex_shared_data.hpp]
 [doc_anonymous_mutex_shared_data]
 
-This is the process main process. Creates the shared memory, constructs 
+This is the process main process. Creates the shared memory, constructs
 the cyclic buffer and start writing traces:
 
 [import ../example/comp_doc_anonymous_mutexA.cpp]
@@ -1544,7 +1544,7 @@ process. For this, we need a condition variable, as we will see in the next sect
 Now imagine that two processes want to write a trace to a file. First they write
 their name, and after that they write the message. Since the operating system can
 interrupt a process in any moment we can mix parts of the messages of both processes,
-so we need a way to write the whole message to the file atomically. To achieve this, 
+so we need a way to write the whole message to the file atomically. To achieve this,
 we can use a named mutex so that each process locks the mutex before writing:
 
 [import ../example/doc_named_mutex.cpp]
@@ -1569,7 +1569,7 @@ can do two things:
    threads to tell them that they the condition that provoked their wait has
    disappeared.
 
-Waiting in a condition variable is always associated with a mutex. 
+Waiting in a condition variable is always associated with a mutex.
 The mutex must be locked prior to waiting on the condition. When waiting
 on the condition variable, the thread unlocks the mutex and waits [*atomically].
 
@@ -1601,7 +1601,7 @@ Named conditions are similar to anonymous conditions, but they are used in
 combination with named mutexes. Several times, we don't want to store
 synchronization objects with the synchronized data:
 
-*  We want to change the synchronization method (from interprocess 
+*  We want to change the synchronization method (from interprocess
    to intra-process, or without any synchronization) using the same data.
    Storing the process-shared anonymous synchronization with the synchronized
    data would forbid this.
@@ -1659,11 +1659,11 @@ count that offers two basic operations:
 *  [*Post]: Increments the semaphore count. If any process is blocked, one of those processes
    is awoken.
 
-If the initial semaphore count is initialized to 1, a [*Wait] operation is equivalent to a 
+If the initial semaphore count is initialized to 1, a [*Wait] operation is equivalent to a
 mutex locking and [*Post] is equivalent to a mutex unlocking. This type of semaphore is known
-as a [*binary semaphore]. 
+as a [*binary semaphore].
 
-Although semaphores can be used like mutexes, they have a unique feature: unlike mutexes, 
+Although semaphores can be used like mutexes, they have a unique feature: unlike mutexes,
 a [*Post] operation need not be executed by the same thread/process that executed the
 [*Wait] operation.
 
@@ -1705,7 +1705,7 @@ This is the shared integer array (doc_anonymous_semaphore_shared_data.hpp):
 [doc_anonymous_semaphore_shared_data]
 
 This is the process main process. Creates the shared memory, places there
-the integer array and starts integers one by one, blocking if the array 
+the integer array and starts integers one by one, blocking if the array
 is full:
 
 [import ../example/comp_doc_anonymous_semaphoreA.cpp]
@@ -1717,7 +1717,7 @@ to it's own buffer:
 [import ../example/comp_doc_anonymous_semaphoreB.cpp]
 [doc_anonymous_semaphoreB]
 
-The same interprocess communication can be achieved with a condition variables 
+The same interprocess communication can be achieved with a condition variables
 and mutexes, but for several synchronization patterns, a semaphore is more
 efficient than a mutex/condition combination.
 
@@ -1740,7 +1740,7 @@ If we allow concurrent access to threads that just read the data but we avoid
 concurrent access between threads that read and modify or between threads that modify,
 we can increase performance. This is specially true in applications where data reading
 is more common than data modification and the synchronized data reading code needs
-some time to execute. With an upgradable mutex we can acquire 3 
+some time to execute. With an upgradable mutex we can acquire 3
 lock types:
 
 *  [*Exclusive lock]: Similar to a plain mutex. If a thread acquires an exclusive
@@ -1756,7 +1756,7 @@ lock types:
 
 *  [*Upgradable lock]: Acquiring an upgradable lock is similar to acquiring
    a [*privileged sharable lock]. If a thread acquires an upgradable lock, other threads
-   can acquire a sharable lock. If any thread has acquired the exclusive or upgradable lock 
+   can acquire a sharable lock. If any thread has acquired the exclusive or upgradable lock
    a thread trying to acquire an upgradable lock will block.
    A thread that has acquired an upgradable lock,
    is guaranteed to be able to acquire atomically an exclusive lock when other threads
@@ -1765,7 +1765,7 @@ lock types:
    This thread acquires the upgradable lock and other threads can acquire the sharable lock.
    If the upgradable thread reads the data and it has to modify it, the thread can be promoted
    to acquire the exclusive lock: when all sharable threads have released the sharable lock, the
-   upgradable lock is atomically promoted to an exclusive lock. The newly promoted thread 
+   upgradable lock is atomically promoted to an exclusive lock. The newly promoted thread
    can modify the data and it can be sure that no other thread has modified it while
    doing the transition. [*Only 1 thread can acquire the upgradable
    (privileged reader) lock].
@@ -1782,7 +1782,7 @@ To sum up:
 A thread that has acquired a lock can try to acquire another lock type atomically.
 All lock transitions are not guaranteed to succeed. Even if a transition is guaranteed
 to succeed, some transitions will block the thread waiting until other threads release
-the sharable locks. [*Atomically] means that no other thread will acquire an Upgradable 
+the sharable locks. [*Atomically] means that no other thread will acquire an Upgradable
 or Exclusive lock in the transition, [*so data is guaranteed to remain unchanged]:
 
 [table Transition Possibilities
@@ -1813,32 +1813,32 @@ the following operations:
 [blurb ['[*void lock()]]]
 
 [*Effects:]
-The calling thread tries to obtain exclusive ownership of the mutex, and if 
-another thread has exclusive, sharable or upgradable ownership of the mutex, 
+The calling thread tries to obtain exclusive ownership of the mutex, and if
+another thread has exclusive, sharable or upgradable ownership of the mutex,
 it waits until it can obtain the ownership.
 
 [*Throws:] *interprocess_exception* on error.
 
 [blurb ['[*bool try_lock()]]]
 
-[*Effects:] 
+[*Effects:]
 The calling thread tries to acquire exclusive ownership of the mutex without
-waiting. If no other thread has exclusive, sharable or upgradable ownership of 
+waiting. If no other thread has exclusive, sharable or upgradable ownership of
 the mutex this succeeds.
 
-[*Returns:] If it can acquire exclusive ownership immediately returns true. 
+[*Returns:] If it can acquire exclusive ownership immediately returns true.
 If it has to wait, returns false.
 
 [*Throws:] *interprocess_exception* on error.
 
 [blurb ['[*bool timed_lock(const boost::posix_time::ptime &abs_time)]]]
 
-[*Effects:] 
+[*Effects:]
 The calling thread tries to acquire exclusive ownership of the mutex
 waiting if necessary until no other thread has exclusive,
 sharable or upgradable ownership of the mutex or abs_time is reached.
 
-[*Returns:] If acquires exclusive ownership, returns true. Otherwise 
+[*Returns:] If acquires exclusive ownership, returns true. Otherwise
 returns false.
 
 [*Throws:] *interprocess_exception* on error.
@@ -1858,32 +1858,32 @@ returns false.
 [blurb ['[*void lock_sharable()]]]
 
 [*Effects:]
-The calling thread tries to obtain sharable ownership of the mutex, and if 
-another thread has exclusive ownership of the mutex, 
+The calling thread tries to obtain sharable ownership of the mutex, and if
+another thread has exclusive ownership of the mutex,
 waits until it can obtain the ownership.
 
 [*Throws:] *interprocess_exception* on error.
 
 [blurb ['[*bool try_lock_sharable()]]]
 
-[*Effects:] 
+[*Effects:]
 The calling thread tries to acquire sharable ownership of the mutex without
-waiting. If no other thread has exclusive ownership of 
+waiting. If no other thread has exclusive ownership of
 the mutex this succeeds.
 
-[*Returns:] If it can acquire sharable ownership immediately returns true. 
+[*Returns:] If it can acquire sharable ownership immediately returns true.
 If it has to wait, returns false.
 
 [*Throws:] *interprocess_exception* on error.
 
 [blurb ['[*bool timed_lock_sharable(const boost::posix_time::ptime &abs_time)]]]
 
-[*Effects:] 
+[*Effects:]
 The calling thread tries to acquire sharable ownership of the mutex
 waiting if necessary until no other thread has exclusive
 ownership of the mutex or abs_time is reached.
 
-[*Returns:] If acquires sharable ownership, returns true. Otherwise 
+[*Returns:] If acquires sharable ownership, returns true. Otherwise
 returns false.
 
 [*Throws:] *interprocess_exception* on error.
@@ -1903,32 +1903,32 @@ returns false.
 [blurb ['[*void lock_upgradable()]]]
 
 [*Effects:]
-The calling thread tries to obtain upgradable ownership of the mutex, and if 
-another thread has exclusive or upgradable ownership of the mutex, 
+The calling thread tries to obtain upgradable ownership of the mutex, and if
+another thread has exclusive or upgradable ownership of the mutex,
 waits until it can obtain the ownership.
 
 [*Throws:] *interprocess_exception* on error.
 
 [blurb ['[*bool try_lock_upgradable()]]]
 
-[*Effects:] 
+[*Effects:]
 The calling thread tries to acquire upgradable ownership of the mutex without
-waiting. If no other thread has exclusive or upgradable ownership of 
+waiting. If no other thread has exclusive or upgradable ownership of
 the mutex this succeeds.
 
-[*Returns:] If it can acquire upgradable ownership immediately returns true. 
+[*Returns:] If it can acquire upgradable ownership immediately returns true.
 If it has to wait, returns false.
 
 [*Throws:] *interprocess_exception* on error.
 
 [blurb ['[*bool timed_lock_upgradable(const boost::posix_time::ptime &abs_time)]]]
 
-[*Effects:] 
+[*Effects:]
 The calling thread tries to acquire upgradable ownership of the mutex
 waiting if necessary until no other thread has exclusive
 ownership of the mutex or abs_time is reached.
 
-[*Returns:] If acquires upgradable ownership, returns true. Otherwise 
+[*Returns:] If acquires upgradable ownership, returns true. Otherwise
 returns false.
 
 [*Throws:] *interprocess_exception* on error.
@@ -1990,7 +1990,7 @@ ownership. This operation will block until all threads with sharable ownership r
 ownership. This operation will fail if there are threads with sharable ownership, but
 it will maintain upgradable ownership.
 
-[*Returns:] If acquires exclusive ownership, returns true. Otherwise 
+[*Returns:] If acquires exclusive ownership, returns true. Otherwise
 returns false.
 
 [*Throws:] An exception derived from *interprocess_exception* on error.[blurb ['[*bool timed_unlock_upgradable_and_lock(const boost::posix_time::ptime &abs_time)]]]
@@ -1998,11 +1998,11 @@ returns false.
 [*Precondition:] The thread must have upgradable ownership of the mutex.
 
 [*Effects:] The thread atomically releases upgradable ownership and tries to acquire
-exclusive ownership, waiting if necessary until abs_time. This operation will fail 
-if there are threads with sharable ownership or timeout reaches, but it will maintain 
+exclusive ownership, waiting if necessary until abs_time. This operation will fail
+if there are threads with sharable ownership or timeout reaches, but it will maintain
 upgradable ownership.
 
-[*Returns:] If acquires exclusive ownership, returns true. Otherwise 
+[*Returns:] If acquires exclusive ownership, returns true. Otherwise
 returns false.
 
 [*Throws:] An exception derived from *interprocess_exception* on error.[blurb ['[*bool try_unlock_sharable_and_lock()]]]
@@ -2013,7 +2013,7 @@ returns false.
 ownership. This operation will fail if there are threads with sharable or upgradable ownership,
 but it will maintain sharable ownership.
 
-[*Returns:] If acquires exclusive ownership, returns true. Otherwise 
+[*Returns:] If acquires exclusive ownership, returns true. Otherwise
 returns false.
 
 [*Throws:] An exception derived from *interprocess_exception* on error.[blurb ['[*bool try_unlock_sharable_and_lock_upgradable()]]]
@@ -2024,7 +2024,7 @@ returns false.
 ownership. This operation will fail if there are threads with sharable or upgradable ownership,
 but it will maintain sharable ownership.
 
-[*Returns:] If acquires upgradable ownership, returns true. Otherwise 
+[*Returns:] If acquires upgradable ownership, returns true. Otherwise
 returns false.
 
 [*Throws:] An exception derived from *interprocess_exception* on error.
@@ -2059,12 +2059,12 @@ Boost.Interprocess offers the following upgradable mutex types:
 [section:upgradable_mutexes_locks Sharable Lock And Upgradable Lock]
 
 As with plain mutexes, it's important to release the acquired lock even in the presence
-of exceptions. [*Boost.Interprocess] mutexes are best used with the 
+of exceptions. [*Boost.Interprocess] mutexes are best used with the
 [classref boost::interprocess::scoped_lock scoped_lock] utility,
 and this class only offers exclusive locking.
 
 As we have sharable locking and upgradable locking with upgradable mutexes, we have two new
-utilities: [classref boost::interprocess::sharable_lock sharable_lock] and 
+utilities: [classref boost::interprocess::sharable_lock sharable_lock] and
 [classref boost::interprocess::upgradable_lock upgradable_lock]. Both classes are similar to `scoped_lock`
 but `sharable_lock` acquires the sharable lock in the constructor and `upgradable_lock`
 acquires the upgradable lock in the constructor.
@@ -2086,11 +2086,11 @@ can use `sharable_lock` if the synchronization object offers [*lock_sharable()] 
 
 [endsect]
 
-`sharable_lock` calls [*unlock_sharable()] in its destructor, and 
+`sharable_lock` calls [*unlock_sharable()] in its destructor, and
 `upgradable_lock` calls [*unlock_upgradable()] in its destructor, so the
-upgradable mutex is always unlocked when an exception occurs. 
+upgradable mutex is always unlocked when an exception occurs.
 Scoped lock has many constructors to lock,
-try_lock, timed_lock a mutex or not to lock it at all. 
+try_lock, timed_lock a mutex or not to lock it at all.
 
 
 [c++]
@@ -2103,7 +2103,7 @@ try_lock, timed_lock a mutex or not to lock it at all.
    {
       //This will call lock_sharable()
       sharable_lock<MutexType> lock(mutex);
-      
+
       //Some code
 
       //The mutex will be unlocked here
@@ -2112,10 +2112,10 @@ try_lock, timed_lock a mutex or not to lock it at all.
    {
       //This won't lock the mutex()
       sharable_lock<MutexType> lock(mutex, defer_lock);
-      
+
       //Lock it on demand. This will call lock_sharable()
       lock.lock();
-      
+
       //Some code
 
       //The mutex will be unlocked here
@@ -2124,20 +2124,20 @@ try_lock, timed_lock a mutex or not to lock it at all.
    {
       //This will call try_lock_sharable()
       sharable_lock<MutexType> lock(mutex, try_to_lock);
-      
+
       //Check if the mutex has been successfully locked
       if(lock){
          //Some code
       }
       //If the mutex was locked it will be unlocked
    }
-   
+
    {
       boost::posix_time::ptime abs_time = ...
 
       //This will call timed_lock_sharable()
       scoped_lock<MutexType> lock(mutex, abs_time);
-      
+
       //Check if the mutex has been successfully locked
       if(lock){
          //Some code
@@ -2148,7 +2148,7 @@ try_lock, timed_lock a mutex or not to lock it at all.
    {
       //This will call lock_upgradable()
       upgradable_lock<MutexType> lock(mutex);
-      
+
       //Some code
 
       //The mutex will be unlocked here
@@ -2157,10 +2157,10 @@ try_lock, timed_lock a mutex or not to lock it at all.
    {
       //This won't lock the mutex()
       upgradable_lock<MutexType> lock(mutex, defer_lock);
-      
+
       //Lock it on demand. This will call lock_upgradable()
       lock.lock();
-      
+
       //Some code
 
       //The mutex will be unlocked here
@@ -2169,20 +2169,20 @@ try_lock, timed_lock a mutex or not to lock it at all.
    {
       //This will call try_lock_upgradable()
       upgradable_lock<MutexType> lock(mutex, try_to_lock);
-      
+
       //Check if the mutex has been successfully locked
       if(lock){
          //Some code
       }
       //If the mutex was locked it will be unlocked
    }
-   
+
    {
       boost::posix_time::ptime abs_time = ...
 
       //This will call timed_lock_upgradable()
       scoped_lock<MutexType> lock(mutex, abs_time);
-      
+
       //Check if the mutex has been successfully locked
       if(lock){
          //Some code
@@ -2215,7 +2215,7 @@ are UTC time points, not local time points]
 [section:lock_conversions Lock Transfers Through Move Semantics]
 
 [blurb [*Interprocess uses its own move semantics emulation code for compilers
-that don't support rvalues references. 
+that don't support rvalues references.
 This is a temporary solution until a Boost move semantics library is accepted.]]
 
 Scoped locks and similar utilities offer simple resource management possibilities,
@@ -2229,11 +2229,11 @@ transferred to another lock executing atomic unlocking plus locking operations.
 
 [section:lock_transfer_simple_transfer Simple Lock Transfer]
 
-Imagine that a thread modifies some data in the beginning but after that, it has to 
+Imagine that a thread modifies some data in the beginning but after that, it has to
 just read it in a long time. The code can acquire the exclusive lock, modify the data
 and atomically release the exclusive lock and acquire the sharable lock. With these
-sequence we guarantee that no other thread can modify the data in the transition 
-and that more readers can acquire sharable lock, increasing concurrency. 
+sequence we guarantee that no other thread can modify the data in the transition
+and that more readers can acquire sharable lock, increasing concurrency.
 Without lock transfer operations, this would be coded like this:
 
 [c++]
@@ -2307,7 +2307,7 @@ the operations presented in the upgradable mutex operations:
    restrictive lock to a less restrictive one. Scoped -> Upgradable,
    Scoped -> Sharable, Upgradable -> Sharable.
 
-* [*Not guaranteed to succeed:] The operation might succeed if no one has 
+* [*Not guaranteed to succeed:] The operation might succeed if no one has
    acquired the upgradable or exclusive lock: Sharable -> Exclusive. This
    operation is a try operation.
 
@@ -2535,7 +2535,7 @@ Generally speaking, we can have two file locking capabilities:
 *  [*Advisory locking:] The operating system kernel maintains a list of files that
    have been locked. But does not prevent writing to those files even if a process
    has acquired a sharable lock or does not prevent reading from the file when a process
-   has acquired the exclusive lock. Any process can ignore an advisory lock. 
+   has acquired the exclusive lock. Any process can ignore an advisory lock.
    This means that advisory locks are for [*cooperating] processes,
    processes that can trust each other. This is similar to a mutex protecting data
    in a shared memory segment: any process connected to that memory can overwrite the
@@ -2552,7 +2552,7 @@ file locks to synchronize the access.
 
 In some systems file locking can be even further refined, leading to [*record locking],
 where a user can specify a [*byte range] within the file where the lock is applied.
-This allows concurrent write access by several processes if they need to access a 
+This allows concurrent write access by several processes if they need to access a
 different byte range in the file. [*Boost.Interprocess] does [*not] offer record
 locking for the moment, but might offer it in the future. To use a file lock just
 include:
@@ -2588,39 +2588,39 @@ File locking has normal mutex operations plus sharable locking capabilities.
 This means that we can have multiple readers holding the sharable lock and
 writers holding the exclusive lock waiting until the readers end their job.
 
-However, file locking does [*not] support upgradable locking or promotion or 
+However, file locking does [*not] support upgradable locking or promotion or
 demotion (lock transfers), so it's more limited than an upgradable lock.
 These are the operations:
 
 [blurb ['[*void lock()]]]
 
 [*Effects:]
-The calling thread tries to obtain exclusive ownership of the file lock, and if 
-another thread has exclusive or sharable ownership of the mutex, 
+The calling thread tries to obtain exclusive ownership of the file lock, and if
+another thread has exclusive or sharable ownership of the mutex,
 it waits until it can obtain the ownership.
 
 [*Throws:] *interprocess_exception* on error.
 
 [blurb ['[*bool try_lock()]]]
 
-[*Effects:] 
+[*Effects:]
 The calling thread tries to acquire exclusive ownership of the file lock
-without waiting. If no other thread has exclusive or sharable ownership of 
+without waiting. If no other thread has exclusive or sharable ownership of
 the file lock, this succeeds.
 
-[*Returns:] If it can acquire exclusive ownership immediately returns true. 
+[*Returns:] If it can acquire exclusive ownership immediately returns true.
 If it has to wait, returns false.
 
 [*Throws:] *interprocess_exception* on error.
 
 [blurb ['[*bool timed_lock(const boost::posix_time::ptime &abs_time)]]]
 
-[*Effects:] 
+[*Effects:]
 The calling thread tries to acquire exclusive ownership of the file lock
 waiting if necessary until no other thread has exclusive or
 sharable ownership of the file lock or abs_time is reached.
 
-[*Returns:] If acquires exclusive ownership, returns true. Otherwise 
+[*Returns:] If acquires exclusive ownership, returns true. Otherwise
 returns false.
 
 [*Throws:] *interprocess_exception* on error.
@@ -2637,31 +2637,31 @@ returns false.
 
 [*Effects:]
 The calling thread tries to obtain sharable ownership of the file lock,
-and if another thread has exclusive ownership of the file lock, 
+and if another thread has exclusive ownership of the file lock,
 waits until it can obtain the ownership.
 
 [*Throws:] *interprocess_exception* on error.
 
 [blurb ['[*bool try_lock_sharable()]]]
 
-[*Effects:] 
+[*Effects:]
 The calling thread tries to acquire sharable ownership of the file
-lock without waiting. If no other thread has exclusive ownership of 
+lock without waiting. If no other thread has exclusive ownership of
 the file lock, this succeeds.
 
-[*Returns:] If it can acquire sharable ownership immediately returns true. 
+[*Returns:] If it can acquire sharable ownership immediately returns true.
 If it has to wait, returns false.
 
 [*Throws:] *interprocess_exception* on error.
 
 [blurb ['[*bool timed_lock_sharable(const boost::posix_time::ptime &abs_time)]]]
 
-[*Effects:] 
+[*Effects:]
 The calling thread tries to acquire sharable ownership of the file lock
 waiting if necessary until no other thread has exclusive
 ownership of the file lock or abs_time is reached.
 
-[*Returns:] If acquires sharable ownership, returns true. Otherwise 
+[*Returns:] If acquires sharable ownership, returns true. Otherwise
 returns false.
 
 [*Throws:] *interprocess_exception* on error.
@@ -2710,7 +2710,7 @@ file locking easier in the presence of exceptions, just like with mutexes:
       //The sharable lock is automatically released by
       //sh_lock's destructor
    }
-   
+
 [c++]
 
    #include <boost/interprocess/sync/file_lock.hpp>
@@ -2757,7 +2757,7 @@ This will produce a compilation error:
 
 [section:file_lock_not_thread_safe Caution: Synchronization limitations]
 
-If you plan to use file locks just like named mutexes, be careful, because portable 
+If you plan to use file locks just like named mutexes, be careful, because portable
 file locks have synchronization limitations, mainly because different implementations
 (POSIX, Windows) offer different guarantees. Interprocess file locks have the following
 limitations:
@@ -2772,7 +2772,7 @@ Windows file locking mechanism, on the other hand, offer thread-synchronization 
 so a thread trying to lock the already locked file, would block.
 
 The second limitation comes from the fact that file locking synchronization state
-is tied with a single file descriptor in Windows. This means that if two `file_lock` 
+is tied with a single file descriptor in Windows. This means that if two `file_lock`
 objects are created pointing to the same file, no synchronization is guaranteed. In
 POSIX, when two file descriptors are used to lock a file if a descriptor is closed,
 all file locks set by the calling process are cleared.
@@ -2838,7 +2838,7 @@ lower priority messages. Each message has some attributes:
 * The length of the message.
 * The data (if length is bigger than 0).
 
-A thread can send a message to or receive a message from the message 
+A thread can send a message to or receive a message from the message
 queue using 3 methods:
 
 * [*Blocking]: If the message queue is full when sending or the message queue
@@ -2851,7 +2851,7 @@ queue using 3 methods:
    successful state) or a timeout is reached (returning a failure).
 
 A message queue [*just copies raw bytes between processes] and does not send
-objects. This means that if we want to send an object using a message queue 
+objects. This means that if we want to send an object using a message queue
 [*the object must be binary serializable]. For example, we can send integers
 between processes but [*not] a `std::string`. You should use [*Boost.Serialization]
 or use advanced [*Boost.Interprocess] mechanisms to send complex data between
@@ -2861,7 +2861,7 @@ The [*Boost.Interprocess] message queue is a named interprocess communication: t
 message queue is created with a name and it's opened with a name, just like a file.
 When creating a message queue, the user must specify the maximum message size and
 the maximum message number that the message queue can store. These parameters will
-define the resources (for example the size of the shared memory used to implement 
+define the resources (for example the size of the shared memory used to implement
 the message queue if shared memory is used).
 
 [c++]
@@ -2946,7 +2946,7 @@ To know more about this class and all its operations, please see the
 
 [section:managed_memory_segments_intro Introduction]
 
-As we have seen, [*Boost.Interprocess] offers some basic classes to create shared memory 
+As we have seen, [*Boost.Interprocess] offers some basic classes to create shared memory
 objects and file mappings and map those mappable classes to the process' address space.
 
 However, managing those memory segments is not not easy for non-trivial tasks.
@@ -2978,7 +2978,7 @@ The most important services of a managed memory segment are:
 *  Customization of many features: memory allocation algorithm, index types or
    character types.
 *  Atomic constructions and destructions so that if the segment is shared between
-   two processes it's impossible to create two objects associated with the same 
+   two processes it's impossible to create two objects associated with the same
    name, simplifying synchronization.
 
 [endsect]
@@ -2992,8 +2992,8 @@ that can be customized by the user:
 
    template
          <
-            class CharType, 
-            class MemoryAlgorithm, 
+            class CharType,
+            class MemoryAlgorithm,
             template<class IndexConfig> class IndexType
          >
    class basic_managed_shared_memory / basic_managed_mapped_file /
@@ -3012,7 +3012,7 @@ These classes can be customized with the following template parameters:
       This allows the use of user-defined mutexes or avoiding internal
       locking (maybe code will be externally synchronized by the user).
 
-   *  The Pointer type (`MemoryAlgorithm::void_pointer`) to be used 
+   *  The Pointer type (`MemoryAlgorithm::void_pointer`) to be used
       by the memory allocation algorithm or additional helper structures
       (like a map to maintain object/name associations). All STL compatible
       allocators and containers to be used with this managed memory segment
@@ -3023,10 +3023,10 @@ These classes can be customized with the following template parameters:
       addresses in each process. If `void_pointer` is `void*` only fixed
       address mapping could be used.
 
-   *  See [link interprocess.customizing_interprocess.custom_interprocess_alloc Writing a new memory 
+   *  See [link interprocess.customizing_interprocess.custom_interprocess_alloc Writing a new memory
       allocation algorithm] for more details about memory algorithms.
-     
-*  *IndexType* is the type of index that will be used to store the name-object 
+
+*  *IndexType* is the type of index that will be used to store the name-object
    association (for example, a map, a hash-map, or an ordered vector).
 
 This way, we can use `char` or `wchar_t` strings to identify created C++
@@ -3049,24 +3049,24 @@ specializations:
 [c++]
 
    //!Defines a managed shared memory with c-strings as keys for named objects,
-   //!the default memory algorithm (with process-shared mutexes, 
+   //!the default memory algorithm (with process-shared mutexes,
    //!and offset_ptr as internal pointers) as memory allocation algorithm
    //!and the default index type as the index.
-   //!This class allows the shared memory to be mapped in different base 
+   //!This class allows the shared memory to be mapped in different base
    //!in different processes
-   typedef 
+   typedef
       basic_managed_shared_memory<char
                                  ,/*Default memory algorithm defining offset_ptr<void> as void_pointer*/
                                  ,/*Default index type*/>
       managed_shared_memory;
 
    //!Defines a managed shared memory with wide strings as keys for named objects,
-   //!the default memory algorithm (with process-shared mutexes, 
+   //!the default memory algorithm (with process-shared mutexes,
    //!and offset_ptr as internal pointers) as memory allocation algorithm
    //!and the default index type as the index.
-   //!This class allows the shared memory to be mapped in different base 
+   //!This class allows the shared memory to be mapped in different base
    //!in different processes
-   typedef 
+   typedef
       basic_managed_shared_memory<wchar_t
                                  ,/*Default memory algorithm defining offset_ptr<void> as void_pointer*/
                                  ,/*Default index type*/>
@@ -3084,10 +3084,10 @@ defines the following types:
 [c++]
 
    //!Defines a managed shared memory with c-strings as keys for named objects,
-   //!the default memory algorithm (with process-shared mutexes, 
+   //!the default memory algorithm (with process-shared mutexes,
    //!and offset_ptr as internal pointers) as memory allocation algorithm
    //!and the default index type as the index.
-   //!This class allows the shared memory to be mapped in different base 
+   //!This class allows the shared memory to be mapped in different base
    //!in different processes*/
    typedef basic_managed_shared_memory
       <char
@@ -3096,10 +3096,10 @@ defines the following types:
    fixed_managed_shared_memory;
 
    //!Defines a managed shared memory with wide strings as keys for named objects,
-   //!the default memory algorithm (with process-shared mutexes, 
+   //!the default memory algorithm (with process-shared mutexes,
    //!and offset_ptr as internal pointers) as memory allocation algorithm
    //!and the default index type as the index.
-   //!This class allows the shared memory to be mapped in different base 
+   //!This class allows the shared memory to be mapped in different base
    //!in different processes
    typedef basic_managed_shared_memory
       <wchar_t
@@ -3116,7 +3116,7 @@ and a mapped region that covers all the shared memory object. That means that
 when we [*create] a new managed shared memory:
 
 *  A new shared memory object is created.
-*  The whole shared memory object is mapped in the process' address space. 
+*  The whole shared memory object is mapped in the process' address space.
 *  Some helper objects are constructed (name-object index, internal synchronization
    objects, internal variables...) in the mapped region to implement
    managed memory segment features.
@@ -3124,7 +3124,7 @@ when we [*create] a new managed shared memory:
 When we [*open] a managed shared memory
 
 *  A shared memory object is opened.
-*  The whole shared memory object is mapped in the process' address space. 
+*  The whole shared memory object is mapped in the process' address space.
 
 To use a managed shared memory, you must include the following header:
 
@@ -3176,7 +3176,7 @@ To use a managed shared memory, you must include the following header:
 When the `managed_shared_memory` object is destroyed, the shared memory
 object is automatically unmapped, and all the resources are freed. To remove
 the shared memory object from the system you must use the `shared_memory_object::remove`
-function. Shared memory object removing might fail if any 
+function. Shared memory object removing might fail if any
 process still has the shared memory object mapped.
 
 The user can also map the managed shared memory in a fixed address. This option is
@@ -3187,7 +3187,7 @@ add the mapping address as an extra parameter:
 
    fixed_managed_shared_memory segment      (open_only      ,"MyFixedAddressSharedMemory" //Shared memory object name
       ,(void*)0x30000000            //Mapping address
-   
+
 [endsect]
 
 [section:windows_managed_memory_common_shm Using native windows shared memory]
@@ -3251,22 +3251,22 @@ specializations:
 
    //Named object creation managed memory segment
    //All objects are constructed in the memory-mapped file
-   //   Names are c-strings, 
+   //   Names are c-strings,
    //   Default memory management algorithm(rbtree_best_fit with no mutexes)
    //   Name-object mappings are stored in the default index type (flat_map)
-   typedef basic_managed_mapped_file < 
-      char, 
+   typedef basic_managed_mapped_file <
+      char,
       rbtree_best_fit<mutex_family, offset_ptr<void> >,
       flat_map_index
       >  managed_mapped_file;
 
    //Named object creation managed memory segment
    //All objects are constructed in the memory-mapped file
-   //   Names are wide-strings, 
+   //   Names are wide-strings,
    //   Default memory management algorithm(rbtree_best_fit with no mutexes)
    //   Name-object mappings are stored in the default index type (flat_map)
-   typedef basic_managed_mapped_file< 
-      wchar_t, 
+   typedef basic_managed_mapped_file<
+      wchar_t,
       rbtree_best_fit<mutex_family, offset_ptr<void> >,
       flat_map_index
       >  wmanaged_mapped_file;
@@ -3285,7 +3285,7 @@ and a mapped region that covers all the file.  That means that
 when we [*create] a new managed mapped file:
 
 *  A new file is created.
-*  The whole file is mapped in the process' address space. 
+*  The whole file is mapped in the process' address space.
 *  Some helper objects are constructed (name-object index, internal synchronization
    objects, internal variables...) in the mapped region to implement
    managed memory segment features.
@@ -3293,7 +3293,7 @@ when we [*create] a new managed mapped file:
 When we [*open] a managed mapped file
 
 *  A file is opened.
-*  The whole file is mapped in the process' address space. 
+*  The whole file is mapped in the process' address space.
 
 To use a managed mapped file, you must include the following header:
 
@@ -3333,9 +3333,9 @@ To use a managed mapped file, you must include the following header:
    managed_mapped_file mfile      (open_or_create,      "MyMappedFile",   //Mapped file name      65536);           //Mapped file size
 When the `managed_mapped_file` object is destroyed, the file is
 automatically unmapped, and all the resources are freed. To remove
-the file from the filesystem you could use standard C `std::remove` 
+the file from the filesystem you could use standard C `std::remove`
 or [*Boost.Filesystem]'s `remove()` functions, but file removing might fail
-if any process still has the file mapped in memory or the file is open 
+if any process still has the file mapped in memory or the file is open
 by any process.
 
 To obtain a more portable behaviour, use `file_mapping::remove(const char *)` operation, which
@@ -3353,14 +3353,14 @@ For more information about managed mapped file capabilities, see
 [section:managed_memory_segment_features Managed Memory Segment Features]
 
 The following features are common to all managed memory segment classes, but
-we will use managed shared memory in our examples. We can do the same with 
+we will use managed shared memory in our examples. We can do the same with
 memory mapped files or other managed memory segment classes.
 
 [section:allocate_deallocate Allocating fragments of a managed memory segment]
 
 If a basic raw-byte allocation is needed from a managed memory
 segment, (for example, a managed shared memory), to implement
-top-level interprocess communications, this class offers 
+top-level interprocess communications, this class offers
 [*allocate] and [*deallocate] functions. The allocation function
 comes with throwing and no throwing versions. Throwing version throws
 boost::interprocess::bad_alloc (which derives from `std::bad_alloc`)
@@ -3373,7 +3373,7 @@ if there is no more memory and the non-throwing version returns 0 pointer.
 
 [section:segment_offset Obtaining handles to identify data]
 
-The class also offers conversions between absolute addresses that belong to 
+The class also offers conversions between absolute addresses that belong to
 a managed memory segment and a handle that can be passed using any
 interprocess mechanism. That handle can be transformed again to an absolute
 address using a managed memory segment that also contains that object.
@@ -3383,7 +3383,7 @@ of a managed memory segment or objects constructed in the managed segment.
 [c++]
 
    //Process A obtains the offset of the address
-   managed_shared_memory::handle handle = 
+   managed_shared_memory::handle handle =
       segment.get_handle_from_address(processA_address);
 
    //Process A sends this address using any mechanism to process B
@@ -3396,10 +3396,10 @@ of a managed memory segment or objects constructed in the managed segment.
 
 [section:allocation_types Object construction function family]
 
-When constructing objects in a managed memory segment (managed shared memory, 
+When constructing objects in a managed memory segment (managed shared memory,
 managed mapped files...) associated with a name, the user has a varied object
 construction family to "construct" or to "construct if not found". [*Boost.Interprocess]
-can construct a single object or an array of objects. The array can be constructed with 
+can construct a single object or an array of objects. The array can be constructed with
 the same parameters for all objects or we can define each parameter from a list of iterators:
 
 [c++]
@@ -3407,29 +3407,29 @@ the same parameters for all objects or we can define each parameter from a list 
    //!Allocates and constructs an object of type MyType (throwing version)
    MyType *ptr = managed_memory_segment.construct<MyType>("Name") (par1, par2...);
 
-   //!Allocates and constructs an array of objects of type MyType (throwing version) 
+   //!Allocates and constructs an array of objects of type MyType (throwing version)
    //!Each object receives the same parameters (par1, par2, ...)
    MyType *ptr = managed_memory_segment.construct<MyType>("Name")[count](par1, par2...);
 
-   //!Tries to find a previously created object. If not present, allocates 
+   //!Tries to find a previously created object. If not present, allocates
    //!and constructs an object of type MyType (throwing version)
    MyType *ptr = managed_memory_segment.find_or_construct<MyType>("Name") (par1, par2...);
 
-   //!Tries to find a previously created object. If not present, allocates and 
-   //!constructs an array of objects of type MyType (throwing version). Each object 
+   //!Tries to find a previously created object. If not present, allocates and
+   //!constructs an array of objects of type MyType (throwing version). Each object
    //!receives the same parameters (par1, par2, ...)
    MyType *ptr = managed_memory_segment.find_or_construct<MyType>("Name")[count](par1, par2...);
 
-   //!Allocates and constructs an array of objects of type MyType (throwing version) 
+   //!Allocates and constructs an array of objects of type MyType (throwing version)
    //!Each object receives parameters returned with the expression (*it1++, *it2++,... )
    MyType *ptr = managed_memory_segment.construct_it<MyType>("Name")[count](it1, it2...);
 
-   //!Tries to find a previously created object. If not present, allocates and constructs 
-   //!an array of objects of type MyType (throwing version).  Each object receives  
+   //!Tries to find a previously created object. If not present, allocates and constructs
+   //!an array of objects of type MyType (throwing version).  Each object receives
    //!parameters returned with the expression (*it1++, *it2++,... )
    MyType *ptr = managed_memory_segment.find_or_construct_it<MyType>("Name")[count](it1, it2...);
 
-   //!Tries to find a previously created object. Returns a pointer to the object and the 
+   //!Tries to find a previously created object. Returns a pointer to the object and the
    //!count (if it is not an array, returns 1). If not present, the returned pointer is 0
    std::pair<MyType *,std::size_t> ret = managed_memory_segment.find<MyType>("Name");
 
@@ -3439,8 +3439,8 @@ the same parameters for all objects or we can define each parameter from a list 
    //!Destroys the created object via pointer
    managed_memory_segment.destroy_ptr(ptr);
 
-All these functions have a non-throwing version, that 
-is invoked with an additional parameter std::nothrow. 
+All these functions have a non-throwing version, that
+is invoked with an additional parameter std::nothrow.
 For example, for simple object construction:
 
 [c++]
@@ -3455,7 +3455,7 @@ For example, for simple object construction:
 Sometimes, the user doesn't want to create class objects associated with a name.
 For this purpose, [*Boost.Interprocess] can create anonymous objects in a managed
 memory segment. All named object construction functions are available to construct
-anonymous objects. To allocate an anonymous objects, the user must use 
+anonymous objects. To allocate an anonymous objects, the user must use
 "boost::interprocess::anonymous_instance" name instead of a normal name:
 
 [c++]
@@ -3468,14 +3468,14 @@ anonymous objects. To allocate an anonymous objects, the user must use
    //We can only destroy the anonymous object via pointer
    managed_memory_segment.destroy_ptr(ptr);
 
-Find functions have no sense here, since anonymous objects have no name. 
+Find functions have no sense here, since anonymous objects have no name.
 We can only destroy the anonymous object via pointer.
 
 [endsect]
 
 [section:unique Unique instance construction]
 
-Sometimes, the user wants to emulate a singleton in a managed memory segment. Obviously, 
+Sometimes, the user wants to emulate a singleton in a managed memory segment. Obviously,
 as the managed memory segment is constructed at run-time, the user must construct and
 destroy this object explicitly. But how can the user be sure that the object is the only
 object of its type in the managed memory segment? This can be emulated using
@@ -3487,8 +3487,8 @@ To solve this, [*Boost.Interprocess] offers a "unique object" creation in a mana
 Only one instance of a class can be created in a managed memory segment using this
 "unique object" service (you can create more named objects of this class, though)
 so it makes easier the emulation of singleton-like objects across processes, for example,
-to design pooled, shared memory allocators. The object can be searched using the type 
-of the class as a key. 
+to design pooled, shared memory allocators. The object can be searched using the type
+of the class as a key.
 
 [c++]
 
@@ -3511,7 +3511,7 @@ of the class as a key.
    managed_shared_memory.destroy_ptr(ptr);
 
 The find function obtains a pointer to the only object of type T that can be created
-using this "unique instance" mechanism. 
+using this "unique instance" mechanism.
 
 [endsect]
 
@@ -3521,7 +3521,7 @@ One of the features of named/unique allocations/searches/destructions is that
 they are [*atomic]. Named allocations use the recursive synchronization scheme defined by the
 internal `mutex_family` typedef defined of the memory allocation algorithm template
 parameter (`MemoryAlgorithm`). That is, the mutex type used to synchronize
-named/unique allocations is defined by the 
+named/unique allocations is defined by the
 `MemoryAlgorithm::mutex_family::recursive_mutex_type` type. For shared memory,
 and memory mapped file based managed segments this recursive mutex is defined
 as [classref boost::interprocess::interprocess_recursive_mutex interprocess_recursive_mutex].
@@ -3531,19 +3531,19 @@ If two processes can call:
 [c++]
 
    MyType *ptr = managed_shared_memory.find_or_construct<MyType>("Name")[count](par1, par2...);
-   
-at the same time, but only one process will create the object and the other will 
+
+at the same time, but only one process will create the object and the other will
 obtain a pointer to the created object.
 
-Raw allocation using `allocate()` can be called also safely while executing 
-named/anonymous/unique allocations, just like when programming a multithreaded 
+Raw allocation using `allocate()` can be called also safely while executing
+named/anonymous/unique allocations, just like when programming a multithreaded
 application inserting an object in a mutex-protected map does not block other threads
 from calling new[] while the map thread is searching the place where it has to insert the
 new object. The synchronization does happen once the map finds the correct place and
 it has to allocate raw memory to construct the new value.
 
 This means that if we are creating or searching for a lot of named objects,
-we only block creation/searches from other processes but we don't block another 
+we only block creation/searches from other processes but we don't block another
 process if that process is inserting elements in a shared memory vector.
 
 [endsect]
@@ -3552,14 +3552,14 @@ process if that process is inserting elements in a shared memory vector.
 
 As seen, managed memory segments, when creating named objects, store the name/object
 association in an index. The index is a map with the name of the object as a key and
-a pointer to the object as the mapped type. The default specializations, 
+a pointer to the object as the mapped type. The default specializations,
 *managed_shared_memory* and *wmanaged_shared_memory*, use *flat_map_index* as the index type.
 
-Each index has its own characteristics, like search-time, insertion time, deletion time, 
-memory use, and memory allocation patterns. [*Boost.Interprocess] offers 3 index types 
+Each index has its own characteristics, like search-time, insertion time, deletion time,
+memory use, and memory allocation patterns. [*Boost.Interprocess] offers 3 index types
 right now:
 
-*  [*boost::interprocess::flat_map_index flat_map_index]: Based on boost::interprocess::flat_map, an ordered 
+*  [*boost::interprocess::flat_map_index flat_map_index]: Based on boost::interprocess::flat_map, an ordered
    vector similar to Loki library's AssocVector class, offers great search time and
    minimum memory use. But the vector must be reallocated when is full, so all data
    must be copied to the new buffer. Ideal when insertions are mainly in initialization
@@ -3578,7 +3578,7 @@ right now:
    If you try to use named object creation with a managed memory segment using this
    index, you will get a compilation error.
 
-As an example, if we want to define new managed shared memory class 
+As an example, if we want to define new managed shared memory class
 using *boost::interprocess::map* as the index type we
 just must specify [boost::interprocess::map_index map_index] as a template parameter:
 
@@ -3586,7 +3586,7 @@ just must specify [boost::interprocess::map_index map_index] as a template param
 
    //This managed memory segment can allocate objects with:
    // -> a wchar_t string as key
-   // -> boost::interprocess::rbtree_best_fit with process-shared mutexes 
+   // -> boost::interprocess::rbtree_best_fit with process-shared mutexes
    //       as memory allocation algorithm.
    // -> boost::interprocess::map<...> as the index to store name/object mappings
    //
@@ -3598,7 +3598,7 @@ just must specify [boost::interprocess::map_index map_index] as a template param
 
 [*Boost.Interprocess] plans to offer an *unordered_map* based index as soon as this
 container is included in Boost. If these indexes are not enough for you, you can define
-your own index type. To know how to do this, go to 
+your own index type. To know how to do this, go to
 [link interprocess.customizing_interprocess.custom_indexes Building custom indexes] section.
 
 [endsect]
@@ -3784,12 +3784,12 @@ default index (`iset_index`) or other indexes (`map_index`):
 Managed memory segments also offer the possibility to iterate through
 constructed named and unique objects for debugging purposes. [*Caution: this
 iteration is not thread-safe] so the user should make sure that no other
-thread is manipulating named or unique indexes (creating, erasing, 
+thread is manipulating named or unique indexes (creating, erasing,
 reserving...) in the segment. Other operations not involving indexes can
 be concurrently executed (raw memory allocation/deallocations, for example).
 
 The following functions return constant iterators to the range of named and
-unique objects stored in the managed segment. Depending on the index type, 
+unique objects stored in the managed segment. Depending on the index type,
 iterators might be invalidated after a named or unique
 creation/erasure/reserve operation:
 
@@ -3991,7 +3991,7 @@ contain any of these values: `boost::interprocess::expand_fwd`, `boost::interpro
 *  If the parameter command contains `boost::interprocess::expand_fwd` or `boost::interprocess::expand_bwd`, the parameter
    `reuse_ptr` must be non-null and returned by a previous allocation function.
 
-*  If the parameter command contains the value `boost::interprocess::shrink_in_place`, the parameter 
+*  If the parameter command contains the value `boost::interprocess::shrink_in_place`, the parameter
    `limit_size` must be equal or greater than the parameter `preferred_size`.
 
 *  If the parameter `command` contains any of these values: `boost::interprocess::expand_fwd` or `boost::interprocess::expand_bwd`,
@@ -4070,14 +4070,14 @@ contain any of these values: `boost::interprocess::expand_fwd`, `boost::interpro
 
 *  The second member of the pair will be false if the memory has been allocated,
    true if the memory has been expanded. If the first member is 0, the second member
-   has an undefined value. 
+   has an undefined value.
 
 [*Notes:]
 
 *  If the user chooses `char` as template argument the returned buffer will
    be suitably aligned to hold any type.
 *  If the user chooses `char` as template argument and a backwards expansion is
-   performed, although properly aligned, the returned buffer might not be 
+   performed, although properly aligned, the returned buffer might not be
    suitable because the distance between the new beginning and the old beginning
    might not multiple of the type the user wants to construct, since due to internal
    restrictions the expansion can be slightly bigger than the requested bytes. [*When
@@ -4146,14 +4146,14 @@ to send serialized data through network, local socket or message queues. Seriali
 can be done through [*Boost.Serialization] or similar library. However, if two processes
 share the same ABI (application binary interface), we could use the same object and
 container construction capabilities of `managed_shared_memory` or `managed_heap_memory`
-to build all the information in a single buffer that will be sent, for example, 
+to build all the information in a single buffer that will be sent, for example,
 though message queues. The receiver would just copy the data to a local buffer, and it
 could read or modify it directly without deserializing the data . This approach can be
 much more efficient that a complex serialization mechanism.
 
 Applications for [*Boost.Interprocess] services using non-shared memory buffers:
 
-* Create and use STL compatible containers and allocators, 
+* Create and use STL compatible containers and allocators,
   in systems where dynamic memory is not recommendable.
 
 * Build complex, easily serializable databases in a single buffer:
@@ -4162,7 +4162,7 @@ Applications for [*Boost.Interprocess] services using non-shared memory buffers:
 
    * To save and load information from/to files.
 
-*  Duplicate information (containers, allocators, etc...) just copying the contents of 
+*  Duplicate information (containers, allocators, etc...) just copying the contents of
    one buffer to another one.
 
 *  Send complex information and objects/databases using serial/inter-process/network
@@ -4174,7 +4174,7 @@ To help with this management, [*Boost.Interprocess] provides two useful classes,
 [section:managed_external_buffer Managed External Buffer: Constructing all Boost.Interprocess objects in a user provided buffer]
 
 Sometimes, the user wants to create simple objects, STL compatible containers, STL compatible
-strings and more, all in a single buffer. This buffer could be a big static buffer, 
+strings and more, all in a single buffer. This buffer could be a big static buffer,
 a memory-mapped auxiliary device or any other user buffer.
 
 This would allow an easy serialization and we-ll just need to copy the buffer to duplicate
@@ -4187,32 +4187,32 @@ provided buffers that allow the same functionality as shared memory classes:
    //Named object creation managed memory segment
    //All objects are constructed in a user provided buffer
    template <
-               class CharType, 
-               class MemoryAlgorithm, 
+               class CharType,
+               class MemoryAlgorithm,
                template<class IndexConfig> class IndexType
             >
    class basic_managed_external_buffer;
 
    //Named object creation managed memory segment
    //All objects are constructed in a user provided buffer
-   //   Names are c-strings, 
+   //   Names are c-strings,
    //   Default memory management algorithm
    //    (rbtree_best_fit with no mutexes and relative pointers)
    //   Name-object mappings are stored in the default index type (flat_map)
-   typedef basic_managed_external_buffer < 
-      char, 
+   typedef basic_managed_external_buffer <
+      char,
       rbtree_best_fit<null_mutex_family, offset_ptr<void> >,
       flat_map_index
       >  managed_external_buffer;
 
    //Named object creation managed memory segment
    //All objects are constructed in a user provided buffer
-   //   Names are wide-strings, 
+   //   Names are wide-strings,
    //   Default memory management algorithm
    //    (rbtree_best_fit with no mutexes and relative pointers)
    //   Name-object mappings are stored in the default index type (flat_map)
-   typedef basic_managed_external_buffer< 
-      wchar_t, 
+   typedef basic_managed_external_buffer<
+      wchar_t,
       rbtree_best_fit<null_mutex_family, offset_ptr<void> >,
       flat_map_index
       >  wmanaged_external_buffer;
@@ -4222,16 +4222,16 @@ To use a managed external buffer, you must include the following header:
 [c++]
 
    #include <boost/interprocess/managed_external_buffer.hpp>
-   
+
 Let's see an example of the use of managed_external_buffer:
 
 [import ../example/doc_managed_external_buffer.cpp]
 [doc_managed_external_buffer]
 
-[*Boost.Interprocess] STL compatible allocators can also be used to place STL 
+[*Boost.Interprocess] STL compatible allocators can also be used to place STL
 compatible containers in the user segment.
 
-[classref boost::interprocess::basic_managed_external_buffer basic_managed_external_buffer] can 
+[classref boost::interprocess::basic_managed_external_buffer basic_managed_external_buffer] can
 be also useful to build small databases for embedded systems limiting the size of
 the used memory to a predefined memory chunk, instead of letting the database
 fragment the heap memory.
@@ -4240,9 +4240,9 @@ fragment the heap memory.
 
 [section:managed_heap_memory Managed Heap Memory: Boost.Interprocess machinery in heap memory]
 
-The use of heap memory (new/delete) to obtain a buffer where the user wants to store all 
-his data is very common, so [*Boost.Interprocess] provides some specialized 
-classes that work exclusively with heap memory. 
+The use of heap memory (new/delete) to obtain a buffer where the user wants to store all
+his data is very common, so [*Boost.Interprocess] provides some specialized
+classes that work exclusively with heap memory.
 
 These are the classes:
 
@@ -4251,32 +4251,32 @@ These are the classes:
    //Named object creation managed memory segment
    //All objects are constructed in a single buffer allocated via new[]
    template <
-               class CharType, 
-               class MemoryAlgorithm, 
+               class CharType,
+               class MemoryAlgorithm,
                template<class IndexConfig> class IndexType
             >
    class basic_managed_heap_memory;
 
    //Named object creation managed memory segment
    //All objects are constructed in a single buffer allocated via new[]
-   //   Names are c-strings, 
+   //   Names are c-strings,
    //   Default memory management algorithm
    //    (rbtree_best_fit with no mutexes and relative pointers)
    //   Name-object mappings are stored in the default index type (flat_map)
-   typedef basic_managed_heap_memory < 
-      char, 
+   typedef basic_managed_heap_memory <
+      char,
       rbtree_best_fit<null_mutex_family>,
       flat_map_index
       >  managed_heap_memory;
 
    //Named object creation managed memory segment
    //All objects are constructed in a single buffer allocated via new[]
-   //   Names are wide-strings, 
+   //   Names are wide-strings,
    //   Default memory management algorithm
    //    (rbtree_best_fit with no mutexes and relative pointers)
    //   Name-object mappings are stored in the default index type (flat_map)
-   typedef basic_managed_heap_memory< 
-      wchar_t, 
+   typedef basic_managed_heap_memory<
+      wchar_t,
       rbtree_best_fit<null_mutex_family>,
       flat_map_index
       >  wmanaged_heap_memory;
@@ -4287,15 +4287,15 @@ To use a managed heap memory, you must include the following header:
 
    #include <boost/interprocess/managed_heap_memory.hpp>
 
-The use is exactly the same as 
+The use is exactly the same as
 [classref boost::interprocess::basic_managed_external_buffer basic_managed_external_buffer],
 except that memory is created by
 the managed memory segment itself using dynamic (new/delete) memory.
 
 [*basic_managed_heap_memory] also offers a `grow(std::size_t extra_bytes)` function that
-tries to resize internal heap memory so that we have room for more objects. 
-But *be careful*, if memory is reallocated, the old buffer will be copied into 
-the new one so all the objects will be binary-copied to the new buffer. 
+tries to resize internal heap memory so that we have room for more objects.
+But *be careful*, if memory is reallocated, the old buffer will be copied into
+the new one so all the objects will be binary-copied to the new buffer.
 To be able to use this function, all pointers constructed in the heap buffer that
 point to objects in the heap buffer must be relative pointers (for example `offset_ptr`).
 Otherwise, the result is undefined. Here is an example:
@@ -4328,7 +4328,7 @@ but there are some remarkable differences between [*managed_shared_memory],
 
 [section:shared_message_queue_ex Example: Serializing a database through the message queue]
 
-To see the utility of managed heap memory and managed external buffer classes, 
+To see the utility of managed heap memory and managed external buffer classes,
 the following example shows how a message queue can be used to serialize a whole
 database constructed in a memory buffer using [*Boost.Interprocess], send the database
 through a message queue and duplicated in another buffer:
@@ -4353,9 +4353,9 @@ To achieve this, [*Boost.Interprocess] makes use of managed memory segment's
 memory allocation algorithms to build several memory allocation schemes, including
 general purpose and node allocators.
 
-[*Boost.Interprocess] STL compatible allocators are configurable via template parameters. 
+[*Boost.Interprocess] STL compatible allocators are configurable via template parameters.
 Allocators define their `pointer` typedef based on the `void_pointer` typedef of the segment manager
-passed as template argument. When this `segment_manager::void_pointer` is a relative pointer, 
+passed as template argument. When this `segment_manager::void_pointer` is a relative pointer,
 (for example, `offset_ptr<void>`) the user can place these allocators in
 memory mapped in different base addresses in several processes.
 
@@ -4408,7 +4408,7 @@ constructor:
 
 [section:allocator_swapping Swapping Boost.Interprocess allocators]
 
-When swapping STL containers, there is an active discussion on what to do with 
+When swapping STL containers, there is an active discussion on what to do with
 the allocators. Some STL implementations, for example Dinkumware from Visual .NET 2003,
 perform a deep swap of the whole container through a temporary when allocators are not equal.
 The [@http://www.open-std.org/JTC1/SC22/WG21/docs/papers/2004/n1599.html proposed resolution]
@@ -4426,14 +4426,14 @@ a non-throwing swap is possible, just like heap allocators.
 
 Until a final resolution is achieved. [*Boost.Interprocess] allocators implement a non-throwing
 swap function that swaps internal pointers. If an allocator placed in a shared memory segment is
-swapped with other placed in a different shared memory segment, the result is undefined. But a 
+swapped with other placed in a different shared memory segment, the result is undefined. But a
 crash is quite sure.
 
 [endsect]
 
 [section:allocator allocator: A general purpose allocator for managed memory segments]
 
-The [classref boost::interprocess::allocator allocator] class defines an allocator class that 
+The [classref boost::interprocess::allocator allocator] class defines an allocator class that
 uses the managed memory segment's algorithm to allocate and deallocate memory. This is
 achieved through the [*segment manager] of the managed memory segment. This allocator
 is the equivalent for managed memory segments of the standard `std::allocator`.
@@ -4484,12 +4484,12 @@ Using [classref boost::interprocess::allocator allocator] is straightforward:
 
 [section:stl_allocators_segregated_storage Segregated storage node allocators]
 
-Variable size memory algorithms waste 
-some space in management information for each allocation. Sometimes, 
+Variable size memory algorithms waste
+some space in management information for each allocation. Sometimes,
 usually for small objects, this is not acceptable. Memory algorithms can
-also fragment the managed memory segment under some allocation and 
-deallocation schemes, reducing their performance. When allocating 
-many objects of the same type, a simple segregated storage becomes 
+also fragment the managed memory segment under some allocation and
+deallocation schemes, reducing their performance. When allocating
+many objects of the same type, a simple segregated storage becomes
 a fast and space-friendly allocator, as explained in the
 [@http://www.boost.org/libs/pool/ [*Boost.Pool]] library.
 
@@ -4523,7 +4523,7 @@ All these allocators are templatized by 3 parameters:
 *  `class T`: The type to be allocated.
 *  `class SegmentManager`: The type of the segment manager that will be passed in the constructor.
 *  `std::size_t NodesPerChunk`: The number of nodes that a memory chunk will contain.
-   This value will define the size of the memory the pool will request to the 
+   This value will define the size of the memory the pool will request to the
    segment manager when the pool runs out of nodes. This parameter has a default value.
 
 These allocators also offer the `deallocate_free_chunks()` function. This function will
@@ -4539,7 +4539,7 @@ This function is quite time-consuming because it has quadratic complexity (O(N^2
 
 For heap-memory node allocators (like [*Boost.Pool's] `boost::fast_pool_allocator`
 usually a global, thread-shared singleton
-pool is used for each node size. This is not possible if you try to share 
+pool is used for each node size. This is not possible if you try to share
 a node allocator between processes. To achieve this sharing
 [classref boost::interprocess::node_allocator node_allocator]
 uses the segment manager's unique type allocation service
@@ -4550,19 +4550,19 @@ In the initialization, a
 object searches this unique object in
 the segment. If it is not preset, it builds one.  This way, all
 [classref boost::interprocess::node_allocator node_allocator]
-objects built inside a memory segment share a unique memory pool. 
+objects built inside a memory segment share a unique memory pool.
 
 The common segregated storage is not only shared between node_allocators of the
-same type, but it is also shared between all node allocators that allocate objects 
+same type, but it is also shared between all node allocators that allocate objects
 of the same size, for example, [*node_allocator<uint32>] and [*node_allocator<float32>].
-This saves a lot of memory but also imposes an synchronization overhead for each 
+This saves a lot of memory but also imposes an synchronization overhead for each
 node allocation.
 
 The dynamically created common segregated storage
-integrates a reference count so that a 
+integrates a reference count so that a
 [classref boost::interprocess::node_allocator node_allocator]
-can know if any other 
-[classref boost::interprocess::node_allocator node_allocator] 
+can know if any other
+[classref boost::interprocess::node_allocator node_allocator]
 is attached to the same common segregated storage. When the last
 allocator attached to the pool is destroyed, the pool is destroyed.
 
@@ -4603,13 +4603,13 @@ An example using [classref boost::interprocess::node_allocator node_allocator]:
 
 [section:private_node_allocator private_node_allocator: a private segregated storage]
 
-As said, the node_allocator shares a common segregated storage between 
+As said, the node_allocator shares a common segregated storage between
 node_allocators that allocate objects of the same size and this optimizes
 memory usage. However, it needs a unique/named object construction feature
 so that this sharing can be possible. Also
 imposes a synchronization overhead per node allocation because of this share.
 Sometimes, the unique object service is not available (for example, when
-building index types to implement the named allocation service itself) or the 
+building index types to implement the named allocation service itself) or the
 synchronization overhead is not acceptable. Many times the programmer wants to
 make sure that the pool is destroyed when the allocator is destroyed, to free
 the memory as soon as possible.
@@ -4617,7 +4617,7 @@ the memory as soon as possible.
 So [*private_node_allocator] uses the same segregated storage as `node_allocator`,
 but each [*private_node_allocator] has its own segregated storage pool. No synchronization
 is used when allocating nodes, so there is far less overhead for an operation
-that usually involves just a few pointer operations when allocating and 
+that usually involves just a few pointer operations when allocating and
 deallocating a node.
 
 [*Equality:] Two [classref boost::interprocess::private_node_allocator private_node_allocator]
@@ -4661,10 +4661,10 @@ applications and the minimal synchronization overhead of [classref boost::interp
 can impose a unacceptable memory waste for other applications.
 
 To solve this, [*Boost.Interprocess] offers an allocator,
-[classref boost::interprocess::cached_node_allocator cached_node_allocator], that 
-allocates nodes from the common pool but caches some of them privately so that following 
-allocations have no synchronization overhead. When the cache is full, the allocator 
-returns some cached nodes to the common pool, and those will be available to other 
+[classref boost::interprocess::cached_node_allocator cached_node_allocator], that
+allocates nodes from the common pool but caches some of them privately so that following
+allocations have no synchronization overhead. When the cache is full, the allocator
+returns some cached nodes to the common pool, and those will be available to other
 allocators.
 
 [*Equality:] Two [classref boost::interprocess::cached_node_allocator cached_node_allocator]
@@ -4737,7 +4737,7 @@ Adaptive pool based allocators trade some space (the overhead can be as low as 1
 and performance (acceptable for many applications) with the ability to return free chunks
 of nodes to the memory segment, so that they can be used by any other container or managed
 object construction. To know the details of the implementation of
-of "adaptive pools" see the 
+of "adaptive pools" see the
 [link interprocess.architecture.allocators_containers.implementation_adaptive_pools Implementation of [*Boost.Intrusive] adaptive pools]
 section.
 
@@ -4759,7 +4759,7 @@ All these allocators are templatized by 4 parameters:
 *  `class T`: The type to be allocated.
 *  `class SegmentManager`: The type of the segment manager that will be passed in the constructor.
 *  `std::size_t NodesPerChunk`: The number of nodes that a memory chunk will contain.
-   This value will define the size of the memory the pool will request to the 
+   This value will define the size of the memory the pool will request to the
    segment manager when the pool runs out of nodes. This parameter has a default value.
 *  `std::size_t MaxFreeChunks`: The maximum number of free chunks that the pool
    will hold. If this limit is reached the pool returns the chunks to the segment manager.
@@ -4778,13 +4778,13 @@ chunks.
 Just like [classref boost::interprocess::node_allocator node_allocator]
 a global, process-thread pool is used for each node size. In the
 initialization, [classref boost::interprocess::adaptive_pool adaptive_pool]
-searches the pool in the segment. If it is not preset, it builds one. 
+searches the pool in the segment. If it is not preset, it builds one.
 The adaptive pool, is created using a unique name.
 The adaptive pool it is also shared between
 all node_allocators that allocate objects  of the same size, for example,
 [*adaptive_pool<uint32>] and [*adaptive_pool<float32>].
 
-The common adaptive pool is destroyed when all the allocators attached 
+The common adaptive pool is destroyed when all the allocators attached
 to the pool are destroyed.
 
 [*Equality:] Two [classref boost::interprocess::adaptive_pool adaptive_pool] instances
@@ -4872,9 +4872,9 @@ Adaptive pools have also a cached version. In this allocator the allocator cache
 some nodes to avoid the synchronization and bookkeeping overhead of the shared
 adaptive pool.
 [classref boost::interprocess::cached_adaptive_pool cached_adaptive_pool]
-allocates nodes from the common adaptive pool but caches some of them privately so that following 
-allocations have no synchronization overhead. When the cache is full, the allocator 
-returns some cached nodes to the common pool, and those will be available to other 
+allocates nodes from the common adaptive pool but caches some of them privately so that following
+allocations have no synchronization overhead. When the cache is full, the allocator
+returns some cached nodes to the common pool, and those will be available to other
 [classref boost::interprocess::cached_adaptive_pool cached_adaptive_pools] or
 [classref boost::interprocess::adaptive_pool adaptive_pools] of the same managed segment.
 
@@ -4936,43 +4936,43 @@ An example using [classref boost::interprocess::cached_adaptive_pool cached_adap
 [section:stl_container_requirements Container requirements for Boost.Interprocess allocators]
 
 [*Boost.Interprocess] STL compatible allocators offer a STL compatible allocator
-interface and if they define their internal *pointer* typedef as a relative pointer, 
+interface and if they define their internal *pointer* typedef as a relative pointer,
 they can sbe used to place STL containers in shared memory, memory mapped files or
 in a user defined memory segment.
 
-However, as Scott Meyers mentions in his Effective STL 
-book, Item 10, ['"Be aware of allocator conventions and 
-restrictions"]: 
+However, as Scott Meyers mentions in his Effective STL
+book, Item 10, ['"Be aware of allocator conventions and
+restrictions"]:
 
-* ['"the Standard explicitly allows library implementers 
-to assume that every allocator's pointer typedef is 
+* ['"the Standard explicitly allows library implementers
+to assume that every allocator's pointer typedef is
 a synonym for T*"]
 
-* ['"the Standard says that an implementation of the STL is 
-permitted to assume that all allocator objects of the 
+* ['"the Standard says that an implementation of the STL is
+permitted to assume that all allocator objects of the
 same type are equivalent and always compare equal"]
 
-Obviously, if any STL implementation ignores pointer typedefs, 
-no smart pointer can be used as allocator::pointer. If STL 
-implementations assume all allocator objects of the same 
-type compare equal, it will assume that two allocators, 
+Obviously, if any STL implementation ignores pointer typedefs,
+no smart pointer can be used as allocator::pointer. If STL
+implementations assume all allocator objects of the same
+type compare equal, it will assume that two allocators,
 each one allocating from a different memory pool
-are equal, which is a complete disaster. 
+are equal, which is a complete disaster.
 
 STL containers that we want to place in shared memory or memory
 mapped files with [*Boost.Interprocess] can't make any of these assumptions, so:
 
-* STL containers may not assume that memory allocated with 
-  an allocator can be deallocated with other allocators of 
-  the same type. All allocators objects must compare equal 
-  only if memory allocated with one object can be deallocated 
-  with the other one, and this can only tested with 
+* STL containers may not assume that memory allocated with
+  an allocator can be deallocated with other allocators of
+  the same type. All allocators objects must compare equal
+  only if memory allocated with one object can be deallocated
+  with the other one, and this can only tested with
   operator==() at run-time.
 
-* Containers' internal pointers should be of the type allocator::pointer 
+* Containers' internal pointers should be of the type allocator::pointer
   and containers may not assume allocator::pointer is a raw pointer.
 
-* All objects must be constructed-destroyed via 
+* All objects must be constructed-destroyed via
   allocator::construct and allocator::destroy functions.
 
 [endsect]
@@ -4980,10 +4980,10 @@ mapped files with [*Boost.Interprocess] can't make any of these assumptions, so:
 [section:containers STL containers in managed memory segments]
 
 Unfortunately, many STL implementations use raw pointers
-for internal data and ignore allocator pointer typedefs 
-and others suppose at some point that the allocator::typedef 
+for internal data and ignore allocator pointer typedefs
+and others suppose at some point that the allocator::typedef
 is T*. This is because in practice,
-there wasn't need of allocators with a pointer typedef 
+there wasn't need of allocators with a pointer typedef
 different from T* for pooled/node memory
 allocators.
 
@@ -4996,14 +4996,14 @@ in a generic way, [*Boost.Interprocess] offers the following classes:
 [c++]
 
    #include <boost/interprocess/containers/vector.hpp>
-        
-*  [*boost:interprocess::deque] is the implementation of `std::deque` ready 
+
+*  [*boost:interprocess::deque] is the implementation of `std::deque` ready
    to be used in managed memory segments like shared memory. To use it include:
 
 [c++]
 
    #include <boost/interprocess/containers/deque.hpp>
-        
+
 *  [classref boost::interprocess::list list] is the implementation of `std::list` ready
    to be used in managed memory segments like shared memory. To use it include:
 
@@ -5017,11 +5017,11 @@ in a generic way, [*Boost.Interprocess] offers the following classes:
 [c++]
 
    #include <boost/interprocess/containers/slist.hpp>
-        
+
 *  [classref boost::interprocess::set set]/
    [classref boost::interprocess::multiset multiset]/
    [classref boost::interprocess::map map]/
-   [classref boost::interprocess::multimap multimap] family is the implementation of 
+   [classref boost::interprocess::multimap multimap] family is the implementation of
    std::set/multiset/map/multimap family ready
    to be used in managed memory segments like shared memory. To use them include:
 
@@ -5033,33 +5033,33 @@ in a generic way, [*Boost.Interprocess] offers the following classes:
 *  [classref boost::interprocess::flat_set flat_set]/
    [classref boost::interprocess::flat_multiset flat_multiset]/
    [classref boost::interprocess::flat_map flat_map]/
-   [classref boost::interprocess::flat_multimap flat_multimap] classes are the 
-   adaptation and extension of Andrei Alexandrescu's famous AssocVector class 
-   from Loki library, ready for the shared memory. These classes offer the same 
-   functionality as `std::set/multiset/map/multimap` implemented with an ordered vector, 
-   which has faster lookups than the standard ordered associative containers 
+   [classref boost::interprocess::flat_multimap flat_multimap] classes are the
+   adaptation and extension of Andrei Alexandrescu's famous AssocVector class
+   from Loki library, ready for the shared memory. These classes offer the same
+   functionality as `std::set/multiset/map/multimap` implemented with an ordered vector,
+   which has faster lookups than the standard ordered associative containers
    based on red-black trees, but slower insertions. To use it include:
 
 [c++]
 
    #include <boost/interprocess/containers/flat_set.hpp>
    #include <boost/interprocess/containers/flat_map.hpp>
-        
+
 *  [classref boost::interprocess::basic_string basic_string]
    is the implementation of `std::basic_string` ready
    to be used in managed memory segments like shared memory.
    It's implemented using a vector-like contiguous storage, so
-   it has fast c string conversion and can be used with the 
+   it has fast c string conversion and can be used with the
    [link interprocess.streams.vectorstream vectorstream] iostream formatting classes.
    To use it include:
 
 [c++]
 
    #include <boost/interprocess/containers/string.hpp>
-        
-All these containers have the same default arguments as standard 
+
+All these containers have the same default arguments as standard
 containers and they can be used with other, non [*Boost.Interprocess]
-allocators (std::allocator, or boost::pool_allocator, for example). 
+allocators (std::allocator, or boost::pool_allocator, for example).
 
 To place any of these containers in managed memory segments, we must
 define the allocator template parameter with a [*Boost.Interprocess] allocator
@@ -5070,7 +5070,7 @@ in the managed memory segment just like any other object with [*Boost.Interproce
 [import ../example/doc_cont.cpp]
 [doc_cont]
 
-These containers also show how easy is to create/modify 
+These containers also show how easy is to create/modify
 an existing container making possible to place it in shared memory.
 
 [endsect]
@@ -5100,7 +5100,7 @@ containers *must*:
   in the managed memory.
 
 If you do the first two points but you don't use `construct<>` or `find_or_construct<>`
-you are creating a container placed *only* in your process but that allocates memory 
+you are creating a container placed *only* in your process but that allocates memory
 for contained types from shared memory/memory mapped file.
 
 Let's see an example:
@@ -5121,7 +5121,7 @@ When using containers of containers, we can also use move-semantics to insert
 objects in the container, avoiding unnecessary copies.
 
 
-To transfer the contents of a container to another one, use 
+To transfer the contents of a container to another one, use
 `boost::move()` function, as shown in the example. For more details
 about functions supporting move-semantics, see the reference section of
 Boost.Interprocess containers:
@@ -5194,54 +5194,54 @@ with raw pointers.
 
 [section:simple_seq_fit simple_seq_fit: A simple shared memory management algorithm]
 
-The algorithm is a variation of sequential fit using singly 
-linked list of free memory buffers. The algorithm is based 
-on the article about shared memory titled 
-[@http://home.earthlink.net/~joshwalker1/writing/SharedMemory.html ['"Taming Shared Memory"] ]. 
+The algorithm is a variation of sequential fit using singly
+linked list of free memory buffers. The algorithm is based
+on the article about shared memory titled
+[@http://home.earthlink.net/~joshwalker1/writing/SharedMemory.html ['"Taming Shared Memory"] ].
 The algorithm is as follows:
 
-The shared memory is divided in blocks of free shared memory, 
-each one with some control data and several bytes of memory 
-ready to be used. The control data contains a pointer (in 
-our case offset_ptr) to the next free block and the size of 
-the block. The allocator consists of a singly linked list 
-of free blocks, ordered by address. The last block, points 
+The shared memory is divided in blocks of free shared memory,
+each one with some control data and several bytes of memory
+ready to be used. The control data contains a pointer (in
+our case offset_ptr) to the next free block and the size of
+the block. The allocator consists of a singly linked list
+of free blocks, ordered by address. The last block, points
 always to the first block:
 
 [c++]
 
    simple_seq_fit memory layout:
 
-       main      extra  allocated  free_block_1     allocated   free_block_2    allocated   free_block_3    
+       main      extra  allocated  free_block_1     allocated   free_block_2    allocated   free_block_3
        header    header  block       ctrl     usr     block      ctrl     usr     block      ctrl     usr
-      _________  _____  _________  _______________  _________  _______________  _________  _______________ 
+      _________  _____  _________  _______________  _________  _______________  _________  _______________
      |         ||     ||         ||         |     ||         ||         |     ||         ||         |     |
      |free|ctrl||extra||         ||next|size| mem ||         ||next|size| mem ||         ||next|size| mem |
      |_________||_____||_________||_________|_____||_________||_________|_____||_________||_________|_____|
-         |                         | |                         |  |                       | |             
-         |_>_>_>_>_>_>_>_>_>_>_>_>_| |_>_>_>_>_>_>_>_>_>_>_>_>_|  |_>_>_>_>_>_>_>_>_>_>_>_| |            
+         |                         | |                         |  |                       | |
+         |_>_>_>_>_>_>_>_>_>_>_>_>_| |_>_>_>_>_>_>_>_>_>_>_>_>_|  |_>_>_>_>_>_>_>_>_>_>_>_| |
                                    |                                                        |
                                    |_<_<_<_<_<_<_<_<_<_<_<_<_<_<_<_<_<_<_<_<_<_<_<_<_<_<_<__|
-                         
-When a user requests N bytes of memory, the allocator 
-traverses the free block list looking for a block large 
-enough. If the "mem" part of the block has the same 
-size as the requested memory, we erase the block from 
-the list and return a pointer to the "mem" part of the 
-block. If the "mem" part size is bigger than needed, 
-we split the block in two blocks, one of the requested 
-size and the other with remaining size. Now, we take 
-the block with the exact size, erase it from list and 
+
+When a user requests N bytes of memory, the allocator
+traverses the free block list looking for a block large
+enough. If the "mem" part of the block has the same
+size as the requested memory, we erase the block from
+the list and return a pointer to the "mem" part of the
+block. If the "mem" part size is bigger than needed,
+we split the block in two blocks, one of the requested
+size and the other with remaining size. Now, we take
+the block with the exact size, erase it from list and
 give it to the user.
 
-When the user deallocates a block, we traverse the list (remember 
-that the list is ordered), and search its place depending on 
-the block address. Once found, we try to merge the block with 
+When the user deallocates a block, we traverse the list (remember
+that the list is ordered), and search its place depending on
+the block address. Once found, we try to merge the block with
 adjacent blocks if possible.
 
-To ease implementation, the size of the free memory block 
-is measured in multiples of "basic_size" bytes.  The basic 
-size will be the size of the control block aligned to 
+To ease implementation, the size of the free memory block
+is measured in multiples of "basic_size" bytes.  The basic
+size will be the size of the control block aligned to
 machine most restrictive alignment.
 
 This algorithm is a low size overhead algorithm suitable for simple allocation
@@ -5267,24 +5267,24 @@ and next blocks when doing merging operations.
 
 The data used to create the red-black tree of free nodes is overwritten by the user
 since it's no longer used once the memory is allocated. This maintains the memory
-size overhead down to the doubly linked list overhead, which is pretty small (two pointers). 
+size overhead down to the doubly linked list overhead, which is pretty small (two pointers).
 Basically this is the scheme:
 
 [c++]
 
    rbtree_best_fit memory layout:
-   
+
       main            allocated block   free block                        allocated block  free block
-      header          
-     _______________  _______________  _________________________________  _______________  _________________________________   
-    |               ||         |     ||         |                 |     ||         |     ||         |                 |     |   
-    |  main header  ||next|prev| mem ||next|prev|left|right|parent| mem ||next|prev| mem ||next|prev|left|right|parent| mem |   
-    |_______________||_________|_____||_________|_________________|_____||_________|_____||_________|_________________|_____|   
+      header
+     _______________  _______________  _________________________________  _______________  _________________________________
+    |               ||         |     ||         |                 |     ||         |     ||         |                 |     |
+    |  main header  ||next|prev| mem ||next|prev|left|right|parent| mem ||next|prev| mem ||next|prev|left|right|parent| mem |
+    |_______________||_________|_____||_________|_________________|_____||_________|_____||_________|_________________|_____|
 
 
 This allocation algorithm is pretty fast and scales well with big shared memory
 segments and big number of allocations. To form a block a minimum memory size is needed:
-the sum of the doubly linked list and the red-black tree control data. 
+the sum of the doubly linked list and the red-black tree control data.
 The size of a block is measured in multiples of the most restrictive alignment value.
 
 In most 32 systems with 8 byte alignment the minimum size of a block is 24 byte.
@@ -5301,7 +5301,7 @@ simple sequential fit algorithm (8 bytes more).
 For allocations bigger than 8 bytes the memory overhead is exactly the same.
 This is the default allocation algorithm in [*Boost.Interprocess] managed memory
 segments.
-                                                                                                                               
+
 [endsect]
 
 [endsect]
@@ -5316,7 +5316,7 @@ the iostream framework for that work.
 
 Some programmers appreciate the iostream safety and design for memory
 formatting but feel that the stringstream family is far from efficient not
-when formatting, but when obtaining formatted data to a string, or when 
+when formatting, but when obtaining formatted data to a string, or when
 setting the string from which the stream will extract data. An example:
 
 [c++]
@@ -5324,10 +5324,10 @@ setting the string from which the stream will extract data. An example:
    //Some formatting elements
    std::string my_text = "...";
    int number;
-   
+
    //Data reader
    std::istringstream input_processor;
-   
+
    //This makes a copy of the string. If not using a
    //reference counted string, this is a serious overhead.
    input_processor.str(my_text);
@@ -5336,24 +5336,24 @@ setting the string from which the stream will extract data. An example:
    while(/*...*/){
       input_processor >> number;
    }
-   
+
    //Data writer
    std::ostringstream output_processor;
-   
+
    //Write data
    while(/*...*/){
       output_processor << number;
    }
-   
+
    //This returns a temporary string. Even with return-value
    //optimization this is expensive.
    my_text = input_processor.str();
 
 The problem is even worse if the string is a shared-memory string, because
-to extract data, we must copy the data first from shared-memory to a 
+to extract data, we must copy the data first from shared-memory to a
 `std::string` and then to a `std::stringstream`. To encode data in a shared memory
-string we should copy data from a `std::stringstream` to a `std::string` and then 
-to the shared-memory string. 
+string we should copy data from a `std::stringstream` to a `std::string` and then
+to the shared-memory string.
 
 Because of this overhead, [*Boost.Interprocess] offers a way to format memory-strings
 (in shared memory, memory mapped files or any other memory segment) that
@@ -5366,19 +5366,19 @@ and `std::basic_iostream<>` classes.
 [section:vectorstream Formatting directly in your character vector: vectorstream]
 
 The *vectorstream* class family (*basic_vectorbuf*, *basic_ivectorstream*
-,*basic_ovectorstream* and *basic_vectorstream*) is an efficient way to obtain 
+,*basic_ovectorstream* and *basic_vectorstream*) is an efficient way to obtain
 formatted reading/writing directly in a character vector. This way, if
 a shared-memory vector is used, data is extracted/written from/to the shared-memory
-vector, without additional copy/allocation. We can see the declaration of 
+vector, without additional copy/allocation. We can see the declaration of
 basic_vectorstream here:
 
    //!A basic_iostream class that holds a character vector specified by CharVector
    //!template parameter as its formatting buffer. The vector must have
    //!contiguous storage, like std::vector, boost::interprocess::vector or
    //!boost::interprocess::basic_string
-   template <class CharVector, class CharTraits = 
+   template <class CharVector, class CharTraits =
             std::char_traits<typename CharVector::value_type> >
-   class basic_vectorstream 
+   class basic_vectorstream
    : public std::basic_iostream<typename CharVector::value_type, CharTraits>
 
    {
@@ -5392,7 +5392,7 @@ basic_vectorstream here:
       typedef typename std::basic_ios<char_type, CharTraits>::traits_type  traits_type;
 
       //!Constructor. Throws if vector_type default constructor throws.
-      basic_vectorstream(std::ios_base::openmode mode 
+      basic_vectorstream(std::ios_base::openmode mode
                         = std::ios_base::in | std::ios_base::out);
 
       //!Constructor. Throws if vector_type(const Parameter &param) throws.
@@ -5405,7 +5405,7 @@ basic_vectorstream here:
       //!Returns the address of the stored stream buffer.
       basic_vectorbuf<CharVector, CharTraits>* rdbuf() const;
 
-      //!Swaps the underlying vector with the passed vector. 
+      //!Swaps the underlying vector with the passed vector.
       //!This function resets the position in the stream.
       //!Does not throw.
       void swap_vector(vector_type &vect);
@@ -5422,17 +5422,17 @@ basic_vectorstream here:
 
 The vector type is templatized, so that we can use any type of vector:
 [*std::vector], [classref boost::interprocess::vector]... But the storage must be *contiguous*,
-we can't use a deque. We can even use *boost::interprocess::basic_string*, since it has a 
-vector interface and it has contiguous storage. *We can't use std::string*, because 
-although some std::string implementation are vector-based, others can have 
+we can't use a deque. We can even use *boost::interprocess::basic_string*, since it has a
+vector interface and it has contiguous storage. *We can't use std::string*, because
+although some std::string implementation are vector-based, others can have
 optimizations and reference-counted implementations.
 
-The user can obtain a const reference to the internal vector using 
+The user can obtain a const reference to the internal vector using
 `vector_type vector() const` function and he also can swap the internal vector
-with an external one calling `void swap_vector(vector_type &vect)`. 
+with an external one calling `void swap_vector(vector_type &vect)`.
 The swap function resets the stream position.
 This functions allow efficient methods to obtain the formatted data avoiding
-all allocations and data copies. 
+all allocations and data copies.
 
 Let's see an example to see how to use vectorstream:
 
@@ -5446,15 +5446,15 @@ Let's see an example to see how to use vectorstream:
 As seen, vectorstream offers an easy and secure way for efficient iostream
 formatting, but many times, we have to read or write formatted data from/to a
 fixed size character buffer (a static buffer, a c-string, or any other).
-Because of the overhead of stringstream, many developers (specially in 
-embedded systems) choose sprintf family. The *bufferstream* classes offer 
-iostream interface with direct formatting in a fixed size memory buffer with 
+Because of the overhead of stringstream, many developers (specially in
+embedded systems) choose sprintf family. The *bufferstream* classes offer
+iostream interface with direct formatting in a fixed size memory buffer with
 protection against buffer overflows. This is the interface:
 
    //!A basic_iostream class that uses a fixed size character buffer
    //!as its formatting buffer.
    template <class CharT, class CharTraits = std::char_traits<CharT> >
-   class basic_bufferstream 
+   class basic_bufferstream
       : public std::basic_iostream<CharT, CharTraits>
 
    {
@@ -5465,9 +5465,9 @@ protection against buffer overflows. This is the interface:
       typedef typename std::basic_ios<char_type, CharTraits>::pos_type     pos_type;
       typedef typename std::basic_ios<char_type, CharTraits>::off_type     off_type;
       typedef typename std::basic_ios<char_type, CharTraits>::traits_type  traits_type;
-      
+
       //!Constructor. Does not throw.
-      basic_bufferstream(std::ios_base::openmode mode 
+      basic_bufferstream(std::ios_base::openmode mode
                         = std::ios_base::in | std::ios_base::out);
 
       //!Constructor. Assigns formatting buffer. Does not throw.
@@ -5478,14 +5478,14 @@ protection against buffer overflows. This is the interface:
       //!Returns the address of the stored stream buffer.
       basic_bufferbuf<CharT, CharTraits>* rdbuf() const;
 
-      //!Returns the pointer and size of the internal buffer. 
+      //!Returns the pointer and size of the internal buffer.
       //!Does not throw.
       std::pair<CharT *, std::size_t> buffer() const;
 
-      //!Sets the underlying buffer to a new value. Resets 
+      //!Sets the underlying buffer to a new value. Resets
       //!stream position. Does not throw.
       void buffer(CharT *buffer, std::size_t length);
-   };   
+   };
 
    //Some typedefs to simplify usage
    typedef basic_bufferstream<char>     bufferstream;
@@ -5495,19 +5495,19 @@ protection against buffer overflows. This is the interface:
 While reading from a fixed size buffer, *bufferstream* activates endbit flag if
 we try to read an address beyond the end of the buffer. While writing to a
 fixed size buffer, *bufferstream* will active the badbit flag if a buffer overflow
-is going to happen and disallows writing. This way, the fixed size buffer 
-formatting through *bufferstream* is secure and efficient, and offers a good 
+is going to happen and disallows writing. This way, the fixed size buffer
+formatting through *bufferstream* is secure and efficient, and offers a good
 alternative to sprintf/sscanf functions. Let's see an example:
 
 [import ../example/doc_bufferstream.cpp]
 [doc_bufferstream]
 
-As seen, *bufferstream* offers an efficient way to format data without any 
+As seen, *bufferstream* offers an efficient way to format data without any
 allocation and extra copies. This is very helpful in embedded systems, or
 formatting inside time-critical loops, where stringstream extra copies would
 be too expensive. Unlike sprintf/sscanf, it has protection against buffer
-overflows. As we know, according to the *Technical Report on C++ Performance*, 
-it's possible to design efficient iostreams for embedded platforms, so this 
+overflows. As we know, according to the *Technical Report on C++ Performance*,
+it's possible to design efficient iostreams for embedded platforms, so this
 bufferstream class comes handy to format data to stack, static or shared memory
 buffers.
 
@@ -5523,11 +5523,11 @@ Boost offers a wide range of such type of pointers: `intrusive_ptr<>`,
 
 When building complex shared memory/memory mapped files structures, programmers
 would like to use also the advantages of these smart pointers. The problem is that
-Boost and C++ TR1 smart pointers are not ready to be used for shared memory. The cause 
+Boost and C++ TR1 smart pointers are not ready to be used for shared memory. The cause
 is that those smart pointers contain raw pointers and they use virtual functions,
 something that is not possible if you want to place your data in shared memory.
 The virtual function limitation makes even impossible to achieve the same level of
-functionality of Boost and TR1 with [*Boost.Interprocess] smart pointers. 
+functionality of Boost and TR1 with [*Boost.Interprocess] smart pointers.
 
 Interprocess ownership smart pointers are mainly "smart pointers containing smart pointers",
 so we can specify the pointer type they contain.
@@ -5535,20 +5535,20 @@ so we can specify the pointer type they contain.
 [section:intrusive_ptr Intrusive pointer]
 
 [classref boost::interprocess::intrusive_ptr] is the generalization of `boost::intrusive_ptr<>`
-to allow non-raw pointers as intrusive pointer members. As the well-known 
-`boost::intrusive_ptr` we must specify the pointee type but we also must also specify 
+to allow non-raw pointers as intrusive pointer members. As the well-known
+`boost::intrusive_ptr` we must specify the pointee type but we also must also specify
 the pointer type to be stored in the intrusive_ptr:
 
 [c++]
 
    //!The intrusive_ptr class template stores a pointer to an object
    //!with an embedded reference count. intrusive_ptr is parameterized on
-   //!T (the type of the object pointed to) and VoidPointer(a void pointer type 
+   //!T (the type of the object pointed to) and VoidPointer(a void pointer type
    //!that defines the type of pointer that intrusive_ptr will store).
    //!intrusive_ptr<T, void *> defines a class with a T* member whereas
    //!intrusive_ptr<T, offset_ptr<void> > defines a class with a offset_ptr<T> member.
    //!Relies on unqualified calls to:
-   //! 
+   //!
    //!void intrusive_ptr_add_ref(T * p);
    //!void intrusive_ptr_release(T * p);
    //!
@@ -5558,9 +5558,9 @@ the pointer type to be stored in the intrusive_ptr:
    template<class T, class VoidPointer>
    class intrusive_ptr;
 
-So `boost::interprocess::intrusive_ptr<MyClass, void*>` is equivalent to 
-`boost::intrusive_ptr<MyClass>`. But if we want to place the intrusive_ptr in 
-shared memory we must specify a relative pointer type like 
+So `boost::interprocess::intrusive_ptr<MyClass, void*>` is equivalent to
+`boost::intrusive_ptr<MyClass>`. But if we want to place the intrusive_ptr in
+shared memory we must specify a relative pointer type like
 `boost::interprocess::intrusive_ptr<MyClass, boost::interprocess::offset_ptr<void> >`
 
 [import ../example/doc_intrusive.cpp]
@@ -5576,19 +5576,19 @@ Also, the `pointer` typedef of the deleter will specify the pointer type stored 
 
 [c++]
 
-   //!scoped_ptr stores a pointer to a dynamically allocated object. 
+   //!scoped_ptr stores a pointer to a dynamically allocated object.
    //!The object pointed to is guaranteed to be deleted, either on destruction
    //!of the scoped_ptr, or via an explicit reset. The user can avoid this
    //!deletion using release().
-   //!scoped_ptr is parameterized on T (the type of the object pointed to) and 
+   //!scoped_ptr is parameterized on T (the type of the object pointed to) and
    //!Deleter (the functor to be executed to delete the internal pointer).
-   //!The internal pointer will be of the same pointer type as typename 
-   //!Deleter::pointer type (that is, if typename Deleter::pointer is 
+   //!The internal pointer will be of the same pointer type as typename
+   //!Deleter::pointer type (that is, if typename Deleter::pointer is
    //!offset_ptr<void>, the internal pointer will be offset_ptr<T>).
    template<class T, class Deleter>
    class scoped_ptr;
-   
-`scoped_ptr<>` comes handy to implement *rollbacks* with exceptions: if an exception 
+
+`scoped_ptr<>` comes handy to implement *rollbacks* with exceptions: if an exception
 is thrown or we call `return` in the scope of `scoped_ptr<>` the deleter is
 automatically called so that *the deleter can be considered as a rollback* function.
 If all goes well, we call `release()` member function to avoid rollback when
@@ -5611,7 +5611,7 @@ cannot take advantage of virtual functions to maintain the same shared pointer
 type while providing user-defined allocators and deleters. The allocator
 and the deleter are template parameters of the shared pointer.
 
-Since the reference count and other auxiliary data needed by 
+Since the reference count and other auxiliary data needed by
 [classref boost::interprocess::shared_ptr shared_ptr] must be created also in
 the managed segment, and the deleter has to delete the object from
 the segment, the user must specify an allocator object and a deleter object
@@ -5682,14 +5682,14 @@ And the creation of a shared pointer can be simplified to this:
 
 [*Boost.Interprocess] also offers a weak pointer named
 [classref boost::interprocess::weak_ptr weak_ptr] (with its corresponding
-[classref boost::interprocess::managed_weak_ptr managed_weak_ptr] and 
+[classref boost::interprocess::managed_weak_ptr managed_weak_ptr] and
 [funcref boost::interprocess::make_managed_weak_ptr make_managed_weak_ptr] utilities)
 to implement non-owning observers of an object owned by
-[classref boost::interprocess::shared_ptr shared_ptr]. 
+[classref boost::interprocess::shared_ptr shared_ptr].
 
 Now let's see a detailed example of the use of
 [classref boost::interprocess::shared_ptr shared_ptr]:
-and 
+and
 [classref boost::interprocess::weak_ptr weak_ptr]
 
 [import ../example/doc_shared_ptr.cpp]
@@ -5775,7 +5775,7 @@ summarized by these points:
    and named synchronization mechanisms. Process persistence for shared memory is also
    desirable but it's difficult to achieve in UNIX systems.
 
-*  [*Boost.Interprocess] inter-process synchronization primitives should be equal to thread 
+*  [*Boost.Interprocess] inter-process synchronization primitives should be equal to thread
    synchronization primitives. [*Boost.Interprocess] aims to have an interface compatible
    with the C++ standard thread API.
 
@@ -5803,8 +5803,8 @@ summarized by these points:
 
 [section:architecture_memory_algorithm The memory algorithm]
 
-The [*memory algorithm] is an object that is placed in the first bytes of a 
-shared memory/memory mapped file segment. The [*memory algorithm] can return 
+The [*memory algorithm] is an object that is placed in the first bytes of a
+shared memory/memory mapped file segment. The [*memory algorithm] can return
 portions of that segment to users marking them as used and the user can return those
 portions to the [*memory algorithm] so that the [*memory algorithm] mark them as free
 again. There is an exception though: some bytes beyond the end of the memory
@@ -5819,22 +5819,22 @@ where it is placed. The layout of a memory segment would be:
 [c++]
 
    Layout of the memory segment:
-    ____________ __________ ____________________________________________  
-   |            |          |                                            | 
-   |   memory   | reserved |  The memory algorithm will return portions | 
-   | algorithm  |          |  of the rest of the segment.               | 
-   |____________|__________|____________________________________________| 
+    ____________ __________ ____________________________________________
+   |            |          |                                            |
+   |   memory   | reserved |  The memory algorithm will return portions |
+   | algorithm  |          |  of the rest of the segment.               |
+   |____________|__________|____________________________________________|
 
 
 The [*memory algorithm] takes care of memory synchronizations, just like malloc/free
 guarantees that two threads can call malloc/free at the same time. This is usually
 achieved placing a process-shared mutex as a member of the memory algorithm. Take
 in care that the memory algorithm knows [*nothing] about the segment (if it is
-shared memory, a shared memory file, etc.). For the memory algorithm the segment 
+shared memory, a shared memory file, etc.). For the memory algorithm the segment
 is just a fixed size memory buffer.
 
 The [*memory algorithm] is also a configuration point for the rest of the
-[*Boost.Interprocess] 
+[*Boost.Interprocess]
 framework since it defines two basic types as member typedefs:
 
 [c++]
@@ -5850,8 +5850,8 @@ addresses, this pointer type will be defined as `offset_ptr<void>` or a similar 
 pointer. If the [*memory algorithm] will be used just with fixed address mapping,
 `void_pointer` can be defined as `void*`.
 
-The rest of the interface of a [*Boost.Interprocess] [*memory algorithm] is described in 
-[link interprocess.customizing_interprocess.custom_interprocess_alloc Writing a new shared memory allocation algorithm] 
+The rest of the interface of a [*Boost.Interprocess] [*memory algorithm] is described in
+[link interprocess.customizing_interprocess.custom_interprocess_alloc Writing a new shared memory allocation algorithm]
 section. As memory algorithm examples, you can see the implementations
 [classref boost::interprocess::simple_seq_fit  simple_seq_fit] or
 [classref boost::interprocess::rbtree_best_fit rbtree_best_fit] classes.
@@ -5873,7 +5873,7 @@ truth is that the memory algorithm is [*embedded] in the segment manager:
    The layout of managed memory segment:
     _______ _________________
    |       |         |       |
-   | some  | memory  | other |<- The memory algorithm considers 
+   | some  | memory  | other |<- The memory algorithm considers
    |members|algorithm|members|   "other members" as reserved memory, so
    |_______|_________|_______|   it does not use it for dynamic allocation.
    |_________________________|____________________________________________
@@ -5883,33 +5883,33 @@ truth is that the memory algorithm is [*embedded] in the segment manager:
    |_________________________|____________________________________________|
 
 
-The [*segment manager] initializes the memory algorithm and tells the memory 
-manager that it should not use the memory where the rest of the 
-[*segment manager]'s member are placed for dynamic allocations. The 
+The [*segment manager] initializes the memory algorithm and tells the memory
+manager that it should not use the memory where the rest of the
+[*segment manager]'s member are placed for dynamic allocations. The
 other members of the [*segment manager] are [*a recursive mutex]
 (defined by the memory algorithm's [*mutex_family::recursive_mutex] typedef member),
 and [*two indexes (maps)]: one to implement named allocations, and another one to
-implement "unique instance" allocations. 
+implement "unique instance" allocations.
 
-*  The first index is a map with a pointer to a c-string (the name of the named object) 
+*  The first index is a map with a pointer to a c-string (the name of the named object)
    as a key and a structure with information of the dynamically allocated object
-   (the most important being the address and the size of the object). 
+   (the most important being the address and the size of the object).
 
-*  The second index is used to implement "unique instances" 
-   and is basically the same as the first index, 
+*  The second index is used to implement "unique instances"
+   and is basically the same as the first index,
    but the name of the object comes from a `typeid(T).name()` operation.
 
-The memory needed to store [name pointer, object information] pairs in the index is 
+The memory needed to store [name pointer, object information] pairs in the index is
 allocated also via the *memory algorithm*, so we can tell that internal indexes
 are just like ordinary user objects built in the segment. The rest of the memory
-to store the name of the object, the object itself, and meta-data for 
+to store the name of the object, the object itself, and meta-data for
 destruction/deallocation is allocated using the *memory algorithm* in a single
 `allocate()` call.
 
-As seen, the [*segment manager] knows [*nothing] about shared memory/memory mapped files. 
-The [*segment manager] itself does not allocate portions of the segment, 
-it just asks the *memory algorithm* to allocate the needed memory from the rest 
-of the segment. The [*segment manager] is a class built above the memory algorithm 
+As seen, the [*segment manager] knows [*nothing] about shared memory/memory mapped files.
+The [*segment manager] itself does not allocate portions of the segment,
+it just asks the *memory algorithm* to allocate the needed memory from the rest
+of the segment. The [*segment manager] is a class built above the memory algorithm
 that offers named object construction, unique instance constructions, and many
 other services.
 
@@ -5918,14 +5918,14 @@ the [classref boost::interprocess::segment_manager segment_manager] class.
 
 [c++]
 
-   template<class CharType 
+   template<class CharType
            ,class MemoryAlgorithm
            ,template<class IndexConfig> class IndexType>
    class segment_manager;
 
 As seen, the segment manager is quite generic: we can specify the character type
 to be used to identify named objects, we can specify the memory algorithm that will
-control dynamically the portions of the memory segment, and we can specify 
+control dynamically the portions of the memory segment, and we can specify
 also the index type that will store the [name pointer, object information] mapping.
 We can construct our own index types as explained in
 [link interprocess.customizing_interprocess.custom_indexes Building custom indexes] section.
@@ -5937,11 +5937,11 @@ We can construct our own index types as explained in
 The [*Boost.Interprocess] managed memory segments that construct the shared memory/memory
 mapped file, place there the segment manager and forward the user requests to the
 segment manager. For example, [classref boost::interprocess::basic_managed_shared_memory basic_managed_shared_memory]
-is a [*Boost.Interprocess] managed memory segment that works with shared memory. 
+is a [*Boost.Interprocess] managed memory segment that works with shared memory.
 [classref boost::interprocess::basic_managed_mapped_file basic_managed_mapped_file] works with memory mapped files, etc...
 
 Basically, the interface of a [*Boost.Interprocess] managed memory segment is the same as
-the [*segment manager] but it also offers functions to "open", "create", or "open or create" 
+the [*segment manager] but it also offers functions to "open", "create", or "open or create"
 shared memory/memory-mapped files segments and initialize all needed resources.
 Managed memory segment classes are not built in shared memory or memory mapped files, they
 are normal C++ classes that store a pointer to the segment manager (which is built
@@ -5952,11 +5952,11 @@ offers functions to flush memory contents to the file, `managed_heap_memory` off
 functions to expand the memory, etc...
 
 Most of the functions of [*Boost.Interprocess] managed memory segments can be shared
-between all managed memory segments, since many times they just forward the functions 
+between all managed memory segments, since many times they just forward the functions
 to the segment manager. Because of this,
 in [*Boost.Interprocess] all managed memory segments derive from a common class that
 implements memory-independent (shared memory, memory mapped files) functions:
-[@../../boost/interprocess/detail/managed_memory_impl.hpp 
+[@../../boost/interprocess/detail/managed_memory_impl.hpp
 boost::interprocess::ipcdetail::basic_managed_memory_impl]
 
 Deriving from this class, [*Boost.Interprocess] implements several managed memory
@@ -6071,8 +6071,8 @@ private_adaptive_node_pool and adaptive_node_pool] classes.
 [*Boost.Interprocess] containers are standard conforming counterparts of STL containers
 in `boost::interprocess` namespace, but with these little details:
 
-*  [*Boost.Interprocess] STL containers don't assume that memory allocated with 
-   an allocator can be deallocated with other allocator of 
+*  [*Boost.Interprocess] STL containers don't assume that memory allocated with
+   an allocator can be deallocated with other allocator of
    the same type. They always compare allocators with `operator==()`
    to know if this is possible.
 
@@ -6094,10 +6094,10 @@ so that you can optimize [*Boost.Interprocess] usage if you need more performanc
 You can have two types of raw memory allocations with [*Boost.Interprocess] classes:
 
 *  [*Explicit]: The user calls `allocate()` and  `deallocate()` functions of
-   managed_shared_memory/managed_mapped_file... managed memory segments. This call is 
-   translated to a `MemoryAlgorithm::allocate()` function, which means that you 
+   managed_shared_memory/managed_mapped_file... managed memory segments. This call is
+   translated to a `MemoryAlgorithm::allocate()` function, which means that you
    will need just the time that the memory algorithm associated with the managed memory segment
-   needs to allocate data. 
+   needs to allocate data.
 
 *  [*Implicit]: For example, you are using `boost::interprocess::allocator<...>` with
    [*Boost.Interprocess] containers. This allocator calls the same `MemoryAlgorithm::allocate()`
@@ -6114,7 +6114,7 @@ these alternatives:
    of these containers when you know beforehand how much data you will insert.
    However in these containers iterators are invalidated in insertions so this
    substitution is only effective in some applications.
-  
+
 *  Use a [*Boost.Interprocess] pooled allocator for node containers, because pooled
    allocators call `allocate()` only when the pool runs out of nodes. This is pretty
    efficient (much more than the current default general-purpose algorithm) and this
@@ -6187,7 +6187,7 @@ The steps when destroying a named object using the pointer of the object
    *  If it's not an node index: Take the name stored near the object and erase
       the index entry calling `erase(const key &). This can require element reordering
       if the index is a balanced tree, an ordered vector...
-      
+
 *  Call the destructor of the object (many if it's an array).
 
 *  Deallocate the memory buffer containing the name, metadata and the object itself
@@ -6221,8 +6221,8 @@ If you see that the performance is not good enough you have these alternatives:
 
 [section:custom_interprocess_alloc Writing a new shared memory allocation algorithm]
 
-If the default algorithm does not satisfy user requirements, 
-it's easy to provide different algorithms like bitmapping or 
+If the default algorithm does not satisfy user requirements,
+it's easy to provide different algorithms like bitmapping or
 more advanced segregated lists to meet requirements. The class implementing
 the algorithm must be compatible with shared memory, so it shouldn't have any
 virtual function or virtual inheritance or
@@ -6242,7 +6242,7 @@ This is the interface to be implemented:
       //!The pointer type to be used by the rest of Interprocess framework
       typedef implementation_defined   void_pointer;
 
-      //!Constructor. "size" is the total size of the managed memory segment, 
+      //!Constructor. "size" is the total size of the managed memory segment,
       //!"extra_hdr_bytes" indicates the extra bytes after the sizeof(my_algorithm)
       //!that the allocator should not use at all.
       my_algorithm (std::size_t size, std::size_t extra_hdr_bytes);
@@ -6261,7 +6261,7 @@ This is the interface to be implemented:
 
       //!Increases managed memory in extra_size bytes more
       void grow(std::size_t extra_size);
-      /*...*/  
+      /*...*/
    };
 
 Let's see the public typedefs to define:
@@ -6271,7 +6271,7 @@ Let's see the public typedefs to define:
    typedef /* . . . */ void_pointer;
    typedef /* . . . */ mutex_family;
 
-The `void_pointer` typedef specifies the pointer type to be used in 
+The `void_pointer` typedef specifies the pointer type to be used in
 the [*Boost.Interprocess] framework that uses the algorithm. For example, if we define
 
 [c++]
@@ -6287,8 +6287,8 @@ But if we define:
 
 then all [*Boost.Interprocess] framework will use relative pointers.
 
-The `mutex_family` is a structure containing typedefs 
-for different interprocess_mutex types to be used in the [*Boost.Interprocess] 
+The `mutex_family` is a structure containing typedefs
+for different interprocess_mutex types to be used in the [*Boost.Interprocess]
 framework. For example the defined
 
 [c++]
@@ -6309,11 +6309,11 @@ The user can specify the desired mutex family.
 The new algorithm (let's call it *my_algorithm*) must implement all the functions
 that boost::interprocess::rbtree_best_fit class offers:
 
-*  [*my_algorithm]'s constructor must take 2 arguments: 
+*  [*my_algorithm]'s constructor must take 2 arguments:
    *  [*size] indicates the total size of the managed memory segment, and
-      [*my_algorithm] object will be always constructed a at offset 0 
-      of the memory segment. 
- 
+      [*my_algorithm] object will be always constructed a at offset 0
+      of the memory segment.
+
    *  The [*extra_hdr_bytes] parameter indicates the number of bytes after
       the offset `sizeof(my_algorithm)` that [*my_algorithm] can't use at all. This extra
       bytes will be used to store additional data that should not be overwritten.
@@ -6321,25 +6321,25 @@ that boost::interprocess::rbtree_best_fit class offers:
       manage the [*[XXX + sizeof(my_algorithm) + extra_hdr_bytes, XXX + size)] range of
       the segment.
 
-*  The [*get_min_size()] function should return the minimum space the algorithm 
-   needs to be valid with the passed [*extra_hdr_bytes] parameter. This function will 
+*  The [*get_min_size()] function should return the minimum space the algorithm
+   needs to be valid with the passed [*extra_hdr_bytes] parameter. This function will
    be used to check if the memory segment is big enough to place the algorithm there.
 
-*  The [*allocate()] function must return 0 if there is no more available memory. 
+*  The [*allocate()] function must return 0 if there is no more available memory.
    The memory returned by [*my_algorithm]
    must be aligned to the most restrictive memory alignment of the system, for example,
    to the value returned by *ipcdetail::alignment_of<boost::detail::max_align>::value*.
    This function should be executed with the synchronization capabilities offered
-   by `typename mutex_family::mutex_type` interprocess_mutex. That means, that if we define 
+   by `typename mutex_family::mutex_type` interprocess_mutex. That means, that if we define
    `typedef mutex_family mutex_family;` then this function should offer
    the same synchronization as if it was surrounded by an interprocess_mutex lock/unlock.
    Normally, this is implemented using a member of type `mutex_family::mutex_type`, but
    it could be done using atomic instructions or lock free algorithms.
 
-*  The [*deallocate()] function must make the returned buffer available for new 
+*  The [*deallocate()] function must make the returned buffer available for new
    allocations. This function should offer the same synchronization as `allocate()`.
 
-*  The [*size()] function will return the passed [*size] parameter in the constructor. 
+*  The [*size()] function will return the passed [*size] parameter in the constructor.
    So, [*my_algorithm] should store the size internally.
 
 *  The [*grow()] function will expand the managed memory by [*my_algorithm] in [*extra_size]
@@ -6354,26 +6354,26 @@ That's it. Now we can create new managed shared memory that uses our new algorit
 
    //Managed memory segment to allocate named (c-string) objects
    //using a user-defined memory allocation algorithm
-   basic_managed_shared_memory<char, 
+   basic_managed_shared_memory<char,
                             ,my_algorithm
-                            ,flat_map_index>  
+                            ,flat_map_index>
       my_managed_shared_memory;
 
 [endsect]
 
 [section:custom_allocators Building custom STL compatible allocators for Boost.Interprocess]
 
-If provided STL-like allocators don't satisfy user needs, the user 
-can implement another STL compatible allocator using raw memory allocation 
-and named object construction functions. 
-The user can this way implement more suitable allocation 
-schemes on top of basic shared memory allocation schemes, 
-just like more complex allocators are built on top of 
+If provided STL-like allocators don't satisfy user needs, the user
+can implement another STL compatible allocator using raw memory allocation
+and named object construction functions.
+The user can this way implement more suitable allocation
+schemes on top of basic shared memory allocation schemes,
+just like more complex allocators are built on top of
 new/delete functions.
 
 When using a managed memory segment, [*get_segment_manager()]
 function returns a pointer to the segment manager. With this pointer,
-the raw memory allocation and named object construction functions can be 
+the raw memory allocation and named object construction functions can be
 called directly:
 
 [c++]
@@ -6383,9 +6383,9 @@ called directly:
       (create_only
       ,"/MySharedMemory"   //segment name
       ,65536);             //segment size in bytes
-                  
+
    //Obtain the segment manager
-   managed_shared_memory::segment_manager *segment_mngr 
+   managed_shared_memory::segment_manager *segment_mngr
       = segment.get_segment_manager();
 
    //With the segment manager, now we have access to all allocation functions
@@ -6393,10 +6393,10 @@ called directly:
    segment_mngr->construct<int>("My_Int")[32](0);
    segment_mngr->destroy<int>("My_Int");
 
-   //Initialize the custom, managed memory segment compatible 
+   //Initialize the custom, managed memory segment compatible
    //allocator with the segment manager.
    //
-   //MySTLAllocator uses segment_mngr->xxx functions to 
+   //MySTLAllocator uses segment_mngr->xxx functions to
    //implement its allocation scheme
    MySTLAllocator<int> stl_alloc(segment_mngr);
 
@@ -6408,7 +6408,7 @@ called directly:
 
 The user can create new STL compatible allocators that use the segment manager to access
 to all memory management/object construction functions. All [*Boost.Interprocess]' STL
-compatible allocators are based on this approach. [*Remember] that to be compatible with 
+compatible allocators are based on this approach. [*Remember] that to be compatible with
 managed memory segments, allocators should define their *pointer* typedef as the same
 pointer family as `segment_manager::void_pointer` typedef. This means that if `segment_manager::void_pointer` is
 `offset_ptr<void>`, `MySTLAllocator<int>` should define `pointer` as `offset_ptr<int>`. The
@@ -6420,7 +6420,7 @@ the container in a managed memory segment, the allocator should be ready for tha
 [section:custom_indexes Building custom indexes]
 
 The managed memory segment uses a name/object index to
-speed up object searching and creation. Default specializations of 
+speed up object searching and creation. Default specializations of
 managed memory segments (`managed_shared_memory` for example),
 use `boost::interprocess::flat_map` as index.
 
@@ -6429,22 +6429,22 @@ the user can define its own index type if he needs that. To construct
 a new index type, the user must create a class with the following guidelines:
 
 * The interface of the index must follow the common public interface of std::map
-  and std::tr1::unordered_map including public typedefs. 
+  and std::tr1::unordered_map including public typedefs.
   The `value_type` typedef can be of type:
 
 [c++]
 
-   std::pair<key_type, mapped_type> 
+   std::pair<key_type, mapped_type>
 
-or 
+or
 
 [c++]
 
    std::pair<const key_type, mapped_type>
 
 
-so that ordered arrays or deques can be used as index types. 
-Some known classes following this basic interface are `boost::unordered_map`, 
+so that ordered arrays or deques can be used as index types.
+Some known classes following this basic interface are `boost::unordered_map`,
 `boost::interprocess::flat_map` and `boost::interprocess::map`.
 
 * The class must be a class template taking only a traits struct of this type:
@@ -6465,7 +6465,7 @@ Some known classes following this basic interface are `boost::unordered_map`,
 
 The `key_type` typedef of the passed `index_traits` will be a specialization of the
 following class:
-            
+
 [c++]
 
    //!The key of the named allocation information index. Stores a to
@@ -6492,11 +6492,11 @@ following class:
       bool operator == (const index_key & right) const;
    };
 
-The `mapped_type` is not directly modified by the customized index but it is needed to 
+The `mapped_type` is not directly modified by the customized index but it is needed to
 define the index type. The *segment_manager* will be the type of the segment manager that
-will manage the index. `segment_manager` will define interesting internal types like 
+will manage the index. `segment_manager` will define interesting internal types like
 `void_pointer` or `mutex_family`.
-            
+
 * The constructor of the customized index type must take a pointer to segment_manager
   as constructor argument:
 
@@ -6504,27 +6504,27 @@ will manage the index. `segment_manager` will define interesting internal types 
 
    constructor(segment_manager *segment_mngr);
 
-* The index must provide a memory reservation function, that optimizes the index if the 
+* The index must provide a memory reservation function, that optimizes the index if the
   user knows the number of elements to be inserted in the index:
 
 [c++]
 
    void reserve(std::size_t n);
 
-For example, the index type `flat_map_index` based in `boost::interprocess::flat_map` 
+For example, the index type `flat_map_index` based in `boost::interprocess::flat_map`
 is just defined as:
 
 [import ../../../boost/interprocess/indexes/flat_map_index.hpp]
 [flat_map_index]
 
 
-If the user is defining a node container based index (a container whose iterators 
+If the user is defining a node container based index (a container whose iterators
 are not invalidated when inserting or erasing other elements), [*Boost.Interprocess] can
 optimize named object destruction when destructing via pointer. [*Boost.Interprocess] can
-store an iterator next to the object and instead of using the name of the object to erase 
+store an iterator next to the object and instead of using the name of the object to erase
 the index entry, it uses the iterator, which is a faster operation. So if you are creating
 a new node container based index (for example, a tree), you should define an
-specialization of `boost::interprocess::is_node_index<...>` defined in 
+specialization of `boost::interprocess::is_node_index<...>` defined in
 `<boost/interprocess/detail/utilities.hpp>`:
 
 [c++]
@@ -6551,16 +6551,16 @@ example, a new managed shared memory that uses the new index:
 
 [c++]
 
-   //!Defines a managed shared memory with a c-strings as 
+   //!Defines a managed shared memory with a c-strings as
    //!a keys, the red-black tree best fit algorithm (with process-shared mutexes
    //!and offset_ptr pointers) as raw shared memory management algorithm
    //!and a custom index
-   typedef 
-      basic_managed_shared_memory < 
-                                 char, 
+   typedef
+      basic_managed_shared_memory <
+                                 char,
                                  rbtree_best_fit<mutex_family>,
                                  my_index_type
-                                >  
+                                >
       my_managed_shared_memory;
 
 [endsect]
@@ -6569,6 +6569,26 @@ example, a new managed shared memory that uses the new index:
 
 
 [section:acknowledgements_notes Acknowledgements, notes and links]
+
+[section:notes Notes]
+
+[section:notes_windows Notes for Windows users]
+
+[*Boost.Interprocess] uses the COM library to implement some features and initializes
+the COM library with concurrency model `COINIT_APARTMENTTHREADED`.
+If the COM library was already initialized by the calling thread for other model, [*Boost.Interprocess]
+handles this gracefully and uses COM calls for the already initialized model. If for some reason, you
+might want [*Boost.Interprocess] to initialize the COM library with another model, define the macro
+`BOOST_INTERPROCESS_WINDOWS_COINIT_MODEL` before including [*Boost.Interprocess] to one of these values:
+
+* `COINIT_APARTMENTTHREADED_BIPC`
+* `COINIT_MULTITHREADED_BIPC`
+* `COINIT_DISABLE_OLE1DDE_BIPC`
+* `COINIT_SPEED_OVER_MEMORY_BIPC`
+
+[endsect]
+
+[endsect]
 
 [section:thanks_to Thanks to...]
 
@@ -6580,7 +6600,7 @@ thank them:
 *  Thanks to all people who have shown interest in the library and have downloaded
    and tested the snapshots.
 
-*  Thanks to [*Francis Andre] and [*Anders Hybertz] for their ideas and suggestions. 
+*  Thanks to [*Francis Andre] and [*Anders Hybertz] for their ideas and suggestions.
    Many of them are not implemented yet but I hope to include them when library gets some stability.
 
 *  Thanks to [*Matt Doyle], [*Steve LoBasso], [*Glenn Schrader], [*Hiang Swee Chiang],
@@ -6594,16 +6614,16 @@ thank them:
 
 *  Thanks to [*Synge Todo] for his boostbook-doxygen patch to improve Interprocess documentation.
 
-*  Thanks to [*Olaf Krzikalla] for his Intrusive library. I have taken some ideas to 
+*  Thanks to [*Olaf Krzikalla] for his Intrusive library. I have taken some ideas to
    improve red black tree implementation from his library.
-      
+
 *  Thanks to [*Daniel James] for his unordered_map/set family and his help with allocators.
-   His great unordered implementation has been a reference to design exception safe containers.  
+   His great unordered implementation has been a reference to design exception safe containers.
 
 *  Thanks to [*Howard Hinnant] for his amazing help, specially explaining allocator swapping,
    move semantics and for developing upgradable mutex and lock transfer features.
 
-*  Thanks to [*Pavel Vozenilek] for his continuous review process, suggestions, code and 
+*  Thanks to [*Pavel Vozenilek] for his continuous review process, suggestions, code and
    help. He is the major supporter of Interprocess library. The library has grown with his
    many and great advices.
 
@@ -6614,6 +6634,30 @@ thank them:
 [endsect]
 
 [section:release_notes Release Notes]
+
+[section:release_notes_boost_1_51_00 Boost 1.51 Release]
+
+*  Synchronous and asynchronous flushing for `mapped_region::flush`.
+*  Source & ABI breaking: Removed `get_offset` method from `mapped_region` as
+   it has no practical utility and `m_offset` member was not for anything else.
+*  Fixed bug
+  [@https://svn.boost.org/trac/boost/ticket/7152 #7152],
+
+[endsect]
+
+[section:release_notes_boost_1_50_00 Boost 1.50 Release]
+
+*  Fixed bugs
+  [@https://svn.boost.org/trac/boost/ticket/3750 #3750],
+  [@https://svn.boost.org/trac/boost/ticket/6727 #6727],
+  [@https://svn.boost.org/trac/boost/ticket/6648 #6648],
+
+*  Shared memory in windows has again kernel persistence: kernel bootstamp
+   and WMI has received some fixes and optimizations. This causes incompatibility
+   with Boost 1.48 and 1.49 but the user can comment `#define BOOST_INTERPROCESS_HAS_KERNEL_BOOTTIME`
+   in the windows configuration part to get Boost 1.48 & Boost 1.49 behaviour.
+
+[endsect]
 
 [section:release_notes_boost_1_49_00 Boost 1.49 Release]
 
@@ -6836,7 +6880,7 @@ thank them:
    and might disallow some of them if the returned type does not lead to a covariant return.
    Allocators are now stored as base classes of internal structs.
 
-*  Implemented [classref boost::interprocess::named_mutex named_mutex] and 
+*  Implemented [classref boost::interprocess::named_mutex named_mutex] and
    [classref boost::interprocess::named_semaphore named_semaphore] with POSIX
    named semaphores in systems supporting that option.
    [classref boost::interprocess::named_condition named_condition] has been
@@ -6896,10 +6940,10 @@ thank them:
    pointers.
 
 *  (multi)map/(multi)set now reuse memory from old nodes in the assignment operator.
-   
+
 *  [*ABI breaking]: Implemented node-containers based on intrusive containers.
    This saves code size, since many instantiations share the same algorithms.
-   
+
 *  Corrected code to be compilable with Visual C++ 8.0.
 
 *  Added function to zero free memory in memory algorithms and the segment manager.
@@ -6912,7 +6956,7 @@ thank them:
    allocation, we allocate room for the value, the name and the hook to insert
    the object in the index.
 
-*  Created new index type: [*iset_index]. It's an index based on 
+*  Created new index type: [*iset_index]. It's an index based on
    an intrusive set (rb-tree).
 
 *  Created new index type: [*iunordered_set_index]. It's an index
@@ -6953,7 +6997,7 @@ thank them:
    chunks from node allocators.
 
 *  Implemented N1780 proposal to LWG issue 233: ['Insertion hints in associative containers]
-   in interprocess [classref boost::interprocess::multiset multiset] and 
+   in interprocess [classref boost::interprocess::multiset multiset] and
    [classref boost::interprocess::multimap multimap] classes.
 
 *  [*Source breaking]: A shared memory object is now used including
@@ -6975,7 +7019,7 @@ thank them:
 
 *  [*ABI breaking]: Reimplemented and optimized small string optimization. The narrow
    string class has zero byte overhead with an internal 11 byte buffer in 32 systems!
-   
+
 *  Added move semantics to containers. Improves
    performance when using containers of containers.
 
@@ -7015,7 +7059,7 @@ shared memory, allocators and containers used to design [*Boost.Interprocess].
 
 [section:references_links Links]
 
-* A framework to put the STL in shared memory: [@http://allocator.sourceforge.net/ ['"A C++ Standard Allocator for the Standard Template Library"] ]. 
+* A framework to put the STL in shared memory: [@http://allocator.sourceforge.net/ ['"A C++ Standard Allocator for the Standard Template Library"] ].
 
 * Instantiating C++ objects in shared memory: [@http://www.cs.ubc.ca/local/reading/proceedings/cascon94/htm/english/abs/hon.htm ['"Using objects in shared memory for C++ application"] ].
 
@@ -7037,7 +7081,7 @@ atomic instructions. This leads to poor performance and does not manage any issu
 like priority inversions. We would need very serious help from threading experts on
 this. And I'm not sure that this can be achieved in user-level software. Posix based
 implementations use PTHREAD_PROCESS_SHARED attribute to place mutexes in shared memory,
-so there are no such problems. I'm not aware of any implementation that simulates 
+so there are no such problems. I'm not aware of any implementation that simulates
 PTHREAD_PROCESS_SHARED attribute for Win32. We should be able to construct these
 primitives in memory mapped files, so that we can get filesystem persistence just like
 with POSIX primitives.
@@ -7046,13 +7090,13 @@ with POSIX primitives.
 
 [section:future_objectnames Use of wide character names on Boost.Interprocess basic resources]
 
-Currently Interprocess only allows *char* based names for basic named 
-objects. However, several operating systems use *wchar_t* names for resources 
-(mapped files, for example). 
+Currently Interprocess only allows *char* based names for basic named
+objects. However, several operating systems use *wchar_t* names for resources
+(mapped files, for example).
 In the future Interprocess should try to present a portable narrow/wide char interface.
-To do this, it would be useful to have a boost wstring <-> string conversion 
+To do this, it would be useful to have a boost wstring <-> string conversion
 utilities to translate resource names (escaping needed characters
-that can conflict with OS names) in a portable way. It would be interesting also 
+that can conflict with OS names) in a portable way. It would be interesting also
 the use of [*boost::filesystem] paths to avoid operating system specific issues.
 
 [endsect]
@@ -7073,9 +7117,9 @@ develop more mechanisms, like stream-oriented named fifo so that we can use it
 with a iostream-interface wrapper (we can imitate Unix pipes).
 
 C++ needs more complex mechanisms and it would be nice to have a stream and
-datagram oriented PF_UNIX-like mechanism in C++. And for very fast inter-process 
+datagram oriented PF_UNIX-like mechanism in C++. And for very fast inter-process
 remote calls Solaris doors is an interesting alternative to implement for C++.
-But the work to implement PF_UNIX-like sockets and doors would be huge 
+But the work to implement PF_UNIX-like sockets and doors would be huge
 (and it might be difficult in a user-level library). Any network expert volunteer?
 
 [endsect]

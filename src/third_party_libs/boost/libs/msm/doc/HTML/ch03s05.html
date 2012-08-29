@@ -1,6 +1,6 @@
 <html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-   <title>Back-end</title><link rel="stylesheet" href="boostbook.css" type="text/css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.75.2"><link rel="home" href="index.html" title="Meta State Machine (MSM)"><link rel="up" href="ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial"><link rel="prev" href="ch03s04.html" title="eUML (experimental)"><link rel="next" href="ch04.html" title="Chapter&nbsp;4.&nbsp; Performance / Compilers"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Back-end</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch03s04.html">Prev</a>&nbsp;</td><th width="60%" align="center">Chapter&nbsp;3.&nbsp;Tutorial</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch04.html">Next</a></td></tr></table><hr></div><div class="sect1" title="Back-end"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2213"></a>Back-end</h2></div></div></div><p>There is, at the moment, one back-end. This back-end contains the library
+   <title>Back-end</title><meta name="generator" content="DocBook XSL-NS Stylesheets V1.75.2"><link rel="home" href="index.html" title="Meta State Machine (MSM)"><link rel="up" href="ch03.html" title="Chapter&nbsp;3.&nbsp;Tutorial"><link rel="prev" href="ch03s04.html" title="eUML (experimental)"><link rel="next" href="ch04.html" title="Chapter&nbsp;4.&nbsp; Performance / Compilers"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Back-end</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch03s04.html">Prev</a>&nbsp;</td><th width="60%" align="center">Chapter&nbsp;3.&nbsp;Tutorial</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="ch04.html">Next</a></td></tr></table><hr></div><div class="sect1" title="Back-end"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e2290"></a>Back-end</h2></div></div></div><p>There is, at the moment, one back-end. This back-end contains the library
                     engine and defines the performance and functionality trade-offs. The currently
                     available back-end implements most of the functionality defined by the UML 2.0
                     standard at very high runtime speed, in exchange for longer compile-time. The
@@ -8,11 +8,11 @@
                     capabilities allowing the framework to adapt itself to the features used by a
                     given concrete state machine. All unneeded features either disable themselves or
                     can be manually disabled. See section 5.1 for a complete description of the
-                    run-to-completion algorithm.</p><div class="sect2" title="Creation"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2218"></a>Creation </h3></div></div></div><p>MSM being divided between front and back-end, one needs to first define a
+                    run-to-completion algorithm.</p><div class="sect2" title="Creation"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2295"></a>Creation </h3></div></div></div><p>MSM being divided between front and back-end, one needs to first define a
                         front-end. Then, to create a real state machine, the back-end must be
                         declared:
                         </p><pre class="programlisting">typedef msm::back::state_machine&lt;my_front_end&gt; my_fsm;</pre><p>We now have a fully functional state machine type. The next sections will
-                        describe what can be done with it.</p></div><div class="sect2" title="Starting and stopping a state machine"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2227"></a><span class="command"><strong><a name="backend-start"></a></strong></span>Starting and stopping a state
+                        describe what can be done with it.</p></div><div class="sect2" title="Starting and stopping a state machine"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2304"></a><span class="command"><strong><a name="backend-start"></a></strong></span>Starting and stopping a state
                         machine</h3></div></div></div><p>The <code class="code">start()</code> method starts the state machine, meaning it will
                         activate the initial state, which means in turn that the initial state's
                         entry behavior will be called. We need the start method because you do not
@@ -23,7 +23,7 @@
                         the algorithm run once. The <a class="link" href="examples/iPodSearch.cpp" target="_top">iPodSearch</a> example uses this possibility.</p><p>The <code class="code">stop()</code> method works the same way. It will cause the exit
                         actions of the currently active states(s) to be called.</p><p>Both methods are actually not an absolute need. Not calling them will
                         simply cause your first entry or your last exit action not to be
-                        called.</p></div><div class="sect2" title="Event dispatching"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2246"></a>Event dispatching</h3></div></div></div><p>The main reason to exist for a state machine is to dispatch events. For
+                        called.</p></div><div class="sect2" title="Event dispatching"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2323"></a>Event dispatching</h3></div></div></div><p>The main reason to exist for a state machine is to dispatch events. For
                         MSM, events are objects of a given event type. The object itself can contain
                         data, but the event type is what decides of the transition to be taken. For
                         MSM, if some_event is a given type (a simple struct for example) and e1 and
@@ -34,14 +34,14 @@
                         an event of type some_event, you can simply create one on the fly or
                         instantiate if before processing: </p><pre class="programlisting">my_fsm fsm; fsm.process_event(some_event());
 some_event e1; fsm.process_event(e1)</pre><p>Creating an event on the fly will be optimized by the compiler so the
-                        performance will not degrade.</p></div><div class="sect2" title="Active state(s)"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2255"></a>Active state(s)</h3></div></div></div><p>The backend also offers a way to know which state is active, though you
+                        performance will not degrade.</p></div><div class="sect2" title="Active state(s)"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2332"></a>Active state(s)</h3></div></div></div><p>The backend also offers a way to know which state is active, though you
                         will normally only need this for debugging purposes. If what you need simply
                         is doing something with the active state, <span class="command"><strong><a class="command" href="ch02s02.html#UML-internal-transition">internal transitions</a></strong></span> or
                             <span class="command"><strong><a class="command" href="ch03s05.html#backend-visitor">visitors</a></strong></span> are a better
                         alternative. If you need to know what state is active, const int*
                         current_state() will return an array of state ids. Please refer to the
                             <span class="command"><strong><a class="command" href="ch06s03.html#internals-state-id">internals section</a></strong></span> to
-                        know how state ids are generated.</p></div><div class="sect2" title="Serialization"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2269"></a><span class="command"><strong><a name="back-end-serialization"></a></strong></span>Serialization</h3></div></div></div><p>A common need is the ability to save a state machine and restore it at a
+                        know how state ids are generated.</p></div><div class="sect2" title="Serialization"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2346"></a><span class="command"><strong><a name="back-end-serialization"></a></strong></span>Serialization</h3></div></div></div><p>A common need is the ability to save a state machine and restore it at a
                         different time. MSM supports this feature for the basic and functor
                         front-ends, and in a more limited manner for eUML. MSM supports
                         boost::serialization out of the box (by offering a <code class="code">serialize</code>
@@ -110,7 +110,7 @@ std::ofstream ofs("fsm.txt");
                         serializing must be done in a stable state, when no event is being
                         processed. You can serialize during event processing only if using no queue
                         (deferred or event queue).</p><p>This <a class="link" href="examples/Serialize.cpp" target="_top">example</a> shows a state machine which we serialize after processing an
-                        event. The <code class="code">Empty</code> state also has some data to serialize.</p></div><div class="sect2" title="Base state type"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2322"></a><span class="command"><strong><a name="backend-base-state"></a></strong></span>Base state type </h3></div></div></div><p>Sometimes, one needs to customize states to avoid repetition and provide a
+                        event. The <code class="code">Empty</code> state also has some data to serialize.</p></div><div class="sect2" title="Base state type"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2399"></a><span class="command"><strong><a name="backend-base-state"></a></strong></span>Base state type </h3></div></div></div><p>Sometimes, one needs to customize states to avoid repetition and provide a
                         common functionality, for example in the form of a virtual method. You might
                         also want to make your states polymorphic so that you can call typeid on
                         them for logging or debugging. It is also useful if you need a visitor, like
@@ -133,7 +133,7 @@ std::ofstream ofs("fsm.txt");
                                     </p><pre class="programlisting">struct player_ : public msm::front::state_machine&lt;player_,my_base_state&gt;             </pre></li></ul></div><p>You can also ask for a state with a given id (which you might have gotten
                         from current_state()) using <code class="code">const base_state* get_state_by_id(int id)
                             const</code> where base_state is the one you just defined. You can now
-                        do something polymorphically.</p></div><div class="sect2" title="Visitor"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2348"></a><span class="command"><strong><a name="backend-visitor"></a></strong></span>Visitor</h3></div></div></div><p>In some cases, having a pointer-to-base of the currently active states is
+                        do something polymorphically.</p></div><div class="sect2" title="Visitor"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2425"></a><span class="command"><strong><a name="backend-visitor"></a></strong></span>Visitor</h3></div></div></div><p>In some cases, having a pointer-to-base of the currently active states is
                         not enough. You might want to call non-virtually a method of the currently
                         active states. It will not be said that MSM forces the virtual keyword down
                         your throat!</p><p>To achieve this goal, MSM provides its own variation of a visitor pattern
@@ -172,18 +172,18 @@ struct my_visitable_state
                         the accept function is to contain a parameter passed by reference, pass this
                         parameter with a boost:ref/cref to avoid undesired copies or slicing. So,
                         for example, in the above case, call:</p><pre class="programlisting">SomeVisitor vis; sm.visit_current_states(boost::ref(vis));</pre><p>This <a class="link" href="examples/SM-2Arg.cpp" target="_top">example</a> uses a
-                        visiting function with 2 arguments.</p></div><div class="sect2" title="Flags"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2391"></a>Flags</h3></div></div></div><p>Flags is a MSM-only concept, supported by all front-ends, which base
+                        visiting function with 2 arguments.</p></div><div class="sect2" title="Flags"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2468"></a>Flags</h3></div></div></div><p>Flags is a MSM-only concept, supported by all front-ends, which base
                         themselves on the functions: </p><pre class="programlisting">template &lt;class Flag&gt; bool is_flag_active()
 template &lt;class Flag,class BinaryOp&gt; bool is_flag_active()</pre><p>These functions return true if the currently active state(s) support the
                         Flag property. The first variant ORs the result if there are several
                         orthogonal regions, the second one expects OR or AND, for example:</p><pre class="programlisting">my_fsm.is_flag_active&lt;MyFlag&gt;()
-my_fsm.is_flag_active&lt;MyFlag,my_fsm_type::Flag_OR&gt;()</pre><p>Please refer to the front-ends sections for usage examples.</p></div><div class="sect2" title="Getting a state"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2404"></a>Getting a state</h3></div></div></div><p>It is sometimes necessary to have the client code get access to the
+my_fsm.is_flag_active&lt;MyFlag,my_fsm_type::Flag_OR&gt;()</pre><p>Please refer to the front-ends sections for usage examples.</p></div><div class="sect2" title="Getting a state"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2481"></a>Getting a state</h3></div></div></div><p>It is sometimes necessary to have the client code get access to the
                         states' data. After all, the states are created once for good and hang
                         around as long as the state machine does so why not use it? You simply just
                         need sometimes to get information about any state, even inactive ones. An
                         example is if you want to write a coverage tool and know how many times a
                         state was visited. To get a state, use the get_state method giving the state
-                        name, for example: </p><pre class="programlisting">player::Stopped* tempstate = p.get_state&lt;player::Stopped*&gt;();</pre><p> or </p><pre class="programlisting">player::Stopped&amp; tempstate2 = p.get_state&lt;player::Stopped&amp;&gt;();</pre><p>depending on your personal taste. </p></div><div class="sect2" title="State machine constructor with arguments"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2417"></a><span class="command"><strong><a name="backend-fsm-constructor-args"></a></strong></span> State machine constructor with arguments </h3></div></div></div><p>You might want to define a state machine with a non-default constructor.
+                        name, for example: </p><pre class="programlisting">player::Stopped* tempstate = p.get_state&lt;player::Stopped*&gt;();</pre><p> or </p><pre class="programlisting">player::Stopped&amp; tempstate2 = p.get_state&lt;player::Stopped&amp;&gt;();</pre><p>depending on your personal taste. </p></div><div class="sect2" title="State machine constructor with arguments"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2494"></a><span class="command"><strong><a name="backend-fsm-constructor-args"></a></strong></span> State machine constructor with arguments </h3></div></div></div><p>You might want to define a state machine with a non-default constructor.
                         For example, you might want to write: </p><pre class="programlisting">struct player_ : public msm::front::state_machine_def&lt;player_&gt; 
 { 
     player_(int some_value){&#8230;} 
@@ -209,7 +209,7 @@ player p(boost::ref(data),3);
                         where some data is passed:</p><pre class="programlisting">player p( back::states_ &lt;&lt; Playing(back::states_ &lt;&lt; Song1(some_Song1_data)) , 
           boost::ref(data),3);</pre><p>It is also possible to replace a given state by a new instance at any time
                         using <code class="code">set_states()</code> and the same syntax, for example:
-                        </p><pre class="programlisting">p.set_states( back::states_ &lt;&lt; state_1 &lt;&lt; ... &lt;&lt; state_n );</pre><p>An <a class="link" href="examples/Constructor.cpp" target="_top">example</a> making intensive use of this capability is provided.</p></div><div class="sect2" title="Trading run-time speed for better compile-time / multi-TU compilation"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2457"></a><span class="command"><strong><a name="backend-tradeof-rt-ct"></a></strong></span>Trading run-time speed for
+                        </p><pre class="programlisting">p.set_states( back::states_ &lt;&lt; state_1 &lt;&lt; ... &lt;&lt; state_n );</pre><p>An <a class="link" href="examples/Constructor.cpp" target="_top">example</a> making intensive use of this capability is provided.</p></div><div class="sect2" title="Trading run-time speed for better compile-time / multi-TU compilation"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2534"></a><span class="command"><strong><a name="backend-tradeof-rt-ct"></a></strong></span>Trading run-time speed for
                         better compile-time / multi-TU compilation</h3></div></div></div><p>MSM is optimized for run-time speed at the cost of longer compile-time.
                         This can become a problem with older compilers and big state machines,
                         especially if you don't really care about run-time speed that much and would
@@ -240,7 +240,7 @@ BOOST_MSM_BACK_GENERATE_PROCESS_EVENT(mysubmachine)</pre></li><li class="listite
                                         cpp for MenuMode</a></p></li><li class="listitem"><p><a class="link" href="examples/iPod_distributed/Events.hpp" target="_top">events
                                         move to a separate header as all machines use
                                     it</a></p></li></ul></div><p>
-                    </p></div><div class="sect2" title="Compile-time state machine analysis"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2539"></a><span class="command"><strong><a name="backend-compile-time-analysis"></a></strong></span>Compile-time state machine analysis </h3></div></div></div><p>A MSM state machine being a metaprogram, it is only logical that cheking
+                    </p></div><div class="sect2" title="Compile-time state machine analysis"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2616"></a><span class="command"><strong><a name="backend-compile-time-analysis"></a></strong></span>Compile-time state machine analysis </h3></div></div></div><p>A MSM state machine being a metaprogram, it is only logical that cheking
                         for the validity of a concrete state machine happens compile-time. To this
                         aim, using the compile-time graph library <a class="link" href="http://www.dynagraph.org/mpl_graph/" target="_top">mpl_graph</a> (delivered at the moment
                         with MSM) from Gordon Woodhull, MSM provides several compile-time checks:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>Check that orthogonal regions ar truly orthogonal.</p></li><li class="listitem"><p>Check that all states are either reachable from the initial
@@ -254,12 +254,12 @@ BOOST_MSM_BACK_GENERATE_PROCESS_EVENT(mysubmachine)</pre></li><li class="listite
                         versions of MSM.</p><p>The same algorithm is also used in case you want to omit providing the
                         region index in the <span class="command"><strong><a class="command" href="ch03s02.html#explicit-entry-no-region-id">explicit entry / pseudo entry state</a></strong></span> declaration.</p><p>The author's advice is to enable the checks after any state machine
                         structure change and disable it again after sucessful analysis.</p><p>The <a class="link" href="examples/TestErrorOrthogonality.cpp" target="_top">following example</a> provokes an assertion if one of the first two lines
-                        of the transition table is used.</p></div><div class="sect2" title="Enqueueing events for later processing"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2583"></a><span class="command"><strong><a name="backend-enqueueing"></a></strong></span> Enqueueing events for later
+                        of the transition table is used.</p></div><div class="sect2" title="Enqueueing events for later processing"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2660"></a><span class="command"><strong><a name="backend-enqueueing"></a></strong></span> Enqueueing events for later
                         processing </h3></div></div></div><p>Calling <code class="code">process_event(Event const&amp;)</code> will immediately
                         process the event with run-to-completion semantics. You can also enqueue the
                         events and delay their processing by calling <code class="code">enqueue_event(Event
                             const&amp;)</code> instead. Calling <code class="code">execute_queued_events()</code> will then
-                        process all enqueued events (in FIFO order).</p><p>You can query the queue size by calling <code class="code">get_message_queue_size()</code>.</p></div><div class="sect2" title="Customizing the message queues"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2603"></a><span class="command"><strong><a name="backend-queues"></a></strong></span> Customizing the message queues </h3></div></div></div><p>MSM uses by default a std::deque for its queues (one message queue for
+                        process all enqueued events (in FIFO order).</p><p>You can query the queue size by calling <code class="code">get_message_queue_size()</code>.</p></div><div class="sect2" title="Customizing the message queues"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2680"></a><span class="command"><strong><a name="backend-queues"></a></strong></span> Customizing the message queues </h3></div></div></div><p>MSM uses by default a std::deque for its queues (one message queue for
                         events generated during run-to-completion or with
                         <code class="code">enqueue_event</code>, one for deferred events). Unfortunately, on some
                         STL implementations, it is a very expensive container in size and copying
@@ -270,14 +270,14 @@ BOOST_MSM_BACK_GENERATE_PROCESS_EVENT(mysubmachine)</pre></li><li class="listite
                         Boost::circular_buffer is outside of the scope of this documentation. What
                         you will however need to define is the queue capacity (initially is 0) to
                         what you think your queue will at most grow, for example (size 1 is
-                        common):</p><pre class="programlisting"> fsm.get_message_queue().set_capacity(1);           </pre></div><div class="sect2" title="Policy definition with Boost.Parameter"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2618"></a><span class="command"><strong><a name="backend-boost-parameter"></a></strong></span>Policy definition with Boost.Parameter </h3></div></div></div><p>MSM uses Boost.Parameter to allow easier definition of
+                        common):</p><pre class="programlisting"> fsm.get_message_queue().set_capacity(1);           </pre></div><div class="sect2" title="Policy definition with Boost.Parameter"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2695"></a><span class="command"><strong><a name="backend-boost-parameter"></a></strong></span>Policy definition with Boost.Parameter </h3></div></div></div><p>MSM uses Boost.Parameter to allow easier definition of
                         back::state_machine&lt;&gt; policy arguments (all except the front-end). This
                         allows you to define policy arguments (history, compile-time / run-time,
                         state machine analysis, container for the queues) at any position, in any
                         number. For example: </p><pre class="programlisting"> typedef msm::back::state_machine&lt; player_,msm::back::mpl_graph_fsm_check&gt; player;  
  typedef msm::back::state_machine&lt; player_,msm::back::AlwaysHistory&gt; player;  
  typedef msm::back::state_machine&lt; player_,msm::back::mpl_graph_fsm_check,msm::back::AlwaysHistory&gt; player; 
- typedef msm::back::state_machine&lt; player_,msm::back::AlwaysHistory,msm::back::mpl_graph_fsm_check&gt; player;      </pre></div><div class="sect2" title="Choosing when to switch active states"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2626"></a><span class="command"><strong><a name="backend-state-switch"></a></strong></span>Choosing when to switch active
+ typedef msm::back::state_machine&lt; player_,msm::back::AlwaysHistory,msm::back::mpl_graph_fsm_check&gt; player;      </pre></div><div class="sect2" title="Choosing when to switch active states"><div class="titlepage"><div><div><h3 class="title"><a name="d0e2703"></a><span class="command"><strong><a name="backend-state-switch"></a></strong></span>Choosing when to switch active
                         states </h3></div></div></div><p>The UML Standard is silent about a very important question: when a
                         transition fires, at which exact point is the target state the new active
                         state of a state machine? At the end of the transition? After the source

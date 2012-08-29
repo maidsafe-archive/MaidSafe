@@ -96,10 +96,10 @@ template &lt;class F, class Policies, class Keywords, class Signature&gt;
       to <code>f</code>. <ul>
 <li>        If <code>policies</code> are supplied, it
       will be applied to the function as described <a href=
-      "CallPolicies.html">here</a>. 
+      "CallPolicies.html">here</a>.
 <li>If <code>keywords</code> are
       supplied, the keywords will be applied in order to the final
-      arguments of the resulting function.  
+      arguments of the resulting function.
 <li>If <code>Signature</code>
       is supplied, it should be an instance of an <a
       href="../../../mpl/doc/refmanual/front-extensible-sequence.html">MPL front-extensible
@@ -125,36 +125,33 @@ template &lt;class F, class Policies, class Keywords, class Signature&gt;
     </dl>
 
 <pre>
-<a name=
-"make_constructor-spec"></a>template &lt;class T, class ArgList, class Generator&gt;
-<a href="object.html#object-spec">object</a> make_constructor();
- 
-template &lt;class ArgList, class Generator, class Policies&gt;
+<a name="make_constructor-spec">template &lt;class F&gt;</a>
+<a href="object.html#object-spec">object</a> make_constructor(F f)
+
+template &lt;class F, class Policies&gt;
 <a href=
-"object.html#object-spec">object</a> make_constructor(Policies const&amp; policies)
+"object.html#object-spec">object</a> make_constructor(F f, Policies const&amp; policies)
+
+template &lt;class F, class Policies, class KeywordsOrSignature&gt;
+<a href=
+"object.html#object-spec">object</a> make_constructor(F f, Policies const&amp; policies, KeywordsOrSignature const&amp; ks)
+
+template &lt;class F, class Policies, class Keywords, class Signature&gt;
+<a href=
+"object.html#object-spec">object</a> make_constructor(F f, Policies const&amp; policies, Keywords const&amp; kw, Signature const&amp; sig)
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Requires:</b> <code>T</code> is a class type.
-      <code>Policies</code> is a model of <a href=
-      "CallPolicies.html">CallPolicies</a>. <code>ArgList</code> is an <a
-      href="../../../mpl/doc/refmanual/forward-sequence.html">MPL sequence</a> of C++ argument
-      types (<i>A1,&nbsp;A2,...&nbsp;AN</i>) such that if
-      <code>a1,&nbsp;a2</code>...&nbsp;<code>aN</code> are objects of type
-      <i>A1,&nbsp;A2,...&nbsp;AN</i> respectively, the expression <code>new
-      Generator::apply&lt;T&gt;::type(a1,&nbsp;a2</code>...&nbsp;<code>aN</code>)
-      is valid. Generator is a model of <a href=
-      "HolderGenerator.html">HolderGenerator</a>.</dt>
+      <dt><b>Requires:</b> <code>F</code> is a
+      function pointer type. If <code>policies</code> are supplied, it must
+      be a model of <a href="CallPolicies.html">CallPolicies</a>. If
+      <code>kewords</code> are supplied, it must be the result of a <a href=
+      "args.html#keyword-expression"><em>keyword-expression</em></a>
+      specifying no more arguments than the <a href=
+      "definitions.html#arity">arity</a> of <code>f</code>.</dt>
 
       <dt><b>Effects:</b> Creates a Python callable object which, when called
-      from Python, expects its first argument to be a Boost.Python extension
-      class object. It converts its remaining its arguments to C++ and passes
-      them to the constructor of a dynamically-allocated
-      <code>Generator::apply&lt;T&gt;::type</code> object, which is then
-      installed in the extension class object. In the second form, the
-      <code>policies</code> are applied to the arguments and result (<a href=
-      "http://www.python.org/doc/current/lib/bltin-null-object.html">None</a>)
-      of the Python callable object</dt>
+      from Python, converts its arguments to C++ and calls <code>f</code>.</dt>
 
       <dt><b>Returns:</b> An instance of <a href=
       "object.html#object-spec">object</a> which holds the new Python
@@ -186,7 +183,7 @@ BOOST_PYTHON_MODULE(make_function_test)
     def("choose_function", choose_function);
 }
 </pre>
-    It can be used this way in Python: 
+    It can be used this way in Python:
 <pre>
 &gt;&gt;&gt; from make_function_test import *
 &gt;&gt;&gt; f = choose_function(1)

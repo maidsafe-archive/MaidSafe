@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 2>, 100> ellint_k_data = {{
+   static const boost::array<boost::array<typename table_type<T>::type, 2>, 100> ellint_k_data = {{
       {{ SC_(-0.99042308330535888671875e0), SC_(0.3377711175347896212115917173531827081735908096628e1) }}, 
       {{ SC_(-0.936324596405029296875e0), SC_(0.24799928378892127263868582279024816073017669022263e1) }}, 
       {{ SC_(-0.931098163127899169921875e0), SC_(0.24445366497109921574142184681825951967450363552834e1) }}, 

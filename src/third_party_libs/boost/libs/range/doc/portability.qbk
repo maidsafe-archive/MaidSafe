@@ -19,7 +19,7 @@ For maximum portability you should follow these guidelines:
 # use __const_begin__`()` and __const_end__`()` whenever your code by intention is read-only; this will also solve most rvalue problems,
 # do not rely on ADL:
   * if you overload functions, include that header before the headers in this library,
-  * put all overloads in namespace boost. 
+  * put all overloads in namespace boost.
 
 
 

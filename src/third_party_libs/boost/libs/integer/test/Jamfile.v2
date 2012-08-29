@@ -22,4 +22,10 @@ test-suite integer
         [ compile static_log2_include_test.cpp ]
         [ compile static_min_max_include_test.cpp ]
         [ compile integer_fwd_include_test.cpp ]
+        [ compile-fail fail_int_exact.cpp ]
+        [ compile-fail fail_int_fast.cpp ]
+        [ compile-fail fail_int_least.cpp ]
+        [ compile-fail fail_uint_exact.cpp ]
+        [ compile-fail fail_uint_fast.cpp ]
+        [ compile-fail fail_uint_least.cpp ]
     ;

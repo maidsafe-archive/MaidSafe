@@ -48,9 +48,12 @@
 <div class="author"><h3 class="author">
 <span class="firstname">Thijs</span> <span class="surname">van den Berg</span>
 </h3></div>
+<div class="author"><h3 class="author">
+<span class="firstname">Benjamin</span> <span class="surname">Sobotta</span>
+</h3></div>
 </div></div>
 <div><p class="copyright">Copyright &#169; 2006-2010 John Maddock, Paul A. Bristow, Hubert Holin, Xiaogang Zhang, Bruno
-      Lalande, Johan R&#229;de, Gautam Sewani and Thijs van den Berg</p></div>
+      Lalande, Johan R&#229;de, Gautam Sewani, Thijs van den Berg and Benjamin Sobotta</p></div>
 <div><div class="legalnotice">
 <a name="math_toolkit.legal"></a><p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -67,6 +70,8 @@
 <dd><dl>
 <dt><span class="section"><a href="math_toolkit/main_overview/intro.html">About the Math Toolkit</a></span></dt>
 <dt><span class="section"><a href="math_toolkit/main_overview/navigation.html">Navigation</a></span></dt>
+<dt><span class="section"><a href="math_toolkit/main_overview/conventions.html">Document Conventions</a></span></dt>
+<dt><span class="section"><a href="math_toolkit/main_overview/hints.html">Other Hints and tips</a></span></dt>
 <dt><span class="section"><a href="math_toolkit/main_overview/directories.html">Directory and
       File Structure</a></span></dt>
 <dt><span class="section"><a href="math_toolkit/main_overview/namespaces.html">Namespaces</a></span></dt>
@@ -201,6 +206,8 @@
           Distribution</a></span></dt>
 <dt><span class="section"><a href="math_toolkit/dist/dist_ref/dists/rayleigh.html">Rayleigh
           Distribution</a></span></dt>
+<dt><span class="section"><a href="math_toolkit/dist/dist_ref/dists/skew_normal_dist.html">Skew
+          Normal Distribution</a></span></dt>
 <dt><span class="section"><a href="math_toolkit/dist/dist_ref/dists/students_t_dist.html">Students
           t Distribution</a></span></dt>
 <dt><span class="section"><a href="math_toolkit/dist/dist_ref/dists/triangular_dist.html">Triangular
@@ -280,6 +287,13 @@
 <dt><span class="section"><a href="math_toolkit/special/bessel/sph_bessel.html">Spherical Bessel
         Functions of the First and Second Kinds</a></span></dt>
 </dl></dd>
+<dt><span class="section"><a href="math_toolkit/special/hankel.html">Hankel Functions</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="math_toolkit/special/hankel/cyl_hankel.html">Cyclic Hankel
+        Functions</a></span></dt>
+<dt><span class="section"><a href="math_toolkit/special/hankel/sph_hankel.html">Spherical Hankel
+        Functions</a></span></dt>
+</dl></dd>
 <dt><span class="section"><a href="math_toolkit/special/ellint.html">Elliptic Integrals</a></span></dt>
 <dd><dl>
 <dt><span class="section"><a href="math_toolkit/special/ellint/ellint_intro.html">Elliptic
@@ -330,6 +344,7 @@
 <dt><span class="section"><a href="math_toolkit/special/inv_hyper/asinh.html">asinh</a></span></dt>
 <dt><span class="section"><a href="math_toolkit/special/inv_hyper/atanh.html">atanh</a></span></dt>
 </dl></dd>
+<dt><span class="section"><a href="math_toolkit/special/owens_t.html">Owen's T function</a></span></dt>
 </dl></dd>
 <dt><span class="section"><a href="math_toolkit/utils.html">Floating Point Utilities</a></span></dt>
 <dd><dl>
@@ -377,14 +392,27 @@
 <dt><span class="section"><a href="math_toolkit/extern_c/tr1_ref.html">TR1 C Functions Quick
       Reference</a></span></dt>
 </dl></dd>
-<dt><span class="section"><a href="math_toolkit/toolkit.html">Tools, Constants and Internal Details</a></span></dt>
+<dt><span class="section"><a href="math_toolkit/constants.html">Mathematical Constants</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="math_toolkit/constants/intro.html">Introduction</a></span></dt>
+<dt><span class="section"><a href="math_toolkit/constants/tutorial.html">Tutorial</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="math_toolkit/constants/tutorial/non_templ.html">Use in non-template
+        code</a></span></dt>
+<dt><span class="section"><a href="math_toolkit/constants/tutorial/templ.html">Use in template
+        code</a></span></dt>
+<dt><span class="section"><a href="math_toolkit/constants/tutorial/user_def.html">Use With
+        User Defined Types</a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="math_toolkit/constants/constants.html">The Mathematical Constants</a></span></dt>
+<dt><span class="section"><a href="math_toolkit/constants/new_const.html">Defining New Constants</a></span></dt>
+<dt><span class="section"><a href="math_toolkit/constants/FAQ.html">FAQs</a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="math_toolkit/toolkit.html">Tools and Internal Details</a></span></dt>
 <dd><dl>
 <dt><span class="section"><a href="math_toolkit/toolkit/internals_overview.html">Overview</a></span></dt>
-<dt><span class="section"><a href="math_toolkit/toolkit/internals1.html">Utilities - Constants
-      &amp; Tools</a></span></dt>
+<dt><span class="section"><a href="math_toolkit/toolkit/internals1.html">Utilities &amp; Tools</a></span></dt>
 <dd><dl>
-<dt><span class="section"><a href="math_toolkit/toolkit/internals1/constants.html">Numeric
-        Constants</a></span></dt>
 <dt><span class="section"><a href="math_toolkit/toolkit/internals1/series_evaluation.html">Series
         Evaluation</a></span></dt>
 <dt><span class="section"><a href="math_toolkit/toolkit/internals1/cf.html">Continued Fraction
@@ -499,11 +527,11 @@
 <dt><span class="section"><a href="math_toolkit/status/issues.html">Known Issues, and TODO List</a></span></dt>
 <dt><span class="section"><a href="math_toolkit/status/credits.html">Credits and Acknowledgements</a></span></dt>
 </dl></dd>
-<dt><span class="section"><a href="index/s12.html">Function Index</a></span></dt>
-<dt><span class="section"><a href="index/s13.html">Class Index</a></span></dt>
-<dt><span class="section"><a href="index/s14.html">Typedef Index</a></span></dt>
-<dt><span class="section"><a href="index/s15.html">Macro Index</a></span></dt>
-<dt><span class="section"><a href="index/s16.html">Index</a></span></dt>
+<dt><span class="section"><a href="index/s13.html">Function Index</a></span></dt>
+<dt><span class="section"><a href="index/s14.html">Class Index</a></span></dt>
+<dt><span class="section"><a href="index/s15.html">Typedef Index</a></span></dt>
+<dt><span class="section"><a href="index/s16.html">Macro Index</a></span></dt>
+<dt><span class="section"><a href="index/s17.html">Index</a></span></dt>
 </dl>
 </div>
 <p>
@@ -513,7 +541,7 @@
   </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
-<td align="left"><p><small>Last revised: January 09, 2012 at 12:12:07 GMT</small></p></td>
+<td align="left"><p><small>Last revised: May 14, 2012 at 18:06:46 GMT</small></p></td>
 <td align="right"><div class="copyright-footer"></div></td>
 </tr></table>
 <hr>

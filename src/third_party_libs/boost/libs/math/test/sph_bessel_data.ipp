@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 3>, 483> sph_bessel_data = {{
+   static const boost::array<boost::array<typename table_type<T>::type, 3>, 483> sph_bessel_data = {{
       {{ SC_(0), SC_(0.177219114266335964202880859375e-2), SC_(0.999999476556507842202459130864323898236e0) }}, 
       {{ SC_(0), SC_(0.22177286446094512939453125e-2), SC_(0.9999991802801447287222232346958222796612e0) }}, 
       {{ SC_(0), SC_(0.7444499991834163665771484375e-2), SC_(0.9999907632622405689302860688925139982587e0) }}, 

@@ -5,11 +5,11 @@
 
 //  See http://www.boost.org/libs/config for most recent version.
 
-//  MACRO:         BOOST_NO_AUTO_MULTIDECLARATIONS
+//  MACRO:         BOOST_NO_CXX11_AUTO_MULTIDECLARATIONS
 //  TITLE:         C++0x auto multideclarators unavailable
 //  DESCRIPTION:   The compiler does not support C++0x declarations of series of variables with automatically deduced type
 
-namespace boost_no_auto_multideclarations {
+namespace boost_no_cxx11_auto_multideclarations {
 
 void check_f(int& x, int*& y)
 {

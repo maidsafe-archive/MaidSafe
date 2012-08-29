@@ -901,8 +901,8 @@ wrapping as outlined in the [link python.overloading previous section], or
 writing thin wrappers:
 
     // write "thin wrappers"
-    int f1(int x) { f(x); }
-    int f2(int x, double y) { f(x,y); }
+    int f1(int x) { return f(x); }
+    int f2(int x, double y) { return f(x,y); }
 
     /*...*/
 

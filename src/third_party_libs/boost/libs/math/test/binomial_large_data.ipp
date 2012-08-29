@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 3>, 230> binomial_large_data = { {
+   static const boost::array<boost::array<typename table_type<T>::type, 3>, 230> binomial_large_data = { {
       {{ SC_(0.174e3), SC_(0.4e1), SC_(0.36890001e8) }}, 
       {{ SC_(0.174e3), SC_(0.5e1), SC_(0.1254260034e10) }}, 
       {{ SC_(0.174e3), SC_(0.6e1), SC_(0.35328324291e11) }}, 

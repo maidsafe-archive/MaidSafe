@@ -398,8 +398,8 @@
 <p>
           If the <code class="computeroutput"><span class="identifier">signed_zero</span></code> flag
           is used with <code class="computeroutput"><span class="identifier">nonfinite_num_put</span></code>,
-          then the facet will distinguish between positive and negative zero. It
-          will format positive zero as "0" or "+0" and negative
+          then the facet will always distinguish between positive and negative zero.
+          It will format positive zero as "0" or "+0" and negative
           zero as "-0". The string representation of positive zero can
           be controlled with the <code class="computeroutput"><span class="identifier">showpos</span></code>
           and <code class="computeroutput"><span class="identifier">noshowpos</span></code> manipulators.
@@ -411,6 +411,34 @@
           always parses "0" and "+0" as positive zero and "-0"
           as negative zero, as do most implementations of <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">num_get</span></code>.
         </p>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../../../../../../../../doc/src/images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+            If the <code class="computeroutput"><span class="identifier">signed_zero</span></code> flag
+            is not set (the default), then a negative zero value will be displayed
+            on output in whatever way the platform normally handles it. For most
+            platforms, this it will format positive zero as "0" or "+0"
+            and negative zero as "-0". But setting the <code class="computeroutput"><span class="identifier">signed_zero</span></code>
+            flag may be more portable.
+          </p></td></tr>
+</table></div>
+<div class="tip"><table border="0" summary="Tip">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Tip]" src="../../../../../../../../doc/src/images/tip.png"></td>
+<th align="left">Tip</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+            A negative zero value can be portably produced using the changesign function
+            <code class="computeroutput"><span class="special">(</span><span class="identifier">changesign</span><span class="special">)(</span><span class="keyword">static_cast</span><span class="special">&lt;</span><span class="identifier">ValType</span><span class="special">&gt;(</span><span class="number">0</span><span class="special">))</span></code> where <code class="computeroutput"><span class="identifier">ValType</span></code>
+            is <code class="computeroutput"><span class="keyword">float</span></code>, <code class="computeroutput"><span class="keyword">double</span></code> or <code class="computeroutput"><span class="keyword">long</span>
+            <span class="keyword">double</span></code>, or a User-Defined floating-point
+            type (UDT) provided that this UDT has a sign and that the changesign
+            function is implemented.
+          </p></td></tr>
+</table></div>
 <h6>
 <a name="math_toolkit.utils.fp_facets.reference.h5"></a>
           <span><a name="math_toolkit.utils.fp_facets.reference.trap_infinity"></a></span><a class="link" href="reference.html#math_toolkit.utils.fp_facets.reference.trap_infinity">trap_infinity</a>
@@ -448,7 +476,7 @@
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
 <td align="right"><div class="copyright-footer">Copyright &#169; 2006-2010 John Maddock, Paul A. Bristow, Hubert Holin, Xiaogang Zhang, Bruno
-      Lalande, Johan R&#229;de, Gautam Sewani and Thijs van den Berg<p>
+      Lalande, Johan R&#229;de, Gautam Sewani, Thijs van den Berg and Benjamin Sobotta<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

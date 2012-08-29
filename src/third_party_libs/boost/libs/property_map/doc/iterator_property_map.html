@@ -175,12 +175,10 @@ Constructor.
 <hr>
 
 <pre>
-reference operator[](difference_type v) const
+reference operator[](const key_type&amp; v) const
 </pre>
-The operator bracket for property access. The <TT>reference</TT> and
-<TT>difference_type</TT> types are from  
-<TT>std::iterator_traits&lt;Iterator&gt;</TT>.
-
+The operator bracket for property access. The <TT>reference</TT> is from  
+<TT>std::iterator_traits&lt;Iterator&gt;</TT> and the <tt>key_type</tt> is from <tt>boost::property_traits&lt;OffsetMap&gt;</tt>.
 <hr>
 
 <h3>Non-Member functions</h3>

@@ -42,7 +42,7 @@ or the version in SVN trunk.
 
 Currently, Boost.Proto is known to work on the following compilers:
 
-* Visual C++ 7.1 and higher
+* Visual C++ 8 and higher
 * GNU C++ 3.4 and higher
 * Intel on Linux 8.1 and higher
 * Intel on Windows 9.1 and higher

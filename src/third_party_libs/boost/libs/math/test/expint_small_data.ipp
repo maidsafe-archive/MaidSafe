@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 3>, 380> expint_small_data = {{
+   static const boost::array<boost::array<typename table_type<T>::type, 3>, 380> expint_small_data = {{
       {{ SC_(0), SC_(0.1730655412757187150418758392333984375e-5), SC_(577814.7758212256423775256378551874856003) }}, 
       {{ SC_(0), SC_(0.216575062950141727924346923828125e-5), SC_(461732.6762508792015318981937822200350918) }}, 
       {{ SC_(0), SC_(0.72700195232755504548549652099609375e-5), SC_(137550.2124589000541443257494936989244997) }}, 

@@ -787,6 +787,14 @@ Many thanks to all boosters that have tested, reviewed and improved the library.
 
 [section:release_notes Release Notes]
 
+[section:release_notes_boost_1_51_00 Boost 1.51 Release]
+
+*  Fixed bugs
+  [@https://svn.boost.org/trac/boost/ticket/7095 #7095],
+  [@https://svn.boost.org/trac/boost/ticket/7031 #7031].
+
+[endsect]
+
 [section:release_notes_boost_1_49_00 Boost 1.49 Release]
 
 *  Fixed bugs

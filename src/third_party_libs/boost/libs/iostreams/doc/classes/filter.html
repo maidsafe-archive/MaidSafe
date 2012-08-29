@@ -63,7 +63,7 @@
 <SPAN CLASS="keyword">typedef</SPAN> wfilter&lt;dual_use&gt;  dual_use_wfilter;
 
 <SPAN CLASS="keyword"><SPAN CLASS="keyword">template</SPAN></SPAN>&lt;<SPAN CLASS="keyword">typename</SPAN> Mode, <SPAN CLASS="keyword">typename</SPAN> Ch = <SPAN CLASS="keyword">char</SPAN>&gt;
-<SPAN CLASS="keyword">struct</SPAN> <A CLASS="documented" HREF="#multichar_filter">multichar_filter</A> : filter<Mode, Ch> {
+<SPAN CLASS="keyword">struct</SPAN> <A CLASS="documented" HREF="#multichar_filter">multichar_filter</A> : filter&lt;Mode, Ch&gt; {
     <SPAN CLASS="keyword">typedef</SPAN> <A STYLE="text-decoration:none" HREF="#category"><SPAN CLASS="omitted">see below</SPAN></A>  category;
 };
 
@@ -83,12 +83,12 @@
     <SPAN CLASS="keyword">typedef</SPAN> <A STYLE="text-decoration:none" HREF="#category"><SPAN CLASS="omitted">see below</SPAN></A>  category;
 
     <SPAN CLASS="keyword">template</SPAN>&lt;<SPAN CLASS="keyword">typename</SPAN> Device&gt;
-    <SPAN CLASS="keyword">void</SPAN> <A CLASS="documented" HREF="#close">close</A>(Device&);
+    <SPAN CLASS="keyword">void</SPAN> <A CLASS="documented" HREF="#close">close</A>(Device&amp;);
 
     <SPAN CLASS="keyword">template</SPAN>&lt;<SPAN CLASS="keyword">typename</SPAN> Device&gt;
-    <SPAN CLASS="keyword">void</SPAN> <A CLASS="documented" HREF="#close">close</A>(std::ios_base::openmode, Device&);
+    <SPAN CLASS="keyword">void</SPAN> <A CLASS="documented" HREF="#close">close</A>(Device&amp;, std::ios_base::openmode);
 
-    <SPAN CLASS="keyword">void</SPAN> <A CLASS="documented" HREF="#imbue">imbue</A>(<SPAN CLASS="keyword">const</SPAN> std::locale&);
+    <SPAN CLASS="keyword">void</SPAN> <A CLASS="documented" HREF="#imbue">imbue</A>(<SPAN CLASS="keyword">const</SPAN> std::locale&amp;);
 };
 
 } } <SPAN CLASS="comment">// End namespace boost::io</SPAN></PRE>
@@ -104,7 +104,6 @@
 <H4>Template parameters</H4>
 
 <TABLE STYLE="margin-left:2em" BORDER=0 CELLPADDING=2>
-<TR>
     <TR>
         <TD VALIGN="top"><I>Mode</I></TD><TD WIDTH="2em" VALIGN="top">-</TD>
         <TD>A <A HREF="../guide/modes.html#mode_tags">mode tag</A>.</TD>
@@ -128,10 +127,10 @@
 <H4><CODE>filter::close</CODE></H4>
 
 <PRE CLASS="broken_ie">    <SPAN CLASS="keyword">template</SPAN>&lt;<SPAN CLASS="keyword">typename</SPAN> Device&gt;
-    <SPAN CLASS="keyword">void</SPAN> <A CLASS="documented" HREF="#close">close</A>(Device&);
+    <SPAN CLASS="keyword">void</SPAN> <A CLASS="documented" HREF="#close">close</A>(Device&amp;);
 
     <SPAN CLASS="keyword">template</SPAN>&lt;<SPAN CLASS="keyword">typename</SPAN> Device&gt;
-    <SPAN CLASS="keyword">void</SPAN> <A CLASS="documented" HREF="#close">close</A>(std::ios_base::openmode, Device&);</PRE>
+    <SPAN CLASS="keyword">void</SPAN> <A CLASS="documented" HREF="#close">close</A>(Device&amp;, std::ios_base::openmode);</PRE>
 
 <P>
     Both overloads are implemented as no-ops. The second is available only if <A HREF="#filter_template_params">Mode</A> is convertible to <A HREF="../guide/modes.html#mode_tags"><CODE>bidirectional</CODE></A>. The first is available only if Mode is <I>not</I> convertible to <A HREF="../guide/modes.html#mode_tags"><CODE>bidirectional</CODE></A>.
@@ -142,7 +141,7 @@
 
 <A NAME="imbue"></A>
 <H4><CODE>filter::imbue</CODE></H4>
-<PRE CLASS="broken_ie">    <SPAN CLASS="keyword">void</SPAN> <A CLASS="documented" HREF="#imbue">imbue</A>(<SPAN CLASS="keyword">const</SPAN> std::locale&);</PRE>
+<PRE CLASS="broken_ie">    <SPAN CLASS="keyword">void</SPAN> <A CLASS="documented" HREF="#imbue">imbue</A>(<SPAN CLASS="keyword">const</SPAN> std::locale&amp;);</PRE>
 
 <P>
     Implemented as a no-op. Required by <A HREF="../concepts/localizable.html">Localizable</A>.
@@ -159,7 +158,6 @@
 <H4>Template parameters</H4>
 
 <TABLE STYLE="margin-left:2em" BORDER=0 CELLPADDING=2>
-<TR>
     <TR>
         <TD VALIGN="top"><I>Mode</I></TD><TD WIDTH="2em" VALIGN="top">-</TD>
         <TD>A <A HREF="../guide/modes.html#mode_tags">mode tag</A>.</TD>

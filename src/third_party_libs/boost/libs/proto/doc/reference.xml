@@ -1,4 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2012 Eric Niebler
+
+  Distributed under the Boost
+  Software License, Version 1.0. (See accompanying
+  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+  -->
 <library-reference xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <!-- classes -->
@@ -598,6 +605,11 @@
       <listitem>
         <computeroutput>
           <classname alt="boost::proto::otherwise">proto::otherwise</classname>
+        </computeroutput>
+      </listitem>
+      <listitem>
+        <computeroutput>
+          <classname alt="boost::proto::pack">proto::pack</classname>
         </computeroutput>
       </listitem>
       <listitem>

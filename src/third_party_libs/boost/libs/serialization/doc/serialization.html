@@ -789,7 +789,7 @@ class derived : public base {
     template&lt;class Archive&gt;
     void serialize(Archive &amp; ar, const unsigned int file_version){
         // method 1 : invoke base class serialization
-        boost::serialization::base_object&lt;base&gt;(*this);
+        ar & boost::serialization::base_object&lt;base&gt;(*this);
         // method 2 : explicitly register base/derived relationship
         boost::serialization::void_cast_register&lt;derived, base&gt;(
             static_cast&lt;derived *&gt;=NULL),

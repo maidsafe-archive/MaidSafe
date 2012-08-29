@@ -175,4 +175,28 @@ C++11 support has resulted in some breaking changes:
 * Fix warning due to accidental odd assignment.
 * Slightly better error messages.
 
+[h2 Boost 1.50.0]
+
+* Fix equality for `unordered_multiset` and `unordered_multimap`.
+* [@https://svn.boost.org/trac/boost/ticket/6857 Ticket 6857]:
+  Implement `reserve`.
+* [@https://svn.boost.org/trac/boost/ticket/6771 Ticket 6771]:
+  Avoid gcc's `-Wfloat-equal` warning.
+* [@https://svn.boost.org/trac/boost/ticket/6784 Ticket 6784]:
+  Fix some Sun specific code.
+* [@https://svn.boost.org/trac/boost/ticket/6190 Ticket 6190]:
+  Avoid gcc's `-Wshadow` warning.
+* [@https://svn.boost.org/trac/boost/ticket/6905 Ticket 6905]:
+  Make namespaces in macros compatible with `bcp` custom namespaces.
+  Fixed by Luke Elliott.
+* Remove some of the smaller prime number of buckets, as they may make
+  collisions quite probable (e.g. multiples of 5 are very common because
+  we used base 10).
+* On old versions of Visual C++, use the container library's implementation
+  of `allocator_traits`, as it's more likely to work.
+* On machines with 64 bit std::size_t, use power of 2 buckets, with Thomas
+  Wang's hash function to pick which one to use. As modulus is very slow
+  for 64 bit values.
+* Some internal changes.
+
 [endsect]

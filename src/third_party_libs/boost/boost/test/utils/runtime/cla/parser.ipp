@@ -7,7 +7,7 @@
 //
 //  File        : $RCSfile$
 //
-//  Version     : $Revision$
+//  Version     : $Revision: 54633 $
 //
 //  Description : implements parser - public interface for CLA parsing and accessing
 // ***************************************************************************

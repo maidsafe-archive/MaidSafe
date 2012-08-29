@@ -31,7 +31,6 @@ lib dll_a_lib
         dll_a.cpp
         ../build//boost_serialization
     : 
-        <link>shared 
     ;
 
 lib dll_base_lib 
@@ -39,7 +38,6 @@ lib dll_base_lib
         dll_base.cpp
         ../build//boost_serialization
     : 
-        <link>shared 
     ;
     
 lib dll_derived2_lib
@@ -48,7 +46,6 @@ lib dll_derived2_lib
         dll_base_lib
         ../build//boost_serialization
     : 
-        <link>shared
     ;
 
 lib dll_polymorphic_derived2_lib
@@ -56,7 +53,6 @@ lib dll_polymorphic_derived2_lib
         polymorphic_derived2.cpp 
         ../build//boost_serialization
     : 
-        <link>shared
     ;
 
 test-suite "serialization" :
@@ -112,9 +108,12 @@ test-suite "serialization" :
 
 if ! $(BOOST_ARCHIVE_LIST) {
     test-suite "serialization2" : 
-        [ test-bsl-run test_dll_exported : : dll_polymorphic_derived2_lib : <runtime-link>shared ]
-        [ test-bsl-run test_dll_simple : : dll_a_lib : <runtime-link>shared ]
+        [ test-bsl-run test_dll_exported : : dll_polymorphic_derived2_lib ]
+        [ test-bsl-run test_dll_simple : : dll_a_lib ]
         [ compile test_dll_plugin.cpp ]
+        # Running the following test requires that the test know the directory 
+        # in which the dll is stored. I don't know how to extract this from bjam
+        # [ test-bsl-run test_dll_plugin : : dll_polymorphic_derived2_lib ]
         [ test-bsl-run test_private_ctor ]
         [ test-bsl-run test_reset_object_address : A ]
         [ test-bsl-run test_void_cast ]

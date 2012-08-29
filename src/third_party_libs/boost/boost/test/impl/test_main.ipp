@@ -8,7 +8,7 @@
 //
 //  File        : $RCSfile$
 //
-//  Version     : $$Revision$
+//  Version     : $$Revision: 49312 $
 //
 //  Description : implements main function for Test Execution Monitor.
 // ***************************************************************************

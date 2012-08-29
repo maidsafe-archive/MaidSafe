@@ -189,6 +189,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_iterators", "test_iter
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_iterators_base64", "test_iterators_base64.vcproj", "{A7D4CC95-F2AC-11D6-9E47-525400E2CF85}"
 	ProjectSection(ProjectDependencies) = postProject
+		{30E10563-960A-11D7-9FE9-525400E2CF85} = {30E10563-960A-11D7-9FE9-525400E2CF85}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_list", "test_list.vcproj", "{A7D4CC95-F2AC-11D6-9E47-525400E2CF85}"

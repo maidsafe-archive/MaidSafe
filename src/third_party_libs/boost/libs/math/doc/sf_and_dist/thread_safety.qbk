@@ -1,24 +1,9 @@
 [section:threads Thread Safety]
 
-The library is fully thread safe and re-entrant provided the function
-and class templates in the library are instantiated with
-built-in floating point types: i.e. the types `float`, `double` 
-and `long double`.  
-
-However, the library [*is not thread safe] when
-used with user-defined (i.e. class type) numeric types.
-
-The reason for the latter limitation is the need to
-initialise symbolic constants using constructs such as:
-
-   static const T coefficient_array = { ... list of values ... };
-
-Which is always thread safe when T is a built-in floating point type, 
-but not when T is a user defined type: as in this case there 
-is a need for T's constructors to be run, leading to potential
-race conditions.
-
-This limitation may be addressed in a future release.
+The library is fully thread safe and re-entrant for all functions
+regards of the data type they are instantiated on.  Thread safety 
+limitations relating to user defined types present in previous 
+releases (prior to 1.50.0) have been removed.
 
 [endsect] [/section:threads Thread Safety]
 

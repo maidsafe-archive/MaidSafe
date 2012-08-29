@@ -34,8 +34,9 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalOptions="/fixed:no"
 				AdditionalDependencies="winmm.lib"
-				OutputFile="$(OutDir)/fully_mapped_file_test_d.exe"
+				OutputFile="$(OutDir)/mapped_file_test_d.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../../../../stage/lib"
 				GenerateDebugInformation="TRUE"

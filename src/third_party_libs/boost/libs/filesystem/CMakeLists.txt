@@ -28,13 +28,14 @@ boost_library_project(
 boost_add_library(
   filesystem
 
-  v2/src/v2_operations.cpp v2/src/v2_path.cpp
-  v2/src/v2_portability.cpp
-
-  v3/src/codecvt_error_category.cpp v3/src/operations.cpp
-  v3/src/path.cpp v3/src/path_traits.cpp v3/src/portability.cpp
-  v3/src/unique_path.cpp v3/src/utf8_codecvt_facet.cpp
-  v3/src/windows_file_codecvt.cpp
+  src/operations.cpp
+  src/path.cpp
+  src/portability.cpp
+  src/utf8_codecvt_facet.cpp
+  src/codecvt_error_category.cpp
+  src/path_traits.cpp
+  src/unique_path.cpp
+  src/windows_file_codecvt.cpp
 
   SHARED_COMPILE_FLAGS "-DBOOST_FILESYSTEM_DYN_LINK=1"
   STATIC_COMPILE_FLAGS "-DBOOST_FILESYSTEM_STATIC_LINK=1"

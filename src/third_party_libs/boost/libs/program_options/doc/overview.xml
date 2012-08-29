@@ -181,7 +181,7 @@ options_description desc;
 desc.add_options()
     ("help", "produce help message")
     ("compression", value&lt;string&gt;(), "compression level")
-    ("verbose", value&lt;string&gt;()->zero_tokens(), "verbosity level")
+    ("verbose", value&lt;string&gt;()->implicit_value("0"), "verbosity level")
     ("email", value&lt;string&gt;()->multitoken(), "email to send to")
     ;
       </programlisting>

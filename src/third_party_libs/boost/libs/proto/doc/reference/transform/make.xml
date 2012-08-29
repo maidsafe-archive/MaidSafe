@@ -149,9 +149,7 @@ struct Foo :
           <para>
             The purpose of <computeroutput>proto::make&lt;&gt;</computeroutput> is to annotate a transform as
             an <conceptname>ObjectTransform</conceptname> so that
-            <computeroutput>
-              <classname alt="proto::when">proto::when&lt;&gt;</classname>
-            </computeroutput> knows
+            <computeroutput><classname alt="proto::when">proto::when&lt;&gt;</classname></computeroutput> knows
             how to apply it.
           </para>
 
@@ -180,7 +178,8 @@ struct Foo :
               </para>
               <para>
                 If <computeroutput>T</computeroutput> is an <conceptname>ObjectTransform</conceptname> of the form
-                <computeroutput>Object(A<subscript>0</subscript>,...A<subscript>n</subscript>)</computeroutput>,
+                <computeroutput>Object(A<subscript>0</subscript>,…A<subscript>n</subscript>)</computeroutput> or
+                <computeroutput>Object(A<subscript>0</subscript>,…A<subscript>n</subscript> ...)</computeroutput>,
                 then let <computeroutput>O</computeroutput> be the return type
                 <computeroutput>Object</computeroutput>. Otherwise, let <computeroutput>O</computeroutput>
                 be <computeroutput>T</computeroutput>. The <computeroutput>result_type</computeroutput> typedef is
@@ -200,7 +199,7 @@ struct Foo :
                   </listitem>
                   <listitem>
                     If <computeroutput>O</computeroutput> is a template like
-                    <computeroutput><classname>proto::noinvoke</classname>&lt;S&lt;X<subscript>0</subscript>,...X<subscript>n</subscript>&gt; &gt;</computeroutput>,
+                    <computeroutput><classname>proto::noinvoke</classname>&lt;S&lt;X<subscript>0</subscript>,…X<subscript>n</subscript>&gt; &gt;</computeroutput>,
                     then the result type is calculated as follows:
                     <itemizedlist>
                       <listitem>
@@ -222,7 +221,7 @@ struct Foo :
                         <para>
                           The result type is
                           <computeroutput>
-                            S&lt;X<subscript>0</subscript>',...X<subscript>n</subscript>'&gt;
+                            S&lt;X<subscript>0</subscript>',…X<subscript>n</subscript>'&gt;
                           </computeroutput>.
                         </para>
                       </listitem>
@@ -230,7 +229,7 @@ struct Foo :
                   </listitem>
                   <listitem>
                     If <computeroutput>O</computeroutput> is a template like
-                    <computeroutput>S&lt;X<subscript>0</subscript>,...X<subscript>n</subscript>&gt;</computeroutput>,
+                    <computeroutput>S&lt;X<subscript>0</subscript>,…X<subscript>n</subscript>&gt;</computeroutput>,
                     then the result type is calculated as follows:
                     <itemizedlist>
                       <listitem>
@@ -250,11 +249,11 @@ struct Foo :
                         <para>
                           If any substitutions took place in the above step and
                           <computeroutput>
-                            S&lt;X<subscript>0</subscript>',...X<subscript>n</subscript>'&gt;
+                            S&lt;X<subscript>0</subscript>',…X<subscript>n</subscript>'&gt;
                           </computeroutput> has a nested
                           <computeroutput>type</computeroutput> typedef, the result type is
                           <computeroutput>
-                            S&lt;X<subscript>0</subscript>',...X<subscript>n</subscript>'&gt;::type
+                            S&lt;X<subscript>0</subscript>',…X<subscript>n</subscript>'&gt;::type
                           </computeroutput>.
                         </para>
                       </listitem>
@@ -262,7 +261,7 @@ struct Foo :
                         <para>
                           Otherwise, the result type is
                           <computeroutput>
-                            S&lt;X<subscript>0</subscript>',...X<subscript>n</subscript>'&gt;
+                            S&lt;X<subscript>0</subscript>',…X<subscript>n</subscript>'&gt;
                           </computeroutput>.
                         </para>
                       </listitem>
@@ -306,7 +305,7 @@ struct Foo :
                     <listitem>
                       <para>
                         If <computeroutput>T</computeroutput> is of the form
-                        <computeroutput>O(A<subscript>0</subscript>,...A<subscript>n</subscript>)</computeroutput>, then:
+                        <computeroutput>O(A<subscript>0</subscript>,…A<subscript>n</subscript>)</computeroutput>, then:
                       </para>
                       <itemizedlist>
                         <listitem>
@@ -317,7 +316,7 @@ struct Foo :
                             and return an object <computeroutput>that</computeroutput> as follows:
                             <programlisting>result_type that = {
   <classname>proto::when</classname>&lt;<classname>_</classname>, A<subscript>0</subscript>&gt;()(expr, state, data),
-  ...
+  …
   <classname>proto::when</classname>&lt;<classname>_</classname>, A<subscript>n</subscript>&gt;()(expr, state, data)
 };</programlisting>
                           </para>
@@ -328,7 +327,7 @@ struct Foo :
                             and return an object <computeroutput>that</computeroutput> as follows:
                             <programlisting>result_type that(
   <classname>proto::when</classname>&lt;<classname>_</classname>, A<subscript>0</subscript>&gt;()(expr, state, data),
-  ...
+  …
   <classname>proto::when</classname>&lt;<classname>_</classname>, A<subscript>n</subscript>&gt;()(expr, state, data)
 );</programlisting>
                           </para>
@@ -337,9 +336,18 @@ struct Foo :
                     </listitem>
                     <listitem>
                       <para>
-                        Otherwise, construct
-                        and return an object <computeroutput>that</computeroutput> as follows:
-                        <programlisting>result_type that = result_type();</programlisting>
+                        If <computeroutput>T</computeroutput> is of the form
+                        <computeroutput>O(A<subscript>0</subscript>,…A<subscript>n</subscript> ...)</computeroutput>,
+                        then let <computeroutput>T&apos;</computeroutput> be <computeroutput>O(A<subscript>0</subscript>,…A<subscript>n-1</subscript>, <replaceable>S</replaceable>)</computeroutput>,
+                        where <replaceable>S</replaceable> is a type sequence computed from the unpacking expression <computeroutput>A<subscript>n</subscript></computeroutput>
+                        as described in the reference for <computeroutput><classname>proto::pack</classname></computeroutput>. Then, return:
+                        <programlisting>proto::make&lt;T&apos;&gt;()(expr, state, data)</programlisting>
+                      </para>
+                    </listitem>
+                    <listitem>
+                      <para>
+                        Otherwise, construct and return an object <computeroutput>that</computeroutput>
+                        as follows: <programlisting>result_type that = result_type();</programlisting>
                       </para>
                     </listitem>
                   </itemizedlist>

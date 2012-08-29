@@ -5,11 +5,11 @@
 
 //  See http://www.boost.org/libs/config for most recent version.
 
-//  MACRO:         BOOST_NO_RVALUE_REFERENCES
+//  MACRO:         BOOST_NO_CXX11_RVALUE_REFERENCES
 //  TITLE:         C++0x rvalue references unavailable
 //  DESCRIPTION:   The compiler does not support C++0x rvalue references
 
-namespace boost_no_rvalue_references {
+namespace boost_no_cxx11_rvalue_references {
 
 void g(int&) {}
 

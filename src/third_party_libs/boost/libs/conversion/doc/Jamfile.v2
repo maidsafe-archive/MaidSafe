@@ -6,9 +6,9 @@ using quickbook ;
 import boostbook : boostbook ;
 
 xml lexical_cast : lexical_cast.qbk ;
-boostbook standalone 
-    : 
-    lexical_cast 
+boostbook standalone
+    :
+    lexical_cast
     :
         <xsl:param>boost.root=../../../..
         <format>pdf:<xsl:param>boost.url.prefix=http://www.boost.org/doc/libs/release/doc/html

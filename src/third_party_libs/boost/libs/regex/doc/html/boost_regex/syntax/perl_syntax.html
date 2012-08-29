@@ -22,7 +22,7 @@
 <div class="spirit-nav">
 <a accesskey="p" href="../syntax.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../syntax.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="basic_extended.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
-<div class="section">
+<div class="section boost_regex_syntax_perl_syntax">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_regex.syntax.perl_syntax"></a><a class="link" href="perl_syntax.html" title="Perl Regular Expression Syntax">Perl Regular Expression
       Syntax</a>
@@ -1292,7 +1292,8 @@
       </p>
 <p>
         <code class="literal">(?(condition)yes-pattern)</code> attempts to match <span class="emphasis"><em>yes-pattern</em></span>
-        if the <span class="emphasis"><em>condition</em></span> is true, otherwise fails.
+        if the <span class="emphasis"><em>condition</em></span> is true, otherwise matches the NULL
+        string.
       </p>
 <p>
         <span class="emphasis"><em>condition</em></span> may be either: a forward lookahead assert,
@@ -1314,6 +1315,21 @@
             <span class="emphasis"><em>no-pattern</em></span>.
           </li>
 <li class="listitem">
+            =(?(<span class="emphasis"><em>N</em></span>)yes-pattern|no-pattern)= Executes <span class="emphasis"><em>yes-pattern</em></span>
+            if subexpression <span class="emphasis"><em>N</em></span> has been matched, otherwise executes
+            <span class="emphasis"><em>no-pattern</em></span>.
+          </li>
+<li class="listitem">
+            =(?(&lt;<span class="emphasis"><em>name</em></span>&gt;)yes-pattern|no-pattern)= Executes
+            <span class="emphasis"><em>yes-pattern</em></span> if named subexpression <span class="emphasis"><em>name</em></span>
+            has been matched, otherwise executes <span class="emphasis"><em>no-pattern</em></span>.
+          </li>
+<li class="listitem">
+            =(?('<span class="emphasis"><em>name</em></span>')yes-pattern|no-pattern)= Executes <span class="emphasis"><em>yes-pattern</em></span>
+            if named subexpression <span class="emphasis"><em>name</em></span> has been matched, otherwise
+            executes <span class="emphasis"><em>no-pattern</em></span>.
+          </li>
+<li class="listitem">
             <code class="literal">(?(R)yes-pattern|no-pattern)</code> Executes <span class="emphasis"><em>yes-pattern</em></span>
             if we are executing inside a recursion, otherwise executes <span class="emphasis"><em>no-pattern</em></span>.
           </li>
@@ -1322,6 +1338,12 @@
             Executes <span class="emphasis"><em>yes-pattern</em></span> if we are executing inside
             a recursion to sub-expression <span class="emphasis"><em>N</em></span>, otherwise executes
             <span class="emphasis"><em>no-pattern</em></span>.
+          </li>
+<li class="listitem">
+            <code class="literal">(?(R&amp;<span class="emphasis"><em>name</em></span>)yes-pattern|no-pattern)</code>
+            Executes <span class="emphasis"><em>yes-pattern</em></span> if we are executing inside
+            a recursion to named sub-expression <span class="emphasis"><em>name</em></span>, otherwise
+            executes <span class="emphasis"><em>no-pattern</em></span>.
           </li>
 <li class="listitem">
             <code class="literal">(?(DEFINE)never-exectuted-pattern)</code> Defines a block

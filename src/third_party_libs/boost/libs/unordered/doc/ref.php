@@ -963,6 +963,18 @@ EOL;
                 <para>The function has no effect if an exception is thrown, unless it is thrown by the container's hash function or comparison function.</para>
               </throws>
             </method>
+            <method name="reserve">
+              <parameter name="n">
+                <paramtype>size_type</paramtype>
+              </parameter>
+              <type>void</type>
+              <description>
+                <para>Invalidates iterators, and changes the order of elements. Pointers and references to elements are not invalidated.</para>
+              </description>
+              <throws>
+                <para>The function has no effect if an exception is thrown, unless it is thrown by the container's hash function or comparison function.</para>
+              </throws>
+            </method>
           </method-group>
           <free-function-group name="Equality Comparisons">
             <function name="operator==">

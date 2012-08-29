@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 2>, 200> zeta_data = {{
+   static const boost::array<boost::array<typename table_type<T>::type, 2>, 200> zeta_data = {{
       {{ SC_(1.16628754138946533203125), SC_(6.602868183069916948720755731837247651904) }}, 
       {{ SC_(1.28222560882568359375), SC_(4.140637712279411074557164685415721499333) }}, 
       {{ SC_(1.7022221088409423828125), SC_(2.049914055577335303673424130546639695977) }}, 

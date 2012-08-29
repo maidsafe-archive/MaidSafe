@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>Background and Tutorial</title>
 <link rel="stylesheet" href="../../../../../doc/src/boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="../index.html" title="Chapter&#160;1.&#160;Boost.TypeTraits">
 <link rel="up" href="../index.html" title="Chapter&#160;1.&#160;Boost.TypeTraits">
 <link rel="prev" href="intro.html" title="Introduction">
@@ -22,7 +22,7 @@
 <div class="spirit-nav">
 <a accesskey="p" href="intro.html"><img src="../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="category.html"><img src="../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
-<div class="section">
+<div class="section boost_typetraits_background">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="boost_typetraits.background"></a><a class="link" href="background.html" title="Background and Tutorial">Background and Tutorial</a>
 </h2></div></div></div>
@@ -55,9 +55,10 @@
       terminated string, safe in the knowledge that specializations of <code class="computeroutput"><span class="identifier">char_traits</span></code> will use the most appropriate
       method available to them.
     </p>
-<a name="boost_typetraits.background.type_traits"></a><h5>
-<a name="boost_typetraits.background.type_traits-heading"></a>
-      <a class="link" href="background.html#boost_typetraits.background.type_traits">Type Traits</a>
+<h5>
+<a name="boost_typetraits.background.h0"></a>
+      <span><a name="boost_typetraits.background.type_traits"></a></span><a class="link" href="background.html#boost_typetraits.background.type_traits">Type
+      Traits</a>
     </h5>
 <p>
       Class <code class="computeroutput"><span class="identifier">char_traits</span></code> is a classic
@@ -83,9 +84,9 @@
       for brevity, namespace-qualification is omitted in most of the code samples
       given.
     </p>
-<a name="boost_typetraits.background.implementation"></a><h5>
-<a name="boost_typetraits.background.implementation-heading"></a>
-      <a class="link" href="background.html#boost_typetraits.background.implementation">Implementation</a>
+<h5>
+<a name="boost_typetraits.background.h1"></a>
+      <span><a name="boost_typetraits.background.implementation"></a></span><a class="link" href="background.html#boost_typetraits.background.implementation">Implementation</a>
     </h5>
 <p>
       There are far too many separate classes contained in the type-traits library
@@ -97,10 +98,10 @@
       from <code class="computeroutput"><a class="link" href="reference/integral_constant.html" title="integral_constant">true_type</a></code>
       only if <code class="computeroutput"><span class="identifier">T</span></code> is <code class="computeroutput"><span class="keyword">void</span></code>.
     </p>
-<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span> 
+<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span>
 <span class="keyword">struct</span> <a class="link" href="reference/is_void.html" title="is_void">is_void</a> <span class="special">:</span> <span class="keyword">public</span> <a class="link" href="reference/integral_constant.html" title="integral_constant">false_type</a><span class="special">{};</span>
 
-<span class="keyword">template</span> <span class="special">&lt;&gt;</span> 
+<span class="keyword">template</span> <span class="special">&lt;&gt;</span>
 <span class="keyword">struct</span> <a class="link" href="reference/is_void.html" title="is_void">is_void</a><span class="special">&lt;</span><span class="keyword">void</span><span class="special">&gt;</span> <span class="special">:</span> <span class="keyword">public</span> <a class="link" href="reference/integral_constant.html" title="integral_constant">true_type</a><span class="special">{};</span>
 </pre>
 <p>
@@ -115,10 +116,10 @@
       a pointer, and a partial specialization to handle all the cases where T is
       a pointer:
     </p>
-<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span> 
+<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span>
 <span class="keyword">struct</span> <a class="link" href="reference/is_pointer.html" title="is_pointer">is_pointer</a> <span class="special">:</span> <span class="keyword">public</span> <a class="link" href="reference/integral_constant.html" title="integral_constant">false_type</a><span class="special">{};</span>
 
-<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span> 
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span>
 <span class="keyword">struct</span> <a class="link" href="reference/is_pointer.html" title="is_pointer">is_pointer</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">*&gt;</span> <span class="special">:</span> <span class="keyword">public</span> <a class="link" href="reference/integral_constant.html" title="integral_constant">true_type</a><span class="special">{};</span>
 </pre>
 <p>
@@ -154,11 +155,11 @@
       that is the same type as T but with any top-level array bounds removed; this
       is an example of a traits class that performs a transformation on a type:
     </p>
-<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span> 
+<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span>
 <span class="keyword">struct</span> <a class="link" href="reference/remove_extent.html" title="remove_extent">remove_extent</a>
 <span class="special">{</span> <span class="keyword">typedef</span> <span class="identifier">T</span> <span class="identifier">type</span><span class="special">;</span> <span class="special">};</span>
 
-<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span> <span class="identifier">N</span><span class="special">&gt;</span> 
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span> <span class="identifier">N</span><span class="special">&gt;</span>
 <span class="keyword">struct</span> <a class="link" href="reference/remove_extent.html" title="remove_extent">remove_extent</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">[</span><span class="identifier">N</span><span class="special">]&gt;</span>
 <span class="special">{</span> <span class="keyword">typedef</span> <span class="identifier">T</span> <span class="identifier">type</span><span class="special">;</span> <span class="special">};</span>
 </pre>
@@ -173,9 +174,10 @@
       after the class name do have to match the number and type of the parameters
       in the default template.
     </p>
-<a name="boost_typetraits.background.optimized_copy"></a><h5>
-<a name="boost_typetraits.background.optimized_copy-heading"></a>
-      <a class="link" href="background.html#boost_typetraits.background.optimized_copy">Optimized copy</a>
+<h5>
+<a name="boost_typetraits.background.h2"></a>
+      <span><a name="boost_typetraits.background.optimized_copy"></a></span><a class="link" href="background.html#boost_typetraits.background.optimized_copy">Optimized
+      copy</a>
     </h5>
 <p>
       As an example of how the type traits classes can be used, consider the standard
@@ -246,9 +248,10 @@
       to the optimized version where appropriate, otherwise it will call the "slow
       but safe version".
     </p>
-<a name="boost_typetraits.background.was_it_worth_it_"></a><h5>
-<a name="boost_typetraits.background.was_it_worth_it_-heading"></a>
-      <a class="link" href="background.html#boost_typetraits.background.was_it_worth_it_">Was it worth it?</a>
+<h5>
+<a name="boost_typetraits.background.h3"></a>
+      <span><a name="boost_typetraits.background.was_it_worth_it_"></a></span><a class="link" href="background.html#boost_typetraits.background.was_it_worth_it_">Was
+      it worth it?</a>
     </h5>
 <p>
       It has often been repeated in these columns that "premature optimization
@@ -378,9 +381,10 @@
 </tbody>
 </table></div>
 </div>
-<br class="table-break"><a name="boost_typetraits.background.pair_of_references"></a><h5>
-<a name="boost_typetraits.background.pair_of_references-heading"></a>
-      <a class="link" href="background.html#boost_typetraits.background.pair_of_references">Pair of References</a>
+<br class="table-break"><h5>
+<a name="boost_typetraits.background.h4"></a>
+      <span><a name="boost_typetraits.background.pair_of_references"></a></span><a class="link" href="background.html#boost_typetraits.background.pair_of_references">Pair
+      of References</a>
     </h5>
 <p>
       The optimized copy example shows how type traits may be used to perform optimization
@@ -395,8 +399,8 @@
       the comparison operators, default constructor, and template copy constructor
       for simplicity:
     </p>
-<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">T2</span><span class="special">&gt;</span> 
-<span class="keyword">struct</span> <span class="identifier">pair</span> 
+<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">T2</span><span class="special">&gt;</span>
+<span class="keyword">struct</span> <span class="identifier">pair</span>
 <span class="special">{</span>
 <span class="keyword">typedef</span> <span class="identifier">T1</span> <span class="identifier">first_type</span><span class="special">;</span>
 <span class="keyword">typedef</span> <span class="identifier">T2</span> <span class="identifier">second_type</span><span class="special">;</span>
@@ -566,8 +570,8 @@
       that can contain non-reference types, reference types, and constant reference
       types:
     </p>
-<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">T2</span><span class="special">&gt;</span> 
-<span class="keyword">struct</span> <span class="identifier">pair</span> 
+<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">typename</span> <span class="identifier">T2</span><span class="special">&gt;</span>
+<span class="keyword">struct</span> <span class="identifier">pair</span>
 <span class="special">{</span>
 <span class="keyword">typedef</span> <span class="identifier">T1</span> <span class="identifier">first_type</span><span class="special">;</span>
 <span class="keyword">typedef</span> <span class="identifier">T2</span> <span class="identifier">second_type</span><span class="special">;</span>
@@ -596,9 +600,9 @@
       partial specialization to the type traits classes, resulting in code that is
       easier to maintain and easier to understand.
     </p>
-<a name="boost_typetraits.background.conclusion"></a><h5>
-<a name="boost_typetraits.background.conclusion-heading"></a>
-      <a class="link" href="background.html#boost_typetraits.background.conclusion">Conclusion</a>
+<h5>
+<a name="boost_typetraits.background.h5"></a>
+      <span><a name="boost_typetraits.background.conclusion"></a></span><a class="link" href="background.html#boost_typetraits.background.conclusion">Conclusion</a>
     </h5>
 <p>
       We hope that in this article we have been able to give you some idea of what
@@ -609,17 +613,17 @@
       does not have to sink to the lowest common denominator, and that templates
       can be optimal as well as generic.
     </p>
-<a name="boost_typetraits.background.acknowledgements"></a><h5>
-<a name="boost_typetraits.background.acknowledgements-heading"></a>
-      <a class="link" href="background.html#boost_typetraits.background.acknowledgements">Acknowledgements</a>
+<h5>
+<a name="boost_typetraits.background.h6"></a>
+      <span><a name="boost_typetraits.background.acknowledgements"></a></span><a class="link" href="background.html#boost_typetraits.background.acknowledgements">Acknowledgements</a>
     </h5>
 <p>
       The authors would like to thank Beman Dawes and Howard Hinnant for their helpful
       comments when preparing this article.
     </p>
-<a name="boost_typetraits.background._anchor_id__background_references___references"></a><h5>
-<a name="boost_typetraits.background._anchor_id__background_references___references-heading"></a>
-      <a class="link" href="background.html#boost_typetraits.background._anchor_id__background_references___references"><a name="background.references"></a>References</a>
+<h5>
+<a name="boost_typetraits.background.h7"></a>
+      <span><a name="boost_typetraits.background._anchor_id__background_references___references"></a></span><a class="link" href="background.html#boost_typetraits.background._anchor_id__background_references___references"><a name="background.references"></a>References</a>
     </h5>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">

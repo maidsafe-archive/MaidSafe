@@ -315,7 +315,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "semaphore_test", "semaphore
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shared_memory_mapping_test", "shared_memory_mappable_test.vcproj", "{5CE18C83-6025-36FE-A4F7-BA09176D3A11}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shared_memory_mapping_test", "shared_memory_mapping_test.vcproj", "{5CE18C83-6025-36FE-A4F7-BA09176D3A11}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject

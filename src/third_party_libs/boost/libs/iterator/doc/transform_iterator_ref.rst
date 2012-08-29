@@ -41,7 +41,7 @@
 
 If ``Reference`` is ``use_default`` then the ``reference`` member of
 ``transform_iterator`` is
-``result_of<UnaryFunction(iterator_traits<Iterator>::reference)>::type``.
+``result_of<const UnaryFunction(iterator_traits<Iterator>::reference)>::type``.
 Otherwise, ``reference`` is ``Reference``.
 
 If ``Value`` is ``use_default`` then the ``value_type`` member is
@@ -64,10 +64,10 @@ convertible to ``input_iterator_tag``.
 ...................................
 
 The type ``UnaryFunction`` must be Assignable, Copy Constructible, and
-the expression ``f(*i)`` must be valid where ``f`` is an object of
+the expression ``f(*i)`` must be valid where ``f`` is a const object of
 type ``UnaryFunction``, ``i`` is an object of type ``Iterator``, and
 where the type of ``f(*i)`` must be
-``result_of<UnaryFunction(iterator_traits<Iterator>::reference)>::type``.
+``result_of<const UnaryFunction(iterator_traits<Iterator>::reference)>::type``.
 
 The argument ``Iterator`` shall model Readable Iterator.  
 

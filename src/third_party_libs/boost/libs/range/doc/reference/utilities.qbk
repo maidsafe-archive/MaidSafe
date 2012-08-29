@@ -40,23 +40,23 @@ namespace boost
     public: // construction, assignment
         template< class ForwardTraversalIterator2 >
         iterator_range( ForwardTraversalIterator2 Begin, ForwardTraversalIterator2 End );
-                    
+
         template< class ForwardRange >
         iterator_range( ForwardRange& r );
-  
+
         template< class ForwardRange >
         iterator_range( const ForwardRange& r );
-        
+
         template< class ForwardRange >
         iterator_range& operator=( ForwardRange& r );
 
         template< class ForwardRange >
         iterator_range& operator=( const ForwardRange& r );
-    
+
     public: // Forward Range functions
         iterator  begin() const;
         iterator  end() const;
-        
+
     public: // convenience
         operator    unspecified_bool_type() const;
         bool        equal( const iterator_range& ) const;
@@ -65,25 +65,25 @@ namespace boost
         iterator_range& advance_begin(difference_type n);
         iterator_range& advance_end(difference_type n);
         bool      empty() const;
-        // for Random Access Range only: 
+        // for Random Access Range only:
         reference operator[]( difference_type at ) const;
         value_type operator()( difference_type at ) const;
         size_type size() const;
     };
-    
+
     // stream output
     template< class ForwardTraversalIterator, class T, class Traits >
-    std::basic_ostream<T,Traits>& 
+    std::basic_ostream<T,Traits>&
     operator<<( std::basic_ostream<T,Traits>& Os,
                 const iterator_range<ForwardTraversalIterator>& r );
 
     // comparison
     template< class ForwardTraversalIterator, class ForwardTraversalIterator2 >
-    bool operator==( const iterator_range<ForwardTraversalIterator>& l, 
+    bool operator==( const iterator_range<ForwardTraversalIterator>& l,
                      const iterator_range<ForwardTraversalIterator2>& r );
 
     template< class ForwardTraversalIterator, class ForwardRange >
-    bool operator==( const iterator_range<ForwardTraversalIterator>& l, 
+    bool operator==( const iterator_range<ForwardTraversalIterator>& l,
                      const ForwardRange& r );
 
     template< class ForwardTraversalIterator, class ForwardRange >
@@ -91,11 +91,11 @@ namespace boost
                      const iterator_range<ForwardTraversalIterator>& r );
 
     template< class ForwardTraversalIterator, class ForwardTraversalIterator2 >
-    bool operator!=( const iterator_range<ForwardTraversalIterator>& l, 
+    bool operator!=( const iterator_range<ForwardTraversalIterator>& l,
                      const iterator_range<ForwardTraversalIterator2>& r );
 
     template< class ForwardTraversalIterator, class ForwardRange >
-    bool operator!=( const iterator_range<ForwardTraversalIterator>& l, 
+    bool operator!=( const iterator_range<ForwardTraversalIterator>& l,
                      const ForwardRange& r );
 
     template< class ForwardTraversalIterator, class ForwardRange >
@@ -103,23 +103,23 @@ namespace boost
                      const iterator_range<ForwardTraversalIterator>& r );
 
     template< class ForwardTraversalIterator, class ForwardTraversalIterator2 >
-    bool operator<( const iterator_range<ForwardTraversalIterator>& l, 
+    bool operator<( const iterator_range<ForwardTraversalIterator>& l,
                     const iterator_range<ForwardTraversalIterator2>& r );
 
     template< class ForwardTraversalIterator, class ForwardRange >
-    bool operator<( const iterator_range<ForwardTraversalIterator>& l, 
+    bool operator<( const iterator_range<ForwardTraversalIterator>& l,
                     const ForwardRange& r );
 
     template< class ForwardTraversalIterator, class ForwardRange >
     bool operator<( const ForwardRange& l,
                     const iterator_range<ForwardTraversalIterator>& r );
- 
+
     // external construction
     template< class ForwardTraversalIterator >
     iterator_range< ForwardTraversalIterator >
-    make_iterator_range( ForwardTraversalIterator Begin, 
+    make_iterator_range( ForwardTraversalIterator Begin,
                          ForwardTraversalIterator End );
-       
+
     template< class ForwardRange >
     iterator_range< typename range_iterator<ForwardRange>::type >
     make_iterator_range( ForwardRange& r );
@@ -127,25 +127,25 @@ namespace boost
     template< class ForwardRange >
     iterator_range< typename range_iterator<const ForwardRange>::type >
     make_iterator_range( const ForwardRange& r );
-    
+
     template< class Range >
     iterator_range< typename range_iterator<Range>::type >
     make_iterator_range( Range& r,
                          typename range_difference<Range>::type advance_begin,
                          typename range_difference<Range>::type advance_end );
-    
+
     template< class Range >
     iterator_range< typename range_iterator<const Range>::type >
-    make_iterator_range( const Range& r, 
+    make_iterator_range( const Range& r,
                          typename range_difference<const Range>::type advance_begin,
                          typename range_difference<const Range>::type advance_end );
-    
+
     // convenience
     template< class Sequence, class ForwardRange >
     Sequence copy_range( const ForwardRange& r );
-    
+
 } // namespace 'boost'
-``    
+``
 
 If an instance of `iterator_range` is constructed by a client with two iterators, the client must ensure that the two iterators delimit a valid closed-open range [begin,end).
 
@@ -177,7 +177,7 @@ It is worth noticing that the templated constructors and assignment operators al
 
 ``
 iterator_range make_iterator_range( Range& r,
-                                    typename range_difference<Range>::type advance_begin, 
+                                    typename range_difference<Range>::type advance_begin,
                                     typename range_difference<Range>::type advance_end );
 ``
 
@@ -209,46 +209,46 @@ namespace boost
     template< class ForwardRange >
     class sub_range : public iterator_range< typename range_iterator<ForwardRange>::type >
     {
-    public: 
+    public:
         typedef typename range_iterator<ForwardRange>::type iterator;
         typedef typename range_iterator<const ForwardRange>::type  const_iterator;
         typedef typename iterator_difference<iterator>::type difference_type;
-    
+
     public: // construction, assignment
         template< class ForwardTraversalIterator >
         sub_range( ForwardTraversalIterator Begin, ForwardTraversalIterator End );
 
         template< class ForwardRange2 >
         sub_range( ForwardRange2& r );
-         
+
         template< class ForwardRange2 >
         sub_range( const Range2& r );
-         
+
         template< class ForwardRange2 >
         sub_range& operator=( ForwardRange2& r );
 
         template< class ForwardRange2 >
-        sub_range& operator=( const ForwardRange2& r );    
-    
-    public:  // Forward Range functions 
+        sub_range& operator=( const ForwardRange2& r );
+
+    public:  // Forward Range functions
         iterator        begin();
         const_iterator  begin() const;
         iterator        end();
-        const_iterator  end() const;    
-        
-    public: // convenience 
+        const_iterator  end() const;
+
+    public: // convenience
         value_type&       front();
         const value_type& front() const;
         value_type&       back();
         const value_type& back() const;
-        // for Random Access Range only: 
+        // for Random Access Range only:
         value_type&       operator[]( size_type at );
         const value_type& operator[]( size_type at ) const;
-    
+
     public:
         // rest of interface inherited from iterator_range
     };
-    
+
 } // namespace 'boost'
 ``
 

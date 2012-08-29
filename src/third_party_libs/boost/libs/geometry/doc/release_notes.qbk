@@ -12,6 +12,48 @@
 
 [section:release_notes Release Notes]
 
+
+[/=================]
+[heading Boost 1.51]
+[/=================]
+
+[*Breaking changes]
+
+* points accessed through a pointer (e.g. in a linestring) should now be specialized without the pointer. In previous versions a type `my_point` used like `linestring<my_point*>` had to be specalized like: `template<> struct tag<my_point*>`. Now the library itself removes the pointer before calling the traits class, so now it should be like: `template<> struct tag<my_point>`
+
+[*Bugfixes]
+
+* intersection was sometimes wrong for integer points, fixed
+* documentation, order of parameters in simplify was wrong, fixed
+
+[*Solved tickets]
+
+* [@https://svn.boost.org/trac/boost/ticket/7030 7030] spherical distance, fixed (by patch of Karsten Ahnert)
+
+
+[/=================]
+[heading Boost 1.50]
+[/=================]
+
+[*Bugfixes]
+
+* the return type of comparable projected point strategy for integer points was wrong (integer), fixed
+* several robustness issues in intersection of segments and polygons, fixed
+* invalid intersection output is filtered out
+* disjoint for multi_polygon's might incorrectly return true, fixed
+
+[*Solved tickets]
+
+* [@https://svn.boost.org/trac/boost/ticket/6585 6585] patch for alternative syntax multipoint, applied
+* [@https://svn.boost.org/trac/boost/ticket/6584 6584] patch for bug in distance, applied
+* [@https://svn.boost.org/trac/boost/ticket/5730 5730] same issue as 6584, fixed
+* [@https://svn.boost.org/trac/boost/ticket/6166 6166] patch for missing transformation, applied
+* [@https://svn.boost.org/trac/boost/ticket/6696 6696] invalid intersection output, was (by chance) already fixed in Trunk before reported
+
+[*Additional functionality]
+
+* added algorithm "touches" (OGC SF compliant) for *polygon/*polygon
+
 [/=================]
 [heading Boost 1.49]
 [/=================]

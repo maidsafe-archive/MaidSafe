@@ -22,7 +22,7 @@
 <div class="spirit-nav">
 <a accesskey="p" href="../interface.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../interface.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="associated_types.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
-<div class="section" lang="en">
+<div class="section boost_icl_interface_required_concepts" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_icl.interface.required_concepts"></a><a class="link" href="required_concepts.html" title="Required Concepts">Required Concepts</a>
 </h3></div></div></div>
@@ -328,7 +328,7 @@
 </tbody>
 </table></div>
 <a name="boost_icl.interface.required_concepts.requirements_on_domaint"></a><h5>
-<a name="id1101332"></a>
+<a name="id1141302"></a>
         <a class="link" href="required_concepts.html#boost_icl.interface.required_concepts.requirements_on_domaint">Requirements
         on DomainT</a>
       </h5>
@@ -439,7 +439,7 @@
 <p>
         A domain type <code class="computeroutput"><span class="identifier">DomainT</span></code> for
         intervals and interval containers has to satisfy the requirements of concept
-        <a href="http://www.generic-programming.org/languages/conceptcpp/issues/concepts-closed.html" target="_top"><code class="computeroutput"><span class="identifier">Regular</span></code></a> which implies among other
+        <a href="http://www.informit.com/guides/content.aspx?g=cplusplus&amp;seqNum=314" target="_top"><code class="computeroutput"><span class="identifier">Regular</span></code></a> which implies among other
         properties the existence of a copy and a default constructor. In addition
         <code class="computeroutput"><span class="identifier">IsIncrementable</span></code> <span class="bold"><strong>or</strong></span> <code class="computeroutput"><span class="identifier">HasUnitElement</span></code>
         is required for <code class="computeroutput"><span class="identifier">DomainT</span></code>.
@@ -505,7 +505,7 @@
         is an integral type.
       </p>
 <a name="boost_icl.interface.required_concepts.requirements_on_intervalt"></a><h6>
-<a name="id1102448"></a>
+<a name="id1142487"></a>
         <a class="link" href="required_concepts.html#boost_icl.interface.required_concepts.requirements_on_intervalt">Requirements
         on IntervalT</a>
       </h6>
@@ -568,7 +568,7 @@
 </tr></tbody>
 </table></div>
 <a name="boost_icl.interface.required_concepts.requirements_on_codomaint"></a><h5>
-<a name="id1102698"></a>
+<a name="id1142736"></a>
         <a class="link" href="required_concepts.html#boost_icl.interface.required_concepts.requirements_on_codomaint">Requirements
         on CodomainT</a>
       </h5>
@@ -732,7 +732,9 @@
         <span class="identifier">subtract</span></code>, &amp;, &amp;=, add_intersection)
         are used on the <code class="computeroutput"><a class="link" href="../../boost/icl/interval_map.html" title="Class template interval_map">interval_map</a></code>,
         then <code class="computeroutput"><span class="identifier">CodomainT</span></code> only needs
-        to be <a href="http://www.generic-programming.org/languages/conceptcpp/issues/concepts-closed.html" target="_top">Regular</a>.
+        to be <a href="http://www.informit.com/guides/content.aspx?g=cplusplus&amp;seqNum=314" target="_top">Regular</a>.
+      </p>
+<p>
         <span class="emphasis"><em><span class="bold"><strong>Regular</strong></span></em></span> object semantics
         implies <code class="computeroutput"><span class="identifier">DefaultConstructible</span></code>
         and <code class="computeroutput"><span class="identifier">EqualityComparable</span></code> which
@@ -777,12 +779,12 @@
 <p>
         For <span class="emphasis"><em>complete aggregation functionality</em></span> an inverse aggregation
         functor on a <code class="computeroutput"><span class="identifier">Map</span></code>'s <code class="computeroutput"><span class="identifier">CodomainT</span></code> is needed. The icl provides a
-        metafunction <code class="computeroutput">inverse</code> for
+        metafunction <code class="computeroutput"><a class="link" href="../../boost/icl/inverse.html" title="Struct template inverse">inverse</a></code> for
         that purpose. Using the default <code class="computeroutput"><span class="identifier">Combine</span>
         <span class="special">=</span> <span class="identifier">inplace_plus</span></code>
         that relies on the existence of <code class="computeroutput"><span class="keyword">operator</span>
         <span class="special">+=</span></code> on type <code class="computeroutput"><span class="identifier">CodomainT</span></code>
-        metafunction <code class="computeroutput">inverse</code> will
+        metafunction <code class="computeroutput"><a class="link" href="../../boost/icl/inverse.html" title="Struct template inverse">inverse</a></code> will
         infer <code class="computeroutput"><a class="link" href="../../boost/icl/inplace_minus.html" title="Struct template inplace_minus">inplace_minus</a></code>
         as inverse functor, that requires <code class="computeroutput"><span class="keyword">operator</span>
         <span class="special">-=</span></code> on type <code class="computeroutput"><span class="identifier">CodomainT</span></code>.

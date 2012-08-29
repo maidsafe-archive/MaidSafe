@@ -1,6 +1,6 @@
 #  Boost.Intrusive library documentation Jamfile
 #
-#  Copyright Ion Gaztanaga 2006. 
+#  Copyright Ion Gaztanaga 2006.
 #  Distributed under the Boost Software License, Version 1.0.
 #     (See accompanying file LICENSE_1_0.txt or copy at
 #           http://www.boost.org/LICENSE_1_0.txt)
@@ -11,6 +11,7 @@ using auto-index ;
 
 import doxygen ;
 import quickbook ;
+path-constant here : . ;
 
 doxygen autodoc
    :
@@ -46,9 +47,9 @@ doxygen autodoc
    ;
 
 xml intrusive : intrusive.qbk
-              : 
+              :
                  <include>../../../tools/auto_index/include
-              ;   
+              ;
 
 boostbook standalone
    :
@@ -61,31 +62,34 @@ boostbook standalone
         <dependency>autodoc
 
         # Build requirements go here:
-        
+
         # <auto-index>on (or off) one turns on (or off) indexing:
         <auto-index>on
-        
+
         # Turns on (or off) auto-index-verbose for diagnostic info.
         # This is highly recommended until you have got all the many details correct!
-        <auto-index-verbose>on 
-        
+        <auto-index-verbose>on
+
         # Choose the indexing method (separately for html and PDF) - see manual.
         # Choose indexing method for PDFs:
         <format>pdf:<auto-index-internal>off
-        
+
         # Choose indexing method for html:
         <format>html:<auto-index-internal>on
-        
+
         # Set the name of the script file to use (index.idx is popular):
-        <auto-index-script>index.idx
+        <auto-index-script>$(here)/index.idx
         # Commands in the script file should all use RELATIVE PATHS
         # otherwise the script will not be portable to other machines.
-        # Relative paths are normally taken as relative to the location 
+        # Relative paths are normally taken as relative to the location
         # of the script file, but we can add a prefix to all
         # those relative paths using the <auto-index-prefix> feature.
         # The path specified by <auto-index-prefix> may be either relative or
         # absolute, for example the following will get us up to the boost root
         # directory for most Boost libraries:
-        <auto-index-prefix>"../../.."
+        <auto-index-prefix>"$(here)/../../.."
 
    ;
+
+install pdfinstall : standalone/<format>pdf : <name>intrusive.pdf <location>. <install-type>PDF <format>pdf ;
+explicit pdfinstall ;

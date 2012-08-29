@@ -62,7 +62,7 @@ majority of compilers, such as namespaces, exceptions, RTTI, or templates.
 [section:warnings Disabling Compiler Warnings]
 
 The header `<boost/config/warning_disable.hpp>` can be used to disable
-certain compiler warings that are hard or impossible to otherwise remove.
+certain compiler warnings that are hard or impossible to otherwise remove.
 
 Note that:
 

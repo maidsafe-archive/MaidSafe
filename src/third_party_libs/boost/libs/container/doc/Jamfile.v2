@@ -1,6 +1,6 @@
 #  Boost.Container library documentation Jamfile  ---------------------------------
 #
-#  Copyright Ion Gaztanaga 2009-2011. Use, modification and
+#  Copyright Ion Gaztanaga 2009-2012. Use, modification and
 #  distribution is subject to the Boost Software License, Version
 #  1.0. (See accompanying file LICENSE_1_0.txt or copy at
 #  http://www.boost.org/LICENSE_1_0.txt)
@@ -13,6 +13,7 @@ import quickbook ;
 using auto-index ;
 
 path-constant images_location : html ;
+path-constant here : . ;
 
 doxygen autodoc
    :
@@ -27,6 +28,8 @@ doxygen autodoc
         <doxygen:param>"PREDEFINED=\"insert_const_ref_type= const T&\" \\
                                    \"BOOST_CONTAINER_DOXYGEN_INVOKED\" \\
                                    \"BOOST_RV_REF(T)=T &&\" \\
+                                   \"BOOST_RV_REF_BEG=\" \\
+                                   \"BOOST_RV_REF_END=&&\" \\
                                    \"BOOST_COPY_ASSIGN_REF(T)=const T &\" \\
                                    \"BOOST_RV_REF_2_TEMPL_ARGS(T,a,b)=T<a, b> &&\" \\
                                    \"BOOST_RV_REF_3_TEMPL_ARGS(T,a,b,c)=T<a,b,c>T<a,b,c> &&\" \\
@@ -34,8 +37,8 @@ doxygen autodoc
         <xsl:param>"boost.doxygen.reftitle=Boost.Container Header Reference"
    ;
 
-xml container : container.qbk 
-              : 
+xml container : container.qbk
+              :
                  <include>../../../tools/auto_index/include
               ;
 
@@ -52,31 +55,35 @@ boostbook standalone
         <format>pdf:<xsl:param>boost.url.prefix=http://www.boost.org/doc/libs/release/doc/html
 
         # Build requirements go here:
-        
+       
         # <auto-index>on (or off) one turns on (or off) indexing:
         <auto-index>on
-        
+       
         # Turns on (or off) auto-index-verbose for diagnostic info.
         # This is highly recommended until you have got all the many details correct!
-        <auto-index-verbose>on 
-        
+        <auto-index-verbose>on
+       
         # Choose the indexing method (separately for html and PDF) - see manual.
         # Choose indexing method for PDFs:
         <format>pdf:<auto-index-internal>off
-        
+       
         # Choose indexing method for html:
         <format>html:<auto-index-internal>on
-        
+       
         # Set the name of the script file to use (index.idx is popular):
-        <auto-index-script>index.idx
+        <auto-index-script>$(here)/index.idx
         # Commands in the script file should all use RELATIVE PATHS
         # otherwise the script will not be portable to other machines.
-        # Relative paths are normally taken as relative to the location 
+        # Relative paths are normally taken as relative to the location
         # of the script file, but we can add a prefix to all
         # those relative paths using the <auto-index-prefix> feature.
         # The path specified by <auto-index-prefix> may be either relative or
         # absolute, for example the following will get us up to the boost root
         # directory for most Boost libraries:
-        <auto-index-prefix>"../../.."
+        <auto-index-prefix>"$(here)/../../.."
 
+        <format>pdf:<xsl:param>admon.graphics.extension=".svg"
    ;
+
+install pdfinstall : standalone/<format>pdf : <install-type>PDF <location>. <name>container.pdf ;
+explicit pdfinstall ;

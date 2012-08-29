@@ -29,6 +29,9 @@ Xpressive's ternary search trie implementation is David's, as is the number
 parser example in [^libs/xpressive/example/numbers.cpp] and the documentation
 for symbol tables and attributes.
 
+Thanks to John Fletcher for helping track down a runtime assertion when using
+xpressive with Howard Hinnant's most excellent libc++.
+
 Finally, I would like to thank [@http://boost.org/people/thomas_witt.html Thomas Witt]
 for acting as xpressive's review manager.
 

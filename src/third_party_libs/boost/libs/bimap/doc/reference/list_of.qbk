@@ -152,6 +152,10 @@ requirements for these types of containers.
         // Only in map views
         // {
 
+          typedef ``['-unspecified-]`` key_type;
+          typedef ``['-unspecified-]`` mapped_type;
+          typedef ``['-unspecified-]`` mapped_type; // Equal to mapped_type
+
           template< class CompatibleKey >
           bool ``[link reference_list_of_replace_key_iterator_key replace_key]``(iterator position, const CompatibleKey & x);
 
@@ -228,14 +232,14 @@ In the set view:
 In the left map view:
 
     typedef  Left  key_type;
-    typedef  ...   data_type;
+    typedef  ...   mapped_type;
 
     typedef signature-compatible with std::pair< Left, ... > value_type;
 
 In the right map view:
 
     typedef  ...  key_type;
-    typedef  Left data_type;
+    typedef  Left mapped_type;
 
     typedef signature-compatible with std::pair< ... , Left > value_type;
 
@@ -459,7 +463,7 @@ its original state.
     bool replace_data(iterator position, const CompatibleData & x);
 
 * [*Requires: ] `position` is a valid dereferenceable iterator of the set view.
-`CompatibleKey` can be assigned to `data_type`.
+`CompatibleKey` can be assigned to `mapped_type`.
 * [*Effects:] Assigns the value `x` to `e.second`, where `e` is the element pointed 
 to by `position` into the `bimap` to which the set view belongs if replacing is allowed by
 all other views of the `bimap`.
@@ -498,7 +502,7 @@ operation (except possibly mod), then the element pointed to by position is eras
     bool modify_data(iterator position, DataModifier mod);
 
 * [*Requires: ] `DataModifier` is a model of __SGI_UNARY_FUNCTION__ accepting arguments of
-type: `data_type&`; `position` is a valid dereferenceable iterator of the view.
+type: `mapped_type&`; `position` is a valid dereferenceable iterator of the view.
 * [*Effects:] Calls `mod(e.second)` where e is the element pointed to by position and 
 rearranges `*position` into all the views of the `bimap`.
 If the rearrangement fails, the element is erased.

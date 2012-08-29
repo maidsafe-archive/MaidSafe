@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 3>, 150> erf_small_data = { {
+   static const boost::array<boost::array<typename table_type<T>::type, 3>, 150> erf_small_data = { {
       {{ SC_(0), SC_(0), SC_(1) }}, 
       {{ SC_(0.140129846432481707092372958328991613128e-44), SC_(0.1581195994027057927040695988659415347357e-44), SC_(1) }}, 
       {{ SC_(0.2802596928649634141847459166579832262561e-44), SC_(0.3162391988054115854081391977318830694715e-44), SC_(1) }}, 

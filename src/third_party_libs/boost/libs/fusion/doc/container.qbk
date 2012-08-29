@@ -21,10 +21,11 @@ __views__. These containers are more or less counterparts of those in __stl__.
 
 [heading Description]
 
-`vector` is a __random_access_sequence__ of heterogenous typed
-data structured as a simple `struct` where each element is held
-as a member variable. `vector` is the simplest of the Fusion
-sequence container, and in many cases the most efficient.
+`vector` is a __random_access_sequence__ of heterogenous typed data
+structured as a simple `struct` where each element is held as a member
+variable. `vector` is the simplest of the Fusion sequence container (a
+vector with N elements is just a struct with N members), and in many
+cases the most efficient.
 
 [heading Header]
 
@@ -95,7 +96,7 @@ including any Fusion header to change the default. Example:
 
 [table
     [[Parameter]            [Description]               [Default]]
-    [[`T0`...`TN`]          [Element types]             [['unspecified]]]
+    [[`T0`...`TN`]          [Element types]             [__unspecified__]]
 ]
 
 [heading Model of]
@@ -156,7 +157,7 @@ time). The runtime cost of access to each element is peculiarly constant
 
 [table
     [[Parameter]            [Description]               [Default]]
-    [[`Car`]                [Head type]                 []]
+    [[`Car`]                [Head type]                 [ ]]
     [[`Cdr`]                [Tail type]                 [`nil`]]
 ]
 
@@ -246,7 +247,7 @@ including any Fusion header to change the default. Example:
 
 [table
     [[Parameter]            [Description]               [Default]]
-    [[`T0`...`TN`]          [Element types]             [['unspecified-type]]]
+    [[`T0`...`TN`]          [Element types]             [__unspecified__]]
 ]
 
 [heading Model of]
@@ -286,6 +287,220 @@ constant (see __recursive_inline__).]
     list<int, float> l(12, 5.5f);
     std::cout << __at_c__<0>(l) << std::endl;
     std::cout << __at_c__<1>(l) << std::endl;
+
+[endsect]
+
+[section deque]
+
+[heading Description]
+
+`deque` is a simple __bidirectional_sequence__ that supports
+constant-time insertion and removal of elements at both ends. Like the
+__list__ and __cons__, `deque` is more efficient than __vector__
+(especially at compile time) when the target sequence is constructed
+piecemeal (a data at a time, e.g. when constructing expression
+templates). Like the __list__ and __cons__, runtime cost of access to
+each element is peculiarly constant (see __recursive_inline__).
+
+Element insertion and removal are done by special `deque` helper classes
+__front_extended_deque__ and __back_extended_deque__.
+
+[heading Header]
+
+    #include <boost/fusion/container/deque.hpp>
+    #include <boost/fusion/include/deque.hpp>
+    #include <boost/fusion/container/list/deque_fwd.hpp>
+    #include <boost/fusion/include/deque_fwd.hpp>
+
+[heading Synopsis]
+
+    template <typename ...Elements>
+    struct deque;
+
+For C++11 compilers, the variadic class interface has no upper bound.
+
+For C++03 compilers, the variadic class interface accepts `0` to
+`FUSION_MAX_DEQUE_SIZE` elements, where `FUSION_MAX_DEQUE_SIZE` is a
+user definable predefined maximum that defaults to `10`. Example:
+
+    deque<int, char, double>
+
+You may define the preprocessor constant `FUSION_MAX_DEQUE_SIZE` before
+including any Fusion header to change the default. Example:
+
+    #define FUSION_MAX_DEQUE_SIZE 20
+
+[heading Template parameters]
+
+[table
+    [[Parameter]            [Description]               [Default]]
+    [[`Elements`]           [Element types]             [ ]]
+]
+
+[heading Model of]
+
+* __bidirectional_sequence__
+
+[variablelist Notation
+    [[`D`]              [A `deque` type]]
+    [[`d`, `d2`]        [Instances of `deque`]]
+    [[`e0`...`en`]      [Heterogeneous values]]
+    [[`s`]              [A __forward_sequence__]]
+    [[`N`]              [An __mpl_integral_constant__]]
+]
+
+[heading Expression Semantics]
+
+Semantics of an expression is defined only where it differs from, or is not
+defined in __bidirectional_sequence__.
+
+[table
+    [[Expression]           [Semantics]]
+    [[`D()`]                [Creates a deque with default constructed elements.]]
+    [[`D(e0, e1,... en)`]   [Creates a deque with elements `e0`...`en`.]]
+    [[`D(s)`]               [Copy constructs a deque from a __forward_sequence__, `s`.]]
+    [[`d = s`]              [Assigns to a deque, `d`, from a __forward_sequence__, `s`.]]
+    [[`__at__<N>(d)`]       [The Nth element from the beginning of the sequence; see __at__.]]
+]
+
+[blurb __note__ `__at__<N>(d)` is provided for convenience, despite
+`deque` being a __bidirectional_sequence__ only (`at` is supposed to be
+a __random_access_sequence__ requirement). The runtime complexity of
+__at__ is constant (see __recursive_inline__). `deque` element access
+utilizes operator overloading with argument dependent lookup (ADL) of
+the proper element getter function given a static constant index
+parameter. Interestingly, with modern C++ compilers, this lookup is very
+fast and rivals recursive template instantiations in compile time-speed,
+so much so that `deque` relies on ADL for all element access (indexing)
+as well as iteration.]
+
+[heading Example]
+
+    deque<int, float> d(12, 5.5f);
+    std::cout << __at_c__<0>(d) << std::endl;
+    std::cout << __at_c__<1>(d) << std::endl;
+
+[endsect]
+
+[section front_extended_deque]
+
+[heading Description]
+
+`front_extended_deque` allows a __deque__ to be front extended. It shares
+the same properties as the __deque__.
+
+[heading Header]
+
+    See __deque__
+
+[heading Synopsis]
+
+    template <typename Deque, typename T>
+    struct front_extended_deque;
+
+[heading Template parameters]
+
+[table
+    [[Parameter]            [Description]               [Default]]
+    [[`Deque`]              [Deque type]                [ ]]
+    [[`T`]                  [Element type]              [ ]]
+]
+
+[blurb __note__ `Deque` can be a __deque__, a __front_extended_deque__ or a
+__back_extended_deque__]
+
+[heading Model of]
+
+* __bidirectional_sequence__
+
+[variablelist Notation
+    [[`D`]              [A `front_extended_deque` type]]
+    [[`e`]              [Heterogeneous value]]
+    [[`N`]              [An __mpl_integral_constant__]]
+]
+
+[heading Expression Semantics]
+
+Semantics of an expression is defined only where it differs from, or is
+not defined in __bidirectional_sequence__.
+
+[table
+    [[Expression]           [Semantics]]
+    [[`D(d, e)`]            [Extend `d` prepending `e` to its front.]]
+    [[`__at__<N>(d)`]       [The Nth element from the beginning of the sequence; see __at__.]]
+]
+
+[blurb __note__ See __deque__ for further details.]
+
+[heading Example]
+
+    typedef deque<int, float> initial_deque;
+    initial_deque d(12, 5.5f);
+    front_extended_deque<initial_deque, int> d2(d, 999);
+    std::cout << __at_c__<0>(d2) << std::endl;
+    std::cout << __at_c__<1>(d2) << std::endl;
+    std::cout << __at_c__<2>(d2) << std::endl;
+
+[endsect]
+
+[section back_extended_deque]
+
+[heading Description]
+
+`back_extended_deque` allows a __deque__ to be back extended. It shares
+the same properties as the __deque__.
+
+[heading Header]
+
+    See __deque__
+
+[heading Synopsis]
+
+    template <typename Deque, typename T>
+    struct back_extended_deque;
+
+[heading Template parameters]
+
+[table
+    [[Parameter]            [Description]               [Default]]
+    [[`Deque`]              [Deque type]                [ ]]
+    [[`T`]                  [Element type]              [ ]]
+]
+
+[blurb __note__ `Deque` can be a __deque__, a __back_extended_deque__ or a
+__back_extended_deque__]
+
+[heading Model of]
+
+* __bidirectional_sequence__
+
+[variablelist Notation
+    [[`D`]              [A `back_extended_deque` type]]
+    [[`e`]              [Heterogeneous value]]
+    [[`N`]              [An __mpl_integral_constant__]]
+]
+
+[heading Expression Semantics]
+
+Semantics of an expression is defined only where it differs from, or is
+not defined in __bidirectional_sequence__.
+
+[table
+    [[Expression]           [Semantics]]
+    [[`D(d, e)`]            [Extend `d` prepending `e` to its back.]]
+    [[`__at__<N>(d)`]       [The Nth element from the beginning of the sequence; see __at__.]]
+]
+
+[blurb __note__ See __deque__ for further details.]
+
+[heading Example]
+
+    typedef deque<int, float> initial_deque;
+    initial_deque d(12, 5.5f);
+    back_extended_deque<initial_deque, int> d2(d, 999);
+    std::cout << __at_c__<0>(d2) << std::endl;
+    std::cout << __at_c__<1>(d2) << std::endl;
+    std::cout << __at_c__<2>(d2) << std::endl;
 
 [endsect]
 
@@ -332,7 +547,7 @@ including any Fusion header to change the default. Example:
 
 [table
     [[Parameter]            [Description]               [Default]]
-    [[`T0`...`TN`]          [Element types]             [['unspecified-type]]]
+    [[`T0`...`TN`]          [Element types]             [__unspecified__]]
 ]
 
 [heading Model of]
@@ -414,7 +629,7 @@ including any Fusion header to change the default. Example:
 
 [table
     [[Parameter]            [Description]               [Default]]
-    [[`T0`...`TN`]          [Element types]             [['unspecified-type]]]
+    [[`T0`...`TN`]          [Element types]             [__unspecified__]]
 ]
 
 [heading Model of]
@@ -617,6 +832,58 @@ __note_boost_ref__
 
 [endsect]
 
+[section make_deque]
+
+[heading Description]
+
+Create a __deque__ from one or more values.
+
+[heading Synopsis]
+
+    template <typename ...Elements>
+    typename __result_of_make_deque__<Elements...>::type
+    make_deque(Elements const&... elements);
+
+For C++11 compilers, the variadic function interface has no upper bound.
+
+For C++11 compilers, the variadic function accepts `0` to
+`FUSION_MAX_DEQUE_SIZE` elements, where `FUSION_MAX_DEQUE_SIZE` is a
+user definable predefined maximum that defaults to `10`. You may define
+the preprocessor constant `FUSION_MAX_DEQUE_SIZE` before including any
+Fusion header to change the default. Example:
+
+    #define FUSION_MAX_DEQUE_SIZE 20
+
+[heading Parameters]
+
+[table
+    [[Parameter]            [Description]               [Description]]
+    [[`elements`]           [Instances of `Elements`]   [The arguments to `make_deque`]]
+]
+
+[heading Expression Semantics]
+
+    make_deque(elements...);
+
+[*Return type]: __result_of_make_deque__`<Elements...>::type`
+
+[*Semantics]: Create a __deque__ from `elements...`.
+
+[heading Header]
+
+    #include <boost/fusion/container/generation/make_deque.hpp>
+    #include <boost/fusion/include/make_deque.hpp>
+
+[heading Example]
+
+    make_deque(123, "hello", 12.5)
+
+[heading See also]
+
+__note_boost_ref__
+
+[endsect]
+
 [section make_set]
 
 [heading Description]
@@ -734,6 +1001,7 @@ succeeding sections document the various /tier/ flavors.
 * __list_tie__
 * __vector_tie__
 * __map_tie__
+* __deque_tie__
 
 Example:
 
@@ -914,6 +1182,56 @@ including any Fusion header to change the default. Example:
 
 [endsect]
 
+[section deque_tie]
+
+[heading Description]
+
+Constructs a tie using a __deque__ sequence.
+
+[heading Synopsis]
+
+    template <typename ...Elements>
+    __deque__<Elements&...>
+    deque_tie(Elements&... elements);
+
+For C++11 compilers, the variadic function interface has no upper bound.
+
+For C++03 compilers, the variadic function accepts `0` to
+`FUSION_MAX_DEQUE_SIZE` elements, where `FUSION_MAX_DEQUE_SIZE` is a
+user definable predefined maximum that defaults to `10`. You may define
+the preprocessor constant `FUSION_MAX_DEQUE_SIZE` before including any
+Fusion header to change the default. Example:
+
+    #define FUSION_MAX_DEQUE_SIZE 20
+
+[heading Parameters]
+
+[table
+    [[Parameter]            [Description]               [Description]]
+    [[`elements`]           [Instances of `Elements`]   [The arguments to `deque_tie`]]
+]
+
+[heading Expression Semantics]
+
+    deque_tie(elements...);
+
+[*Return type]: __deque__<Elements&...>
+
+[*Semantics]: Create a __deque__ of references from `elements...`.
+
+[heading Header]
+
+    #include <boost/fusion/container/generation/deque_tie.hpp>
+    #include <boost/fusion/include/deque_tie.hpp>
+
+[heading Example]
+
+    int i = 123;
+    double d = 123.456;
+    deque_tie(i, d)
+
+[endsect]
+
 [endsect]
 
 [section MetaFunctions]
@@ -1045,6 +1363,54 @@ rules for __element_conversion__.
 [heading Example]
 
     result_of::make_vector<int, const char(&)[7], double>::type
+
+[endsect]
+
+[section make_deque]
+
+[heading Description]
+
+Returns the result type of __make_deque__.
+
+[heading Synopsis]
+
+    template <typename ...Elements>
+    struct make_deque;
+
+For C++11 compilers, the variadic template interface has no upper bound.
+
+For C++03 The variadic function accepts `0` to `FUSION_MAX_DEQUE_SIZE`
+elements, where `FUSION_MAX_DEQUE_SIZE` is a user definable predefined
+maximum that defaults to `10`. You may define the preprocessor constant
+`FUSION_MAX_DEQUE_SIZE` before including any Fusion header to change the
+default. Example:
+
+    #define FUSION_MAX_DEQUE_SIZE 20
+
+[heading Parameters]
+
+[table
+    [[Parameter]        [Requirement]               [Description]]
+    [[`Elements`]       [Variadic template types]   [Template arguments to `make_deque`]]
+]
+
+[heading Expression Semantics]
+
+    result_of::make_deque<Elements...>::type
+
+[*Return type]: A __deque__ with elements of types converted following the
+rules for __element_conversion__.
+
+[*Semantics]: Create a __deque__ from `Elements...`.
+
+[heading Header]
+
+    #include <boost/fusion/container/generation/make_deque.hpp>
+    #include <boost/fusion/include/make_deque.hpp>
+
+[heading Example]
+
+    result_of::make_deque<int, const char(&)[7], double>::type
 
 [endsect]
 
@@ -1240,6 +1606,53 @@ default. Example:
 
 [endsect]
 
+[section deque_tie]
+
+[heading Description]
+
+Returns the result type of __deque_tie__.
+
+[heading Synopsis]
+
+    template <typename ...Elements>
+    struct deque_tie;
+
+For C++11 compilers, the variadic template interface has no upper bound.
+
+For C++03 compilers, the variadic function accepts `0` to
+`FUSION_MAX_DEQUE_SIZE` elements, where `FUSION_MAX_DEQUE_SIZE` is a
+user definable predefined maximum that defaults to `10`. You may define
+the preprocessor constant `FUSION_MAX_DEQUE_SIZE` before including any
+Fusion header to change the default. Example:
+
+    #define FUSION_MAX_DEQUE_SIZE 20
+
+[heading Parameters]
+
+[table
+    [[Parameter]        [Requirement]               [Description]]
+    [[`Elements`]       [Variadic template types]   [Template arguments to `deque_tie`]]
+]
+
+[heading Expression Semantics]
+
+    result_of::deque_tie<Elements...>::type;
+
+[*Return type]: __deque__<Elements&...>
+
+[*Semantics]: Create a __deque__ of references from `Elements...`.
+
+[heading Header]
+
+    #include <boost/fusion/container/generation/deque_tie.hpp>
+    #include <boost/fusion/include/deque_tie.hpp>
+
+[heading Example]
+
+    result_of::deque_tie<int, double>::type
+
+[endsect]
+
 [section map_tie]
 
 [heading Description]
@@ -1385,6 +1798,48 @@ Convert a fusion sequence to a __vector__.
 [heading Example]
 
     as_vector(__make_list__('x', 123, "hello"))
+
+[endsect]
+
+[section as_deque]
+
+[heading Description]
+
+Convert a fusion sequence to a __deque__.
+
+[heading Synopsis]
+
+    template <typename Sequence>
+    typename result_of::as_deque<Sequence>::type
+    as_deque(Sequence& seq);
+
+    template <typename Sequence>
+    typename result_of::as_deque<Sequence const>::type
+    as_deque(Sequence const& seq);
+
+[heading Parameters]
+
+[table
+    [[Parameter]    [Requirement]               [Description]]
+    [[`seq`]        [An instance of Sequence]   [The sequence to convert.]]
+]
+
+[heading Expression Semantics]
+
+    as_deque(seq);
+
+[*Return type]: __result_of_as_deque__`<Sequence>::type`
+
+[*Semantics]: Convert a fusion sequence, `seq`, to a __deque__.
+
+[heading Header]
+
+    #include <boost/fusion/container/deque/convert.hpp>
+    #include <boost/fusion/include/as_deque.hpp>
+
+[heading Example]
+
+    as_deque(__make_vector__('x', 123, "hello"))
 
 [endsect]
 
@@ -1556,6 +2011,44 @@ Returns the result type of __as_vector__.
 [heading Example]
 
     result_of::as_vector<__list__<char, int> >::type
+
+[endsect]
+
+[section as_deque]
+
+[heading Description]
+
+Returns the result type of __as_deque__.
+
+[heading Synopsis]
+
+    template <typename Sequence>
+    struct as_deque;
+
+[heading Parameters]
+
+[table
+    [[Parameter]    [Requirement]               [Description]]
+    [[`Sequence`]   [A fusion __sequence__]     [The sequence type to convert.]]
+]
+
+[heading Expression Semantics]
+
+    result_of::as_deque<Sequence>::type;
+
+[*Return type]: A __deque__ with same elements as the input sequence,
+`Sequence`.
+
+[*Semantics]: Convert a fusion sequence, `Sequence`, to a __deque__.
+
+[heading Header]
+
+    #include <boost/fusion/container/deque/convert.hpp>
+    #include <boost/fusion/include/as_deque.hpp>
+
+[heading Example]
+
+    result_of::as_deque<__vector__<char, int> >::type
 
 [endsect]
 

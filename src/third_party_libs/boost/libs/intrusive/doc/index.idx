@@ -1,1 +1,1 @@
-!scan-path "boost/intrusive" ".*.hpp" false 
+!scan-path "boost/intrusive" ".*.hpp" false

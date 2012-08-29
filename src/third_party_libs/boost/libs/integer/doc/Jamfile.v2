@@ -50,6 +50,7 @@ boostbook standalone
         <format>pdf:<xsl:param>boost.url.prefix=http://www.boost.org/doc/libs/release/libs/regex/doc/html
     ;
 
-install pdf-install : standalone : <location>. <install-type>PDF ;
+install pdfinstall : standalone/<format>pdf : <location>. <install-type>PDF ;
+explicit pdfinstall ;
 
 

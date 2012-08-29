@@ -15,12 +15,15 @@ project
     : requirements
         <target-os>freebsd:<linkflags>"-lrt" 
         <target-os>linux:<linkflags>"-lrt" 
+        <toolset>clang/<target-os>linux:<linkflags>"-lpthread" 
         <toolset>pgi:<linkflags>"-lrt" 
         #<threading>single:<define>BOOST_CHRONO_THREAD_DISABLED
         <toolset>msvc:<asynch-exceptions>on
         <define>BOOST_CHRONO_USES_MPL_ASSERT
         <define>BOOST_SYSTEM_NO_DEPRECATED
-        <toolset>sun:<define>BOOST_TYPEOF_EMULATION
+        #<toolset>sun:<define>BOOST_COMMON_TYPE_DONT_USE_TYPEOF
+        #<toolset>sun:<define>BOOST_TYPEOF_EMULATION
+        <toolset>sun:<define>__typeof__=__typeof__ 
         <warnings>all
         <toolset>gcc:<cxxflags>-Wextra
         <toolset>gcc:<cxxflags>-pedantic
@@ -60,7 +63,8 @@ rule chrono-run ( sources )
     [ run $(sources)
         : :
         :   <define>BOOST_CHRONO_HEADER_ONLY
-           <define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
+            <define>BOOST_ERROR_CODE_HEADER_ONLY
+           #<define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
         :   $(sources[1]:B)_header ]
     ;
 }
@@ -80,7 +84,8 @@ rule chrono-run2 ( sources : name )
     [ run $(sources)
         : :
         :   <define>BOOST_CHRONO_HEADER_ONLY
-           <define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
+            <define>BOOST_ERROR_CODE_HEADER_ONLY
+           #<define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
         : $(name)_header ]
     ;
 }
@@ -102,7 +107,8 @@ rule chrono-run-mt ( sources )
     [ run $(sources)
         : :
         :   <define>BOOST_CHRONO_HEADER_ONLY
-           <define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
+            <define>BOOST_ERROR_CODE_HEADER_ONLY
+           #<define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
         :   $(sources[1]:B)_header ]
     ;
 }
@@ -122,7 +128,8 @@ rule chrono-run2-mt ( sources : name )
     [ run $(sources)
         : :
         :   <define>BOOST_CHRONO_HEADER_ONLY
-           <define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
+            <define>BOOST_ERROR_CODE_HEADER_ONLY
+           #<define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
         : $(name)_header ]
     ;
 }
@@ -143,7 +150,8 @@ rule chrono-run-check ( sources )
     [ run $(sources)
         : :
         :   <define>BOOST_CHRONO_HEADER_ONLY
-           <define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
+            <define>BOOST_ERROR_CODE_HEADER_ONLY
+           #<define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
         :   $(sources[1]:B)_header ]
     ;
 }
@@ -164,7 +172,8 @@ rule chrono-run-check2 ( sources : name )
     [ run $(sources)
         : :
         :   <define>BOOST_CHRONO_HEADER_ONLY
-           <define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
+            <define>BOOST_ERROR_CODE_HEADER_ONLY
+           #<define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
         : $(name)_header ]
     ;
 }
@@ -175,7 +184,8 @@ rule chrono-run-header ( sources )
     [ run $(sources)
         : :
         :   <define>BOOST_CHRONO_HEADER_ONLY
-           <define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
+            <define>BOOST_ERROR_CODE_HEADER_ONLY
+           #<define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
         :   $(sources[1]:B)_header ]
     ;
 }
@@ -186,7 +196,8 @@ rule chrono-run-header2 ( sources : name )
     [ run $(sources)
         : :
         :   <define>BOOST_CHRONO_HEADER_ONLY
-           <define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
+            <define>BOOST_ERROR_CODE_HEADER_ONLY
+           #<define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
         : $(name)_header ]
     ;
 }
@@ -199,7 +210,8 @@ rule chrono-compile ( sources )
         : $(sources[1]:B)_lib ]
     [ compile $(sources)
         :   <define>BOOST_CHRONO_HEADER_ONLY
-           <define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
+            <define>BOOST_ERROR_CODE_HEADER_ONLY
+           #<define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
         :   $(sources[1]:B)_header ]
     ;
 }
@@ -212,7 +224,8 @@ rule chrono-compile2 ( sources : name )
         : $(name)_lib ]
     [ compile $(sources)
         :   <define>BOOST_CHRONO_HEADER_ONLY
-           <define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
+            <define>BOOST_ERROR_CODE_HEADER_ONLY
+           #<define>BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
         : $(name)_header ]
     ;
 }

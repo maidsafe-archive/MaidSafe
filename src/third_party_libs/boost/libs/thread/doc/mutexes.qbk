@@ -1,5 +1,6 @@
 [/
-  (C) Copyright 2007-8 Anthony Williams.
+  (C) Copyright 2007-11 Anthony Williams
+  (C) Copyright 2011-12 Vicente J. Botet Escriba
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or copy at
   http://www.boost.org/LICENSE_1_0.txt).
@@ -75,10 +76,11 @@ __try_mutex__ is a `typedef` to __mutex__, provided for backwards compatibility 
         void lock();
         void unlock();
         bool try_lock();
-        bool timed_lock(system_time const & abs_time);
 
-        template<typename TimeDuration>
-        bool timed_lock(TimeDuration const & relative_time);
+        template <class Rep, class Period>
+        bool try_lock_for(const chrono::duration<Rep, Period>& rel_time);
+        template <class Clock, class Duration>
+        bool try_lock_until(const chrono::time_point<Clock, Duration>& t);
 
         typedef platform-specific-type native_handle_type;
         native_handle_type native_handle();
@@ -86,6 +88,13 @@ __try_mutex__ is a `typedef` to __mutex__, provided for backwards compatibility 
         typedef unique_lock<timed_mutex> scoped_timed_lock;
         typedef unspecified-type scoped_try_lock;
         typedef scoped_timed_lock scoped_lock;
+
+    #if defined BOOST_THREAD_PROVIDES_DEPRECATED_FEATURES_SINCE_V3_0_0 || defined BOOST_THREAD_DONT_USE_CHRONO
+        bool timed_lock(system_time const & abs_time);
+        template<typename TimeDuration>
+        bool timed_lock(TimeDuration const & relative_time);
+    #endif
+
     };
 
 __timed_mutex__ implements the __timed_lockable_concept__ to provide an exclusive-ownership mutex. At most one thread can own the
@@ -181,10 +190,11 @@ __recursive_try_mutex__ is a `typedef` to __recursive_mutex__, provided for back
         bool try_lock();
         void unlock();
 
-        bool timed_lock(system_time const & abs_time);
 
-        template<typename TimeDuration>
-        bool timed_lock(TimeDuration const & relative_time);
+        template <class Rep, class Period>
+        bool try_lock_for(const chrono::duration<Rep, Period>& rel_time);
+        template <class Clock, class Duration>
+        bool try_lock_until(const chrono::time_point<Clock, Duration>& t);
 
         typedef platform-specific-type native_handle_type;
         native_handle_type native_handle();
@@ -192,6 +202,13 @@ __recursive_try_mutex__ is a `typedef` to __recursive_mutex__, provided for back
         typedef unique_lock<recursive_timed_mutex> scoped_lock;
         typedef unspecified-type scoped_try_lock;
         typedef scoped_lock scoped_timed_lock;
+
+    #if defined BOOST_THREAD_PROVIDES_DEPRECATED_FEATURES_SINCE_V3_0_0 || defined BOOST_THREAD_DONT_USE_CHRONO
+        bool timed_lock(system_time const & abs_time); 
+        template<typename TimeDuration>
+        bool timed_lock(TimeDuration const & relative_time);
+    #endif
+
     };
 
 __recursive_timed_mutex__ implements the __timed_lockable_concept__ to provide an exclusive-ownership recursive mutex. At most one

@@ -10,13 +10,13 @@
     Defining Terminals and Non-Terminals of Your EDSL]
 [/================================================================================]
 
-Here is the fun part: designing your own mini-programming language. In this section we'll talk about the nuts and bolts of designing a EDSL interface using Proto. We'll cover the definition of terminals and lazy functions that the users of your EDSL will get to program with. We'll also talk about Proto's expression template-building operator overloads, and about ways to add additional members to expressions within your domain.
+Here is the fun part: designing your own mini-programming language. In this section we'll talk about the nuts and bolts of designing an EDSL interface using Proto. We'll cover the definition of terminals and lazy functions that the users of your EDSL will get to program with. We'll also talk about Proto's expression template-building operator overloads, and about ways to add additional members to expressions within your domain.
 
 [/=======================]
 [section Making Terminals]
 [/=======================]
 
-As we saw with the Calculator example from the Introduction, the simplest way to get a EDSL up and running is simply to define some terminals, as follows.
+As we saw with the Calculator example from the Introduction, the simplest way to get an EDSL up and running is simply to define some terminals, as follows.
 
     // Define a literal integer Proto expression.
     proto::terminal<int>::type i = {0};
@@ -129,12 +129,26 @@ The above code prints out:
 
 [pre 1]
 
+I'm no expert at trigonometry, but that looks right to me.
+
+We can write `sin(pi/2)` because the `sin` object, which is a Proto terminal, has an overloaded `operator()()` that builds a node representing a function call invocation. The actual type of `sin(pi/2)` is actually something like this:
+
+    // The type of the expression sin(pi/2):
+    proto::function<
+        proto::terminal< double(*)(double) >::type const &
+        proto::result_of::as_child< double const >::type
+    >::type
+
+This type further expands to an unsightly node type with a /tag/ type of `proto::tag::function` and two children: the first representing the function to be invoked, and the second representing the argument to the function. (Node tag types describe the operation that created the node. The difference between `a + b` and `a - b` is that the former has tag type `proto::tag::plus` and the latter has tag type `proto::tag::minus`. Tag types are pure compile-time information.)
+
+[note In the type computation above, `proto::result_of::as_child<>` is a metafunction that ensures its argument is a Proto expression type. If it isn't one already, it becomes a Proto terminal. We'll learn more about this metafunction, along with _as_child_, its runtime counterpart, [link boost_proto.users_guide.front_end.customizing_expressions_in_your_domain.per_domain_as_child later]. For now, you can forget about it.]
+
 It is important to note that there is nothing special about terminals that contain function pointers. /Any/ Proto expression has an overloaded function call operator. Consider:
 
     // This compiles!
     proto::lit(1)(2)(3,4)(5,6,7,8);
 
-That may look strange at first. It creates an integer terminal with _lit_, and then invokes it like a function again and again. What does it mean? To be sure, the `default_context` wouldn't know what to do with it. The `default_context` only knows how to evaluate expressions that are sufficiently C++-like. In the case of function call expressions, the left hand side must evaluate to something that can be invoked: a pointer to a function, a reference to a function, or a TR1-style function object. That doesn't stop you from defining your own evaluation context that gives that expression a meaning. But more on that later.
+That may look strange at first. It creates an integer terminal with _lit_, and then invokes it like a function again and again. What does it mean? Who knows?! You get to decide when you define an evaluation context or a transform. But more on that later.
 
 [/=======================================]
 [heading Making Lazy Functions, Continued]
@@ -146,114 +160,46 @@ Now, what if we wanted to add a `pow()` function to our calculator EDSL that use
     // and raises it to the 2nd power
     pow< 2 >(_1);
 
-The simple technique described above of making `pow` a terminal containing a function pointer doesn't work here. If `pow` is an object, then the expression `pow< 2 >(_1)` is not valid C++. `pow` needs to be a real function template. But it must be an unusual function; it must return an expression template.
+The simple technique described above of making `pow` a terminal containing a function pointer doesn't work here. If `pow` is an object, then the expression `pow< 2 >(_1)` is not valid C++. (Well, technically it is; it means, `pow` less than 2, greater than `(_1)`, which is nothing at all like what we want.) `pow` should be a real function template. But it must be an unusual function: one that returns an expression template.
 
-Before we can write the `pow()` function, we need a function object that wraps an invocation of `std::pow()`. 
+With `sin`, we relied on Proto to provide an overloaded `operator()()` to build an expression node with tag type `proto::tag::function` for us. Now we'll need to do so ourselves. As before, the node will have two children: the function to invoke and the function's argument. 
+
+With `sin`, the function to invoke was a raw function pointer wrapped in a Proto terminal. In the case of `pow`, we want it to be a terminal containing TR1-style function object. This will allow us to parameterize the function on the exponent. Below is the implementation of a simple TR1-style wrapper for the `std::pow` function:
 
     // Define a pow_fun function object
-    template<int Exp>
+    template< int Exp >
     struct pow_fun
     {
         typedef double result_type;
+
         double operator()(double d) const
         {
             return std::pow(d, Exp);
         }
     };
 
-Now, let's try to define a function template that returns an expression template. We'll use the _function_ metafunction to calculate the type of a Proto expression that represents a function call. It is analogous to _terminal_. (We'll see a couple of different ways to solve this problem, and each will demonstrate another utility for defining Proto front-ends.)
+Following the `sin` example, we want `pow< 1 >( pi/2 )` to have a type like this:
 
-    // Define a lazy pow() function for the calculator EDSL.
-    // Can be used as: pow< 2 >(_1)
-    template<int Exp, typename Arg>
-    typename proto::function<
-        typename proto::terminal<pow_fun<Exp> >::type
-      , Arg const &
-    >::type const
-    pow(Arg const &arg)
-    {
-        typedef
-            typename proto::function<
-                typename proto::terminal<pow_fun<Exp> >::type
-              , Arg const &
-            >::type
-        result_type;
+    // The type of the expression pow<1>(pi/2):
+    proto::function<
+        proto::terminal< pow_fun<1> >::type
+        proto::result_of::as_child< double const >::type
+    >::type
 
-        result_type result = {{{}}, arg};
-        return result;
-    }
-
-In the code above, notice how the _function_ and _terminal_ metafunctions are used to calculate the return type: `pow()` returns an expression template representing a function call where the first child is the function to call and the second is the argument to the function. (Unfortunately, the same type calculation is repeated in the body of the function so that we can initialize a local variable of the correct type. We'll see in a moment how to avoid that.)
-
-[note As with _function_, there are metafunctions corresponding to all of the overloadable C++ operators for calculating expression types.]
-
-With the above definition of the `pow()` function, we can create calculator expressions like the one below and evaluate them using the `calculator_context` we implemented in the Introduction.
-
-    // Initialize a calculator context
-    calculator_context ctx;
-    ctx.args.push_back(3); // let _1 be 3
-
-    // Create a calculator expression that takes one argument,
-    // adds one to it, and raises it to the 2nd power; and then
-    // immediately evaluate it using the calculator_context.
-    assert( 16 == proto::eval( pow<2>( _1 + 1 ), ctx ) );
-
-[/=========================================]
-[heading Protofying Lazy Function Arguments]
-[/=========================================]
-
-Above, we defined a `pow()` function template that returns an expression template representing a lazy function invocation. But if we tried to call it as below, we'll run into a problem.
-
-    // ERROR: pow() as defined above doesn't work when
-    // called with a non-Proto argument.
-    pow< 2 >( 4 );
-
-Proto expressions can only have other Proto expressions as children. But if we look at `pow()`'s function signature, we can see that if we pass it a non-Proto object, it will try to make it a child.
-
-    template<int Exp, typename Arg>
-    typename proto::function<
-        typename proto::terminal<pow_fun<Exp> >::type
-      , Arg const & // <=== ERROR! This may not be a Proto type!
-    >::type const
-    pow(Arg const &arg)
-
-What we want is a way to make `Arg` into a Proto terminal if it is not a Proto expression already, and leave it alone if it is. For that, we can use _as_child_. The following implementation of the `pow()` function handles all argument types, expression templates or otherwise.
-
-    // Define a lazy pow() function for the calculator EDSL. Use
-    // proto::as_child() to Protofy the argument, but only if it
-    // is not a Proto expression type to begin with!
-    template<int Exp, typename Arg>
-    typename proto::function<
-        typename proto::terminal<pow_fun<Exp> >::type
-      , typename proto::result_of::as_child<Arg const>::type
-    >::type const
-    pow(Arg const &arg)
-    {
-        typedef
-            typename proto::function<
-                typename proto::terminal<pow_fun<Exp> >::type
-              , typename proto::result_of::as_child<Arg const>::type
-            >::type
-        result_type;
-
-        result_type result = {{{}}, proto::as_child(arg)};
-        return result;
-    }
-
-Notice how we use the `proto::result_of::as_child<>` metafunction to calculate the return type, and the `proto::as_child()` function to actually normalize the argument.
+We could write a `pow()` function using code like this, but it's verbose and error prone; it's too easy to introduce subtle bugs by forgetting to call _as_child_ where necessary, resulting in code that seems to work but sometimes doesn't. Proto provides a better way to construct expression nodes: _make_expr_.
 
 [/=====================================================]
 [heading Lazy Functions Made Simple With [^make_expr()]]
 [/=====================================================]
 
-The versions of the `pow()` function we've seen above are rather verbose. In the return type calculation, you have to be very explicit about wrapping non-Proto types. Worse, you have to restate the return type calculation in the body of `pow()` itself. Proto provides a helper for building expression templates directly that handles these mundane details for you. It's called _make_expr_. We can redefine `pow()` with it as below.
+Proto provides a helper for building expression templates called _make_expr_. We can concisely define the `pow()` function with it as below.
 
     // Define a lazy pow() function for the calculator EDSL.
     // Can be used as: pow< 2 >(_1)
-    template<int Exp, typename Arg>
+    template< int Exp, typename Arg >
     typename proto::result_of::make_expr<
         proto::tag::function  // Tag type
-      , pow_fun<Exp>          // First child (by value)
+      , pow_fun< Exp >        // First child (by value)
       , Arg const &           // Second child (by reference)
     >::type const
     pow(Arg const &arg)
@@ -264,11 +210,13 @@ The versions of the `pow()` function we've seen above are rather verbose. In the
         );
     }
 
-There are some things to notice about the above code. We use `proto::result_of::make_expr<>` to calculate the return type. The first template parameter is the tag type for the expression node we're building -- in this case, `proto::tag::function`, which is the tag type Proto uses for function call expressions.
+There are some things to notice about the above code. We use `proto::result_of::make_expr<>` to calculate the return type. The first template parameter is the tag type for the expression node we're building -- in this case, `proto::tag::function`.
 
-Subsequent template parameters to `proto::result_of::make_expr<>` represent children nodes. If a child type is not already a Proto expression, it is made into a terminal with _as_child_. A type such as `pow_fun<Exp>` results in terminal that is held by value, whereas a type like `Arg const &` (note the reference) indicates that the result should be held by reference.
+Subsequent template parameters to `proto::result_of::make_expr<>` represent child nodes. If a child type is not already a Proto expression, it is automatically made into a terminal with _as_child_. A type such as `pow_fun<Exp>` results in terminal that is held by value, whereas a type like `Arg const &` (note the reference) indicates that the result should be held by reference.
 
-In the function body is the runtime invocation of _make_expr_. It closely mirrors the return type calculation. _make_expr_ requires you to specify the node's tag type as a template parameter. The arguments to the function become the node's children. When a child should be stored by value, nothing special needs to be done. When a child should be stored by reference, you must use the `boost::ref()` function to wrap the argument. Without this extra information, the _make_expr_ function couldn't know whether to store a child by value or by reference.
+In the function body is the runtime invocation of _make_expr_. It closely mirrors the return type calculation. _make_expr_ requires you to specify the node's tag type as a template parameter. The arguments to the function become the node's children. When a child should be stored by value, nothing special needs to be done. When a child should be stored by reference, you must use the `boost::ref()` function to wrap the argument.
+
+And that's it! _make_expr_ is the lazy person's way to make a lazy funtion.
 
 [endsect]
 
@@ -553,7 +501,7 @@ Now we can use calculator expressions as function objects to STL algorithms, as 
 [/==========================================================]
 
 By default, Proto defines every possible operator overload for Protofied
-expressions. This makes it simple to bang together a EDSL. In some cases, however, the presence of Proto's promiscuous overloads can lead to confusion or worse. When that happens, you'll have to disable some of Proto's overloaded operators. That is done by defining the grammar for your domain and specifying it as the second parameter of the _domain_ template.
+expressions. This makes it simple to bang together an EDSL. In some cases, however, the presence of Proto's promiscuous overloads can lead to confusion or worse. When that happens, you'll have to disable some of Proto's overloaded operators. That is done by defining the grammar for your domain and specifying it as the second parameter of the _domain_ template.
 
 In the [link boost_proto.users_guide.getting_started.hello_calculator Hello Calculator] section, we saw an example of a Proto grammar, which is repeated here:
 
@@ -914,7 +862,7 @@ The invocation of the _DEFINE_OPERATORS_ macro defines a complete set of operato
 [section:code_repetition Generating Repetitive Code with the Preprocessor]
 [/=======================================================================]
 
-Sometimes as a EDSL designer, to make the lives of your users easy, you have to make your own life hard. Giving your users natural and flexible syntax often involves writing large numbers of repetitive function overloads. It can be enough to give you repetitive stress injury! Before you hurt yourself, check out the macros Proto provides for automating many repetitive code-generation chores.
+Sometimes as an EDSL designer, to make the lives of your users easy, you have to make your own life hard. Giving your users natural and flexible syntax often involves writing large numbers of repetitive function overloads. It can be enough to give you repetitive stress injury! Before you hurt yourself, check out the macros Proto provides for automating many repetitive code-generation chores.
 
 Imagine that we are writing a lambda EDSL, and we would like to enable syntax for constructing temporary objects of any type using the following syntax:
 

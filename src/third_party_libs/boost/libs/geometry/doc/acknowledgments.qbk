@@ -28,6 +28,9 @@ We also thank all people who discussed on the mailing lists (either at boost,
 or at osgeo) about __boost_geometry__, in preview stage, or in review stage, 
 or after that.
 
+Furthermore we are thankful to people supplying patches: Arnold Metselaar, 
+Aleksey Tulinov, Christophe Henry
+
 Finally I (Barend) would like to thank my former employer, Geodan. They 
 allowed me to start a geographic library in 1995, which after a number of 
 incarnations, redesigns, refactorings, previews, a review and even more 

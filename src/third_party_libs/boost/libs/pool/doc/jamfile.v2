@@ -135,3 +135,5 @@ boostbook standalone
       <dependency>autodoc #
    ;
 
+install pdfinstall : standalone/<format>pdf : <location>. <install-type>PDF <name>pool.pdf ;
+explicit pdfinstall ;

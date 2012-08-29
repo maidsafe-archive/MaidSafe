@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 3>, 400> tgamma_ratio_data = { {
+   static const boost::array<boost::array<typename table_type<T>::type, 3>, 400> tgamma_ratio_data = { {
       {{ SC_(6.68193912506103515625), SC_(6.68193912506103515625), SC_(1) }}, 
       {{ SC_(6.68193912506103515625), SC_(8.095367431640625), SC_(0.06544775114440229981894259276990196062764) }}, 
       {{ SC_(6.68193912506103515625), SC_(8.50289630889892578125), SC_(0.02833082889188931171456297874515804727699) }}, 

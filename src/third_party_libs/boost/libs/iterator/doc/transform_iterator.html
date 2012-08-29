@@ -99,7 +99,7 @@ private:
 </pre>
 <p>If <tt class="docutils literal"><span class="pre">Reference</span></tt> is <tt class="docutils literal"><span class="pre">use_default</span></tt> then the <tt class="docutils literal"><span class="pre">reference</span></tt> member of
 <tt class="docutils literal"><span class="pre">transform_iterator</span></tt> is
-<tt class="docutils literal"><span class="pre">result_of&lt;UnaryFunction(iterator_traits&lt;Iterator&gt;::reference)&gt;::type</span></tt>.
+<tt class="docutils literal"><span class="pre">result_of&lt;const UnaryFunction(iterator_traits&lt;Iterator&gt;::reference)&gt;::type</span></tt>.
 Otherwise, <tt class="docutils literal"><span class="pre">reference</span></tt> is <tt class="docutils literal"><span class="pre">Reference</span></tt>.</p>
 <p>If <tt class="docutils literal"><span class="pre">Value</span></tt> is <tt class="docutils literal"><span class="pre">use_default</span></tt> then the <tt class="docutils literal"><span class="pre">value_type</span></tt> member is
 <tt class="docutils literal"><span class="pre">remove_cv&lt;remove_reference&lt;reference&gt;</span> <span class="pre">&gt;::type</span></tt>.  Otherwise,
@@ -117,10 +117,10 @@ convertible to <tt class="docutils literal"><span class="pre">input_iterator_tag
 <div class="section" id="transform-iterator-requirements">
 <h1><a class="toc-backref" href="#id3"><tt class="docutils literal"><span class="pre">transform_iterator</span></tt> requirements</a></h1>
 <p>The type <tt class="docutils literal"><span class="pre">UnaryFunction</span></tt> must be Assignable, Copy Constructible, and
-the expression <tt class="docutils literal"><span class="pre">f(*i)</span></tt> must be valid where <tt class="docutils literal"><span class="pre">f</span></tt> is an object of
+the expression <tt class="docutils literal"><span class="pre">f(*i)</span></tt> must be valid where <tt class="docutils literal"><span class="pre">f</span></tt> is a const object of
 type <tt class="docutils literal"><span class="pre">UnaryFunction</span></tt>, <tt class="docutils literal"><span class="pre">i</span></tt> is an object of type <tt class="docutils literal"><span class="pre">Iterator</span></tt>, and
 where the type of <tt class="docutils literal"><span class="pre">f(*i)</span></tt> must be
-<tt class="docutils literal"><span class="pre">result_of&lt;UnaryFunction(iterator_traits&lt;Iterator&gt;::reference)&gt;::type</span></tt>.</p>
+<tt class="docutils literal"><span class="pre">result_of&lt;const UnaryFunction(iterator_traits&lt;Iterator&gt;::reference)&gt;::type</span></tt>.</p>
 <p>The argument <tt class="docutils literal"><span class="pre">Iterator</span></tt> shall model Readable Iterator.</p>
 </div>
 <div class="section" id="transform-iterator-models">

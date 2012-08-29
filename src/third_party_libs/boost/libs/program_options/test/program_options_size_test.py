@@ -21,7 +21,7 @@ void do_it()
       f.write("(\"opt%d\", value<int>())\n")
    f.write(";\n}\n")   
    f.close()
-   os.system(compiler_command + " -c -save-temps -I /home/ghost/Work/boost-rc program_options_test.cpp")
+   os.system(compiler_command + " -c -save-temps -I /home/ghost/Work/Boost/boost-svn program_options_test.cpp")
 
    nm = os.popen("nm -S program_options_test.o")
    for l in nm:
@@ -45,7 +45,7 @@ def run_tests(range, compiler_command):
    print "Avarage: ", (last_size-first_size)/(range[-1]-range[0])
 
 if __name__ == '__main__':
-   for compiler in [ "g++-3.3 -Os", "g++-3.3 -O3", "g++-3.4 -Os", "g++-3.4 -O3"]:
+   for compiler in [ "g++ -Os", "g++ -O3"]:
       print "****", compiler, "****"
       run_tests(range(1, 20), compiler)
 

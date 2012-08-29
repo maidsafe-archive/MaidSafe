@@ -1,14 +1,14 @@
 [article Math Toolkit
     [quickbook 1.5]
-    [copyright 2006, 2007, 2008, 2009, 2010 John Maddock, Paul A. Bristow, Hubert Holin, Xiaogang Zhang, Bruno Lalande, Johan Råde, Gautam Sewani and Thijs van den Berg]
+    [copyright 2006, 2007, 2008, 2009, 2010 John Maddock, Paul A. Bristow, Hubert Holin, Xiaogang Zhang, Bruno Lalande, Johan Råde, Gautam Sewani, Thijs van den Berg and Benjamin Sobotta]
     [/purpose ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22]
     [license
         Distributed under the Boost Software License, Version 1.0.
         (See accompanying file LICENSE_1_0.txt or copy at
         [@http://www.boost.org/LICENSE_1_0.txt])
     ]
-    [authors [Maddock, John], [Bristow, Paul A.], [Holin, Hubert], [Zhang, Xiaogang], [Lalande, Bruno], [Råde, Johan], [Sewani, Gautam], [van den Berg, Thijs]]
-    [/last-revision $Date$]
+    [authors [Maddock, John], [Bristow, Paul A.], [Holin, Hubert], [Zhang, Xiaogang], [Lalande, Bruno], [Råde, Johan], [Sewani, Gautam], [van den Berg, Thijs], [Sobotta, Benjamin]]
+    [/last-revision $Date: 2012-05-14 10:01:32 -0700 (Mon, 14 May 2012) $]
 ]
 
 [/ \u00E5 = Latin small letter A with ring above doesn't seem to work in authors with Quickbook 1.5]
@@ -30,6 +30,9 @@
 <imagedata align="center" fileref="../graphs/'''[name]'''.svg"></imagedata>
 </imageobject>
 </inlinemediaobject>''']
+
+[include ../../../../tools/auto_index/include/auto_index_helpers.qbk]
+[/ Must be first included file!]
 
 [include html4_symbols.qbk]
 [/include math_symbols.qbk]
@@ -148,6 +151,12 @@ and use the function's name as the link text.]
 [def __sph_bessel  [link math_toolkit.special.bessel.sph_bessel sph_bessel]]
 [def __sph_neumann  [link math_toolkit.special.bessel.sph_bessel sph_neumann]]
 
+[/Hankel Functions]
+[def __cyl_hankel_1  [link math_toolkit.special.hankel.cyl_hankel cyl_hankel_1]]
+[def __cyl_hankel_2  [link math_toolkit.special.hankel.cyl_hankel cyl_hankel_2]]
+[def __sph_hankel_1  [link math_toolkit.special.hankel.sph_hankel sph_hankel_1]]
+[def __sph_hankel_2  [link math_toolkit.special.hankel.sph_hankel sph_hankel_2]]
+
 [/sinus cardinals]
 [def __sinc_pi  [link math_toolkit.special.sinc.sinc_pi sinc_pi]]
 [def __sinhc_pi  [link math_toolkit.special.sinc.sinhc_pi sinhc_pi]]
@@ -196,6 +205,8 @@ and use the function's name as the link text.]
 [/Misc]
 [def __expint [link math_toolkit.special.expint.expint_i expint]]
 [def __spherical_harmonic [link math_toolkit.special.sf_poly.sph_harm spherical_harmonic]]
+[def __owens_t [link math_toolkit.special.owens_t Owens T]]
+
 
 [/tools]
 [def __tuple [link math_toolkit.toolkit.internals1.tuples boost::math::tuple]]
@@ -244,6 +255,7 @@ and use the function's name as the link text.]
 [def __normal_distrib [link math_toolkit.dist.dist_ref.dists.normal_dist Normal Distribution]]
 [def __poisson_distrib [link math_toolkit.dist.dist_ref.dists.poisson_dist Poisson Distribution]]
 [def __students_t_distrib [link math_toolkit.dist.dist_ref.dists.students_t_dist Students t Distribution]]
+[def __skew_normal_distrib [link math_toolkit.dist.dist_ref.dists.skew_normal_dist Skew Normal Distribution]]
 [def __weibull_distrib [link math_toolkit.dist.dist_ref.dists.weibull_dist Weibull Distribution]]
 
 [/links to policy]
@@ -275,6 +287,8 @@ and use the function's name as the link text.]
 [def __NTL [@http://www.shoup.net/ntl/ NTL A Library for doing Number Theory]]
 [def __NTL_RR [@http://shoup.net/ntl/doc/RR.txt NTL::RR]]
 [def __NTL_quad_float [@http://shoup.net/ntl/doc/quad_float.txt NTL::quad_float]]
+[def __MPFR [@http://www.mpfr.org/ MPFR]]
+[def __GMP [@http://gmplib.org/ GNU Multiple Precision Arithmetic Library]]
 [def __R [@http://www.r-project.org/ The R Project for Statistical Computing]]
 [def __godfrey [link godfrey Godfrey]]
 [def __pugh [link pugh Pugh]]
@@ -413,6 +427,9 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 [include bessel_spherical.qbk]
 [endsect] [/section:bessel Bessel Functions]
 
+[/Hankel functions]
+[include hankel.qbk]
+
 [section:ellint Elliptic Integrals]
 [include ellint_introduction.qbk]
 [include ellint_carlson.qbk]
@@ -428,6 +445,8 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 [include powers.qbk]
 [include sinc.qbk]
 [include inv_hyper.qbk]
+
+[include owens_t.qbk]
 
 [endsect] [/section:special Special Functions]
 
@@ -447,12 +466,13 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 [include tr1_ref.qbk]
 [endsect]
 
-[section:toolkit Tools, Constants and Internal Details]
+[include constants.qbk]
+
+[section:toolkit Tools and Internal Details]
 
 [include internals_overview.qbk]
 
-[section:internals1 Utilities - Constants & Tools]
-[include constants.qbk]
+[section:internals1 Utilities & Tools]
 [include series.qbk]
 [include fraction.qbk]
 [include rational.qbk]
@@ -460,7 +480,7 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 [include roots_without_derivatives.qbk]
 [include minima.qbk]
 [include tuple.qbk]
-[endsect] [/section:internals1 Utilities - Constants & Tools]
+[endsect] [/section:internals1 Utilities & Tools]
 
 [section:internals2 Testing and Development]
 [include polynomial.qbk]
@@ -498,7 +518,6 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 
 [endsect] [/section:status Status and Roadmap]
 
-[include ../../../../tools/auto_index/include/auto_index_helpers.qbk]
 [named_index function_name Function Index]
 [named_index class_name Class Index]
 [named_index typedef_name Typedef Index]
@@ -506,10 +525,11 @@ and as a CD ISBN 0-9504833-2-X  978-0-9504833-2-0, Classification 519.2-dc22.
 [index]
 
 [/ math.qbk
-  Copyright 2008, 2010 John Maddock and Paul A. Bristow.
+  Copyright 2008, 2010, 2012 John Maddock and Paul A. Bristow.
   Distributed under the Boost Software License, Version 1.0.
   (See accompanying file LICENSE_1_0.txt or copy at
   http://www.boost.org/LICENSE_1_0.txt).
 ]
+
 
 

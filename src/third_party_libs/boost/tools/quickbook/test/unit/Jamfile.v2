@@ -13,6 +13,11 @@ project quickbook-unit-tests
         <include>../../src
         <warnings>all
         <library>/boost//filesystem
+        <toolset>gcc:<cflags>-g0
+        <toolset>darwin:<cflags>-g0
+        <toolset>msvc:<cflags>/wd4709
+        <toolset>gcc:<define>BOOST_DETAIL_CONTAINER_FWD
+        <toolset>darwin:<define>BOOST_DETAIL_CONTAINER_FWD
     ;
 
 run values_test.cpp ../../src/values.cpp ../../src/files.cpp ../../src/string_ref.cpp ;

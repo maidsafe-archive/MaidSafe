@@ -6,11 +6,11 @@
 
 //  See http://www.boost.org/libs/config for more information.
 
-//  MACRO:         BOOST_NO_RAW_LITERALS
+//  MACRO:         BOOST_NO_CXX11_RAW_LITERALS
 //  TITLE:         C++0x raw string literals unavailable
 //  DESCRIPTION:   The compiler does not support C++0x raw string literals
 
-namespace boost_no_raw_literals {
+namespace boost_no_cxx11_raw_literals {
 
 void quiet_warning(const char*){}
 void quiet_warning(const wchar_t*){}

@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 3>, 420> hermite = {{
+   static const boost::array<boost::array<typename table_type<T>::type, 3>, 420> hermite = {{
       {{ SC_(0.8e1), SC_(-0.804919189453125e3), SC_(0.45107507538695517471998224862706929168983312035236e26) }}, 
       {{ SC_(0.8e1), SC_(-0.7460263671875e3), SC_(0.24561928260207418635049717146784087504133748838575e26) }}, 
       {{ SC_(0.8e1), SC_(-0.72904595947265625e3), SC_(0.20429972623973894937590136235800300689033201111301e26) }}, 

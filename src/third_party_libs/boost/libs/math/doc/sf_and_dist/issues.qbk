@@ -67,12 +67,14 @@ it's not clear how to solve this issue, or if it's ever likely
 to be an real problem in practice - especially as most other implementations
 don't support this domain either (Medium Priority).
 
-[h4 Bessel Functions]
+[h4 Owen's T Function]
 
-We should implement the Hankel H1 and H2 functions as linear combinations of Bessel functions.
-Requires refactoring the internals so we can reliably calculate pairs of Bessel functions at the same time.
-We may also be able to improve performance of the Bessel series evaluation by accelerating the alternating
-series.  This may also increase the scope of the series form.
+There is a problem area at arbitrary precision when ['a] is very close to 1.  However, note that
+the value for ['T(h, 1)] is well known and easy to compute, and if we replaced the
+['a[super k]] terms in series T1, T2 or T4 by ['(a[super k] - 1)] then we would have the
+difference between ['T(h, a)] and ['T(h, 1)].  Unfortunately this doesn't improve the
+convergence of those series in that area.  It certainly looks as though a new series in terms
+of ['(1-a)[super k]] is both possible and desirable in this area, but it remains elusive at present.
 
 [h4 Jocobi elliptic functions]
 

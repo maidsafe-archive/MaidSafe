@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 4>, 190> tgamma_delta_ratio_int2 = { {
+   static const boost::array<boost::array<typename table_type<T>::type, 4>, 190> tgamma_delta_ratio_int2 = { {
       {{ SC_(0.11e2), SC_(0.1e2), SC_(0.1491552059147518383844493235618106619139e-11), SC_(0.36288e7) }}, 
       {{ SC_(0.12e2), SC_(0.1e2), SC_(0.7812891738391762962994964567523415624059e-12), SC_(0.399168e8) }}, 
       {{ SC_(0.12e2), SC_(0.11e2), SC_(0.3551314426541710437724983894328825283663e-13), SC_(0.399168e8) }}, 

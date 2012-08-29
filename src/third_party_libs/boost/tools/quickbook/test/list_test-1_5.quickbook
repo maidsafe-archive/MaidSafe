@@ -98,3 +98,11 @@ Don't end list with comment 2:
 * Three
 
 [endsect]
+
+[section List immediately following markup 2]
+* One
+[section Nested section]
+* Two
+[endsect]
+
+[endsect]

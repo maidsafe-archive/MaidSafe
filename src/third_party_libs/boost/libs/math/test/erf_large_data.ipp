@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 3>, 300> erf_large_data = { {
+   static const boost::array<boost::array<typename table_type<T>::type, 3>, 300> erf_large_data = { {
       {{ SC_(8.2311115264892578125), SC_(0.9999999999999999999999999999997436415644), SC_(0.2563584356432915693836191701249115171878e-30) }}, 
       {{ SC_(8.3800067901611328125), SC_(0.9999999999999999999999999999999787664373), SC_(0.212335626810981756102114466368867764939e-31) }}, 
       {{ SC_(8.39224529266357421875), SC_(0.9999999999999999999999999999999827316301), SC_(0.1726836993826464997300336080711750877816e-31) }}, 

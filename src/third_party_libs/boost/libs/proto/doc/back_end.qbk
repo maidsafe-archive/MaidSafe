@@ -696,7 +696,7 @@ When the second template parameter to _when_ is a function type, _when_ interpre
 
 [note *Transforms are a Domain-Specific Language*
 
-`LeftmostLeaf( proto::_child0 )` /looks/ like an invocation of the `LeftmostLeaf` function object, but it's not, but then it actually is! Why this confusing subterfuge? Function types give us a natural and concise syntax for composing more complicated transforms from simpler ones. The fact that the syntax is suggestive of a function invocation is on purpose. It is a embedded domain-specific language for defining expression transformations. If the subterfuge worked, it may have fooled you into thinking the transform is doing exactly what it actually does! And that's the point.]
+`LeftmostLeaf( proto::_child0 )` /looks/ like an invocation of the `LeftmostLeaf` function object, but it's not, but then it actually is! Why this confusing subterfuge? Function types give us a natural and concise syntax for composing more complicated transforms from simpler ones. The fact that the syntax is suggestive of a function invocation is on purpose. It is an embedded domain-specific language for defining expression transformations. If the subterfuge worked, it may have fooled you into thinking the transform is doing exactly what it actually does! And that's the point.]
 
 The type `LeftmostLeaf( proto::_child0 )` is an example of a /callable transform/. It is a function type that represents a function object to call and its arguments. The types `proto::_child0` and `proto::_value` are /primitive transforms/. They are plain structs, not unlike function objects, from which callable transforms can be composed. There is one other type of transform, /object transforms/, that we'll encounter next.
 
@@ -1155,6 +1155,99 @@ Once you know that primitive transforms will always receive all three parameters
 )``
 ][``proto::fold<_, proto::_state, StringCopy>``]]
 ]
+
+[endsect]
+
+[/==================================================]
+[section:unpacking_expressions Unpacking Expressions]
+[/==================================================]
+
+Processing expressions with an arbitrary number of children can be a pain. What if you want to do something to each child, then pass the results as arguments to some other function? Can you do it just once without worrying about how many children an expression has? Yes. This is where Proto's /unpacking expressions/ come in handy. Unpacking expressions give you a way to write callable and object transforms that handle ['n]-ary expressions.
+
+[note *Inspired by C++11 Variadic Templates*
+
+Proto's unpacking expressions take inspiration from the C++11 feature of the same name. If you are familiar with variadic functions, and in particular how to expand a function parameter pack, this discussion should seem very familiar. However, this feature doesn't actually use any C++11 features, so the code describe here will work with any compliant C++98 compiler.]
+
+[heading Example: A C++ Expression Evaluator]
+
+Proto has the built-in _default_pt_ transform for evaluating Proto expressions in a C++-ish way. But if it didn't, it wouldn't be too hard to implement one from scratch using Proto's unpacking patterns. The transform `eval` below does just that.
+
+    // A callable polymorphic function object that takes an unpacked expression
+    // and a tag, and evaluates the expression. A plus tag and two operands adds
+    // them with operator +, for instance.
+    struct do_eval : proto::callable
+    {
+        typedef double result_type;
+
+    #define UNARY_OP(TAG, OP)                                                       \
+        template<typename Arg>                                                      \
+        double operator()(proto::tag::TAG, Arg arg) const                           \
+        {                                                                           \
+            return OP arg;                                                          \
+        }                                                                           \
+        /**/
+
+    #define BINARY_OP(TAG, OP)                                                      \
+        template<typename Left, typename Right>                                     \
+        double operator()(proto::tag::TAG, Left left, Right right) const            \
+        {                                                                           \
+            return left OP right;                                                   \
+        }                                                                           \
+        /**/
+
+        UNARY_OP(negate, -)
+        BINARY_OP(plus, +)
+        BINARY_OP(minus, -)
+        BINARY_OP(multiplies, *)
+        BINARY_OP(divides, /)
+        /*... others ...*/
+    };
+
+    struct eval
+      : proto::or_<
+            // Evaluate terminals by simply returning their value
+            proto::when<proto::terminal<_>, proto::_value>
+
+            // Non-terminals are handled by unpacking the expression,
+            // recursively calling eval on each child, and passing
+            // the results along with the expression's tag to do_eval
+            // defined above.
+          , proto::otherwise<do_eval(proto::tag_of<_>(), eval(proto::pack(_))...)>
+            // UNPACKING PATTERN HERE -------------------^^^^^^^^^^^^^^^^^^^^^^^^
+        >
+    {};
+
+The bulk of the above code is devoted to the `do_eval` function object that maps tag types to behaviors, but the interesting bit is the definition of the `eval` algorithm at the bottom. Terminals are handled quite simply, but non-terminals could be unary, binary, ternary, even ['n]-ary if we consider function call expressions. The `eval` algorithm handles this uniformly with the help of an unpacking pattern.
+
+Non-terminals are evaluated with this callable transform:
+
+    do_eval(proto::tag_of<_>(), eval(proto::pack(_))...)
+
+You can read this as: call the `do_eval` function object with the tag of the current expression and all its children after they have each been evaluated with `eval`. The unpacking pattern is the bit just before the ellipsis: `eval(proto::pack(_))`.
+
+What's going on here is this. The unpacking expression gets repeated once for each child in the expression currently being evaluated. In each repetition, the type `proto::pack(_)` gets replaced with [^proto::_child_c<['N]>]. So, if a unary expression is passed to `eval`, it actually gets evaluated like this:
+
+    // After the unpacking pattern is expanded for a unary expression
+    do_eval(proto::tag_of<_>(), eval(proto::_child_c<0>))
+
+And when passed a binary expression, the unpacking pattern expands like this:
+
+    // After the unpacking pattern is expanded for a binary expression
+    do_eval(proto::tag_of<_>(), eval(proto::_child_c<0>), eval(proto::_child_c<1>))
+
+Although it can't happen in our example, when passed a terminal, the unpacking pattern expands such that it extracts the value from the terminal instead of the children. So it gets handled like this:
+
+    // If a terminal were passed to this transform, Proto would try
+    // to evaluate it like this, which would fail:
+    do_eval(proto::tag_of<_>(), eval(proto::_value))
+
+That doesn't make sense. `proto::_value` would return something that isn't a Proto expression, and `eval` wouldn't be able to evaluate it. Proto algorithms don't work unless you pass them Proto expressions.
+
+[note *Kickin' It Old School*
+
+You may be thinking, my compiler doesn't support C++11 variadic templates! How can this possibly work? The answer is simple: The `...` above isn't a C++11 pack expansion. It's actually an old-school C-style vararg. Remember that callable and object transforms are /function types/. A transform with one of these pseudo-pack expansions is really just the type of a boring, old vararg function. Proto just interprets it differently.]
+
+Unpacking patterns are very expressive. Any callable or object transform can be used as an unpacking pattern, so long as `proto::pack(_)` appears exactly once somewhere within it. This gives you a lot of flexibility in how you want to process the children of an expression before passing them on to some function object or object constructor.
 
 [endsect]
 

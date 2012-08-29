@@ -15,6 +15,16 @@ Currently open issues can be viewed [@https://svn.boost.org/trac/boost/query?sta
 
 All issues including closed ones can be viewed [@https://svn.boost.org/trac/boost/query?status=assigned&status=closed&status=new&status=reopened&component=regex&order=priority&col=id&col=summary&col=status&col=type&col=milestone&col=component here].
 
+[h4 Boost-1.51]
+
+Fixed issues:
+[@https://svn.boost.org/trac/boost/ticket/589 #589], [@https://svn.boost.org/trac/boost/ticket/7084 #7084],
+[@https://svn.boost.org/trac/boost/ticket/7032 #7032], [@https://svn.boost.org/trac/boost/ticket/6346 #6346].
+
+[h4 Boost-1.50]
+
+Fixed issue with `(?!)` not being a valid expression, and updated docs on what constitutes a valid conditional expression.
+
 [h4 Boost-1.48]
 
 Fixed issues:

@@ -7,11 +7,11 @@
 
 //  See http://www.boost.org/libs/config for more information.
 
-//  MACRO:         BOOST_NO_DECLTYPE
+//  MACRO:         BOOST_NO_CXX11_DECLTYPE
 //  TITLE:         C++0x decltype unavailable
 //  DESCRIPTION:   The compiler does not support C++0x decltype
 
-namespace boost_no_decltype {
+namespace boost_no_cxx11_decltype {
 
 void quiet_warning(int){}
 

@@ -28,6 +28,45 @@
 </h3></div></div></div>
 <h5>
 <a name="math_toolkit.status.history1.h0"></a>
+        <span><a name="math_toolkit.status.history1.boost_1_50"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.boost_1_50">Boost-1.50</a>
+      </h5>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem">
+            Promoted math constants to be 1st class citizens, including convenient
+            access to the most widely used built-in float, double, long double via
+            three namespaces.
+          </li>
+<li class="listitem">
+            Added the Owen's T function and Skew Normal distribution written by Benjamin
+            Sobotta: see <a class="link" href="../special/owens_t.html" title="Owen's T function">Owens T</a>
+            and skew_normal_distrib.
+          </li>
+<li class="listitem">
+            Added Hankel functions <a class="link" href="../special/hankel/cyl_hankel.html" title="Cyclic Hankel Functions">cyl_hankel_1</a>,
+            <a class="link" href="../special/hankel/cyl_hankel.html" title="Cyclic Hankel Functions">cyl_hankel_2</a>,
+            <a class="link" href="../special/hankel/sph_hankel.html" title="Spherical Hankel Functions">sph_hankel_1</a>
+            and <a class="link" href="../special/hankel/sph_hankel.html" title="Spherical Hankel Functions">sph_hankel_2</a>.
+          </li>
+<li class="listitem">
+            Corrected issue <a href="https://svn.boost.org/trac/boost/ticket/6627" target="_top">#6627
+            nonfinite_num_put formatting of 0.0 is incorrect</a> based on a patch
+            submitted by K R Walker.
+          </li>
+<li class="listitem">
+            Changed constant initialization mechanism so that it is thread safe even
+            for user-defined types, also so that user defined types get the full
+            precision of the constant, even when <code class="computeroutput"><span class="keyword">long</span>
+            <span class="keyword">double</span></code> does not. So for example
+            128-bit rational approximations will work with UDT's and do the right
+            thing, even though <code class="computeroutput"><span class="keyword">long</span> <span class="keyword">double</span></code> may be only 64 or 80 bits.
+          </li>
+<li class="listitem">
+            Fixed issue in <code class="computeroutput"><span class="identifier">bessel_jy</span></code>
+            which causes Y<sub>8.5</sub>(4&#960;) to yield a NaN.
+          </li>
+</ul></div>
+<h5>
+<a name="math_toolkit.status.history1.h1"></a>
         <span><a name="math_toolkit.status.history1.boost_1_49"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.boost_1_49">Boost-1.49</a>
       </h5>
 <div class="itemizedlist"><ul class="itemizedlist" type="disc">
@@ -71,7 +110,7 @@
           </li>
 </ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h1"></a>
+<a name="math_toolkit.status.history1.h2"></a>
         <span><a name="math_toolkit.status.history1.boost_1_48"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.boost_1_48">Boost-1.48</a>
       </h5>
 <div class="itemizedlist"><ul class="itemizedlist" type="disc">
@@ -122,7 +161,7 @@
           </li>
 </ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h2"></a>
+<a name="math_toolkit.status.history1.h3"></a>
         <span><a name="math_toolkit.status.history1.boost_1_47"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.boost_1_47">Boost-1.47</a>
       </h5>
 <div class="itemizedlist"><ul class="itemizedlist" type="disc">
@@ -139,7 +178,7 @@
           </li>
 </ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h3"></a>
+<a name="math_toolkit.status.history1.h4"></a>
         <span><a name="math_toolkit.status.history1.boost_1_46_1"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.boost_1_46_1">Boost-1.46.1</a>
       </h5>
 <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
@@ -147,7 +186,7 @@
             <a href="https://svn.boost.org/trac/boost/ticket/5095" target="_top">#5113</a>.
           </li></ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h4"></a>
+<a name="math_toolkit.status.history1.h5"></a>
         <span><a name="math_toolkit.status.history1.boost_1_46_0"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.boost_1_46_0">Boost-1.46.0</a>
       </h5>
 <div class="itemizedlist"><ul class="itemizedlist" type="disc">
@@ -162,7 +201,7 @@
           </li>
 </ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h5"></a>
+<a name="math_toolkit.status.history1.h6"></a>
         <span><a name="math_toolkit.status.history1.boost_1_45_0"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.boost_1_45_0">Boost-1.45.0</a>
       </h5>
 <div class="itemizedlist"><ul class="itemizedlist" type="disc">
@@ -179,7 +218,7 @@
           </li>
 </ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h6"></a>
+<a name="math_toolkit.status.history1.h7"></a>
         <span><a name="math_toolkit.status.history1.boost_1_44_0"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.boost_1_44_0">Boost-1.44.0</a>
       </h5>
 <div class="itemizedlist"><ul class="itemizedlist" type="disc">
@@ -193,7 +232,7 @@
           </li>
 </ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h7"></a>
+<a name="math_toolkit.status.history1.h8"></a>
         <span><a name="math_toolkit.status.history1.boost_1_41_0"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.boost_1_41_0">Boost-1.41.0</a>
       </h5>
 <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
@@ -201,7 +240,7 @@
             and its inverse.
           </li></ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h8"></a>
+<a name="math_toolkit.status.history1.h9"></a>
         <span><a name="math_toolkit.status.history1.boost_1_40_0"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.boost_1_40_0">Boost-1.40.0</a>
       </h5>
 <div class="itemizedlist"><ul class="itemizedlist" type="disc">
@@ -238,7 +277,7 @@
           </li>
 </ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h9"></a>
+<a name="math_toolkit.status.history1.h10"></a>
         <span><a name="math_toolkit.status.history1.boost_1_38_0"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.boost_1_38_0">Boost-1.38.0</a>
       </h5>
 <div class="itemizedlist"><ul class="itemizedlist" type="disc">
@@ -250,14 +289,14 @@
           </li>
 </ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h10"></a>
+<a name="math_toolkit.status.history1.h11"></a>
         <span><a name="math_toolkit.status.history1.boost_1_37_0"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.boost_1_37_0">Boost-1.37.0</a>
       </h5>
 <div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">
             Improved accuracy and testing of the inverse hypergeometric functions.
           </li></ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h11"></a>
+<a name="math_toolkit.status.history1.h12"></a>
         <span><a name="math_toolkit.status.history1.boost_1_36_0"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.boost_1_36_0">Boost-1.36.0</a>
       </h5>
 <div class="itemizedlist"><ul class="itemizedlist" type="disc">
@@ -290,7 +329,7 @@
           </li>
 </ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h12"></a>
+<a name="math_toolkit.status.history1.h13"></a>
         <span><a name="math_toolkit.status.history1.boost_1_35_0__post_review_first_official_release"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.boost_1_35_0__post_review_first_official_release">Boost-1.35.0:
         Post Review First Official Release</a>
       </h5>
@@ -322,7 +361,7 @@
           </li>
 </ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h13"></a>
+<a name="math_toolkit.status.history1.h14"></a>
         <span><a name="math_toolkit.status.history1.milestone_4__second_review_candidate__1st_march_2007_"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.milestone_4__second_review_candidate__1st_march_2007_">Milestone
         4: Second Review Candidate (1st March 2007)</a>
       </h5>
@@ -336,7 +375,7 @@
           </li>
 </ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h14"></a>
+<a name="math_toolkit.status.history1.h15"></a>
         <span><a name="math_toolkit.status.history1.milestone_3__first_review_candidate__31st_dec_2006_"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.milestone_3__first_review_candidate__31st_dec_2006_">Milestone
         3: First Review Candidate (31st Dec 2006)</a>
       </h5>
@@ -364,7 +403,7 @@
           </li>
 </ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h15"></a>
+<a name="math_toolkit.status.history1.h16"></a>
         <span><a name="math_toolkit.status.history1.milestone_2__released_september_10th_2006"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.milestone_2__released_september_10th_2006">Milestone
         2: Released September 10th 2006</a>
       </h5>
@@ -400,7 +439,7 @@
           </li>
 </ul></div>
 <h5>
-<a name="math_toolkit.status.history1.h16"></a>
+<a name="math_toolkit.status.history1.h17"></a>
         <span><a name="math_toolkit.status.history1.milestone_1__released_march_31st_2006"></a></span><a class="link" href="history1.html#math_toolkit.status.history1.milestone_1__released_march_31st_2006">Milestone
         1: Released March 31st 2006</a>
       </h5>
@@ -435,7 +474,7 @@
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
 <td align="right"><div class="copyright-footer">Copyright &#169; 2006-2010 John Maddock, Paul A. Bristow, Hubert Holin, Xiaogang Zhang, Bruno
-      Lalande, Johan R&#229;de, Gautam Sewani and Thijs van den Berg<p>
+      Lalande, Johan R&#229;de, Gautam Sewani, Thijs van den Berg and Benjamin Sobotta<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

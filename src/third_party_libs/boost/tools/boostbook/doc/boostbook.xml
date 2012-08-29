@@ -9,7 +9,7 @@
 <!DOCTYPE part PUBLIC "-//Boost//DTD BoostBook XML V1.0//EN"
   "http://www.boost.org/tools/boostbook/dtd/boostbook.dtd">
 <part xmlns:xi="http://www.w3.org/2001/XInclude" id="boostbook"
-     last-revision="$Date$">
+     last-revision="$Date: 2010-07-19 16:29:09 -0700 (Mon, 19 Jul 2010) $">
   <partinfo>
     <author>
       <firstname>Douglas</firstname>

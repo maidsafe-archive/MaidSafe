@@ -248,15 +248,17 @@ iterators. It is the same type as
 <entry>
 This is an iterator over the values of <literal>A</literal>.
 If <literal>NumDims == 1</literal>, then it models 
-<ulink url="http://www.sgi.com/tech/stl/RandomAccessIterator.html">
+<ulink url="http://www.boost.org/doc/html/RandomAccessIterator.html">
 <literal>Random Access Iterator</literal></ulink>. 
 Otherwise it models 
 <ulink url="./iterator_categories.html#concept_RandomAccessTraversalIterator">
 Random Access Traversal Iterator</ulink>,
 <ulink url="./iterator_categories.html#concept_ReadableIterator">
-Readable Iterator</ulink>, and
+Readable Iterator</ulink>,
 <ulink url="./iterator_categories.html#concept_WritableIterator">
-Writable Iterator</ulink>.
+Writable Iterator</ulink>, and 
+<ulink url="http://www.boost.org/doc/html/OutputIterator.html">
+<literal>Output Iterator</literal></ulink>.
 </entry>
 </row>
 

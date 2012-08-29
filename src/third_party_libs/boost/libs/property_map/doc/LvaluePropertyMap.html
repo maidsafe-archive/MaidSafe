@@ -19,13 +19,9 @@
 LvaluePropertyMap
 </H2>
 
-The LvaluePropertyMap provides an interface for accessing a
-reference to a property object (instead of a copy of the object as in
-the <TT>get()</TT> function required by <a
-href="./ReadablePropertyMap.html">ReadablePropertyMap</a>). An
-LvaluePropertyMap can be <I>mutable</I> or
-<I>non-mutable</I>. The mutable LvaluePropertyMap returns a
-reference whereas the non-mutable returns a const reference.
+The LvaluePropertyMap provides <code>operator[]</code> and function <code>get()</code> for accessing a
+reference to a value object. The return type  refines that of function <code>get()</code>in <a
+href="./ReadablePropertyMap.html">ReadablePropertyMap</a>; it can only be a reference (for a <I>mutable</I> LvaluePropertyMap) or a const reference (for a <I>non-mutable</I> LvaluePropertyMap).
 
 <H3>Refinement of</H3>
 
@@ -60,7 +56,7 @@ for non-mutable or <a href="./ReadWritePropertyMap.html">ReadWritePropertyMap</a
 <td><TT>boost::property_traits&lt;PMap&gt;::reference</TT></td> 
 <td>
 The reference type, which must be a reference or const reference to
-the value typeof the property map.
+the value type of the property map.
 </td>
 </tr>
 
@@ -90,7 +86,7 @@ The category of the property: a type convertible to
 <TT>value_type&amp;</TT> for mutable, <TT>const value_type&amp;</TT>
 otherwise.
 </TD>
-<TD>Obtain a reference to the property identified by <TT>key</TT>.</TD>
+<TD>Obtain a reference to the value associated with <TT>key</TT>.</TD>
 </TR>
 </TABLE>
 

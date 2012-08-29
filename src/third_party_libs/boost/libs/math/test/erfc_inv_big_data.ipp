@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 2>, 200> erfc_inv_big_data = { {
+   static const boost::array<boost::array<typename table_type<T>::type, 2>, 200> erfc_inv_big_data = { {
       {{ SC_(0.5460825444184401149953083908674803067585e-4312), SC_(99.62016927389407649911084501709563799849) }}, 
       {{ SC_(0.2645475979732877501542006305722535728925e-4291), SC_(99.38083815930157675670279543643240126733) }}, 
       {{ SC_(0.4647218972549971591905525747707221131215e-4281), SC_(99.26209205835381203650501813598769577392) }}, 

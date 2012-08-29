@@ -3,8 +3,8 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#define SC_(x) static_cast<T>(BOOST_JOIN(x, L))
-   static const boost::array<boost::array<T, 6>, 1000> spherical_harmonic = {{
+#define SC_(x) static_cast<typename table_type<T>::type>(BOOST_JOIN(x, L))
+   static const boost::array<boost::array<typename table_type<T>::type, 6>, 1000> spherical_harmonic = {{
       {{ SC_(0.2e1), SC_(0), SC_(-0.6223074436187744140625e1), SC_(-0.983176708221435546875e0), SC_(0.62736841735769885881246893757736785347239567286304e0), SC_(0) }}, 
       {{ SC_(0.2e1), SC_(0), SC_(-0.5057456493377685546875e1), SC_(0.59339153766632080078125e0), SC_(-0.20713028443163886820218719974386053923059852163073e0), SC_(0) }}, 
       {{ SC_(0.2e1), SC_(0), SC_(-0.4687422275543212890625e1), SC_(0.5891966342926025390625e1), SC_(-0.31480190270523966739513025513763623833894947272512e0), SC_(0) }}, 

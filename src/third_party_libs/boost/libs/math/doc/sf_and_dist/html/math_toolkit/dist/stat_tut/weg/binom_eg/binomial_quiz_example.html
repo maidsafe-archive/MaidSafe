@@ -55,8 +55,6 @@
   <span class="keyword">using</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">setw</span><span class="special">;</span> <span class="keyword">using</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">setprecision</span><span class="special">;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">exception</span><span class="special">&gt;</span>
   <span class="keyword">using</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">exception</span><span class="special">;</span>
-
-
 </pre>
 <p>
             </p>
@@ -70,7 +68,8 @@
 <pre class="programlisting"><span class="keyword">int</span> <span class="identifier">questions</span> <span class="special">=</span> <span class="number">16</span><span class="special">;</span> <span class="comment">// All the questions in the quiz.</span>
 <span class="keyword">int</span> <span class="identifier">answers</span> <span class="special">=</span> <span class="number">4</span><span class="special">;</span> <span class="comment">// Possible answers to each question.</span>
 <span class="keyword">double</span> <span class="identifier">success_fraction</span> <span class="special">=</span> <span class="number">1.</span> <span class="special">/</span> <span class="identifier">answers</span><span class="special">;</span> <span class="comment">// If a random guess, p = 1/4 = 0.25.</span>
-<span class="identifier">binomial</span> <span class="identifier">quiz</span><span class="special">(</span><span class="identifier">questions</span><span class="special">,</span> <span class="identifier">success_fraction</span><span class="special">);</span></pre>
+<span class="identifier">binomial</span> <span class="identifier">quiz</span><span class="special">(</span><span class="identifier">questions</span><span class="special">,</span> <span class="identifier">success_fraction</span><span class="special">);</span>
+</pre>
 <p>
             </p>
 <p>
@@ -81,7 +80,8 @@
 <pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"In a quiz with "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quiz</span><span class="special">.</span><span class="identifier">trials</span><span class="special">()</span>
   <span class="special">&lt;&lt;</span> <span class="string">" questions and with a probability of guessing right of "</span>
   <span class="special">&lt;&lt;</span> <span class="identifier">quiz</span><span class="special">.</span><span class="identifier">success_fraction</span><span class="special">()</span> <span class="special">*</span> <span class="number">100</span> <span class="special">&lt;&lt;</span> <span class="string">" %"</span>
-  <span class="special">&lt;&lt;</span> <span class="string">" or 1 in "</span> <span class="special">&lt;&lt;</span> <span class="keyword">static_cast</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="number">1.</span> <span class="special">/</span> <span class="identifier">quiz</span><span class="special">.</span><span class="identifier">success_fraction</span><span class="special">())</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="string">" or 1 in "</span> <span class="special">&lt;&lt;</span> <span class="keyword">static_cast</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="number">1.</span> <span class="special">/</span> <span class="identifier">quiz</span><span class="special">.</span><span class="identifier">success_fraction</span><span class="special">())</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <p>
@@ -96,7 +96,8 @@
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting exactly "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pass_score</span> <span class="special">&lt;&lt;</span> <span class="string">" answers right by chance is "</span>
   <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">pass_score</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting all "</span> <span class="special">&lt;&lt;</span> <span class="identifier">questions</span> <span class="special">&lt;&lt;</span> <span class="string">" answers right by chance is "</span>
-  <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">questions</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">questions</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of getting none right is 0.0100226
@@ -119,7 +120,8 @@ Probability of getting exactly all 16 answers right by chance is 2.32831e-010
   <span class="keyword">double</span> <span class="identifier">probability</span> <span class="special">=</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">successes</span><span class="special">);</span>
   <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">setw</span><span class="special">(</span><span class="number">2</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">successes</span> <span class="special">&lt;&lt;</span> <span class="string">"      "</span> <span class="special">&lt;&lt;</span> <span class="identifier">probability</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
 <span class="special">}</span>
-<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Guessed Probability
@@ -146,7 +148,8 @@ Probability of getting exactly all 16 answers right by chance is 2.32831e-010
             </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting none or one right is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">0</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting none or one right is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">0</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of getting none or one right is 0.0634764
@@ -158,7 +161,8 @@ Probability of getting exactly all 16 answers right by chance is 2.32831e-010
             </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting none or one right is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting none or one right is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of getting none or one right is 0.0634764
@@ -169,7 +173,8 @@ Probability of getting exactly all 16 answers right by chance is 2.32831e-010
             </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting &lt;= 10 right (to fail) is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">10</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting &lt;= 10 right (to fail) is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">10</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of getting &lt;= 10 right (to fail) is 0.999715
@@ -184,7 +189,8 @@ Probability of getting exactly all 16 answers right by chance is 2.32831e-010
             </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting &gt; 10 right (to pass) is "</span> <span class="special">&lt;&lt;</span> <span class="number">1</span> <span class="special">-</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">10</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting &gt; 10 right (to pass) is "</span> <span class="special">&lt;&lt;</span> <span class="number">1</span> <span class="special">-</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">10</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of getting &gt; 10 right (to pass) is 0.000285239
@@ -195,7 +201,8 @@ Probability of getting exactly all 16 answers right by chance is 2.32831e-010
             </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting &gt; 10 right (to pass) is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">10</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting &gt; 10 right (to pass) is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">10</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of getting &gt; 10 right (to pass) is 0.000285239
@@ -205,7 +212,8 @@ Probability of getting exactly all 16 answers right by chance is 2.32831e-010
             </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">BOOST_ASSERT</span><span class="special">((</span><span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">10</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">10</span><span class="special">)))</span> <span class="special">==</span> <span class="number">1.</span><span class="special">);</span></pre>
+<pre class="programlisting"><span class="identifier">BOOST_ASSERT</span><span class="special">((</span><span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">10</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">10</span><span class="special">)))</span> <span class="special">==</span> <span class="number">1.</span><span class="special">);</span>
+</pre>
 <p>
             </p>
 <p>
@@ -216,7 +224,8 @@ Probability of getting exactly all 16 answers right by chance is 2.32831e-010
 </p>
 <pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting less than "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pass_score</span>
   <span class="special">&lt;&lt;</span> <span class="string">" (&lt; "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pass_score</span> <span class="special">&lt;&lt;</span> <span class="string">") answers right by guessing is "</span>
-  <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">pass_score</span> <span class="special">-</span><span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">pass_score</span> <span class="special">-</span><span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of getting less than 11 (&lt; 11) answers right by guessing is 0.999715
@@ -235,7 +244,8 @@ Probability of getting exactly all 16 answers right by chance is 2.32831e-010
   <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">pass_score</span><span class="special">-</span><span class="number">1</span><span class="special">))</span>
   <span class="special">&lt;&lt;</span> <span class="string">", only 1 in "</span> <span class="special">&lt;&lt;</span> <span class="number">1</span><span class="special">/</span><span class="identifier">cdf</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">pass_score</span><span class="special">-</span><span class="number">1</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
 
-<span class="identifier">BOOST_ASSERT</span><span class="special">((</span><span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">pass_score</span> <span class="special">-</span><span class="number">1</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">pass_score</span><span class="special">-</span><span class="number">1</span><span class="special">)))</span> <span class="special">==</span> <span class="number">1</span><span class="special">);</span></pre>
+<span class="identifier">BOOST_ASSERT</span><span class="special">((</span><span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">pass_score</span> <span class="special">-</span><span class="number">1</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">pass_score</span><span class="special">-</span><span class="number">1</span><span class="special">)))</span> <span class="special">==</span> <span class="number">1</span><span class="special">);</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of getting at least 11 (&gt;= 11) answers right by guessing is 0.000285239, only 1 in 3505.83
@@ -251,7 +261,8 @@ Probability of getting exactly all 16 answers right by chance is 2.32831e-010
   <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">setw</span><span class="special">(</span><span class="number">2</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">score</span> <span class="special">&lt;&lt;</span> <span class="string">"           "</span> <span class="special">&lt;&lt;</span> <span class="identifier">setprecision</span><span class="special">(</span><span class="number">10</span><span class="special">)</span>
     <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">score</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
 <span class="special">}</span>
-<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">At most (&lt;=)
@@ -281,7 +292,8 @@ Guessed OK   Probability
 <span class="special">{</span>
   <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">setw</span><span class="special">(</span><span class="number">2</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">score</span> <span class="special">&lt;&lt;</span> <span class="string">"           "</span>  <span class="special">&lt;&lt;</span> <span class="identifier">setprecision</span><span class="special">(</span><span class="number">10</span><span class="special">)</span>
     <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">score</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
-<span class="special">}</span></pre>
+<span class="special">}</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">At least (&gt;)
@@ -324,7 +336,8 @@ Guessed OK   Probability
 <span class="identifier">cout</span><span class="special">.</span><span class="identifier">precision</span><span class="special">(</span><span class="number">4</span><span class="special">);</span>
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting between "</span>
   <span class="special">&lt;&lt;</span> <span class="identifier">low</span> <span class="special">&lt;&lt;</span> <span class="string">" and "</span> <span class="special">&lt;&lt;</span> <span class="identifier">high</span> <span class="special">&lt;&lt;</span> <span class="string">" answers right by guessing is "</span>
-  <span class="special">&lt;&lt;</span> <span class="identifier">sum</span>  <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.61323</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="identifier">sum</span>  <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.61323</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of getting between 3 and 5 answers right by guessing is 0.6132
@@ -335,7 +348,8 @@ Guessed OK   Probability
 <p>
 </p>
 <pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting between "</span> <span class="special">&lt;&lt;</span> <span class="identifier">low</span> <span class="special">&lt;&lt;</span> <span class="string">" and "</span> <span class="special">&lt;&lt;</span> <span class="identifier">high</span> <span class="special">&lt;&lt;</span> <span class="string">" answers right by guessing is "</span>
-  <span class="special">&lt;&lt;</span>  <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">high</span><span class="special">)</span> <span class="special">-</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">low</span> <span class="special">-</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.61323</span></pre>
+  <span class="special">&lt;&lt;</span>  <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">high</span><span class="special">)</span> <span class="special">-</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">low</span> <span class="special">-</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.61323</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of getting between 3 and 5 answers right by guessing is 0.6132
@@ -353,7 +367,8 @@ Guessed OK   Probability
   <span class="special">&lt;&lt;</span>  <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">high</span><span class="special">)</span> <span class="special">-</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">low</span> <span class="special">-</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 1 &lt;= x 8 P = 0.9825</span>
 <span class="identifier">low</span> <span class="special">=</span> <span class="number">4</span><span class="special">;</span> <span class="identifier">high</span> <span class="special">=</span> <span class="number">4</span><span class="special">;</span>
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of getting between "</span> <span class="special">&lt;&lt;</span> <span class="identifier">low</span> <span class="special">&lt;&lt;</span> <span class="string">" and "</span> <span class="special">&lt;&lt;</span> <span class="identifier">high</span> <span class="special">&lt;&lt;</span> <span class="string">" answers right by guessing is "</span>
-  <span class="special">&lt;&lt;</span>  <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">high</span><span class="special">)</span> <span class="special">-</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">low</span> <span class="special">-</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 4 &lt;= x 4 P = 0.22520</span></pre>
+  <span class="special">&lt;&lt;</span>  <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">high</span><span class="special">)</span> <span class="special">-</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="identifier">low</span> <span class="special">-</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 4 &lt;= x 4 P = 0.22520</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Probability of getting between 1 and 6 answers right by guessing is 0.9104
@@ -377,7 +392,8 @@ Probability of getting between 4 and 4 answers right by guessing is 0.2252
   <span class="special">&lt;&lt;</span>  <span class="identifier">ceil</span><span class="special">(</span><span class="identifier">mean</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">)</span> <span class="special">-</span> <span class="identifier">standard_deviation</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">))</span>  <span class="special">&lt;&lt;</span> <span class="string">" and "</span>
   <span class="special">&lt;&lt;</span> <span class="identifier">floor</span><span class="special">(</span><span class="identifier">mean</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">standard_deviation</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="string">" correct."</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Mode (the most frequent) is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">mode</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
-<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Skewness is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">skewness</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Skewness is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">skewness</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">By guessing, on average, one can expect to get 4 correct answers.
@@ -410,7 +426,8 @@ Skewness is 0.2887
   <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">0.02</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">//  2 to 98%</span>
 
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"If guessing then percentiles 1 to 99% will get "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">0.01</span><span class="special">)</span>
-  <span class="special">&lt;&lt;</span> <span class="string">" to "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">0.01</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="string">" right."</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="string">" to "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz</span><span class="special">,</span> <span class="number">0.01</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="string">" right."</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <p>
@@ -457,7 +474,8 @@ Deciles 1 to 6
 <span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">policies</span><span class="special">::</span><span class="identifier">discrete_quantile</span><span class="special">;</span>
 <span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">policies</span><span class="special">::</span><span class="identifier">real</span><span class="special">;</span>
 <span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">policies</span><span class="special">::</span><span class="identifier">integer_round_outwards</span><span class="special">;</span> <span class="comment">// Default.</span>
-<span class="keyword">typedef</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">policies</span><span class="special">::</span><span class="identifier">policy</span><span class="special">&lt;</span><span class="identifier">discrete_quantile</span><span class="special">&lt;</span><span class="identifier">real</span><span class="special">&gt;</span> <span class="special">&gt;</span> <span class="identifier">real_quantile_policy</span><span class="special">;</span></pre>
+<span class="keyword">typedef</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">policies</span><span class="special">::</span><span class="identifier">policy</span><span class="special">&lt;</span><span class="identifier">discrete_quantile</span><span class="special">&lt;</span><span class="identifier">real</span><span class="special">&gt;</span> <span class="special">&gt;</span> <span class="identifier">real_quantile_policy</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <p>
@@ -473,7 +491,8 @@ Deciles 1 to 6
 <p>
 </p>
 <pre class="programlisting"><span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">binomial_distribution</span><span class="special">;</span>
-<span class="keyword">typedef</span> <span class="identifier">binomial_distribution</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">,</span> <span class="identifier">real_quantile_policy</span><span class="special">&gt;</span> <span class="identifier">real_quantile_binomial</span><span class="special">;</span></pre>
+<span class="keyword">typedef</span> <span class="identifier">binomial_distribution</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">,</span> <span class="identifier">real_quantile_policy</span><span class="special">&gt;</span> <span class="identifier">real_quantile_binomial</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <p>
@@ -481,7 +500,8 @@ Deciles 1 to 6
             </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">real_quantile_binomial</span> <span class="identifier">quiz_real</span><span class="special">(</span><span class="identifier">questions</span><span class="special">,</span> <span class="identifier">success_fraction</span><span class="special">);</span></pre>
+<pre class="programlisting"><span class="identifier">real_quantile_binomial</span> <span class="identifier">quiz_real</span><span class="special">(</span><span class="identifier">questions</span><span class="special">,</span> <span class="identifier">success_fraction</span><span class="special">);</span>
+</pre>
 <p>
             </p>
 <p>
@@ -504,7 +524,8 @@ Deciles 1 to 6
   <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz_real</span><span class="special">,</span> <span class="number">0.02</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">//  2 to 98% 0.31311 7.7880</span>
 
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"If guessing, then percentiles 1 to 99% will get "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">quiz_real</span><span class="special">,</span> <span class="number">0.01</span><span class="special">)</span>
-  <span class="special">&lt;&lt;</span> <span class="string">" to "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz_real</span><span class="special">,</span> <span class="number">0.01</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="string">" right."</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="string">" to "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">quiz_real</span><span class="special">,</span> <span class="number">0.01</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="string">" right."</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
             </p>
 <pre class="programlisting">Real Quantiles
@@ -524,7 +545,7 @@ If guessing then percentiles 1 to 99% will get 0 to 7.788 right.
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
 <td align="right"><div class="copyright-footer">Copyright &#169; 2006-2010 John Maddock, Paul A. Bristow, Hubert Holin, Xiaogang Zhang, Bruno
-      Lalande, Johan R&#229;de, Gautam Sewani and Thijs van den Berg<p>
+      Lalande, Johan R&#229;de, Gautam Sewani, Thijs van den Berg and Benjamin Sobotta<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

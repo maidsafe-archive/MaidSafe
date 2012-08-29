@@ -1,5 +1,14 @@
+# Boost.Math Indexing terms file.
+# Copyright John Maddock 2009 - 2012
+# Copyright Paul A. Bristow 2009 - 2012
 
 "Lanczos approximation" lanczos
+
+closed form \<closed\w*\>
+
+expression \<express\w*\>
+
+constants  \<constant\w*\>
 
 !scan-path boost/math .*\.hpp true
 

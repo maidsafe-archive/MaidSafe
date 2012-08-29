@@ -41,7 +41,7 @@ BOOST_FOREACH (CList<CString> *theList, myArray)
 
 * Boost C++ Libraries Version 1.34.0 or later (no compilation required)
 * Visual C++ 7.1 or later (for MFC and ATL)
-    
+
 [endsect]
 
 [section:mfc_ranges MFC Ranges]

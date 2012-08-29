@@ -30,6 +30,7 @@
 [include distributions/pareto.qbk]
 [include distributions/poisson.qbk]
 [include distributions/rayleigh.qbk]
+[include distributions/skew_normal.qbk]
 [include distributions/students_t.qbk]
 [include distributions/triangular.qbk]
 [include distributions/uniform.qbk]

@@ -37,7 +37,8 @@
 <p>
 </p>
 <pre class="programlisting"><span class="preprocessor">#define</span> <span class="identifier">BOOST_MATH_OVERFLOW_ERROR_POLICY</span> <span class="identifier">ignore_error</span>
-<span class="preprocessor">#define</span> <span class="identifier">BOOST_MATH_DISCRETE_QUANTILE_POLICY</span> <span class="identifier">real</span></pre>
+<span class="preprocessor">#define</span> <span class="identifier">BOOST_MATH_DISCRETE_QUANTILE_POLICY</span> <span class="identifier">real</span>
+</pre>
 <p>
           </p>
 <div class="caution"><table border="0" summary="Caution">
@@ -109,7 +110,8 @@
 <p>
 </p>
 <pre class="programlisting"><span class="keyword">double</span> <span class="identifier">success_fraction</span> <span class="special">=</span> <span class="number">1.</span><span class="special">/</span><span class="number">6</span><span class="special">;</span> <span class="comment">// success_fraction (p) = 0.1666</span>
-<span class="comment">// (so failure_fraction is 1 - success_fraction = 5./6 = 1- 0.1666 = 0.8333)</span></pre>
+<span class="comment">// (so failure_fraction is 1 - success_fraction = 5./6 = 1- 0.1666 = 0.8333)</span>
+</pre>
 <p>
           </p>
 <p>
@@ -126,7 +128,8 @@
           </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">geometric</span> <span class="identifier">g6</span><span class="special">(</span><span class="identifier">success_fraction</span><span class="special">);</span> <span class="comment">// type double by default.</span></pre>
+<pre class="programlisting"><span class="identifier">geometric</span> <span class="identifier">g6</span><span class="special">(</span><span class="identifier">success_fraction</span><span class="special">);</span> <span class="comment">// type double by default.</span>
+</pre>
 <p>
           </p>
 <p>
@@ -134,7 +137,8 @@
           </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"success fraction of a six-sided dice is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">g6</span><span class="special">.</span><span class="identifier">success_fraction</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"success fraction of a six-sided dice is "</span> <span class="special">&lt;&lt;</span> <span class="identifier">g6</span><span class="special">.</span><span class="identifier">success_fraction</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
           </p>
 <p>
@@ -144,7 +148,8 @@
 <p>
 </p>
 <pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">0</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.1667</span>
-<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">0</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.1667</span></pre>
+<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">0</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.1667</span>
+</pre>
 <p>
           </p>
 <p>
@@ -154,7 +159,8 @@
           </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.1389</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.1389</span>
+</pre>
 <p>
           </p>
 <p>
@@ -163,7 +169,8 @@
           </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"pdf(g6, 0) + pdf(g6, 1) = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">0</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"pdf(g6, 0) + pdf(g6, 1) = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">0</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
           </p>
 <p>
@@ -172,7 +179,8 @@
           </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"cdf(g6, 1) = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.3056</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"cdf(g6, 1) = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.3056</span>
+</pre>
 <p>
           </p>
 <p>
@@ -181,7 +189,8 @@
           </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"cdf(g6, 12) = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">12</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.9065 or 90% probability.</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"cdf(g6, 12) = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">12</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.9065 or 90% probability.</span>
+</pre>
 <p>
           </p>
 <p>
@@ -190,7 +199,8 @@
           </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"quantile(g6, 0.99) = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">0.99</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 24.26</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"quantile(g6, 0.99) = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">0.99</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 24.26</span>
+</pre>
 <p>
           </p>
 <p>
@@ -210,7 +220,8 @@
 </p>
 <pre class="programlisting"><span class="identifier">negative_binomial</span> <span class="identifier">nb</span><span class="special">(</span><span class="number">1</span><span class="special">,</span> <span class="identifier">success_fraction</span><span class="special">);</span>
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.1389</span>
-<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.3056</span></pre>
+<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">nb</span><span class="special">,</span> <span class="number">1</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.3056</span>
+</pre>
 <p>
           </p>
 <p>
@@ -219,7 +230,8 @@
           </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"quantile(complement(g6, 1 - p))  "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">0.01</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 24.26</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"quantile(complement(g6, 1 - p))  "</span> <span class="special">&lt;&lt;</span> <span class="identifier">quantile</span><span class="special">(</span><span class="identifier">complement</span><span class="special">(</span><span class="identifier">g6</span><span class="special">,</span> <span class="number">0.01</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 24.26</span>
+</pre>
 <p>
           </p>
 <p>
@@ -251,7 +263,8 @@
     <span class="special">&lt;&lt;</span> <span class="identifier">max_digits10</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
   <span class="identifier">cout</span><span class="special">.</span><span class="identifier">precision</span><span class="special">(</span><span class="identifier">max_digits10</span><span class="special">);</span> <span class="comment">// </span>
 
-    <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">g05</span><span class="special">,</span> <span class="number">0.0001</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// returns 0.5000346561579232, not exact 0.5.</span></pre>
+    <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">g05</span><span class="special">,</span> <span class="number">0.0001</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// returns 0.5000346561579232, not exact 0.5.</span>
+</pre>
 <p>
           </p>
 <p>
@@ -260,7 +273,8 @@
           </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">g05</span><span class="special">,</span> <span class="identifier">floor</span><span class="special">(</span><span class="number">0.0001</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// returns exactly 0.5</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">cdf</span><span class="special">(</span><span class="identifier">g05</span><span class="special">,</span> <span class="identifier">floor</span><span class="special">(</span><span class="number">0.0001</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// returns exactly 0.5</span>
+</pre>
 <p>
           </p>
 <pre class="programlisting"><code class="computeroutput"><span class="special">&gt;</span> <span class="identifier">formatC</span><span class="special">(</span><span class="identifier">pgeom</span><span class="special">(</span><span class="number">0.9999999</span><span class="special">,</span><span class="number">0.5</span><span class="special">,</span> <span class="identifier">FALSE</span><span class="special">),</span> <span class="identifier">digits</span><span class="special">=</span><span class="number">17</span><span class="special">)</span> <span class="special">[</span><span class="number">1</span><span class="special">]</span> <span class="string">"              0.25"</span></code>
@@ -313,7 +327,8 @@
 <span class="identifier">c</span> <span class="special">=</span> <span class="number">0.80</span><span class="special">;</span> <span class="comment">// Only reasonably confident.</span>
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"To be "</span> <span class="special">&lt;&lt;</span> <span class="identifier">c</span> <span class="special">*</span> <span class="number">100</span>
   <span class="special">&lt;&lt;</span> <span class="string">"% confident of finding we customer with a fault, need to survey "</span>
-  <span class="special">&lt;&lt;</span>  <span class="identifier">ceil</span><span class="special">(</span><span class="identifier">quantile</span><span class="special">(</span><span class="identifier">g</span><span class="special">,</span> <span class="identifier">c</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="string">" customers."</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 79</span></pre>
+  <span class="special">&lt;&lt;</span>  <span class="identifier">ceil</span><span class="special">(</span><span class="identifier">quantile</span><span class="special">(</span><span class="identifier">g</span><span class="special">,</span> <span class="identifier">c</span><span class="special">))</span> <span class="special">&lt;&lt;</span> <span class="string">" customers."</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 79</span>
+</pre>
 <p>
           </p>
 <h6>
@@ -332,7 +347,8 @@
 <p>
 </p>
 <pre class="programlisting"><span class="identifier">cout</span><span class="special">.</span><span class="identifier">precision</span><span class="special">(</span><span class="number">2</span><span class="special">);</span>
-<span class="identifier">geometric</span> <span class="identifier">gav</span><span class="special">(</span><span class="number">0.75</span><span class="special">);</span> <span class="comment">// Shooter averages 7.5 out of 10 in the basket.</span></pre>
+<span class="identifier">geometric</span> <span class="identifier">gav</span><span class="special">(</span><span class="number">0.75</span><span class="special">);</span> <span class="comment">// Shooter averages 7.5 out of 10 in the basket.</span>
+</pre>
 <p>
           </p>
 <p>
@@ -341,7 +357,8 @@
           </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of score on 1st try = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">gav</span><span class="special">,</span> <span class="number">0</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.75</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of score on 1st try = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">gav</span><span class="special">,</span> <span class="number">0</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.75</span>
+</pre>
 <p>
           </p>
 <p>
@@ -351,7 +368,8 @@
           </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of score on 5th try = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">gav</span><span class="special">,</span> <span class="number">4</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.0029</span></pre>
+<pre class="programlisting"><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of score on 5th try = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">gav</span><span class="special">,</span> <span class="number">4</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.0029</span>
+</pre>
 <p>
           </p>
 <p>
@@ -365,7 +383,8 @@
 <pre class="programlisting"><span class="identifier">geometric</span> <span class="identifier">gbest</span><span class="special">(</span><span class="number">0.95</span><span class="special">);</span>
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of score on 5th try = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">gbest</span><span class="special">,</span> <span class="number">4</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 5.9e-6</span>
 <span class="identifier">geometric</span> <span class="identifier">gmediocre</span><span class="special">(</span><span class="number">0.50</span><span class="special">);</span>
-<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of score on 5th try = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">gmediocre</span><span class="special">,</span> <span class="number">4</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.031</span></pre>
+<span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Probability of score on 5th try = "</span> <span class="special">&lt;&lt;</span> <span class="identifier">pdf</span><span class="special">(</span><span class="identifier">gmediocre</span><span class="special">,</span> <span class="number">4</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.031</span>
+</pre>
 <p>
           </p>
 <p>
@@ -408,7 +427,8 @@
   <span class="special">&lt;&lt;</span> <span class="identifier">t</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.00025</span>
 <span class="identifier">t</span> <span class="special">=</span> <span class="identifier">geometric</span><span class="special">::</span><span class="identifier">find_upper_bound_on_p</span><span class="special">(</span><span class="identifier">k</span><span class="special">,</span> <span class="identifier">alpha</span><span class="special">/</span><span class="number">2</span><span class="special">);</span>
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"geometric::find_upper_bound_on_p("</span> <span class="special">&lt;&lt;</span> <span class="keyword">int</span><span class="special">(</span><span class="identifier">k</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">", "</span> <span class="special">&lt;&lt;</span> <span class="identifier">alpha</span><span class="special">/</span><span class="number">2</span> <span class="special">&lt;&lt;</span> <span class="string">") = "</span>
-  <span class="special">&lt;&lt;</span> <span class="identifier">t</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.037</span></pre>
+  <span class="special">&lt;&lt;</span> <span class="identifier">t</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.037</span>
+</pre>
 <p>
           </p>
 <p>
@@ -433,7 +453,8 @@
   <span class="special">&lt;&lt;</span> <span class="identifier">t</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 5e-005</span>
 <span class="identifier">t</span> <span class="special">=</span> <span class="identifier">geometric</span><span class="special">::</span><span class="identifier">find_upper_bound_on_p</span><span class="special">(</span><span class="identifier">k</span><span class="special">,</span> <span class="identifier">alpha</span><span class="special">/</span><span class="number">2</span><span class="special">);</span>
 <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"geometric::find_upper_bound_on_p("</span> <span class="special">&lt;&lt;</span> <span class="keyword">int</span><span class="special">(</span><span class="identifier">k</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="string">", "</span> <span class="special">&lt;&lt;</span> <span class="identifier">alpha</span><span class="special">/</span><span class="number">2</span> <span class="special">&lt;&lt;</span> <span class="string">") = "</span>
-    <span class="special">&lt;&lt;</span> <span class="identifier">t</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.052</span></pre>
+    <span class="special">&lt;&lt;</span> <span class="identifier">t</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span> <span class="comment">// 0.052</span>
+</pre>
 <p>
           </p>
 <p>
@@ -451,7 +472,8 @@
 <span class="keyword">catch</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">exception</span><span class="special">&amp;</span> <span class="identifier">e</span><span class="special">)</span>
 <span class="special">{</span> <span class="comment">// Since we have set an overflow policy of ignore_error,</span>
   <span class="comment">// an overflow exception should never be thrown.</span>
-   <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"\nMessage from thrown exception was:\n "</span> <span class="special">&lt;&lt;</span> <span class="identifier">e</span><span class="special">.</span><span class="identifier">what</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span></pre>
+   <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"\nMessage from thrown exception was:\n "</span> <span class="special">&lt;&lt;</span> <span class="identifier">e</span><span class="special">.</span><span class="identifier">what</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
           </p>
 <p>
@@ -476,7 +498,7 @@
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
 <td align="right"><div class="copyright-footer">Copyright &#169; 2006-2010 John Maddock, Paul A. Bristow, Hubert Holin, Xiaogang Zhang, Bruno
-      Lalande, Johan R&#229;de, Gautam Sewani and Thijs van den Berg<p>
+      Lalande, Johan R&#229;de, Gautam Sewani, Thijs van den Berg and Benjamin Sobotta<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

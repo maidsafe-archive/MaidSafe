@@ -35,6 +35,7 @@ test-suite boost-geometry-algorithms
     [ run perimeter.cpp ]
     [ run reverse.cpp ]
     [ run simplify.cpp ]
+    [ run touches.cpp ]
     [ run transform.cpp ]
     [ run union.cpp ]
     [ run unique.cpp ]

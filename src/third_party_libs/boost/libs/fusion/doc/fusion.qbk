@@ -11,7 +11,7 @@
     [quickbook 1.3]
     [version 2.1]
     [authors [de Guzman, Joel], [Marsden, Dan], [Schwinger, Tobias]]
-    [copyright 2001 2002 2003 2004 2005 2006 2011 Joel de Guzman, Dan Marsden, Tobias Schwinger]
+    [copyright 2001 2002 2003 2004 2005 2006 2011 2012 Joel de Guzman, Dan Marsden, Tobias Schwinger]
     [purpose Statically Typed Heterogeneous Data Structures and Algorithms]
     [license
         Distributed under the Boost Software License, Version 1.0.
@@ -116,6 +116,9 @@
 [def __vector__                 [link fusion.container.vector `vector`]]
 [def __cons__                   [link fusion.container.cons `cons`]]
 [def __list__                   [link fusion.container.list `list`]]
+[def __deque__                  [link fusion.container.deque `deque`]]
+[def __front_extended_deque__   [link fusion.container.front_extended_deque `front_extended_deque`]]
+[def __back_extended_deque__    [link fusion.container.back_extended_deque `back_extended_deque`]]
 [def __set__                    [link fusion.container.set `set`]]
 [def __map__                    [link fusion.container.map `map`]]
 
@@ -198,12 +201,16 @@
 [def __result_of_make_cons__    [link fusion.container.generation.metafunctions.make_cons `result_of::make_cons`]]
 [def __make_list__              [link fusion.container.generation.functions.make_list `make_list`]]
 [def __result_of_make_list__    [link fusion.container.generation.metafunctions.make_list `result_of::make_list`]]
+[def __make_deque__             [link fusion.container.generation.functions.make_deque `make_deque`]]
+[def __result_of_make_deque__   [link fusion.container.generation.metafunctions.make_deque `result_of::make_deque`]]
 [def __make_set__               [link fusion.container.generation.functions.make_set `make_set`]]
 [def __result_of_make_set__     [link fusion.container.generation.metafunctions.make_set `result_of::make_set`]]
 [def __make_map__               [link fusion.container.generation.functions.make_map `make_map`]]
 [def __result_of_make_map__     [link fusion.container.generation.metafunctions.make_map `result_of::make_map`]]
 [def __list_tie__               [link fusion.container.generation.functions.list_tie `list_tie`]]
 [def __result_of_list_tie__     [link fusion.container.generation.metafunctions.list_tie `result_of::list_tie`]]
+[def __deque_tie__              [link fusion.container.generation.functions.deque_tie `deque_tie`]]
+[def __result_of_deque_tie__    [link fusion.container.generation.metafunctions.deque_tie `result_of::deque_tie`]]
 
 [def __out__                    [link fusion.sequence.operator.i_o.out out]]
 [def __in__                     [link fusion.sequence.operator.i_o.in in]]

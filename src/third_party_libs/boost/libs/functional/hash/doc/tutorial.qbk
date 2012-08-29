@@ -198,5 +198,15 @@ To calculate the hash of an iterator range you can use [funcref boost::hash_rang
     std::vector<std::string> some_strings;
     std::size_t hash = ``[funcref boost::hash_range]``(some_strings.begin(), some_strings.end());
 
-[endsect]
+Note that when writing template classes, you might not want to include the main
+hash header as it's quite an expensive include that brings in a lot of other
+headers, so instead you can include the `<boost/functional/hash_fwd.hpp>`
+header which forward declares [classref boost::hash],
+[funcref boost::hash_range] and [funcref boost::hash_combine]. You'll need to
+include the main header before instantiating [classref boost::hash]. When using
+a container that uses [classref boost::hash] it should do that for you, so your
+type will work fine with the boost hash containers. There's an example of this
+in [@boost:/libs/functional/hash/examples/template.hpp template.hpp] and
+[@boost:/libs/functional/hash/examples/template.cpp template.cpp].
 
+[endsect]

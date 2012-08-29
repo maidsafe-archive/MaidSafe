@@ -29,7 +29,7 @@
 <div><p class="copyright">Copyright &#169; 2001-2007 Beman Dawes, Vesa Karvonen, John
       Maddock</p></div>
 <div><div class="legalnotice">
-<a name="id988561"></a><p>
+<a name="config.legal"></a><p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>
@@ -72,6 +72,8 @@
       Helper Macros</a></span></dt>
 <dt><span class="section"><a href="boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.boost_informational_macros">Boost
       Informational Macros</a></span></dt>
+<dt><span class="section"><a href="boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.boost_deprecated_macros">Boost
+      Deprecated Macros</a></span></dt>
 <dt><span class="section"><a href="boost_config/boost_macro_reference.html#boost_config.boost_macro_reference.macros_for_libraries_with_separate_source_code">Macros
       for libraries with separate source code</a></span></dt>
 </dl></dd>
@@ -95,7 +97,7 @@
 <dt><span class="section"><a href="boost_config/acknowledgements.html">Acknowledgements</a></span></dt>
 </dl>
 </div>
-<div class="section">
+<div class="section boost_config_configuring_boost_for_your_platform">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="boost_config.configuring_boost_for_your_platform"></a><a class="link" href="index.html#boost_config.configuring_boost_for_your_platform" title="Configuring Boost for Your Platform">Configuring
     Boost for Your Platform</a>
@@ -114,7 +116,7 @@
 <dt><span class="section"><a href="index.html#boost_config.configuring_boost_for_your_platform.testing_the_boost_configuration">Testing
       the boost configuration</a></span></dt>
 </dl></div>
-<div class="section">
+<div class="section boost_config_configuring_boost_for_your_platform_using_the_default_boost_configuration">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_config.configuring_boost_for_your_platform.using_the_default_boost_configuration"></a><a class="link" href="index.html#boost_config.configuring_boost_for_your_platform.using_the_default_boost_configuration" title="Using the default boost configuration">Using
       the default boost configuration</a>
@@ -138,7 +140,7 @@
         and submitting a support request.
       </p>
 </div>
-<div class="section">
+<div class="section boost_config_configuring_boost_for_your_platform_the__boost_config_hpp__header">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_config.configuring_boost_for_your_platform.the__boost_config_hpp__header"></a><a class="link" href="index.html#boost_config.configuring_boost_for_your_platform.the__boost_config_hpp__header" title="The &lt;boost/config.hpp&gt; header">The
       &lt;boost/config.hpp&gt; header</a>
@@ -169,7 +171,7 @@
         developers list.
       </p>
 </div>
-<div class="section">
+<div class="section boost_config_configuring_boost_for_your_platform_using_the_configure_script">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_config.configuring_boost_for_your_platform.using_the_configure_script"></a><a name="config_config_script"></a><a class="link" href="index.html#boost_config.configuring_boost_for_your_platform.using_the_configure_script" title="Using the configure script">Using
       the configure script</a>
@@ -277,7 +279,7 @@
 <span class="keyword">export</span> <span class="identifier">CXXFLAGS</span><span class="special">=</span><span class="string">"-Aa -DAportable -D__HPACC_THREAD_SAFE_RB_TREE \
    -DRWSTD_MULTI_THREAD -DRW_MULTI_THREAD -D_REENTRANT -D_THREAD_SAFE"</span>
 <span class="keyword">export</span> <span class="identifier">LDFLAGS</span><span class="special">=</span><span class="string">"-DAportable"</span>
-<span class="keyword">export</span> <span class="identifier">LIBS</span><span class="special">=</span><span class="string">"-lpthread"</span> 
+<span class="keyword">export</span> <span class="identifier">LIBS</span><span class="special">=</span><span class="string">"-lpthread"</span>
 <span class="identifier">sh</span> <span class="special">./</span><span class="identifier">configure</span>
 </pre>
 <p>
@@ -296,7 +298,7 @@
             provided by boost. This option allows only one configure-generated setup;
             boost developers should avoid this option, as it incurs the danger of
             accidentally committing a configure-modified <a href="../../../../boost/config/user.hpp" target="_top">&lt;boost/config/user.hpp&gt;</a>
-            to the cvs repository (something you will not be thanked for!).
+            to the svn repository (something you will not be thanked for!).
           </li>
 <li class="listitem">
             <span class="bold"><strong>Option 2:</strong></span> give the header a more memorable
@@ -311,7 +313,7 @@
           </li>
 </ul></div>
 </div>
-<div class="section">
+<div class="section boost_config_configuring_boost_for_your_platform_user_settable_options">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_config.configuring_boost_for_your_platform.user_settable_options"></a><a name="config_user_settable"></a><a class="link" href="index.html#boost_config.configuring_boost_for_your_platform.user_settable_options" title="User settable options">User
       settable options</a>
@@ -585,7 +587,7 @@
                   knows which symbols to look for in a dll rather than in a static
                   library). Note that there may be some libraries that can only be
                   statically linked (Boost.Test for example) and others which may
-                  only be dynamically linked (Boost.Threads for example), in these
+                  only be dynamically linked (Boost.Thread for example), in these
                   cases this macro has no effect.
                 </p>
               </td>
@@ -607,7 +609,7 @@
                   knows which symbols to look for in a dll rather than in a static
                   library). Note that there may be some libraries that can only be
                   statically linked (Boost.Test for example) and others which may
-                  only be dynamically linked (Boost.Threads for example), in these
+                  only be dynamically linked (Boost.Thread for example), in these
                   cases this macro is unsupported.
                 </p>
               </td>
@@ -677,14 +679,14 @@
 </tbody>
 </table></div>
 </div>
-<div class="section">
+<div class="section boost_config_configuring_boost_for_your_platform_advanced_configuration_usage">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_config.configuring_boost_for_your_platform.advanced_configuration_usage"></a><a class="link" href="index.html#boost_config.configuring_boost_for_your_platform.advanced_configuration_usage" title="Advanced configuration usage">Advanced
       configuration usage</a>
 </h3></div></div></div>
 <div class="toc"><dl>
 <dt><span class="section"><a href="index.html#boost_config.configuring_boost_for_your_platform.advanced_configuration_usage.example_1__creating_our_own_frozen_configuration">Example
-        1, creating our own frozen configuration</a></span></dt>
+        1: creating our own frozen configuration</a></span></dt>
 <dt><span class="section"><a href="index.html#boost_config.configuring_boost_for_your_platform.advanced_configuration_usage.example_2__skipping_files_that_you_don_t_need">Example
         2: skipping files that you don't need</a></span></dt>
 <dt><span class="section"><a href="index.html#boost_config.configuring_boost_for_your_platform.advanced_configuration_usage.example_3__using_configure_script_to_freeze_the_boost_configuration">Example
@@ -721,10 +723,10 @@
 <p>
         The following usage examples represent just a few of the possibilities:
       </p>
-<div class="section">
+<div class="section boost_config_configuring_boost_for_your_platform_advanced_configuration_usage_example_1__creating_our_own_frozen_configuration">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="boost_config.configuring_boost_for_your_platform.advanced_configuration_usage.example_1__creating_our_own_frozen_configuration"></a><a class="link" href="index.html#boost_config.configuring_boost_for_your_platform.advanced_configuration_usage.example_1__creating_our_own_frozen_configuration" title="Example 1, creating our own frozen configuration">Example
-        1, creating our own frozen configuration</a>
+<a name="boost_config.configuring_boost_for_your_platform.advanced_configuration_usage.example_1__creating_our_own_frozen_configuration"></a><a class="link" href="index.html#boost_config.configuring_boost_for_your_platform.advanced_configuration_usage.example_1__creating_our_own_frozen_configuration" title="Example 1: creating our own frozen configuration">Example
+        1: creating our own frozen configuration</a>
 </h4></div></div></div>
 <p>
           Lets suppose that we're building boost with Visual C++ 6, and STLport 4.0.
@@ -753,7 +755,7 @@
           yet supported by boost.
         </p>
 </div>
-<div class="section">
+<div class="section boost_config_configuring_boost_for_your_platform_advanced_configuration_usage_example_2__skipping_files_that_you_don_t_need">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="boost_config.configuring_boost_for_your_platform.advanced_configuration_usage.example_2__skipping_files_that_you_don_t_need"></a><a class="link" href="index.html#boost_config.configuring_boost_for_your_platform.advanced_configuration_usage.example_2__skipping_files_that_you_don_t_need" title="Example 2: skipping files that you don't need">Example
         2: skipping files that you don't need</a>
@@ -768,11 +770,11 @@
           and miss out the compiler configuration header altogether (actually you
           miss out two headers, one which works out what the compiler is, and one
           that configures boost for it). This has two consequences: the first is
-          that less code has to be c ompiled, and the second that you have removed
+          that less code has to be compiled, and the second that you have removed
           a dependency on two boost headers.
         </p>
 </div>
-<div class="section">
+<div class="section boost_config_configuring_boost_for_your_platform_advanced_configuration_usage_example_3__using_configure_script_to_freeze_the_boost_configuration">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="boost_config.configuring_boost_for_your_platform.advanced_configuration_usage.example_3__using_configure_script_to_freeze_the_boost_configuration"></a><a class="link" href="index.html#boost_config.configuring_boost_for_your_platform.advanced_configuration_usage.example_3__using_configure_script_to_freeze_the_boost_configuration" title="Example 3: using configure script to freeze the boost configuration">Example
         3: using configure script to freeze the boost configuration</a>
@@ -785,7 +787,7 @@
         </p>
 </div>
 </div>
-<div class="section">
+<div class="section boost_config_configuring_boost_for_your_platform_testing_the_boost_configuration">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="boost_config.configuring_boost_for_your_platform.testing_the_boost_configuration"></a><a class="link" href="index.html#boost_config.configuring_boost_for_your_platform.testing_the_boost_configuration" title="Testing the boost configuration">Testing
       the boost configuration</a>
@@ -949,7 +951,7 @@
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
-<td align="left"><p><small>Last revised: October 11, 2011 at 17:21:29 GMT</small></p></td>
+<td align="left"><p><small>Last revised: April 22, 2012 at 10:30:25 GMT</small></p></td>
 <td align="right"><div class="copyright-footer"></div></td>
 </tr></table>
 <hr>

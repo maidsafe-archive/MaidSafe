@@ -2,7 +2,7 @@
 <!DOCTYPE boostbook PUBLIC "-//Boost//DTD BoostBook XML V1.0//EN"
   "http://www.boost.org/tools/boostbook/dtd/boostbook.dtd">
 <boostbook id="boost" xmlns:xi="http://www.w3.org/2001/XInclude"
-           last-revision="$Date$">
+           last-revision="$Date: 2011-12-17 08:36:06 -0800 (Sat, 17 Dec 2011) $">
   <title>The Boost C++ Libraries BoostBook Documentation Subset</title>
 
   <preface id="about">

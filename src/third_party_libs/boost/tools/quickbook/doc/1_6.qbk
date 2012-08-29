@@ -279,3 +279,85 @@ html.
 [endsect]
 
 [endsect] [/ Quickbok 1.6]
+
+[section:1_7 Quickbook 1.7]
+
+[section:source_mode Source mode for single entities]
+
+1.7 introduces a new `!` element type for setting the source mode of a single
+entity without changing the source mode otherwise. This can be used for
+code blocks and other elements. For example:
+
+```
+[!c++]
+    void foo() {};
+
+[!python]``\`\`\`\ ``def foo():``\`\`\`\ ``
+```
+
+It can also be used to set the source mode for elements:
+
+```
+[!teletype][table
+    [[code][meaning]]
+    [[`+`][addition]]
+]
+```
+
+When used a section, it's only set for the section element, not the
+whole section.
+
+Currently it does support other syntactic entities such as paragraphs
+and lists. I'm not sure if it would be a good idea.
+
+[endsect]
+
+[section:callouts Callouts in code block]
+
+Currently callouts can only be used in code snippets. 1.7 add
+support in normal code blocks. The same syntax is used as in
+code snippets, the callout descriptions appear immediately
+after the code block.
+
+[endsect]
+
+[section:escaped_docinfo_attributes Escaped docbook in docinfo blocks]
+
+Quickbook docinfo attributes will probably never be as rich as docbook
+attributes so to allow more flexible markup, not supported by quickbook
+escaped docbook can be included in the docinfo block:
+
+```
+[article Some article
+[quickbook 1.7]
+'''<author>
+    <firstname>John</firstname>
+    <surname>Doe</surname>
+    <email>john.doe@example.com</email>
+</author>'''
+]
+```
+
+The escaped docbook is always placed at the end of the docinfo block,
+so it shouldn't be assumed that it will interleave the markup. A mixture
+of quickbook and docbook attributes for the same information will not work
+well.
+
+[endsect] [/escaped_docinfo_attributes]
+
+[section:templates_in_link_values Templates in link values]
+
+There's very premilinary support for calling templates in link values. A lot
+more work needs to be done, including:
+
+* Considering other places where templates could be called (e.g. images are
+  quite tricky, as templates could get confused with attributes, should
+  templates be callable from something like an element's id?).
+* Trimming spaces from the body of the template (which can cause surprising
+  results).
+* Checking that the contents of the template are appropriate for the context.
+  Possibly even using a different grammar.
+
+[endsect] [/templates_in_link_values]
+
+[endsect] [/ Quickbok 1.7]

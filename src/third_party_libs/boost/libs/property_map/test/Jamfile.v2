@@ -13,4 +13,6 @@
 test-suite property_map
   : [ compile property_map_cc.cpp ]
     [ run     dynamic_properties_test.cpp ]
+    [ run     function_property_map_test.cpp ]
+    [ run     transform_value_property_map_test.cpp ]
   ;

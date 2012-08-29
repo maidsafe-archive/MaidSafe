@@ -172,7 +172,9 @@ IN: <tt>weight_map(WeightMap w_map)</tt>
   <a href="../../property_map/doc/ReadablePropertyMap.html">Readable Property Map</a>. The edge descriptor type of
   the graph needs to be usable as the key type for the weight
   map. The value type for the map must be
-  <i>Addable</i> with the value type of the distance map.<br>
+  the same as the value type of the distance map, and that type must be <a
+    href="http://www.sgi.com/tech/stl/LessThanComparable.html">Less Than
+      Comparable</a>.<br>
   <b>Default:</b>  <tt>get(edge_weight, g)</tt><br>
   <b>Python</b>: Must be an <tt>edge_double_map</tt> for the graph.<br>
   <b>Python default</b>: <tt>graph.get_edge_double_map("weight")</tt>
@@ -190,7 +192,7 @@ IN: <tt>vertex_index_map(VertexIndexMap i_map)</tt>
   <b>Default:</b> <tt>get(vertex_index, g)</tt>
     Note: if you use this default, make sure your graph has
     an internal <tt>vertex_index</tt> property. For example,
-    <tt>adjacenty_list</tt> with <tt>VertexList=listS</tt> does
+    <tt>adjacency_list</tt> with <tt>VertexList=listS</tt> does
     not have an internal <tt>vertex_index</tt> property.
    <br>
   <b>Python</b>: Unsupported parameter.
@@ -204,10 +206,9 @@ UTIL/OUT: <tt>distance_map(DistanceMap d_map)</tt>
   The type <tt>DistanceMap</tt> must be a model of <a
   href="../../property_map/doc/ReadWritePropertyMap.html">Read/Write
   Property Map</a>. The vertex descriptor type of the
-  graph needs to be usable as the key type of the distance map. The
-  value type of the distance map must be <a
-  href="http://www.sgi.com/tech/stl/LessThanComparable.html">Less Than
-  Comparable</a>.<br> 
+  graph needs to be usable as the key type of the distance map, and the value
+  type needs to be the same as the value type of the <tt>weight_map</tt>
+  argument.<br> 
   <b>Default:</b> <a href="../../property_map/doc/iterator_property_map.html">
   <tt>iterator_property_map</tt></a> created from a
   <tt>std::vector</tt> of the <tt>WeightMap</tt>'s value type of size

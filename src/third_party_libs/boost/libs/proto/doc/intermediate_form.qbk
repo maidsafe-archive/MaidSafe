@@ -1073,7 +1073,7 @@ Second, it might be the case that some operators are only allowed in certain
 contexts within your EDSL. This is easy to express with a grammar, and hard to do 
 with straight operator overloading.
 
-Third, using a EDSL grammar to flag invalid expressions can often yield better 
+Third, using an EDSL grammar to flag invalid expressions can often yield better 
 errors than manually selecting the overloaded operators.
 
 Fourth, the grammar can be used for more than just validation. You can use your 
@@ -1084,7 +1084,7 @@ If none of the above convinces you, you actually /can/ use Proto to control whic
 operators are overloaded within your domain. And to do it, you need to define a 
 grammar!]
 
-In a previous section, we used Proto to define a EDSL for a lazily evaluated calculator that allowed any combination of placeholders, floating-point literals, addition, subtraction, multiplication, division and grouping. If we were to write the grammar for this EDSL in [@http://en.wikipedia.org/wiki/Extended_Backus_Naur_Form EBNF], it might look like this:
+In a previous section, we used Proto to define an EDSL for a lazily evaluated calculator that allowed any combination of placeholders, floating-point literals, addition, subtraction, multiplication, division and grouping. If we were to write the grammar for this EDSL in [@http://en.wikipedia.org/wiki/Extended_Backus_Naur_Form EBNF], it might look like this:
 
 [pre
 group       ::= '(' expression ')'

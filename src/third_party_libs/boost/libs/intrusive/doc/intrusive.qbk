@@ -1,5 +1,5 @@
 [/
- / Copyright (c) 2006-2011 Ion Gaztanaga
+ / Copyright (c) 2006-2012 Ion Gaztanaga
  /
  / Distributed under the Boost Software License, Version 1.0. (See accompanying
  / file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -8,7 +8,7 @@
 [library Boost.Intrusive
     [quickbook 1.4]
     [authors [Krzikalla, Olaf], [Gaztanaga, Ion]]
-    [copyright 2005 Olaf Krzikalla, 2006-2011 Ion Gaztanaga]
+    [copyright 2005 Olaf Krzikalla, 2006-2012 Ion Gaztanaga]
     [id intrusive]
     [dirname intrusive]
     [purpose Intrusive containers]
@@ -26,7 +26,7 @@
 [*Boost.Intrusive] is a library presenting some intrusive containers to
 the world of C++. Intrusive containers are special containers
 that offer [link intrusive.performance better performance]
-and exception safety guarantees than non-intrusive containers (like STL containers). 
+and exception safety guarantees than non-intrusive containers (like STL containers).
 
 The performance benefits of intrusive containers makes them ideal as a building
 block to efficiently construct complex containers like multi-index containers or
@@ -88,7 +88,7 @@ next and previous node and the value itself. Something similar to:
    {
       list_node *next;
       list_node *previous;
-      MyClass    value; 
+      MyClass    value;
    };
 
 
@@ -127,11 +127,11 @@ way to make user classes compatible with those containers.
 
 [section:properties_of_intrusive Properties of Boost.Intrusive containers]
 
-Semantically, a [*Boost.Intrusive] container is similar to a STL container 
+Semantically, a [*Boost.Intrusive] container is similar to a STL container
 holding pointers to objects. That is, if you have an intrusive list holding
 objects of type `T`, then `std::list<T*>` would allow you to do quite the
 same operations (maintaining and navigating a set of objects of type T and
-types derived from it). 
+types derived from it).
 
 A non-intrusive container has some limitations:
 
@@ -151,7 +151,7 @@ A non-intrusive container has some limitations:
 *  It's not possible to store a derived object in a STL-container while
    retaining its original type.
 
-Intrusive containers have some important advantages: 
+Intrusive containers have some important advantages:
 
 *  Operating with intrusive containers doesn't invoke any memory management at all.
    The time and size overhead associated with dynamic memory can be minimized.
@@ -160,7 +160,7 @@ Intrusive containers have some important advantages:
    equivalent container of pointers: iteration is faster.
 
 *  Intrusive containers offer better exception guarantees than non-intrusive containers.
-   In some situations intrusive containers offer a no-throw guarantee that can't be 
+   In some situations intrusive containers offer a no-throw guarantee that can't be
    achieved with non-intrusive containers.
 
 *  The computation of an iterator to an element from a pointer or reference to that element
@@ -174,16 +174,16 @@ Intrusive containers have some important advantages:
 
 Intrusive containers have also downsides:
 
-*  Each type stored in an intrusive container needs additional memory holding the 
+*  Each type stored in an intrusive container needs additional memory holding the
    maintenance information needed by the container. Hence, whenever a certain type will
    be stored in an intrusive container [*you have to change the definition of that type]
-   appropriately. Although this task is easy with [*Boost.Intrusive], touching the 
+   appropriately. Although this task is easy with [*Boost.Intrusive], touching the
    definition of a type is sometimes a crucial issue.
 
 *  In intrusive containers you don't store a copy of an object, [*but rather the original object
    is linked with other objects in the container]. Objects don't need copy-constructors or assignment
-   operators to be stored in intrusive containers. But you have to take care of possible side effects, 
-   whenever you change the contents of an object (this is especially important for 
+   operators to be stored in intrusive containers. But you have to take care of possible side effects,
+   whenever you change the contents of an object (this is especially important for
    associative containers).
 
 *  The user [*has to manage the lifetime of inserted objects] independently from the
@@ -230,9 +230,9 @@ For a performance comparison between Intrusive and Non-intrusive containers see
 
 [section:usage How to use Boost.Intrusive]
 
-If you plan to insert a class in an intrusive container, you have to make some decisions 
-influencing the class definition itself. Each class that will be used in an intrusive 
-container needs some appropriate data members storing the information needed by the 
+If you plan to insert a class in an intrusive container, you have to make some decisions
+influencing the class definition itself. Each class that will be used in an intrusive
+container needs some appropriate data members storing the information needed by the
 container. We will take a simple intrusive container, the intrusive list
 ([classref boost::intrusive::list boost::intrusive::list]), for the following
 examples, but all [*Boost.Intrusive] containers are very similar. To compile
@@ -246,14 +246,14 @@ just include:
 Every class to be inserted in an intrusive container, needs to contain a hook that
 will offer the necessary data and resources to be insertable in the container.
 With [*Boost.Intrusive] you just choose the hook to be a public base class or
-a public member of the class to be inserted. [*Boost.Intrusive] also offers 
+a public member of the class to be inserted. [*Boost.Intrusive] also offers
 more flexible hooks for advanced users, as explained in the chapter
 [link intrusive.function_hooks Using function hooks], but usually base or member
 hooks are good enough for most users.
 
 [section:usage_base_hook Using base hooks]
 
-For [classref boost::intrusive::list list], you can publicly derive from 
+For [classref boost::intrusive::list list], you can publicly derive from
 [classref boost::intrusive::list_base_hook list_base_hook].
 
 [c++]
@@ -262,7 +262,7 @@ For [classref boost::intrusive::list list], you can publicly derive from
    class list_base_hook;
 
 The class can take several options. [*Boost.Intrusive] classes receive arguments in the
-form `option_name<option_value>`. You can specify the following options:   
+form `option_name<option_value>`. You can specify the following options:
 
 *  [*`tag<class Tag>`]: this argument serves as a tag, so you can derive from more than one
    [classref boost::intrusive::list_base_hook list_base_hook] and hence put an object in
@@ -307,11 +307,11 @@ After that, we can define the intrusive list:
 `list` receives the type to be inserted in the container (`T`) as the first parameter
 and optionally, the user can specify options. We have 3 option types:
 
-*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] / 
+*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] /
    [*`value_traits<class ValueTraits>`]: All these options specify the relationship
    between the type `T` to be inserted in the list and the hook (since we can
    have several hooks in the same `T` type). `member_hook` will be explained
-   a bit later and `value_traits` will be explained in the 
+   a bit later and `value_traits` will be explained in the
    [link intrusive.value_traits Containers with custom ValueTraits] section.
    [*If no option is specified, the container will be configured to use the base
    hook with the default tag].
@@ -323,7 +323,7 @@ and optionally, the user can specify options. We have 3 option types:
    container to store an additional member to keep track of the current size of the
    container. By default, constant-time size is activated.
 
-*  [*`size_type<bool Enabled>`]: Specifies a type that can hold
+*  [*`size_type<class SizeType>`]: Specifies an unsigned type that can hold
    the size of the container. This type will be the type returned by `list.size()`
    and the type stored in the intrusive container if `constant_time_size<true>`
    is requested.
@@ -340,28 +340,33 @@ the base hook with the default tag:
 
    typedef list<Foo> FooList;
 
-Example of a intrusive list with non constant-time size that will store Foo objects:
+Example of an intrusive list with non constant-time size that will store Foo objects:
 
 [c++]
 
    typedef list<Foo, constant_time_size<false> > FooList;
 
-Remember that the user must specify the base hook if the base hook has no default tag
-(e.g: if more than one base hook is used):
+Remember that the user must specify the base hook in the container declaration
+if the base hook has no default tag, because that usually means that the type
+has more than one base hook, and a container shall know which hook will be
+using:
 
 [c++]
 
    #include <boost/intrusive/list.hpp>
 
    using namespace boost::intrusive;
-   
-   struct my_tag;
 
-   typedef list_base_hook< tag<my_tag> > BaseHook;
-   class Foo   :  public BaseHook
+   struct my_tag1;
+   struct my_tag2;
+
+   typedef list_base_hook< tag<my_tag>  > BaseHook;
+   typedef list_base_hook< tag<my_tag2> > BaseHook2;
+   class Foo   :  public BaseHook, public BaseHook2
    { /**/ };
 
-   typedef list< Foo, base_hook<BaseHook> > FooList;
+   typedef list< Foo, base_hook<BaseHook>  > FooList;
+   typedef list< Foo, base_hook<BaseHook2> > FooList2;
 
 Once the list is defined, we can use it:
 
@@ -397,10 +402,10 @@ Example:
 
    #include <boost/intrusive/list.hpp>
 
-   class Foo 
+   class Foo
    {
       public:
-      list_member_hook<> hook_;  
+      list_member_hook<> hook_;
       //...
    };
 
@@ -431,7 +436,7 @@ Now we can use the container:
 
 [section:usage_both_hooks Using both hooks]
 
-You can insert the same object in several intrusive containers at the same time, 
+You can insert the same object in several intrusive containers at the same time,
 using one hook per container. This is a full example using base and member hooks:
 
 [import ../example/doc_how_to_use.cpp]
@@ -442,13 +447,13 @@ using one hook per container. This is a full example using base and member hooks
 [section:usage_lifetime Object lifetime]
 
 Even if the interface of [classref boost::intrusive::list list] is similar to
-`std::list`, its usage is a bit different: You always have to keep in mind that 
-you directly store objects in intrusive containers, not copies. The lifetime of a 
+`std::list`, its usage is a bit different: You always have to keep in mind that
+you directly store objects in intrusive containers, not copies. The lifetime of a
 stored object is not bound to or managed by the container:
 
 *  When the container gets destroyed before the object, the object is not destroyed,
    so you have to be careful to avoid resource leaks.
-   
+
 *  When the object is destroyed before the container, your program is likely to crash,
    because the container contains a pointer to an non-existing object.
 
@@ -470,7 +475,7 @@ issue and:
 *  it's important to achieve a well-known worst-time system response.
 *  localization of data (e.g. for cache hit optimization) leads to measurable effects.
 
-The last point is important if you have a lot of containers over a set of elements. E.g. if 
+The last point is important if you have a lot of containers over a set of elements. E.g. if
 you have a vector of objects (say, `std::vector<Object>`), and you also have a list
 storing a subset of those objects (`std::list<Object*>`), then operating on an Object
 from the list iterator (`std::list<Object*>::iterator`) requires two steps:
@@ -484,16 +489,16 @@ like a data block, list nodes may be dispersed in the heap memory.
 Hence depending on your system you might get a lot of cache misses. The same doesn't hold
 for an intrusive list. Indeed, dereferencing an iterator from an intrusive list is performed in
 the same two steps as described above. But the list node is already embedded in the Object, so
-the memory is directly tracked from the iterator to the Object. 
+the memory is directly tracked from the iterator to the Object.
 
 It's also possible to use intrusive containers when the objects to be stored can
 have different or unknown size. This allows storing base and derived objects
-in the same container, as shown in the following example: 
+in the same container, as shown in the following example:
 
 [import ../example/doc_window.cpp]
 [doc_window_code]
 
-Due to certain properties of intrusive containers 
+Due to certain properties of intrusive containers
 they are often more difficult to use than their STL-counterparts. That's why you
 should avoid them in public interfaces of libraries. Classes to be stored in intrusive
 containers must change their implementation to store the hook and this is not always
@@ -507,12 +512,12 @@ Here is a small summary of the basic concepts that will be used in the following
 chapters:
 
 [variablelist Brief Concepts Summary
-[[Node Algorithms][A class containing typedefs and static functions that define 
-   basic operations that can be applied to a group of nodes. It's independent
+[[Node Algorithms][A class containing typedefs and static functions that define
+   basic operations that can be applied to a group of `node`s. It's independent
    from the node definition and configured using a NodeTraits template
    parameter that describes the node.]]
 [[Node Traits][A class that stores basic information and operations to insert a node into a group of nodes.]]
-[[Hook][A class that a user must add as a base class or as a member to make the user class compatible with intrusive containers.]]
+[[Hook][A class that a user must add as a base class or as a member to make the user class compatible with intrusive containers. A Hook encapsulates a `node`]]
 [[Intrusive Container][A class that stores user classes that have the needed hooks. It takes a ValueTraits template parameter as configuration information.]]
 [[Semi-Intrusive Container][Similar to an intrusive container but a semi-intrusive container needs additional memory (e.g. an auxiliary array) to work.]]
 [[Value Traits][A class containing typedefs and operations to obtain the node to be used by Node Algorithms from the user class and the inverse.]]
@@ -543,7 +548,7 @@ chapters:
    Many operations have logarithmic time complexity.
 
 *  [*splay_set/splay_multiset/splaytree]: `std::set/std::multiset` like intrusive associative
-   containers based on splay trees. Splay trees have no constant operations, but they  
+   containers based on splay trees. Splay trees have no constant operations, but they
    have some interesting caching properties.
    The size overhead is moderate for user classes (usually the size of three pointers).
    Many operations have logarithmic time complexity.
@@ -584,18 +589,18 @@ offers two types of hooks for each container type:
 
 Apart from that, [*Boost.Intrusive] offers additional features:
 
-*  [*Safe mode hooks]: Hook constructor initializes the internal data to a well-known
+*  [*Safe mode hooks]: Hook constructor initializes the internal `node` to a well-known
    safe state and intrusive containers check that state before inserting a value in the
-   container. When erasing an element from the container, the container puts the hook
-   in the safe state again. This allows a safer use mode and it can be used to detect
-   programming errors. It implies a slight performance overhead in some operations
-   and can convert some constant time operations to linear time operations.
+   container using that hook. When erasing an element from the container, the container
+   puts the `node` of the hook in the safe state again. This allows a safer use mode and it can
+   be used to detect programming errors. It implies a slight performance overhead in some
+   operations and can convert some constant time operations to linear time operations.
 
 *  [*Auto-unlink hooks]: The hook destructor removes the object from the container
    automatically and the user can safely unlink the object from the container without
    referring to the container.
 
-*  [*Non-raw pointers]: If the user wants to use smart pointers instead of raw pointers, 
+*  [*Non-raw pointers]: If the user wants to use smart pointers instead of raw pointers,
    [*Boost.Intrusive] hooks can
    be configured to use any type of pointer. This configuration information is also
    transmitted to the containers, so all the internal pointers used by intrusive containers
@@ -636,7 +641,7 @@ is actually inserted in a container without any external reference. Let's review
 
 With these features, without any external reference the user can know if the object
 has been inserted in a container by calling the `is_linked()` member function.
-If the object is not actually inserted 
+If the object is not actually inserted
 in a container, the hook is in the default state, and if it is inserted in a container, the
 hook is not in the default state.
 
@@ -689,11 +694,11 @@ with the name of the file to include:
 These hooks have exactly the same size overhead as their analog non auto-unlinking
 hooks, but they have a restriction: they can only be used with
 [link intrusive.presenting_containers non-constant time containers].
-There is a reason for this: 
+There is a reason for this:
 
 * Auto-unlink hooks don't store any reference to the container where they are inserted.
 * Only containers with non constant-time `size()` allow removing an object from the container
-  without referring to the container. 
+  without referring to the container.
 
 This auto-unlink feature is useful in certain applications
 but it must be used [*very carefully]:
@@ -734,7 +739,7 @@ that have constant-time `size()`, so if you try to define such container with an
 auto-unlink hook's value_traits, you will get a static assertion:
 
 [c++]
-   
+
    #include <boost/intrusive/list.hpp>
 
    using boost::intrusive;
@@ -776,7 +781,7 @@ in constant-time size containers.
 
 [classref boost::intrusive::slist slist] is the simplest intrusive container of
 [*Boost.Intrusive]: a singly linked list. The memory overhead
-it imposes is 1 pointer per node. The size of an empty, non constant-time size 
+it imposes is 1 pointer per node. The size of an empty, non constant-time size
 [classref boost::intrusive::slist slist] is the size of 1 pointer. This
 lightweight memory overhead comes with drawbacks, though: many operations have
 linear time complexity, even some that usually are constant time, like
@@ -810,7 +815,7 @@ Like the rest of [*Boost.Intrusive] containers,
    class slist_member_hook;
 
 *  [classref boost::intrusive::slist_member_hook slist_member_hook]:
-   the user class contains a public 
+   the user class contains a public
    [classref boost::intrusive::slist_member_hook slist_member_hook] to make
    it [classref boost::intrusive::slist slist]-compatible.
 
@@ -842,7 +847,7 @@ the section [link intrusive.usage How to use Boost.Intrusive]:
 [classref boost::intrusive::slist slist] receives the options explained in
 the section [link intrusive.usage How to use Boost.Intrusive]:
 
-*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] / 
+*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] /
    [*`value_traits<class ValueTraits>`]: To specify the hook type or value traits used
    to configure the container. (To learn about value traits go to the section
    [link intrusive.value_traits Containers with custom ValueTraits].)
@@ -911,8 +916,8 @@ Like the rest of [*Boost.Intrusive] containers,
    template <class ...Options>
    class list_member_hook;
 
-*  [classref boost::intrusive::list_member_hook list_member_hook]: 
-   the user class contains a public 
+*  [classref boost::intrusive::list_member_hook list_member_hook]:
+   the user class contains a public
    [classref boost::intrusive::list_member_hook list_member_hook] to make
    it [classref boost::intrusive::list list]-compatible.
 
@@ -944,7 +949,7 @@ the same options explained in the section
 [classref boost::intrusive::list list] receives the same options explained in
 the section [link intrusive.usage How to use Boost.Intrusive]:
 
-*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] / 
+*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] /
    [*`value_traits<class ValueTraits>`]: To specify the hook type or value traits used
    to configure the container. (To learn about value traits go to the section
    [link intrusive.value_traits Containers with custom ValueTraits].)
@@ -972,7 +977,7 @@ Now let's see a small example using both hooks:
 
 [*Boost.Intrusive] also offers associative containers that can be very useful
 when creating more complex associative containers, like containers maintaining
-one or more indices with different sorting semantics. Boost.Intrusive associative 
+one or more indices with different sorting semantics. Boost.Intrusive associative
 containers, like most STL associative container implementations are based on
 red-black trees.
 
@@ -991,7 +996,7 @@ searches, insertions, erasures, etc. [classref boost::intrusive::set set] and
 [classref boost::intrusive::multiset multiset] are the
 intrusive equivalents of standard `std::set` and `std::multiset` containers.
 
-[classref boost::intrusive::rbtree rbtree] is a superset of 
+[classref boost::intrusive::rbtree rbtree] is a superset of
 [classref boost::intrusive::set set] and
 [classref boost::intrusive::multiset multiset] containers that offers
 functions to insert unique and multiple keys.
@@ -1068,7 +1073,7 @@ the same options explained in the section
 These containers receive the same options explained in the section
 [link intrusive.usage How to use Boost.Intrusive]:
 
-*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] / 
+*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] /
    [*`value_traits<class ValueTraits>`]: To specify the hook type or value traits used
    to configure the container. (To learn about value traits go to the section
    [link intrusive.value_traits Containers with custom ValueTraits].)
@@ -1113,11 +1118,11 @@ load factor: that would require memory management and intrusive containers don't
 implement any memory management at all. However, the user can request an explicit
 rehashing passing a new bucket array.
 This also offers an additional guarantee over TR1 unordered associative containers:
-[*iterators are not invalidated when inserting an element] in the container. 
+[*iterators are not invalidated when inserting an element] in the container.
 
 As with TR1 unordered associative containers, rehashing invalidates iterators,
 changes ordering between elements and changes which buckets elements appear in,
-but does not invalidate pointers or references to elements. 
+but does not invalidate pointers or references to elements.
 
 Apart from expected hash and equality function objects, [*Boost.Intrusive] unordered
 associative containers' constructors take an argument specifying an auxiliary
@@ -1129,12 +1134,12 @@ The size overhead for a hashed container is moderate: 1 pointer per value plus
 a bucket array per container. The size of an element of the bucket array
 is usually one pointer. To obtain a good performance hashed container,
 the bucket length is usually the same as the number of elements that the
-container contains, so a well-balanced hashed container (`bucket_count()` is 
+container contains, so a well-balanced hashed container (`bucket_count()` is
 equal to `size()` ) will have an equivalent overhead of two pointers per element.
 
 An empty, non constant-time size [classref boost::intrusive::unordered_set unordered_set] or
 [classref boost::intrusive::unordered_multiset unordered_multiset]
-has also the size of `bucket_count()` pointers. 
+has also the size of `bucket_count()` pointers.
 
 Insertions, erasures, and searches, have amortized constant-time complexity in
 hashed containers. However, some worst-case guarantees are linear. See
@@ -1253,7 +1258,7 @@ is undefined.
 receive the same options explained in the section
 [link intrusive.usage How to use Boost.Intrusive]:
 
-*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] / 
+*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] /
    [*`value_traits<class ValueTraits>`]: To specify the hook type or value traits used
    to configure the container. (To learn about value traits go to the section
    [link intrusive.value_traits Containers with custom ValueTraits].)
@@ -1306,7 +1311,7 @@ And they also can receive additional options:
 
 *  [*`incremental<bool Enabled>`]: Activates incremental hashing (also known as Linear Hashing).
    This option implies `power_2_buckets<true>` and the container will require power of two buckets.
-   For more information on incremental hashing, see 
+   For more information on incremental hashing, see
    [@http://en.wikipedia.org/wiki/Linear_hashing `Linear hash` on Wikipedia]
    Default: `incremental<false>`
 
@@ -1339,7 +1344,7 @@ option. A user-defined bucket-traits must fulfill the following interface:
 
 The following bucket traits just stores a pointer to the bucket
 array but the size is a compile-time constant. Note the use of the auxiliary
-[classref boost::intrusive::unordered_bucket unordered_bucket] and 
+[classref boost::intrusive::unordered_bucket unordered_bucket] and
 [classref boost::intrusive::unordered_bucket_ptr unordered_bucket_ptr]
 utilities to obtain the type of the bucket and its pointer before defining
 the unordered container:
@@ -1454,7 +1459,7 @@ the same options explained in the section
 These containers receive the same options explained in the section
 [link intrusive.usage How to use Boost.Intrusive]:
 
-*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] / 
+*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] /
    [*`value_traits<class ValueTraits>`]: To specify the hook type or value traits used
    to configure the container.  (To learn about value traits go to the section
    [link intrusive.value_traits Containers with custom ValueTraits].)
@@ -1510,12 +1515,12 @@ containers:
 
 [section:avl_set_multiset Intrusive avl tree based associative containers: avl_set, avl_multiset and avltree]
 
-Similar to red-black trees, AVL trees are balanced binary trees. 
+Similar to red-black trees, AVL trees are balanced binary trees.
 AVL trees are often compared with red-black trees because they support the same set of operations
-and because both take O(log n) time for basic operations. 
+and because both take O(log n) time for basic operations.
 AVL trees are more rigidly balanced than Red-Black trees, leading to slower insertion and
 removal but faster retrieval, so AVL trees perform better
-than red-black trees for lookup-intensive applications. 
+than red-black trees for lookup-intensive applications.
 
 [*Boost.Intrusive] offers 3 containers based on avl trees:
 [classref boost::intrusive::avl_set avl_set],
@@ -1603,7 +1608,7 @@ the size of the node:
 These containers receive the same options explained in the section
 [link intrusive.usage How to use Boost.Intrusive]:
 
-*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] / 
+*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] /
    [*`value_traits<class ValueTraits>`]: To specify the hook type or value traits used
    to configure the container. (To learn about value traits go to the section
    [link intrusive.value_traits Containers with custom ValueTraits].)
@@ -1753,7 +1758,7 @@ the same options explained in the section
 These containers receive the same options explained in the section
 [link intrusive.usage How to use Boost.Intrusive]:
 
-*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] / 
+*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] /
    [*`value_traits<class ValueTraits>`]: To specify the hook type or value traits used
    to configure the container. (To learn about value traits go to the section
    [link intrusive.value_traits Containers with custom ValueTraits].)
@@ -1767,7 +1772,7 @@ And they also can receive additional options:
    in containers. The comparison functor must induce a strict weak ordering.
    Default: `compare< std::less<T> >`
 
-*  [*`floating_point<bool Enable>`]: 
+*  [*`floating_point<bool Enable>`]:
    When this option is deactivated, the scapegoat tree loses the ability to change
    the balance factor a at run-time, but the size of an empty container is reduced
    and no floating point operations are performed, normally increasing container
@@ -1796,7 +1801,7 @@ containers:
 The name ['treap] is a mixture of ['tree] and ['heap] indicating that Treaps exhibit the properties of both
 binary search trees and heaps. A treap is a binary search tree that orders the nodes
 by a key but also by a priority attribute. The nodes are ordered so that the keys form a binary search tree and
-the priorities obey the max heap order property. 
+the priorities obey the max heap order property.
 
 * If v is a left descendant of u, then key[v] < key[u];
 * If v is a right descendant of u, then key[v] > key[u];
@@ -1889,7 +1894,7 @@ the same options explained in the section
 These containers receive the same options explained in the section
 [link intrusive.usage How to use Boost.Intrusive]:
 
-*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] / 
+*  [*`base_hook<class Hook>`] / [*`member_hook<class T, class Hook, Hook T::* PtrToMember>`] /
    [*`value_traits<class ValueTraits>`]: To specify the hook type or value traits used
    to configure the container. (To learn about value traits go to the section
    [link intrusive.value_traits Containers with custom ValueTraits].)
@@ -1972,7 +1977,7 @@ containers:
 [section:advanced_lookups Advanced lookups]
 
 [*Boost.Intrusive] associative containers offer the same interface as STL associative
-containers. However, STL and TR1 ordered and unordered simple associative containers 
+containers. However, STL and TR1 ordered and unordered simple associative containers
 (`std::set`, `std::multiset`, `std::tr1::unordered_set` and `std::tr1::unordered_multiset`)
 have some inefficiencies caused by the interface: the user can only operate with `value_type`
 objects. When using these containers we must use `iterator find(const value_type &value)`
@@ -1988,7 +1993,7 @@ However, sometimes the object to be searched is quite expensive to construct:
 `Expensive` has to construct a `std::string` using heap memory. Like
 `Expensive`, many times the only member taking part in ordering issues is just
 a small part of the class. For example, with `Expensive`, only the internal
-`std::string` is needed to compare the object. 
+`std::string` is needed to compare the object.
 
 In both containers, if we call `get_from_set/get_from_unordered_set` in a loop, we might get a performance penalty,
 because we are forced to create a whole `Expensive` object to be able to find an
@@ -2001,8 +2006,8 @@ to search `Expensive` in the container but constructing an `Expensive`
 might require more information that the user might not have.
 
 To solve this, [classref boost::intrusive::set set]/[classref boost::intrusive::multiset multiset]
-offer alternative functions, which take any type comparable with the value and a 
-functor that should be compatible with the 
+offer alternative functions, which take any type comparable with the value and a
+functor that should be compatible with the
 ordering function of the associative container.
 [classref boost::intrusive::unordered_set unordered_set]/[classref boost::intrusive::unordered_multiset unordered_multiset]
 offers functions that take any key type and compatible hash and equality functions. Now, let's see the
@@ -2043,7 +2048,7 @@ For example, using the same `Expensive` class,
 this function can be inefficient:
 
 [doc_assoc_optimized_code_normal_insert]
- 
+
 If the object is already present, we are constructing an `Expensive` that
 will be discarded, and this is a waste of resources. Instead of that, let's use
 `insert_check` and `insert_commit` functions:
@@ -2069,7 +2074,7 @@ and [classref boost::intrusive::unordered_set unordered_set] reference for more 
 `insert_check` and `insert_commit`.
 
 With multiple ordered and unordered associative containers
-([classref boost::intrusive::multiset multiset] and 
+([classref boost::intrusive::multiset multiset] and
 [classref boost::intrusive::unordered_multiset unordered_multiset]) there  is
 no need for these advanced insertion functions, since insertions are always successful.
 
@@ -2100,7 +2105,7 @@ Let's see an example:
 [endsect]
 
 For more information about advanced lookup and insertion functions see
-associative containers' documentation (e.g. 
+associative containers' documentation (e.g.
 [classref boost::intrusive::set set],
 [classref boost::intrusive::multiset multiset],
 [classref boost::intrusive::unordered_set unordered_set] and
@@ -2132,10 +2137,10 @@ object that will be called after the element has been erased from the container.
    void remove_and_dispose_if(Pred pred, Disposer disposer)
 
 With this function the user can efficiently remove and destroy elements if the disposer
-function destroys an object: `remove_and_dispose_if` 
+function destroys an object: `remove_and_dispose_if`
 will call the "disposer" function object for every removed element. [classref boost::intrusive::list list] offers
 more functions taking a disposer function object as argument, like `erase_and_dispose`, `clear_and_dispose`,
-`remove_and_dispose`, etc. 
+`remove_and_dispose`, etc.
 
 Note that the disposing function does not need to just destroy the object. It can
 implement any other operation like inserting the remove object in another container.
@@ -2169,7 +2174,7 @@ Apart from the container to be cloned, `clone_from` takes two function objects a
 
    template <class Cloner, class Disposer>
    void clone_from(const list &src, Cloner cloner, Disposer disposer);
-   
+
 This function will make `*this` a clone of `src`. Let's explain the arguments:
 
 *   The first parameter is the list to be cloned.
@@ -2178,7 +2183,7 @@ This function will make `*this` a clone of `src`. Let's explain the arguments:
    `pointer operator()(const value_type &)`.
 *   The second parameter is a function object that will dispose `value_type` objects. It's used first
    to empty the container before cloning and to dispose the elements if an exception is thrown.
-   
+
 The cloning function works as follows:
 
 *   First it clears and disposes all the elements from *this using the disposer function object.
@@ -2229,7 +2234,7 @@ in practice members or base classes of class data members. The inverse operation
 is a bit more complicated, but [*Boost.Intrusive] offers a bit of help with the function
 [funcref boost::intrusive::get_parent_from_member get_parent_from_member],
 which allows easy conversions from the address of a data member to the address of
-the parent holding that member. Let's see a little example of 
+the parent holding that member. Let's see a little example of
 [classref boost::intrusive::function_hook function_hook]:
 
 [import ../example/doc_function_hooks.cpp]
@@ -2251,7 +2256,7 @@ instantiation:
 
 [c++]
 
-  //This leads to compilation error (Recursive is instantiated by 
+  //This leads to compilation error (Recursive is instantiated by
   //'list' to deduce hook properties (pointer type, tag, safe-mode...)
   class Recursive
   {  //...
@@ -2315,11 +2320,11 @@ and [*Boost.Intrusive]:
 
 Not every smart pointer is compatible with [*Boost.Intrusive]:
 
-   * It must be compatible with C++11 [@http://en.cppreference.com/w/cpp/memory/pointer_traits `std::pointer_traits`]
-      requirements. [*Boost.Intrusive] uses its own [classref boost::intrusive::pointer_traits pointer_traits]
-      class to implement those features in both C++11 and C++03 compilers.
-   * It must  have the same ownership semantics as a raw pointer. This means that
-      resource management smart pointers (like `boost::shared_ptr`) can't be used.
+* It must be compatible with C++11 [@http://en.cppreference.com/w/cpp/memory/pointer_traits `std::pointer_traits`]
+   requirements. [*Boost.Intrusive] uses its own [classref boost::intrusive::pointer_traits pointer_traits]
+   class to implement those features in both C++11 and C++03 compilers.
+* It must  have the same ownership semantics as a raw pointer. This means that
+   resource management smart pointers (like `boost::shared_ptr`) can't be used.
 
 The conversion from the smart pointer to a raw pointer will be implemented as a recursive call to
 `operator->()` until the function returns a raw pointer.
@@ -2332,7 +2337,7 @@ The conversion from the smart pointer to a raw pointer will be implemented as a 
 
 [*Boost.Intrusive] offers another useful feature that's not present in STL
 containers: it's possible to obtain an iterator to a value from the value itself.
-This feature is implemented in [*Boost.Intrusive] containers by a 
+This feature is implemented in [*Boost.Intrusive] containers by a
 function called `iterator_to`:
 
 [c++]
@@ -2352,7 +2357,7 @@ For most [*Boost.Intrusive] containers
 ([classref boost::intrusive::list list],
 [classref boost::intrusive::slist slist],
 [classref boost::intrusive::set set],
-[classref boost::intrusive::multiset multiset]) we have an alternative 
+[classref boost::intrusive::multiset multiset]) we have an alternative
 static `s_iterator_to` function.
 
 For unordered associative containers
@@ -2367,7 +2372,7 @@ explained in the [link intrusive.value_traits.stateful_value_traits Stateful val
 if the programmer uses hooks provided by [*Boost.Intrusive], those functions
 will be available.
 
-Let's see a small function that shows the use of `iterator_to` and 
+Let's see a small function that shows the use of `iterator_to` and
 `local_iterator_to`:
 
 [import ../example/doc_iterator_from_value.cpp]
@@ -2431,7 +2436,7 @@ before explaining the customization options of [*Boost.Intrusive].
    singly linked list is a group of nodes, where each node has a pointer to the
    next node. [*Node Algorithms] just require a [*NodeTraits]
    template parameter and they can work with any [*NodeTraits] class that fulfills
-   the needed interface. As an example, here is a class that implements operations7'
+   the needed interface. As an example, here is a class that implements operations
    to manage a group of nodes forming a circular singly linked list:
 
 [c++]
@@ -2452,7 +2457,7 @@ before explaining the customization options of [*Boost.Intrusive].
       }
 
       // number of elements in the group of nodes containing "this_node"
-      static std::size_t count(const_node_ptr this_node) 
+      static std::size_t count(const_node_ptr this_node)
       {
          std::size_t result = 0;
          const_node_ptr p = this_node;
@@ -2469,7 +2474,7 @@ before explaining the customization options of [*Boost.Intrusive].
 
 *  [*Node Traits]: A class that encapsulates the basic information and
    operations on a node within a group of nodes:
-   the type of the node, a function to obtain the pointer to the next node, etc. 
+   the type of the node, a function to obtain the pointer to the next node, etc.
    [*Node Traits] specify the configuration information [*Node Algorithms]
    need. Each type of [*Node Algorithm] expects an interface that compatible
    [*Node Traits] classes must implement.
@@ -2484,18 +2489,18 @@ before explaining the customization options of [*Boost.Intrusive].
       struct node
       {
          node *next_;
-      };      
-     
+      };
+
       typedef node *       node_ptr;
       typedef const node * const_node_ptr;
 
       //A function to obtain a pointer to the next node
       static node_ptr get_next(const_node_ptr n)
-      {  return n->next_;  }  
+      {  return n->next_;  }
 
       //A function to set the pointer to the next node
       static void set_next(node_ptr n, node_ptr next)
-      {  n->next_ = next;  }  
+      {  n->next_ = next;  }
    };
 
 
@@ -2544,7 +2549,7 @@ before explaining the customization options of [*Boost.Intrusive].
    value types that use different hooks. An intrusive container is also more elaborate
    than a group of nodes: it can store the number of elements to achieve constant-time
    size information, it can offer debugging facilities, etc.
-   For example, an [classref boost::intrusive::slist slist] container 
+   For example, an [classref boost::intrusive::slist slist] container
    (intrusive singly linked list) should
    be able to hold `MyClass` objects that might have decided to store the hook
    as a base class or as a member. Internally, the container will use [*Node Algorithms]
@@ -2565,10 +2570,10 @@ before explaining the customization options of [*Boost.Intrusive].
       // ...
 
       //Insert the value as the first element of the list
-      void push_front (reference value) 
+      void push_front (reference value)
       {
          node_ptr to_insert(ValueTraits::to_node_ptr(value));
-         circular_list_algorithms::link_after(to_insert, get_root_node()); 
+         circular_list_algorithms::link_after(to_insert, get_root_node());
       }
 
       // More operations
@@ -2584,7 +2589,7 @@ before explaining the customization options of [*Boost.Intrusive].
    that will be inserted in a group of nodes. [*Node Algorithms] just work
    with nodes and don't know anything about user classes. On the other
    hand, an intrusive container needs to know how to obtain a node from a user class,
-   and also the inverse operation.   
+   and also the inverse operation.
    So we can define [*ValueTraits] as the glue between user classes and nodes
    required by [*Node Algorithms].
    Let's see a possible implementation of a value traits class that glues MyClass
@@ -2606,7 +2611,7 @@ before explaining the customization options of [*Boost.Intrusive].
       { return static_cast<slist_base_hook &>(value).to_node_ptr(); }
 
       //Converts a generic node into user's value
-      static value_type *to_value_ptr(node_traits::node *n) 
+      static value_type *to_value_ptr(node_traits::node *n)
       { static_cast<value_type*>(slist_base_hook::to_hook_ptr(n)); }
 
       // More operations
@@ -2643,7 +2648,7 @@ members of the [classref boost::intrusive::circular_slist_algorithms circular_sl
 
 An empty list is formed by a node whose pointer to the next node points
 to itself. [classref boost::intrusive::circular_slist_algorithms circular_slist_algorithms]
-is configured with a NodeTraits class, which encapsulates 
+is configured with a NodeTraits class, which encapsulates
 the information about the node to be manipulated. NodeTraits must support the
 following interface:
 
@@ -2686,7 +2691,7 @@ members of the [classref boost::intrusive::circular_list_algorithms circular_lis
 
 An empty list is formed by a node whose pointer to the next node points
 to itself. [classref boost::intrusive::circular_list_algorithms circular_list_algorithms]
-is configured with a NodeTraits class, which encapsulates 
+is configured with a NodeTraits class, which encapsulates
 the information about the node to be manipulated. NodeTraits must support the
 following interface:
 
@@ -2737,7 +2742,7 @@ members of the [classref boost::intrusive::rbtree_algorithms rbtree_algorithms] 
 An empty tree is formed by a node whose pointer to the parent node is null,
 the left and right node pointers point to itself, and whose color is red.
 [classref boost::intrusive::rbtree_algorithms rbtree_algorithms]
-is configured with a NodeTraits class, which encapsulates 
+is configured with a NodeTraits class, which encapsulates
 the information about the node to be manipulated. NodeTraits must support the
 following interface:
 
@@ -2808,7 +2813,7 @@ members of the [classref boost::intrusive::splaytree_algorithms splaytree_algori
 An empty tree is formed by a node whose pointer to the parent node is null,
 and whose left and right nodes pointers point to itself.
 [classref boost::intrusive::splaytree_algorithms splaytree_algorithms]
-is configured with a NodeTraits class, which encapsulates 
+is configured with a NodeTraits class, which encapsulates
 the information about the node to be manipulated. NodeTraits must support the
 following interface:
 
@@ -2862,7 +2867,7 @@ interface as [classref boost::intrusive::rbtree_algorithms rbtree_algorithms].
    struct avltree_algorithms;
 
 [classref boost::intrusive::avltree_algorithms avltree_algorithms]
-is configured with a NodeTraits class, which encapsulates 
+is configured with a NodeTraits class, which encapsulates
 the information about the node to be manipulated. NodeTraits must support the
 following interface:
 
@@ -2934,7 +2939,7 @@ interface as [classref boost::intrusive::rbtree_algorithms rbtree_algorithms].
    struct treap_algorithms;
 
 [classref boost::intrusive::treap_algorithms treap_algorithms]
-is configured with a NodeTraits class, which encapsulates 
+is configured with a NodeTraits class, which encapsulates
 the information about the node to be manipulated. NodeTraits must support the
 following interface:
 
@@ -2992,7 +2997,7 @@ For a complete list of functions see
 /   struct sgtree_algorithms;
 /
 /[classref boost::intrusive::sgtree_algorithms sgtree_algorithms]
-/is configured with a NodeTraits class, which encapsulates 
+/is configured with a NodeTraits class, which encapsulates
 /the information about the node to be manipulated. NodeTraits must support the
 /following interface:
 /
@@ -3111,23 +3116,23 @@ Let's explain each type and function:
 *  [*['node_ptr]]: A typedef for `node_traits::node_ptr`.
 
 *  [*['const_node_ptr]]: A typedef for `node_traits::const_node_ptr`.
-   
+
 *  [*['value_type]]: The type that the user wants to insert in the container. This type can be
    the same as `node_traits::node` but it can be different (for example, `node_traits::node`
    can be a member type of `value_type`). If `value_type` and `node_traits::node` are the
    same type, the `to_node_ptr` and `to_value_ptr` functions are trivial.
-   
+
 *  [*['pointer]]: The type of a pointer to a `value_type`. It must be the same pointer type
    as `node_ptr`: If `node_ptr` is `node*`, `pointer` must be `value_type*`. If
    `node_ptr` is `smart_ptr<node_traits::node>`, `pointer` must be `smart_ptr<value_type>`.
    This can be generically achieved using `boost::intrusive::pointer_traits` (portable implementation of C++11
    `std::pointer_traits`) or `boost::pointer_to_other` utility from [*Boost SmartPointers]
    defined in `<boost/pointer_to_other.hpp>`.
-   
+
 *  [*['const_pointer]]: The type of a pointer to a `const value_type`. It must be the same pointer type
    as `node_ptr`: If `node_ptr` is `node*`, `const_pointer` must be `const value_type*`. If
    `node_ptr` is `smart_ptr<node_traits::node>`, `const_pointer` must be `smart_ptr<const value_type>`.
-     
+
 *  [*['link_mode]]: Indicates that `value_traits` needs some additional work or checks from the
    container. The types are enumerations defined in the `link_mode.hpp` header.
    These are the possible types:
@@ -3138,7 +3143,7 @@ Let's explain each type and function:
       of the erased values to a default state. Containers also won't
       check that the hooks of the new values are default initialized.
 
-   *  [*`safe_link`]: If this linking policy is specified as the link mode 
+   *  [*`safe_link`]: If this linking policy is specified as the link mode
       in a `ValueTraits` class, containers
       configured with this `ValueTraits` will set the hooks
       of the erased values to a default state. Containers also will
@@ -3165,11 +3170,11 @@ Let's explain each type and function:
 [section:value_traits_example Custom ValueTraits example]
 
 Let's define our own `value_traits` class to be able to use [*Boost.Intrusive]
-containers with an old C structure whose definition can't be changed. 
+containers with an old C structure whose definition can't be changed.
 That legacy type has two pointers that can be used to build singly and doubly linked
 lists: in singly linked lists we only need a pointer, whereas in doubly
 linked lists, we need two pointers. Since we only have two pointers, we can't insert
-the object in both a singly and a doubly linked list at the same time. 
+the object in both a singly and a doubly linked list at the same time.
 This is the definition of the old node:
 
 [import ../example/doc_value_traits.cpp]
@@ -3181,20 +3186,20 @@ we'll define a ValueTraits class that will configure [*Boost.Intrusive] containe
 
 [doc_value_traits_value_traits]
 
-Defining a value traits class that simply defines `value_type` as 
+Defining a value traits class that simply defines `value_type` as
 `legacy_node_traits::node` is a common approach when defining customized
 intrusive containers, so [*Boost.Intrusive] offers a templatized
 [classref boost::intrusive::trivial_value_traits trivial_value_traits] class
 that does exactly what we want:
 
 [c++]
-   
+
    #include <boost/intrusive/trivial_value_traits.hpp>
 
    //Now we can define legacy_value_traits just with a single line
    using namespace boost::intrusive;
    typedef trivial_value_traits<legacy_node_traits, normal_link> legacy_value_traits;
-   
+
 
 Now we can just define the containers that will store the legacy abi objects and write
 a little test:
@@ -3211,7 +3216,7 @@ if the user does not want to use the provided [*Boost.Intrusive] facilities.
 In the previous example, `legacy_node_traits::node` type and
 `legacy_value_traits::value_type` are the same type, but this is not necessary. It's possible
 to have several `ValueTraits` defining the same `node_traits` type (and thus, the same `node_traits::node`).
-This reduces the number of node algorithm instantiations, but 
+This reduces the number of node algorithm instantiations, but
 now `ValueTraits::to_node_ptr` and `ValueTraits::to_value_ptr` functions need to offer
 conversions between both types. Let's see a small example:
 
@@ -3256,7 +3261,7 @@ class to define a value traits class with a value that stores the
 
    using namespace boost::intrusive;
 
-   //Now define the needed value traits using 
+   //Now define the needed value traits using
    typedef derivation_value_traits<value_1, simple_node_traits, normal_link> ValueTraits1;
    typedef derivation_value_traits<value_2, simple_node_traits, normal_link> ValueTraits2;
 
@@ -3279,7 +3284,7 @@ Until now all shown custom value traits are stateless, that is, [*the transforma
 and values is implemented in terms of static functions]. It's possible to use [*stateful] value traits
 so that we can separate nodes and values and [*avoid modifying types to insert nodes].
 [*Boost.Intrusive] differentiates between stateful and stateless value traits by checking if all
-Node <-> Value transformation functions are static or not (except for Visual 7.1, since overloaded 
+Node <-> Value transformation functions are static or not (except for Visual 7.1, since overloaded
 static function detection is not possible, in this case the implementation checks if the class is empty):
 
 *  If all Node <-> Value transformation functions are static , a [*stateless]
@@ -3373,7 +3378,7 @@ has a couple of downsides:
 
    //Implicitly specify constant-time size and size type
    typedef list<T> List2;
-   
+
 *  Option specifiers lead to long template symbols for classes and functions. Option specifiers themselves
    are verbose and without variadic templates, several default template parameters are assigned for
    non-specified options. Object and debugging information files can grow and compilation times
@@ -3413,7 +3418,7 @@ When designing [*Boost.Intrusive] the following guidelines have been taken into 
 
 [*Boost.Intrusive] should be a valuable tool in performance sensitive environments,
 and following this guideline, [*Boost.Intrusive] has been designed to offer well
-known complexity guarantees. Apart from that, some options, like optional 
+known complexity guarantees. Apart from that, some options, like optional
 constant-time, have been designed to offer faster complexity guarantees in some
 functions, like `slist::splice`.
 
@@ -3476,7 +3481,7 @@ primarily because:
 *  They minimize memory allocation/deallocation calls.
 *  They obtain better memory locality.
 
-This section will show performance tests comparing some operations on 
+This section will show performance tests comparing some operations on
 `boost::intrusive::list` and `std::list`:
 
 *  Insertions using `push_back` and container destruction will show the
@@ -3522,7 +3527,7 @@ and also derives from `test_class`.
 `func_ptr_adaptor` is just a functor adaptor to convert function objects taking
 `test_list` objects to function objects taking pointers to them.
 
-You can find the full test code code in the 
+You can find the full test code code in the
 [@../../libs/intrusive/perf/perf_list.cpp perf_list.cpp] source file.
 
 [section:performance_results_push_back Back insertion and destruction]
@@ -3824,6 +3829,18 @@ all the objects to be inserted in intrusive containers in containers like `std::
 
 [section:release_notes Release Notes]
 
+[section:release_notes_boost_1_51_00 Boost 1.51 Release]
+
+*  Fixed bugs
+  [@https://svn.boost.org/trac/boost/ticket/6841 #6841],
+  [@https://svn.boost.org/trac/boost/ticket/6907 #6907],
+  [@https://svn.boost.org/trac/boost/ticket/6922 #6922],
+  [@https://svn.boost.org/trac/boost/ticket/7033 #7033],
+
+* Added `bounded_range` function to trees.
+
+[endsect]
+
 [section:release_notes_boost_1_49_00 Boost 1.49 Release]
 
 *  Fixed bugs
@@ -3959,11 +3976,11 @@ all the objects to be inserted in intrusive containers in containers like `std::
 
 [*Olaf Krzikalla] would like to thank:
 
-*  [*Markus Schaaf] for pointing out the possibility and the advantages of the derivation 
-approach. 
+*  [*Markus Schaaf] for pointing out the possibility and the advantages of the derivation
+approach.
 
 *  [*Udo Steinbach] for encouragements to present this work for boost, a lot of fixes and
-helpful discussions. 
+helpful discussions.
 
 *  [*Jaap Suter] for the initial hint, which eventually lead to the member value_traits.
 

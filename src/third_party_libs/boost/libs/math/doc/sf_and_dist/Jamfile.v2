@@ -77,7 +77,8 @@ boostbook standalone
         <format>pdf:<xsl:param>index.on.type=1
     ;
 
-install pdf-install : standalone : <location>. <install-type>PDF <name>math.pdf ;
+install pdfinstall : standalone/<format>pdf : <location>. <install-type>PDF <name>math.pdf ;
+explicit pdfinstall ;
 
 
 

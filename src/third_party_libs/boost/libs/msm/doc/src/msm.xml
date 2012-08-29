@@ -393,6 +393,21 @@
                         on implementing this behavior himself. </para>
                 </sect2>
             </sect1>
+            <sect1> 
+                <title>Added concepts</title>
+                <itemizedlist>
+                    <listitem>
+                        <para>Interrupt states: a terminate state which can be exited if a defined
+                            event is triggered.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Kleene (any) event: a transition with a kleene event will accept any
+                            event as trigger. Unlike a completion transition, an event must be
+                            triggered and the original event is kept accessible in the kleene
+                            event.</para>
+                    </listitem>
+                </itemizedlist>
+                </sect1>
             <sect1>
                 <title>State machine glossary</title>
                 <para>
@@ -805,6 +820,43 @@ a_row&lt; Song3  , NextSong, Song2  , &amp;Playing_::start_prev_song        >
                         state is active. All other state machine features described later are also
                         available. You can even decide to use a state machine sometimes as
                         submachine or sometimes as an independent state machine.</para>
+                    <para><command xml:id="limitation-submachine"/>There is, however, a limitation for submachines. If a submachine's
+                        substate has an entry action which requires a special event property (like a
+                        given method), the compiler will require all events entering this submachine
+                        to support this property. As this is not practicable, we will need to use
+                            <code>boost::enable_if</code> / <code>boost::disable_if</code> to help,
+                            for example consider:</para>
+                    <programlisting>// define a property for use with enable_if 
+BOOST_MPL_HAS_XXX_TRAIT_DEF(some_event_property)
+
+// this event supports some_event_property and a corresponding required method
+struct event1
+{
+   // the property
+   typedef int some_event_property;
+   // the method required by this property
+   void some_property(){...}
+};
+// this event does not supports some_event_property
+struct event2
+{
+};
+struct some_state : public msm::front::state&lt;>
+{
+   template &lt;class Event,class Fsm>
+   // enable this version for events supporting some_event_property
+   typename boost::enable_if&lt;typename has_some_event_property&lt;Event>::type,void>::type
+   on_entry(Event const&amp; evt,Fsm&amp; fsm)
+   {
+      evt.some_property();
+   }
+   // for events not supporting some_event_property
+   template &lt;class Event,class Fsm>
+   typename boost::disable_if&lt;typename has_some_event_property&lt;Event>::type,void>::type
+   on_entry(Event const&amp; ,Fsm&amp; )
+   {    }
+};                        </programlisting>
+                <para>Now this state can be used in your submachine.</para>
                 </sect2>
                 <sect2>
                     <title>Orthogonal regions, terminate state, event deferring</title>
@@ -1804,6 +1856,44 @@ struct Empty : public msm::front::euml::func_state&lt;Empty_Entry,Empty_Exit>{};
                         dispatch instead of O(number of regions). While the example is with eUML,
                         the same is also possible with this front-end.</para>
                 </sect2>
+                <sect2>
+                    <title><command xml:id="any-event"/>Kleene (any) event</title>
+                    <para>Normally, MSM requires an event to fire a transition. But there are cases,
+                        where any event, no matter which one would do:<itemizedlist>
+                            <listitem>
+                                <para>If you want to reduce the number of transitions: any event
+                                    would do, possibly will guards decide what happens</para>
+                            </listitem>
+                            <listitem>
+                                <para>Pseudo entry states do not necessarily want to know the event
+                                    which caused their activation, or they might want to know only a
+                                    property of it.</para>
+                            </listitem>
+                        </itemizedlist></para>
+                    <para>MSM supports a boost::any as an acceptable event. This event will match
+                        any event, meaning that if a transition with boost::any as event originates
+                        from the current state, this transition would fire (provided no guards or
+                        transition with a higher priority fires first). This event is named Kleene,
+                        as reference top the Kleene star used in a regex.</para>
+                    <para>For example, this transition on a state machine instance named fsm:</para>
+                    <programlisting>Row &lt; State1, boost::any, State2></programlisting>
+                    <para>will fire if State1 is active and an event is processed:</para>
+                    <programlisting>fsm.process_event(whatever_event());</programlisting>
+                    <para>At this point, you can use this <emphasis role="italic">any</emphasis>
+                        event in transition actions to get back to the original event by calling for
+                            example<emphasis role="italic"> boost::any::type()</emphasis>.</para>
+                    <para>It is also possible to support your own Kleene events by specializing
+                        boost::msm::is_kleene_event for a given event, for example:</para>
+                    <programlisting>namespace boost { namespace msm{
+    template&lt;> 
+    struct is_kleene_event&lt; my_event >
+    { 
+      typedef boost::mpl::true_ type;
+    };
+}}</programlisting> 
+                    <para>The only requirement is that this event must have a copy constructor from
+                        the event originally processed on the state machine.</para>
+                 </sect2>
             </sect1>
             <sect1>
                 <title><command xml:id="eUML-front-end"/>eUML (experimental)</title>
@@ -1890,7 +1980,7 @@ Stopped  == Empty   + cd_detected [good_disk_format] / store_cd_info
                         without any syntactic noise at all.</para>
                 </sect2>
                 <sect2>
-                    <title>A simple example: rewriting only our transition table</title>
+                    <title>A simple example: rewriting only our transition table </title>
                     <para>As an introduction to eUML, we will rewrite our tutorial's transition
                         table using eUML. This will require two or three changes, depending on the compiler:<itemizedlist>
                             <listitem>
@@ -1908,24 +1998,21 @@ Stopped  == Empty   + cd_detected [good_disk_format] / store_cd_info
                     <para>We now can write the transition table like just shown, using
                         BOOST_MSM_EUML_DECLARE_TRANSITION_TABLE instead of
                         BOOST_MSM_EUML_TRANSITION_TABLE. The <link
-                            xlink:href="examples/SimpleTutorialWithEumlTable.cpp">implementation</link> is pretty
-                        straightforward.</para>
-                    <para>The <link
-                        xlink:href="examples/CompositeTutorialWithEumlTable.cpp">composite</link> implementation is slightly trickier because the submachine
-                        has to be a msm::back::state_machine and a msm::front::euml::state. For
-                        example:</para>
+                            xlink:href="examples/SimpleTutorialWithEumlTable.cpp"
+                            >implementation</link> is pretty straightforward. The only required
+                        addition is the need to declare a variable for each state or add parenses (a
+                        default-constructor call) in the transition table.</para>
+                    <para>The <link xlink:href="examples/CompositeTutorialWithEumlTable.cpp">
+                      <command xml:id="eUML-composite-table">composite</command></link> implementation is also natural:</para>
                     <programlisting>// front-end like always
-struct front_end : public boost::msm::front::state_machine_def&lt;front_end>
+struct sub_front_end : public boost::msm::front::state_machine_def&lt;sub_front_end>
 {
 ...
 };
 // back-end like always
-typedef boost::msm::back::state_machine&lt;front_end> back_end;
-// this is new: make the submachine a eUML type
-struct submachine : public back_end,
-                    public boost::msm::front::euml::euml_state&lt;back_end>
-{
-};</programlisting>
+typedef boost::msm::back::state_machine&lt;sub_front_end> sub_back_end;
+
+sub_back_end const sub; // sub can be used in a transition table.</programlisting>
                     <para>Unfortunately, there is a bug with VC, which appears from time to time and
                         causes in a stack overflow. If you get a warning that the program is
                         recursive on all paths, revert to either standard eUML or another front-end
@@ -2442,6 +2529,16 @@ struct Open_impl : public Open_def
                                     instead of O(number of regions).</para>
                             </listitem>
                         </itemizedlist></para>
+                </sect2>
+                <sect2>
+                    <title><command xml:id="kleene-event"/>Kleene(any) event)</title>
+                    <para>As for the functor front-end, eUML supports the concept of an <emphasis
+                            role="italic"><command xlink:href="#any-event">any</command></emphasis>
+                        event, but boost::any is not an acceptable eUML terminal. If you need an
+                            <emphasis role="italic">any</emphasis> event, use
+                        msm::front::euml::kleene, which inherits boost::any. The same transition as
+                        with boost:any would be: </para>
+                    <programlisting>State1 + kleene == State2</programlisting>
                 </sect2>
                 <sect2>
                     <title>Other state types</title>
@@ -3380,6 +3477,11 @@ BOOST_MSM_BACK_GENERATE_PROCESS_EVENT(mysubmachine)</programlisting>
                                 and fusion default vector size of 10 if more than 10 states found in
                                 a state machine</para>
                         </listitem>
+                        <listitem>
+                            <para><command xlink:href="#limitation-submachine">Limitation for
+                                    submachines</command> and entry actions requiring an event
+                                property.</para>
+                        </listitem>
                     </itemizedlist>
                 </para>
             </sect1>
@@ -3926,6 +4028,59 @@ typename ::boost::enable_if&lt;
         <chapter>
             <title>Version history</title>
             <sect1>
+                <title>From V2.23 to V2.24 (Boost 1.51)</title>
+                <para>
+                    <itemizedlist>
+                        <listitem>
+                            <para> Support for <command xlink:href="#any-event">boost::any</command>
+                                or <command xlink:href="#kleene-event">kleene</command> as an
+                                acceptable event.</para>
+                        </listitem>
+                        <listitem>
+                            <para>Bugfix: compiler error with fsm internal table and
+                                    <code>none</code>(compound) event.</para>
+                        </listitem>
+                        <listitem>
+                            <para>Bugfix: <code>euml::defer_</code> leading to stack overflow.</para>
+                        </listitem>
+                    </itemizedlist>
+                </para>
+            </sect1>
+            <sect1>
+                <title>From V2.22 to V2.23 (Boost 1.50)</title>
+                <para>
+                    <itemizedlist>
+                        <listitem>
+                            <para> <command xlink:href="#eUML-composite-table">eUML</command> : better syntax
+                                for front-ends defined with eUML as transititon table only. Caution:
+                                Breaking Change!</para>
+                        </listitem>
+                        <listitem>
+                            <para>Bugfix: graph building was only working if
+                                    <code>initial_state</code> defined as a sequence</para>
+                        </listitem>
+                        <listitem>
+                            <para>Bugfix: flags defined for a Terminate or Interrupt state do not
+                                break the blocking function of these states any more.</para>
+                        </listitem>
+                        <listitem>
+                            <para>Bugfix: multiple deferred events from several regions were not
+                                working in every case.</para>
+                        </listitem>
+                        <listitem>
+                            <para>Bugfix: visitor was passed by value to submachines.</para>
+                        </listitem>
+                        <listitem>
+                            <para>Bugfix: <code>no_transition</code> was not called for submachines who send an
+                                event to themselves.</para>
+                        </listitem>
+                        <listitem>
+                            <para>Fixed warnings with gcc</para>
+                        </listitem>
+                    </itemizedlist>
+                </para>
+            </sect1>
+            <sect1>
                 <title>From V2.21 to V2.22 (Boost 1.48)</title>
                 <para>
                     <itemizedlist>
@@ -4141,6 +4296,12 @@ typename ::boost::enable_if&lt;
     </part>
     <part>
         <title><command xml:id="Reference-begin"/>Reference</title>
+        <chapter>
+            <title>External references to MSM</title>
+            <para>An interesting mapping UML &lt;-> MSM from Takatoshi Kondo can be found at
+                    <command xlink:href="http://redboltz.wikidot.com/boost-msm-guide"
+                    >Redboltz</command>.</para>
+        </chapter>
         <chapter>
             <title>eUML operators and basic helpers</title>
             <para>The following table lists the supported operators: </para>

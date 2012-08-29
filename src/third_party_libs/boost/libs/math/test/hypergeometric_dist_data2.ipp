@@ -8,7 +8,7 @@
 // (5) are commented out as they are too close to numeric_limits<double>::min(), to expect
 // our implementation to cope :-(
 //
-#define SC_(x) static_cast<T>(BOOST_JOIN(x, L))
+#define SC_(x) static_cast<typename table_type<T>::type>(BOOST_JOIN(x, L))
    static const boost::array<boost::array<T, 7>, 1542-5> hypergeometric_dist_data2 = {{
       {{ SC_(3), SC_(3), SC_(4), SC_(3), SC_(0.25), SC_(1), SC_(0) }}, 
       {{ SC_(3), SC_(3), SC_(15), SC_(1), SC_(0.4351648351648351648351648351648351648351648351648351648351648351648351648351648351648351648351648352), SC_(0.9186813186813186813186813186813186813186813186813186813186813186813186813186813186813186813186813187), SC_(0.08131868131868131868131868131868131868131868131868131868131868131868131868131868131868131868131868132) }}, 

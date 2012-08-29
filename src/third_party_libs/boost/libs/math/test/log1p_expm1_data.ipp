@@ -3,9 +3,9 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #ifndef SC_
-#define SC_(x) static_cast<T>(BOOST_JOIN(x, L))
+#define SC_(x) static_cast<typename table_type<T>::type>(BOOST_JOIN(x, L))
 #endif
-   static const boost::array<boost::array<T, 3>, 80> log1p_expm1_data = { {
+   static const boost::array<boost::array<typename table_type<T>::type, 3>, 80> log1p_expm1_data = { {
       {{ SC_(-0.69330310821533203125e0), SC_(-0.1181895342296499380302723361817935835636e1), SC_(-0.5000779577496508480606742934033661111325e0) }}, 
       {{ SC_(-0.650003612041473388671875e0), SC_(-0.1049832444670425873798449427248829256278e1), SC_(-0.477956108886575099597621504254337139212e0) }}, 
       {{ SC_(-0.5634434223175048828125e0), SC_(-0.8288372954181591063099417140530721209296e0), SC_(-0.4307544676154126107123951950891833745657e0) }}, 

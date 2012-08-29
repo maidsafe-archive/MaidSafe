@@ -84,7 +84,8 @@
        <span class="keyword">return</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">quiet_NaN</span><span class="special">();</span>
     <span class="special">}</span>
   <span class="special">}</span> <span class="comment">// namespace policies</span>
-<span class="special">}}</span> <span class="comment">// namespace boost{ namespace math</span></pre>
+<span class="special">}}</span> <span class="comment">// namespace boost{ namespace math</span>
+</pre>
 <p>
         </p>
 <p>
@@ -104,7 +105,8 @@
 
 <span class="identifier">BOOST_MATH_DECLARE_SPECIAL_FUNCTIONS</span><span class="special">(</span><span class="identifier">user_error_policy</span><span class="special">)</span>
 
-<span class="special">}</span> <span class="comment">// close unnamed namespace</span></pre>
+<span class="special">}</span> <span class="comment">// close unnamed namespace</span>
+</pre>
 <p>
         </p>
 <p>
@@ -136,7 +138,8 @@
       <span class="special">&lt;&lt;</span> <span class="identifier">erf_inv</span><span class="special">(-</span><span class="number">10</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
    <span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Result of tgamma(-10) is: "</span>
       <span class="special">&lt;&lt;</span> <span class="identifier">tgamma</span><span class="special">(-</span><span class="number">10</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">endl</span><span class="special">;</span>
-<span class="special">}</span></pre>
+<span class="special">}</span>
+</pre>
 <p>
         </p>
 <p>
@@ -196,7 +199,8 @@
         </p>
 <p>
 </p>
-<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">special_functions</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></pre>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">special_functions</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+</pre>
 <p>
         </p>
 <p>
@@ -211,7 +215,8 @@
 
 <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span>
 <span class="identifier">T</span> <span class="identifier">user_domain_error</span><span class="special">(</span><span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">function</span><span class="special">,</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">message</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">T</span><span class="special">&amp;</span> <span class="identifier">val</span><span class="special">)</span>
-<span class="special">{</span></pre>
+<span class="special">{</span>
+</pre>
 <p>
         </p>
 <p>
@@ -223,7 +228,8 @@
 <pre class="programlisting"><span class="keyword">if</span><span class="special">(</span><span class="identifier">function</span> <span class="special">==</span> <span class="number">0</span><span class="special">)</span>
     <span class="identifier">function</span> <span class="special">=</span> <span class="string">"Unknown function with arguments of type %1%"</span><span class="special">;</span>
 <span class="keyword">if</span><span class="special">(</span><span class="identifier">message</span> <span class="special">==</span> <span class="number">0</span><span class="special">)</span>
-    <span class="identifier">message</span> <span class="special">=</span> <span class="string">"Cause unknown with bad argument %1%"</span><span class="special">;</span></pre>
+    <span class="identifier">message</span> <span class="special">=</span> <span class="string">"Cause unknown with bad argument %1%"</span><span class="special">;</span>
+</pre>
 <p>
         </p>
 <p>
@@ -233,7 +239,8 @@
 <p>
 </p>
 <pre class="programlisting"><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">msg</span><span class="special">(</span><span class="string">"Error in function "</span><span class="special">);</span>
-<span class="identifier">msg</span> <span class="special">+=</span> <span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">format</span><span class="special">(</span><span class="identifier">function</span><span class="special">)</span> <span class="special">%</span> <span class="keyword">typeid</span><span class="special">(</span><span class="identifier">T</span><span class="special">).</span><span class="identifier">name</span><span class="special">()).</span><span class="identifier">str</span><span class="special">();</span></pre>
+<span class="identifier">msg</span> <span class="special">+=</span> <span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">format</span><span class="special">(</span><span class="identifier">function</span><span class="special">)</span> <span class="special">%</span> <span class="keyword">typeid</span><span class="special">(</span><span class="identifier">T</span><span class="special">).</span><span class="identifier">name</span><span class="special">()).</span><span class="identifier">str</span><span class="special">();</span>
+</pre>
 <p>
         </p>
 <p>
@@ -245,7 +252,8 @@
 <pre class="programlisting"><span class="identifier">msg</span> <span class="special">+=</span> <span class="string">": \n"</span><span class="special">;</span>
 <span class="keyword">int</span> <span class="identifier">prec</span> <span class="special">=</span> <span class="number">2</span> <span class="special">+</span> <span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">digits</span> <span class="special">*</span> <span class="number">30103UL</span><span class="special">)</span> <span class="special">/</span> <span class="number">100000UL</span><span class="special">;</span>
 <span class="comment">// int prec = std::numeric_limits&lt;T&gt;::max_digits10; //  For C++0X Standard Library</span>
-<span class="identifier">msg</span> <span class="special">+=</span> <span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">format</span><span class="special">(</span><span class="identifier">message</span><span class="special">)</span> <span class="special">%</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">io</span><span class="special">::</span><span class="identifier">group</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">setprecision</span><span class="special">(</span><span class="identifier">prec</span><span class="special">),</span> <span class="identifier">val</span><span class="special">)).</span><span class="identifier">str</span><span class="special">();</span></pre>
+<span class="identifier">msg</span> <span class="special">+=</span> <span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">format</span><span class="special">(</span><span class="identifier">message</span><span class="special">)</span> <span class="special">%</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">io</span><span class="special">::</span><span class="identifier">group</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">setprecision</span><span class="special">(</span><span class="identifier">prec</span><span class="special">),</span> <span class="identifier">val</span><span class="special">)).</span><span class="identifier">str</span><span class="special">();</span>
+</pre>
 <p>
         </p>
 <p>
@@ -254,7 +262,8 @@
         </p>
 <p>
 </p>
-<pre class="programlisting"><span class="identifier">std</span><span class="special">::</span><span class="identifier">cerr</span> <span class="special">&lt;&lt;</span> <span class="identifier">msg</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span></pre>
+<pre class="programlisting"><span class="identifier">std</span><span class="special">::</span><span class="identifier">cerr</span> <span class="special">&lt;&lt;</span> <span class="identifier">msg</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
+</pre>
 <p>
         </p>
 <p>
@@ -264,7 +273,8 @@
 <p>
 </p>
 <pre class="programlisting">   <span class="keyword">return</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">quiet_NaN</span><span class="special">();</span>
-<span class="special">}</span></pre>
+<span class="special">}</span>
+</pre>
 <p>
         </p>
 <p>
@@ -277,7 +287,8 @@
 <span class="identifier">T</span> <span class="identifier">user_pole_error</span><span class="special">(</span><span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">function</span><span class="special">,</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">message</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">T</span><span class="special">&amp;</span> <span class="identifier">val</span><span class="special">)</span>
 <span class="special">{</span>
    <span class="keyword">return</span> <span class="identifier">user_domain_error</span><span class="special">(</span><span class="identifier">function</span><span class="special">,</span> <span class="identifier">message</span><span class="special">,</span> <span class="identifier">val</span><span class="special">);</span>
-<span class="special">}</span></pre>
+<span class="special">}</span>
+</pre>
 <p>
         </p>
 <p>
@@ -304,7 +315,8 @@
 
    <span class="comment">// Value passed to the function is an infinity, just return it:</span>
    <span class="keyword">return</span> <span class="identifier">val</span><span class="special">;</span>
-<span class="special">}</span></pre>
+<span class="special">}</span>
+</pre>
 <p>
         </p>
 <p>
@@ -330,7 +342,8 @@
 
    <span class="comment">// Value passed to the function is zero, just return it:</span>
    <span class="keyword">return</span> <span class="identifier">val</span><span class="special">;</span>
-<span class="special">}</span></pre>
+<span class="special">}</span>
+</pre>
 <p>
         </p>
 <p>
@@ -356,7 +369,8 @@
 
    <span class="comment">// Value passed to the function is denormalised, just return it:</span>
    <span class="keyword">return</span> <span class="identifier">val</span><span class="special">;</span>
-<span class="special">}</span></pre>
+<span class="special">}</span>
+</pre>
 <p>
         </p>
 <p>
@@ -392,7 +406,8 @@
 <span class="special">}</span>
 
 <span class="special">}</span> <span class="comment">// policies</span>
-<span class="special">}}</span> <span class="comment">// boost::math</span></pre>
+<span class="special">}}</span> <span class="comment">// boost::math</span>
+</pre>
 <p>
         </p>
 <p>
@@ -417,7 +432,8 @@
 
 <span class="identifier">BOOST_MATH_DECLARE_SPECIAL_FUNCTIONS</span><span class="special">(</span><span class="identifier">user_error_policy</span><span class="special">)</span>
 
-<span class="special">}</span> <span class="comment">// unnamed namespace</span></pre>
+<span class="special">}</span> <span class="comment">// unnamed namespace</span>
+</pre>
 <p>
         </p>
 <p>
@@ -460,7 +476,8 @@
    <span class="comment">// Unfortunately we can't predicably raise a denormalised</span>
    <span class="comment">// result, nor can we raise an evaluation error in this example</span>
    <span class="comment">// since these should never really occur!</span>
-<span class="special">}</span> <span class="comment">// int main()</span></pre>
+<span class="special">}</span> <span class="comment">// int main()</span>
+</pre>
 <p>
         </p>
 <p>
@@ -500,7 +517,7 @@ Result of tgamma(-190.5) is: 0
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
 <td align="right"><div class="copyright-footer">Copyright &#169; 2006-2010 John Maddock, Paul A. Bristow, Hubert Holin, Xiaogang Zhang, Bruno
-      Lalande, Johan R&#229;de, Gautam Sewani and Thijs van den Berg<p>
+      Lalande, Johan R&#229;de, Gautam Sewani, Thijs van den Berg and Benjamin Sobotta<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

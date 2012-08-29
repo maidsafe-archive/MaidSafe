@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 3>, 280> laguerre2 = {{
+   static const boost::array<boost::array<typename table_type<T>::type, 3>, 280> laguerre2 = {{
       {{ SC_(0.5e1), SC_(0.9754039764404296875e2), SC_(-0.56218428868911115998451316426215010600803852349048e8) }}, 
       {{ SC_(0.5e1), SC_(0.12698681640625e3), SC_(-0.2243354877625806499089339248835065869040287604245e9) }}, 
       {{ SC_(0.5e1), SC_(0.1354770050048828125e3), SC_(-0.31418973293934559300911242611564538290439848722478e9) }}, 

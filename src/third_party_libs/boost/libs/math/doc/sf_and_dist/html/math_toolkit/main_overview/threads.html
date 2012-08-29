@@ -27,35 +27,16 @@
 <a name="math_toolkit.main_overview.threads"></a><a class="link" href="threads.html" title="Thread Safety">Thread Safety</a>
 </h3></div></div></div>
 <p>
-        The library is fully thread safe and re-entrant provided the function and
-        class templates in the library are instantiated with built-in floating point
-        types: i.e. the types <code class="computeroutput"><span class="keyword">float</span></code>,
-        <code class="computeroutput"><span class="keyword">double</span></code> and <code class="computeroutput"><span class="keyword">long</span>
-        <span class="keyword">double</span></code>.
-      </p>
-<p>
-        However, the library <span class="bold"><strong>is not thread safe</strong></span>
-        when used with user-defined (i.e. class type) numeric types.
-      </p>
-<p>
-        The reason for the latter limitation is the need to initialise symbolic constants
-        using constructs such as:
-      </p>
-<pre class="programlisting"><span class="keyword">static</span> <span class="keyword">const</span> <span class="identifier">T</span> <span class="identifier">coefficient_array</span> <span class="special">=</span> <span class="special">{</span> <span class="special">...</span> <span class="identifier">list</span> <span class="identifier">of</span> <span class="identifier">values</span> <span class="special">...</span> <span class="special">};</span>
-</pre>
-<p>
-        Which is always thread safe when T is a built-in floating point type, but
-        not when T is a user defined type: as in this case there is a need for T's
-        constructors to be run, leading to potential race conditions.
-      </p>
-<p>
-        This limitation may be addressed in a future release.
+        The library is fully thread safe and re-entrant for all functions regards
+        of the data type they are instantiated on. Thread safety limitations relating
+        to user defined types present in previous releases (prior to 1.50.0) have
+        been removed.
       </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
 <td align="right"><div class="copyright-footer">Copyright &#169; 2006-2010 John Maddock, Paul A. Bristow, Hubert Holin, Xiaogang Zhang, Bruno
-      Lalande, Johan R&#229;de, Gautam Sewani and Thijs van den Berg<p>
+      Lalande, Johan R&#229;de, Gautam Sewani, Thijs van den Berg and Benjamin Sobotta<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

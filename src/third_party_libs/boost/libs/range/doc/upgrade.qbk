@@ -5,6 +5,12 @@
 /]
 [section:upgrade Upgrade version of Boost.Range]
 
+[section:upgrade_from_1_49 Upgrade from version 1.49]
+
+# __size__ now returns the type Rng::size_type if the range has size_type;
+otherwise range_size<Rng>::type is used. This is the distance type promoted to
+an unsigned type.
+
 [section:upgrade_from_1_45 Upgrade from version 1.45]
 
 # __size__ in addition to supporting __random_access_range__ now also supports extensibility via calls to the unqualified `range_calculate_size(rng)` function.

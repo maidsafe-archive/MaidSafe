@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 3>, 225> bessel_i_data = {{
+   static const boost::array<boost::array<typename table_type<T>::type, 3>, 225> bessel_i_data = {{
       {{ SC_(-0.8049192047119140625e2), SC_(0.24750102996826171875e2), SC_(0.4186983670927603951456761016615805321694e29) }}, 
       {{ SC_(-0.8049192047119140625e2), SC_(0.637722015380859375e2), SC_(0.2032477564839492547710163141114983376107e7) }}, 
       {{ SC_(-0.7460263824462890625e2), SC_(0.24750102996826171875e2), SC_(0.7209773983625557491285409746913864781653e24) }}, 

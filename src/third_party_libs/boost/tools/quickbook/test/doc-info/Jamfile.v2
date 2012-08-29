@@ -16,6 +16,8 @@ test-suite quickbook.test :
     [ quickbook-test author1 ]
     [ quickbook-test author2 ]
     [ quickbook-test empty-attributes ]
+    [ quickbook-test escaped_attributes1-1_7 ]
+    [ quickbook-test escaped_attributes2-1_7 ]
     [ quickbook-test duplicates-1.1 ]
     [ quickbook-test duplicates-1.5 ]
     [ quickbook-test source-mode-1.4 ]

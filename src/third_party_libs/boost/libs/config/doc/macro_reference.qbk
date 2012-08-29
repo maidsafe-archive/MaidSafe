@@ -149,8 +149,13 @@ The C++ implementation does not provide the `<limits>` header. Never check for
 this symbol in library code; always include `<boost/limits.hpp>`, which
 guarantees to provide `std::numeric_limits`.
 ]]
-[[`BOOST_NO_NUMERIC_LIMITS_LOWEST`][Standard library][
-Static function `numeric_limits<T>::lowest()` is not available for use.
+[[`BOOST_NO_CXX11_NUMERIC_LIMITS`][Standard library][
+C++11 additions to `std::numeric_limits` are not available for use.
+`static function numeric_limits<T>::lowest()` the lowest finite value representable by the numeric type.
+`static int const max_digits10` the number of decimal digits that are required to make sure that two distinct values of the type have distinct decimal representations.
+`template<> class numeric_limits<char16_t>;`, see also `BOOST_NO_CXX11_CHAR16_T`, 
+`template<> class numeric_limits<char32_t>;` see also `BOOST_NO_CXX11_CHAR32_T`.
+Replaces BOOST_NO_NUMERIC_LIMITS_LOWEST.
 ]]
 [[`BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS`][Standard library][
 Constants such as `numeric_limits<T>::is_signed` are not available for use
@@ -538,102 +543,109 @@ that are not yet supported by a particular compiler or library.
 [table
 [[Macro     ][Description     ]]
 
-[[`BOOST_NO_0X_HDR_ARRAY`][The standard library does not provide header <array>.]]
-[[`BOOST_NO_0X_HDR_CHRONO`][The standard library does not provide header <chrono>.]]
-[[`BOOST_NO_0X_HDR_CODECVT`][The standard library does not provide header <codecvt>.]]
-[[`BOOST_NO_0X_HDR_CONDITION_VARIABLE`][The standard library does not provide header <condition_variable>.]]
-[[`BOOST_NO_0X_HDR_FORWARD_LIST`][The standard library does not provide header <forward_list>.]]
-[[`BOOST_NO_0X_HDR_FUTURE`][The standard library does not provide header <future>.]]
-[[`BOOST_NO_0X_HDR_INITIALIZER_LIST`][The standard library does not provide header <initializer_list>.]]
-[[`BOOST_NO_0X_HDR_MUTEX`][The standard library does not provide header <mutex>.]]
-[[`BOOST_NO_0X_HDR_RANDOM`][The standard library does not provide header <random>.]]
-[[`BOOST_NO_0X_HDR_RATIO`][The standard library does not provide header <ratio>.]]
-[[`BOOST_NO_0X_HDR_REGEX`][The standard library does not provide header <regex>.]]
-[[`BOOST_NO_0X_HDR_SYSTEM_ERROR`][The standard library does not provide header <system_error>.]]
-[[`BOOST_NO_0X_HDR_THREAD`][The standard library does not provide header <thread>.]]
-[[`BOOST_NO_0X_HDR_TUPLE`][The standard library does not provide header <tuple>.]]
-[[`BOOST_NO_0X_HDR_TYPEINDEX`][The standard library does not provide header <typeindex>.]]
-[[`BOOST_NO_0X_HDR_TYPE_TRAITS`][The standard library does not provide header <type_traits>.]]
-[[`BOOST_NO_0X_HDR_UNORDERED_MAP`][The standard library does not provide header <unordered_map>.]]
-[[`BOOST_NO_0X_HDR_UNORDERED_SET`][The standard library does not provide header <unordered_set>.]]
+[[`BOOST_NO_CXX11_ALLOCATOR`][The standard library does not provide a C++11 version of `std::allocator` in <memory>.]]
+[[`BOOST_NO_CXX11_ATOMIC_SP`][The standard library <memory> does not support atomic smart pointer operations.]]
+[[`BOOST_NO_CXX11_HDR_ARRAY`][The standard library does not provide header <array>.]]
+[[`BOOST_NO_CXX11_HDR_CHRONO`][The standard library does not provide header <chrono>.]]
+[[`BOOST_NO_CXX11_HDR_CODECVT`][The standard library does not provide header <codecvt>.]]
+[[`BOOST_NO_CXX11_HDR_CONDITION_VARIABLE`][The standard library does not provide header <condition_variable>.]]
+[[`BOOST_NO_CXX11_HDR_FORWARD_LIST`][The standard library does not provide header <forward_list>.]]
+[[`BOOST_NO_CXX11_HDR_FUNCTIONAL`][The standard library does not provide a C++11 compatible version of <functional>.]]
+[[`BOOST_NO_CXX11_HDR_FUTURE`][The standard library does not provide header <future>.]]
+[[`BOOST_NO_CXX11_HDR_INITIALIZER_LIST`][The standard library does not provide header <initializer_list>.]]
+[[`BOOST_NO_CXX11_HDR_MUTEX`][The standard library does not provide header <mutex>.]]
+[[`BOOST_NO_CXX11_HDR_RANDOM`][The standard library does not provide header <random>.]]
+[[`BOOST_NO_CXX11_HDR_RATIO`][The standard library does not provide header <ratio>.]]
+[[`BOOST_NO_CXX11_HDR_REGEX`][The standard library does not provide header <regex>.]]
+[[`BOOST_NO_CXX11_HDR_SYSTEM_ERROR`][The standard library does not provide header <system_error>.]]
+[[`BOOST_NO_CXX11_HDR_THREAD`][The standard library does not provide header <thread>.]]
+[[`BOOST_NO_CXX11_HDR_TUPLE`][The standard library does not provide header <tuple>.]]
+[[`BOOST_NO_CXX11_HDR_TYPEINDEX`][The standard library does not provide header <typeindex>.]]
+[[`BOOST_NO_CXX11_HDR_TYPE_TRAITS`][The standard library does not provide header <type_traits>.]]
+[[`BOOST_NO_CXX11_HDR_UNORDERED_MAP`][The standard library does not provide header <unordered_map>.]]
+[[`BOOST_NO_CXX11_HDR_UNORDERED_SET`][The standard library does not provide header <unordered_set>.]]
+[[`BOOST_NO_CXX11_SMART_PTR`][The standard library header <memory> has no shared_ptr and unique_ptr.]]
 
-[[`BOOST_NO_AUTO_DECLARATIONS`][The compiler does not support
+[[`BOOST_NO_CXX11_AUTO_DECLARATIONS`][The compiler does not support
 type deduction for variables declared with the `auto` keyword (`auto var = ...;`).
 ]]                       
-[[`BOOST_NO_AUTO_MULTIDECLARATIONS`][The compiler does not support
+[[`BOOST_NO_CXX11_AUTO_MULTIDECLARATIONS`][The compiler does not support
 type deduction for multiple variables declared with the `auto` keyword (`auto var = ..., *ptr = ...;`).
 ]]                       
-[[`BOOST_NO_CHAR16_T`][The compiler does not support
+[[`BOOST_NO_CXX11_CHAR16_T`][The compiler does not support
 type `char16_t`. 
 ]]                       
-[[`BOOST_NO_CHAR32_T`][The compiler does not support 
+[[`BOOST_NO_CXX11_CHAR32_T`][The compiler does not support 
 type `char32_t`. 
 ]]                       
-[[`BOOST_NO_TEMPLATE_ALIASES`][The compiler does not support template aliases. 
+[[`BOOST_NO_CXX11_TEMPLATE_ALIASES`][The compiler does not support template aliases. 
 ]]                      
-[[`BOOST_NO_CONSTEXPR`][The compiler does not support 
+[[`BOOST_NO_CXX11_CONSTEXPR`][The compiler does not support 
 `constexpr`. 
 ]]                      
-[[`BOOST_NO_DECLTYPE`][The compiler does not support 
+[[`BOOST_NO_CXX11_DECLTYPE`][The compiler does not support 
 `decltype`. 
 ]]                       
-[[`BOOST_NO_DECLTYPE_N3276`][The compiler does not support the extension to
+[[`BOOST_NO_CXX11_DECLTYPE_N3276`][The compiler does not support the extension to
 `decltype` described in [@http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2011/n3276.pdf N3276],
 accepted in Madrid, March 2011.
 ]]                       
-[[`BOOST_NO_DEFAULTED_FUNCTIONS`][The compiler does not support 
+[[`BOOST_NO_CXX11_DEFAULTED_FUNCTIONS`][The compiler does not support 
 defaulted (`= default`) functions.  
 ]]            
-[[`BOOST_NO_DELETED_FUNCTIONS`][The compiler does not support 
+[[`BOOST_NO_CXX11_DELETED_FUNCTIONS`][The compiler does not support 
 deleted (`= delete`) functions.              
 ]]              
-[[`BOOST_NO_EXPLICIT_CONVERSION_OPERATORS`][The compiler does not support 
+[[`BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS`][The compiler does not support 
 explicit conversion operators (`explicit operator T()`).              
 ]] 
-[[`BOOST_NO_EXTERN_TEMPLATE`][The compiler does not support 
+[[`BOOST_NO_CXX11_EXTERN_TEMPLATE`][The compiler does not support 
 explicit instantiation forward declarations for templates (`extern template ...`).
 ]]
-[[`BOOST_NO_FUNCTION_TEMPLATE_DEFAULT_ARGS`][The compiler does not support
+[[`BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS`][The compiler does not support
 default template arguments for function templates.
 ]]
-[[`BOOST_NO_INITIALIZER_LISTS`][
-The C++ compiler does not support C++0x initializer lists.
-]]
-[[`BOOST_NO_LAMBDAS`][The compiler does not support Lambdas. 
+[[`BOOST_NO_CXX11_LAMBDAS`][The compiler does not support Lambdas. 
 ]]                      
+[[`BOOST_NO_CXX11_LOCAL_CLASS_TEMPLATE_PARAMETERS`][The compiler does not allow to
+pass local classes as template parameters (this macro intentionally does not
+control passing of unnamed types as template parameters, see also
+[@http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2008/n2657.htm N2657]).
+]]
 [[`BOOST_NO_LONG_LONG`][The compiler does not support `long long`.
 ]]                
-[[`BOOST_NO_NOEXCEPT`][The compiler does not support `noexcept`. 
+[[`BOOST_NO_CXX11_NOEXCEPT`][The compiler does not support `noexcept`. 
 ]]                      
-[[`BOOST_NO_NULLPTR`][The compiler does not support `nullptr`. 
+[[`BOOST_NO_CXX11_NULLPTR`][The compiler does not support `nullptr`. 
 ]]                      
-[[`BOOST_NO_RAW_LITERALS`][The compiler does not support
+[[`BOOST_NO_CXX11_RANGE_BASED_FOR`][The compiler does not support
+range-based for statements. 
+]]                   
+[[`BOOST_NO_CXX11_RAW_LITERALS`][The compiler does not support
 raw string literals. 
 ]]                   
-[[`BOOST_NO_RVALUE_REFERENCES`][The compiler does not support
+[[`BOOST_NO_CXX11_RVALUE_REFERENCES`][The compiler does not support
 r-value references. 
 ]]              
-[[`BOOST_NO_SCOPED_ENUMS`][The compiler does not support
+[[`BOOST_NO_CXX11_SCOPED_ENUMS`][The compiler does not support
 scoped enumerations (`enum class`). 
 ]]                   
-[[`BOOST_NO_STATIC_ASSERT`][The compiler does not support
+[[`BOOST_NO_CXX11_STATIC_ASSERT`][The compiler does not support
 `static_assert`. 
 ]]                  
-[[`BOOST_NO_STD_UNORDERD`][The standard library does not support
+[[`BOOST_NO_CXX11_STD_UNORDERD`][The standard library does not support
 <unordered_map> and <unordered_set>. 
 ]]                  
-[[`BOOST_NO_TEMPLATE_ALIASES`][The compiler does not support template aliases. 
-]]                      
-[[`BOOST_NO_UNICODE_LITERALS`][The compiler does not support
+[[`BOOST_NO_CXX11_UNICODE_LITERALS`][The compiler does not support
 Unicode (`u8`, `u`, `U`) literals. 
 ]] 
-[[`BOOST_NO_UNIFIED_INITIALIZATION_SYNTAX`][The compiler does not support
+[[`BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX`][The compiler does not support
 the [@http://en.wikipedia.org/wiki/C%2B%2B0x#Uniform_initialization C++11 Unified Initialization Syntax].
 ]]
-[[`BOOST_NO_VARIADIC_TEMPLATES`][The compiler does not support
+[[`BOOST_NO_CXX11_VARIADIC_TEMPLATES`][The compiler does not support
 variadic templates. 
 ]]
-[[`BOOST_NO_VARIADIC_MACROS`][The compiler does not support
+[[`BOOST_NO_CXX11_VARIADIC_MACROS`][The compiler does not support
 variadic macros. 
 ]]
 ]
@@ -648,7 +660,7 @@ The following macros allow use of C++11 features even with compilers that do not
 provide compliant C++11 support.
 
 [table
-[[Macro        ][Section     ][ Description          ]]
+[[Macro        ][ Description          ]]
 
 [[`BOOST_CONSTEXPR`][
 Some compilers don't support the use of `constexpr`. This macro expands to nothing on those compilers, and `constexpr`
@@ -673,7 +685,7 @@ with:
 ``
 ]]
 [[`BOOST_STATIC_CONSTEXPR`][
-This is a shortcut for `static BOOST_CONSTEXPR_OR_CONST`For example, when defining const expr variables replace:
+This is a shortcut for `static BOOST_CONSTEXPR_OR_CONST`. For example, when defining const expr variables replace:
 ``
   static constexpr UIntType xor_mask = a;
 ``
@@ -853,7 +865,7 @@ must be used when the macro invocation appears after a normal parameter
 declaration or after the invocation of another macro of this same group.
 ]]
 [[`BOOST_USE_FACET(Type, loc)`][
-When the standard library does not have a comforming `std::use_facet` there
+When the standard library does not have a conforming `std::use_facet` there
 are various workarounds available, but they differ from library to library.
 This macro provides a consistent way to access a locale's facets. For example,
 replace:
@@ -976,6 +988,69 @@ library in use. Mainly for debugging the configuration.
 Defined as a string describing the name of the platform. Mainly for debugging
 the configuration.
 ]]
+]
+
+[endsect]
+
+[#deprecated_macros]
+
+[section Boost Deprecated Macros]
+
+The following have been deprecated; please use the replacements instead.
+They will be removed in a future version of boost.
+
+[table
+
+[[Deprecated Macro][Replacement][When deprecated][When removed]]
+
+[[`BOOST_NO_0X_HDR_ARRAY`][`BOOST_NO_CXX11_HDR_ARRAY`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_CHRONO`][`BOOST_NO_CXX11_HDR_CHRONO`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_CODECVT`][`BOOST_NO_CXX11_HDR_CODECVT`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_CONDITION_VARIABLE`][`BOOST_NO_CXX11_HDR_CONDITION_VARIABLE`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_FORWARD_LIST`][`BOOST_NO_CXX11_HDR_FORWARD_LIST`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_FUTURE`][`BOOST_NO_CXX11_HDR_FUTURE`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_INITIALIZER_LIST`][`BOOST_NO_CXX11_HDR_INITIALIZER_LIST`][Boost 1.50][]]
+[[`BOOST_NO_INITIALIZER_LISTS`][`BOOST_NO_CXX11_HDR_INITIALIZER_LIST`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_MUTEX`][`BOOST_NO_CXX11_HDR_MUTEX`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_RANDOM`][`BOOST_NO_CXX11_HDR_RANDOM`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_RATIO`][`BOOST_NO_CXX11_HDR_RATIO`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_REGEX`][`BOOST_NO_CXX11_HDR_REGEX`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_SYSTEM_ERROR`][`BOOST_NO_CXX11_HDR_SYSTEM_ERROR`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_THREAD`][`BOOST_NO_CXX11_HDR_THREAD`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_TUPLE`][`BOOST_NO_CXX11_HDR_TUPLE`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_TYPE_TRAITS`][`BOOST_NO_CXX11_HDR_TYPE_TRAITS`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_TYPEINDEX`][`BOOST_NO_CXX11_HDR_TYPEINDEX`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_UNORDERED_SET`][`BOOST_NO_CXX11_HDR_UNORDERED_SET`][Boost 1.50][]]
+[[`BOOST_NO_0X_HDR_UNORDERED_MAP`][`BOOST_NO_CXX11_HDR_UNORDERED_MAP`][Boost 1.50][]]
+[[`BOOST_NO_STD_UNORDERED`][`BOOST_NO_CXX11_HDR_UNORDERED_SET`][Boost 1.50][]]
+[[][][][]]
+[[`BOOST_NO_AUTO_DECLARATIONS`][`BOOST_NO_CXX11_AUTO_DECLARATIONS`][Boost 1.51][]]
+[[`BOOST_NO_AUTO_MULTIDECLARATIONS`][`BOOST_NO_CXX11_AUTO_MULTIDECLARATIONS`][Boost 1.51][]]
+[[`BOOST_NO_CHAR16_T`][`BOOST_NO_CXX11_CHAR16_T`][Boost 1.51][]]
+[[`BOOST_NO_CHAR32_T`][`BOOST_NO_CXX11_CHAR32_T`][Boost 1.51][]]
+[[`BOOST_NO_TEMPLATE_ALIASES`][`BOOST_NO_CXX11_TEMPLATE_ALIASES`][Boost 1.51][]]
+[[`BOOST_NO_CONSTEXPR`][`BOOST_NO_CXX11_CONSTEXPR`][Boost 1.51][]]
+[[`BOOST_NO_DECLTYPE`][`BOOST_NO_CXX11_DECLTYPE`][Boost 1.51][]]
+[[`BOOST_NO_DECLTYPE_N3276`][`BOOST_NO_CXX11_DECLTYPE_N3276`][Boost 1.51][]]
+[[`BOOST_NO_DEFAULTED_FUNCTIONS`][`BOOST_NO_CXX11_DEFAULTED_FUNCTIONS`][Boost 1.51][]]
+[[`BOOST_NO_DELETED_FUNCTIONS`][`BOOST_NO_CXX11_DELETED_FUNCTIONS`][Boost 1.51][]]
+[[`BOOST_NO_EXPLICIT_CONVERSION_OPERATORS`][`BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS`][Boost 1.51][]]
+[[`BOOST_NO_EXTERN_TEMPLATE`][`BOOST_NO_CXX11_EXTERN_TEMPLATE`][Boost 1.51][]]
+[[`BOOST_NO_FUNCTION_TEMPLATE_DEFAULT_ARGS`][`BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS`][Boost 1.51][]]
+[[`BOOST_NO_LAMBDAS`][`BOOST_NO_CXX11_LAMBDAS`][Boost 1.51][]]
+[[`BOOST_NO_LOCAL_CLASS_TEMPLATE_PARAMETERS`][`BOOST_NO_CXX11_LOCAL_CLASS_TEMPLATE_PARAMETERS`][Boost 1.51][]]
+[[`BOOST_NO_NOEXCEPT`][`BOOST_NO_CXX11_NOEXCEPT`][Boost 1.51][]]
+[[`BOOST_NO_NULLPTR`][`BOOST_NO_CXX11_NULLPTR`][Boost 1.51][]]
+[[`BOOST_NO_RAW_LITERALS`][`BOOST_NO_CXX11_RAW_LITERALS`][Boost 1.51][]]
+[[`BOOST_NO_RVALUE_REFERENCES`][`BOOST_NO_CXX11_RVALUE_REFERENCES`][Boost 1.51][]]
+[[`BOOST_NO_SCOPED_ENUMS`][`BOOST_NO_CXX11_SCOPED_ENUMS`][Boost 1.51][]]
+[[`BOOST_NO_STATIC_ASSERT`][`BOOST_NO_CXX11_STATIC_ASSERT`][Boost 1.51][]]
+[[`BOOST_NO_STD_UNORDERD`][`BOOST_NO_CXX11_STD_UNORDERD`][Boost 1.51][]]
+[[`BOOST_NO_UNICODE_LITERALS`][`BOOST_NO_CXX11_UNICODE_LITERALS`][Boost 1.51][]]
+[[`BOOST_NO_UNIFIED_INITIALIZATION_SYNTAX`][`BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX`][Boost 1.51][]]
+[[`BOOST_NO_VARIADIC_TEMPLATES`][`BOOST_NO_CXX11_VARIADIC_TEMPLATES`][Boost 1.51][]]
+[[`BOOST_NO_VARIADIC_MACROS`][`BOOST_NO_CXX11_VARIADIC_MACROS`][Boost 1.51][]]
+[[`BOOST_NO_NUMERIC_LIMITS_LOWEST`][`BOOST_NO_CXX11_NUMERIC_LIMITS`][Boost 1.51][]]
 ]
 
 [endsect]

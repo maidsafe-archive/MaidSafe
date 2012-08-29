@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-   static const boost::array<boost::array<T, 2>, 336> expinti_data = {{
+   static const boost::array<boost::array<typename table_type<T>::type, 2>, 336> expinti_data = {{
       {{ SC_(-49.689971923828125), SC_(-0.5189914452467706181911213069148082266893e-23) }}, 
       {{ SC_(-49.490234375), SC_(-0.6362401135264284153452455085506782750647e-23) }}, 
       {{ SC_(-49.47381591796875), SC_(-0.6469829627301154800340680350229540167762e-23) }}, 

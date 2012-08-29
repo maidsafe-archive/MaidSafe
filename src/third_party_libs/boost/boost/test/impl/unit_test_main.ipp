@@ -7,7 +7,7 @@
 //
 //  File        : $RCSfile$
 //
-//  Version     : $Revision$
+//  Version     : $Revision: 54633 $
 //
 //  Description : main function implementation for Unit Test Framework
 // ***************************************************************************

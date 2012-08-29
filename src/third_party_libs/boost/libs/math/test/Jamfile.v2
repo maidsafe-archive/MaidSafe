@@ -36,25 +36,35 @@ project
        <toolset>msvc:<cxxflags>/wd4189 # local variable is initialized but not referenced
 	   <toolset>msvc-7.1:<source>../vc71_fix//vc_fix
       <toolset>msvc-7.1:<pch>off
-      <toolset>borland:<link>static
       <toolset>borland:<runtime-link>static
       # <toolset>msvc:<cxxflags>/wd4506 has no effect?
       # suppress xstring(237) : warning C4506: no definition for inline function
       <include>../../..
       <source>../../regex/build//boost_regex
       <link>shared:<define>BOOST_REGEX_DYN_LINK=1
-      # Sunpro and cygwin/Mingw have problems building regex as a shared lib:
-      <toolset>sun:<link>static
-	    <toolset>gcc-mw:<link>static
-	    <toolset>gcc-mingw:<link>static
-      <toolset>gcc-cygwin:<link>static
+      # For simplicities sake, make everything a static lib:
+      <link>static
       <define>BOOST_ALL_NO_LIB=1
       <define>BOOST_UBLAS_UNSUPPORTED_COMPILER=0
       <include>.
       <include>$(ntl-path)/include
       <include>$(e_float_path)
       <include>$(gmp_path) <include>$(gmp_path)/mpfr <include>$(gmp_path)/gmpfrxx <include>$(gmp_path)/mpfrc++
+      <search>$(gmp_path) 
+      <search>$(mpfr_path) 
+      <search>$(mpfr_path)/build.vc10/lib/Win32/Debug
     ;
+    
+if $(ntl-path)
+{
+   lib ntl : [ GLOB $(ntl-path)/src : *.cpp ] ;
+}
+else
+{
+   lib ntl ;
+}
+
+explicit ntl ;
 
 cpp-pch pch : pch.hpp : <use>../../test/build//boost_test_exec_monitor ;
 cpp-pch pch_light : pch_light.hpp : <use>../../test/build//boost_test_exec_monitor ;
@@ -66,9 +76,11 @@ run hypot_test.cpp test_instances pch_light ../../test/build//boost_test_exec_mo
 run pow_test.cpp ../../test/build//boost_test_exec_monitor ;
 run log1p_expm1_test.cpp test_instances pch_light ../../test/build//boost_test_exec_monitor ;
 run powm1_sqrtp1m1_test.cpp test_instances pch_light ../../test/build//boost_test_exec_monitor ;
-run special_functions_test.cpp ../../test/build//boost_unit_test_framework/<link>static ;
+run special_functions_test.cpp ../../test/build//boost_unit_test_framework ;
 run test_bernoulli.cpp ../../test/build//boost_test_exec_monitor ;
-run test_constants.cpp pch ../../test/build//boost_test_exec_monitor ;
+run test_constants.cpp ../../test/build//boost_test_exec_monitor ;
+run test_print_info_on_type.cpp ;
+run test_constant_generate.cpp ntl  : : : [ check-target-builds ../config//has_ntl_rr : : <build>no ] : test_constant_generate_ntl ;
 run test_bessel_j.cpp test_instances pch_light ../../test/build//boost_test_exec_monitor ;
 run test_bessel_y.cpp test_instances pch_light ../../test/build//boost_test_exec_monitor ;
 run test_bessel_i.cpp test_instances pch_light ../../test/build//boost_test_exec_monitor ;
@@ -175,6 +187,7 @@ run test_fisher_f.cpp ../../test/build//boost_test_exec_monitor ;
 run test_gamma.cpp test_instances pch_light ../../test/build//boost_test_exec_monitor ;
 run test_gamma_dist.cpp pch ../../test/build//boost_test_exec_monitor ;
 run test_geometric.cpp ../../test/build//boost_test_exec_monitor ;
+run test_hankel.cpp ../../test/build//boost_test_exec_monitor ;
 run test_hermite.cpp test_instances pch_light ../../test/build//boost_test_exec_monitor ;
 run test_hypergeometric_dist.cpp ../../test/build//boost_test_exec_monitor
         : # command line
@@ -432,7 +445,7 @@ run test_inverse_gamma_distribution.cpp ../../test/build//boost_test_exec_monito
 
 run test_inverse_gaussian.cpp ../../test/build//boost_test_exec_monitor ;
 
-run test_laplace.cpp ../../test/build//boost_unit_test_framework/<link>static ;
+run test_laplace.cpp ../../test/build//boost_unit_test_framework ;
 run test_inv_hyp.cpp pch ../../test/build//boost_test_exec_monitor ;
 run test_laguerre.cpp test_instances pch_light ../../test/build//boost_test_exec_monitor ;
 run test_legendre.cpp test_instances pch_light ../../test/build//boost_test_exec_monitor ;
@@ -563,6 +576,7 @@ run test_nc_t.cpp  pch ../../test/build//boost_test_exec_monitor
 	      <toolset>intel:<pch>off
         : test_nc_t_real_concept ;
 run test_normal.cpp pch ../../test/build//boost_test_exec_monitor ;
+run test_owens_t.cpp ../../test/build//boost_test_exec_monitor ;
 run test_pareto.cpp ../../test/build//boost_test_exec_monitor ;
 run test_poisson.cpp ../../test/build//boost_test_exec_monitor 
         : # command line
@@ -623,6 +637,7 @@ run test_round.cpp pch ../../test/build//boost_test_exec_monitor ;
 run test_spherical_harmonic.cpp test_instances pch_light ../../test/build//boost_test_exec_monitor ;
 run test_students_t.cpp ../../test/build//boost_test_exec_monitor ;
 run test_sign.cpp ../../test/build//boost_test_exec_monitor ;
+run test_skew_normal.cpp ../../test/build//boost_test_exec_monitor ;
 run test_tgamma_ratio.cpp pch ../../test/build//boost_test_exec_monitor ;
 run test_toms748_solve.cpp pch ../../test/build//boost_test_exec_monitor ;
 run test_triangular.cpp pch ../../test/build//boost_test_exec_monitor ;
@@ -778,18 +793,18 @@ compile  compile_test/tools_test_inc_test.cpp ;
 compile  compile_test/tools_toms748_inc_test.cpp ;
 
 run ../test/common_factor_test.cpp
-    ../../test/build//boost_unit_test_framework/<link>static ;
+    ../../test/build//boost_unit_test_framework ;
 
 run ../octonion/octonion_test.cpp
-    ../../test/build//boost_unit_test_framework/<link>static ;
+    ../../test/build//boost_unit_test_framework ;
 
 run ../quaternion/quaternion_test.cpp
-    ../../test/build//boost_unit_test_framework/<link>static ;
+    ../../test/build//boost_unit_test_framework ;
 
 run ../quaternion/quaternion_mult_incl_test.cpp 
     ../quaternion/quaternion_mi1.cpp
     ../quaternion/quaternion_mi2.cpp
-    ../../test/build//boost_unit_test_framework/<link>static ;
+    ../../test/build//boost_unit_test_framework ;
     
     
 run test_legacy_nonfinite.cpp ../../test/build//boost_test_exec_monitor ;
@@ -807,6 +822,9 @@ compile e_float_concept_check.cpp : [ check-target-builds ../config//has_e_float
 compile test_common_factor_gmpxx.cpp : [ check-target-builds ../config//has_gmpxx : : <build>no ] ;
 
 build-project ../example ;
+
+
+
 
 
 

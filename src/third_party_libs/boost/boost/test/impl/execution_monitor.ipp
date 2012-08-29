@@ -8,7 +8,7 @@
 //
 //  File        : $RCSfile$
 //
-//  Version     : $Revision$
+//  Version     : $Revision: 57992 $
 //
 //  Description : provides execution monitor implementation for all supported
 //  configurations, including Microsoft structured exception based, unix signals

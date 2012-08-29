@@ -9,7 +9,7 @@
 
 [library Boost.Chrono
     [quickbook 1.5]
-    [version 1.2.1]
+    [version 1.2.3]
     [authors [Hinnant, Howard]]
     [authors [Dawes, Beman]]
     [authors [Botet Escriba, Vicente J.]]
@@ -45,18 +45,23 @@
 [def __example [*Example:]]
 [def __type [*type:]]
 [def __returns [*Returns:]]
+[def __return_type [*Return Type:]]
 [def __throws [*Throws:]]
 [def __remarks [*Remarks:]]
 [def __effects [*Effects:]]
-[def __post_conditions [*PostConditions:]]
-[def __postcondition [*PostConditions:]]
-[def __pre_conditions [*PreConditions:]]
-[def __precondition [*PreConditions:]]
+[def __post_conditions [*Post Conditions:]]
+[def __post_condition [*Post Conditions:]]
+[def __postcondition [*Post Conditions:]]
+[def __pre_conditions [*Pre Conditions:]]
+[def __precondition [*Pre Conditions:]]
 [def __requires [*Requires:]]
+[def __params [*Parameters:]]
+[template param [p] [*[p]:]]
 
 [template mu[]'''&#x3BC;'''] [/ µ Greek small letter mu]
 [template plusminus[]'''&#x00B1;'''] [/  ? plus or minus sign]
 
+[def __mus [mu]s]
 
 [/===============================================]
 [def __common_type `common_type`]
@@ -78,6 +83,7 @@
 [def __ratio_greater `ratio_greater`]
 [def __ratio_greater_equal `ratio_greater_equal`]
 
+[def __failbit `failbit`]
 
 [def __atto `atto`]
 [def __femto `femto`]
@@ -377,15 +383,13 @@ Finally, you can mentally add the following to any code fragments in this docume
 
 We all deal with time every day of our lives. We've intuitively known it since birth. Thus we are all very familiar with it and believe it to be a simple matter. The modeling of time in computer programs should be similarly simple. The unfortunate truth is that this perceived simplicity is only skin deep. Fortunately, we do not need a terribly complicated solution to meet the bulk of our needs. However, overly simplistic solutions can be dangerous and inefficient, and won't adapt as the computer industry evolves.
 
-__Boost_Chrono__ aims to implement the new time facilities in C++0x, as proposed in [@http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2008/n2661.htm [*N2661 - A Foundation to Sleep On]].  That document provides background and motivation for key design decisions and is the source of a good deal of information in this documentation.
+__Boost_Chrono__ implements the new time facilities in C++11, as proposed in [@http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2008/n2661.htm [*N2661 - A Foundation to Sleep On]].  That document provides background and motivation for key design decisions and is the source of a good deal of information in this documentation.
 
 [/
 __Boost_Chrono__ proposes a solution that is precision neutral, with a very simple end user interface which supports multiple clocks, multiple precisions (both coarser and finer than we will ever need), separate types for points in time and time durations, efficiency, and compile-time enforced safety.
 ]
 
-[/
 In addition to the clocks provided by the standard proposal, __Boost_Chrono__ provides specific process clocks and a thread clock.
-]
 
 [/
 See [@http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2008/n2661.htm [*N2661 - A Foundation to Sleep On]] which is very informative and provides motivation for key design decisions for __common_type, __ratio and `chrono`. This documentation contains a lot of extracts from this document.
@@ -569,7 +573,7 @@ The simple way is to decompress (or checkout from SVN) the files in your BOOST_R
 [heading Building Boost.Chrono ]
 [/=================================]
 
-__Boost_Chrono__ can be configured as a header-only library. When __BOOST_CHRONO_HEADER_ONLY is defined the Boost.Chrono is a header-only library. Otherwise is not a header only library and you need to compile it and build the library before use, for example using:
+__Boost_Chrono__ can be configured as a header-only library. When __BOOST_CHRONO_HEADER_ONLY and BOOST_ERROR_CODE_HEADER_ONLY are defined the Boost.Chrono is a header-only library. Otherwise is not a header only library and you need to compile it and build the library before use, for example using:
 
     bjam libs/chrono/build
 
@@ -615,7 +619,7 @@ In particular, __Boost_Chrono__ depends on:
 [/=========================================================]
 
 In addition to link with the __Boost_Chrono__ library you need also to link with the [*Boost.System] library.
-Once [*Boost.System] will be configurable to be a header only using __BOOST_SYSTEM_INLINED you will no need to link with it.
+If [*Boost.System] is configured defining BOOST_ERROR_CODE_HEADER_ONLY you will no need to link with it as the dependent part is header only then.
 
 
 [/=========================]
@@ -652,18 +656,18 @@ Cygwin 1.7 with
 MinGW with
 
 * GCC 4.5.0
-* GCC 4.5.0 -std=c++0x
+* GCC 4.5.0 -std=C++11
 * GCC 4.5.2
-* GCC 4.5.2 -std=c++0x
+* GCC 4.5.2 -std=C++11
 * GCC 4.6.0
-* GCC 4.6.0 -std=c++0x
+* GCC 4.6.0 -std=C++11
 
 OsX with
 
 * GCC 4.1.2
 * clang 1.6
 * clang 2.9
-* clang 2.9 -std=c++0x
+* clang 2.9 -std=C++11
 
 
 The committed code is tested with much more compilers. There are two compilers (VACPP and Borland) that don't provide the needed features.
@@ -2143,7 +2147,7 @@ The output could be:
 [/=======================================================]
 [section Simulated Thread Interface Demonstration Program]
 
-The C++0x standard library's multi-threading library requires the ability to deal with the representation of time in a manner consistent with modern C++ practices. Next is a simulation of this interface.
+The C++11 standard library's multi-threading library requires the ability to deal with the representation of time in a manner consistent with modern C++ practices. Next is a simulation of this interface.
 
 The non-member sleep functions can be emulated as follows:
 
@@ -2405,7 +2409,7 @@ Include only the standard files.
 
 [section:limitations Limitations and Extensions]
 
-Next follows some limitation respect to the C++0x recomendations:
+Next follows some limitation respect to the C++11 recomendations:
 
 The current implementation provides in addition:
 
@@ -4872,6 +4876,33 @@ All the units are given using the suffix "s" following the System International 
 [section:history Appendix: History]
 [/==================================]
 
+[//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////]
+[section [*Version 1.2.3, August 1, 2012 - 1.51] ]
+
+[*Fixes:]
+
+* [@http://svn.boost.org/trac/boost/ticket/6918 #6918] Boost Chrono compilation failure on HP uX due to undefined pthread_getcpuclockid.  
+* [@http://svn.boost.org/trac/boost/ticket/6241 #6241] boost::chrono compilation problems without std::wstring support.
+* [@http://svn.boost.org/trac/boost/ticket/6987 #6987] Documentation & C++11.
+* [@http://svn.boost.org/trac/boost/ticket/7041 #7041] time_point.hpp depends on Boost.System.
+* [@http://svn.boost.org/trac/boost/ticket/7042 #7042] Avoiding time_point and duration dependency on time.h and CLOCK_REALTIME.
+* [@http://svn.boost.org/trac/boost/ticket/7058 #7058] Make it work when BOOST_NO_EXCEPTIONS is defined.
+* [@http://svn.boost.org/trac/boost/ticket/7069 #7069] Misspellings in clock_string<thread_clock>.
+* [@http://svn.boost.org/trac/boost/ticket/7081 #7081] WinError.h capitalization in boost/detail/win/basic_types.hpp.
+
+[endsect] [/section [*Version 1.2.3] ]
+
+
+[section [*Version 1.2.2, April 1, 2012 - 1.50] ]
+
+[*Fixes:]
+
+* [@http://svn.boost.org/trac/boost/ticket/6361 #6361] integer overflow in boost::chrono::process_real_cpu_clock::now() under Windows 32bits.
+* [@http://svn.boost.org/trac/boost/ticket/6628 #6628] compiler warning in process_cpu_clocks.hpp.
+* [@http://svn.boost.org/trac/boost/ticket/6666 #6666] thread_clock.hpp needs pthread.h.
+
+[endsect] [/section [*Version 1.2.2] ]
+
 [section [*Version 1.2.1, February 1, 2012 - 1.49] ]
 
 [*Fixes:]
@@ -5230,9 +5261,9 @@ More updated documentation.
 
 [*Features:]
 
-*  The C++0x Standard Library's __common_type.
-*  The C++0x Standard Library's compile-time rational arithmetic.
-*  The C++0x Standard Library's time utilities, including:
+*  The C++11 Standard Library's __common_type.
+*  The C++11 Standard Library's compile-time rational arithmetic.
+*  The C++11 Standard Library's time utilities, including:
     * Class template __duration
     * Class template __time_point
     * Clocks:

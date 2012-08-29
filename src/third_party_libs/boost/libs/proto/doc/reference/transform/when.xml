@@ -199,6 +199,114 @@ struct CountLeaves :
       <struct-specialization name="when">
         <template>
           <template-type-parameter name="Grammar"/>
+          <template-type-parameter name="R"/>
+          <template-type-parameter name="A" pack="1"/>
+        </template>
+        <specialization>
+          <template-arg>Grammar</template-arg>
+          <template-arg>R(A..., ...)</template-arg>
+        </specialization>
+        <inherit><type><classname>proto::transform</classname>&lt; when&lt;Grammar, R(A..., ...)&gt; &gt;</type></inherit>
+        <purpose>A grammar element and a <conceptname>Transform</conceptname> that associates a
+          transform with the grammar. </purpose>
+        <description>
+          <para>
+            Use <computeroutput>proto::when&lt;&gt;</computeroutput> to override a grammar's default
+            transform with a custom transform. It is for use when composing larger transforms by associating
+            smaller transforms with individual rules in your grammar.
+          </para>
+          <para>
+            The <computeroutput>when&lt;G, R(A..., ...)&gt;</computeroutput> form accepts either a
+            <conceptname>CallableTransform</conceptname> or an <conceptname>ObjectTransform</conceptname> as its
+            second parameter. <computeroutput>proto::when&lt;&gt;</computeroutput> uses
+            <computeroutput><classname>proto::is_callable</classname>&lt;R&gt;::value</computeroutput> to
+            distinguish between the two, and uses
+            <computeroutput><classname>proto::call&lt;&gt;</classname></computeroutput> to evaluate
+            <conceptname>CallableTransform</conceptname>s and
+            <computeroutput><classname>proto::make&lt;&gt;</classname></computeroutput> to evaluate
+            <conceptname>ObjectTransform</conceptname>s.
+          </para>
+          <para>
+            <emphasis role="bold">Note:</emphasis> In the specialization
+            <computeroutput>when&lt;G, R(A..., ...)&gt;</computeroutput>, the first ellipsis denotes a
+            C++11-style variadic template (which is emulated for C++98 compilers). The second ellipsis
+            is a C-style vararg.
+          </para>
+        </description>
+        <struct name="impl">
+          <template>
+            <template-type-parameter name="Expr"/>
+            <template-type-parameter name="State"/>
+            <template-type-parameter name="Data"/>
+          </template>
+          <inherit><type><classname>proto::transform_impl</classname>&lt; Expr, State, Data &gt;</type></inherit>
+          <typedef name="call_">
+            <purpose>For exposition only</purpose>
+            <type><classname>proto::call</classname>&lt;R(A..., ...)&gt;</type>
+          </typedef>
+          <typedef name="make_">
+            <purpose>For exposition only</purpose>
+            <type><classname>proto::make</classname>&lt;R(A..., ...)&gt;</type>
+          </typedef>
+          <typedef name="which">
+            <purpose>For exposition only</purpose>
+            <type>typename mpl::if_&lt;<classname>proto::is_callable</classname>&lt;R&gt;,call_,make_&gt;::type</type>
+          </typedef>
+          <typedef name="result_type">
+            <type>typename boost::result_of&lt;which(Expr, State, Data)&gt;::type</type>
+          </typedef>
+          <method-group name="public member functions">
+            <method name="operator()" cv="const">
+              <type>result_type</type>
+              <parameter name="expr">
+                <paramtype>typename impl::expr_param</paramtype>
+                <description>
+                  <para>The current expression </para>
+                </description>
+              </parameter>
+              <parameter name="state">
+                <paramtype>typename impl::state_param</paramtype>
+                <description>
+                  <para>The current state </para>
+                </description>
+              </parameter>
+              <parameter name="data">
+                <paramtype>typename impl::data_param</paramtype>
+                <description>
+                  <para>An arbitrary data </para>
+                </description>
+              </parameter>
+              <description>
+                <para>
+                  Evaluate <computeroutput>R(A..., ...)</computeroutput> as a transform either with
+                  <computeroutput><classname>proto::call&lt;&gt;</classname></computeroutput> or with
+                  <computeroutput><classname>proto::make&lt;&gt;</classname></computeroutput> depending
+                  on whether <computeroutput><classname>proto::is_callable</classname>&lt;R&gt;::value</computeroutput>
+                  is <computeroutput>true</computeroutput> or <computeroutput>false</computeroutput>.
+                </para>
+              </description>
+              <requires>
+                <para>
+                  <computeroutput><classname>proto::matches</classname>&lt;Expr, Grammar&gt;::value</computeroutput>
+                  is <computeroutput>true</computeroutput>.
+                </para>
+              </requires>
+              <returns>
+                <para>
+                  <computeroutput>which()(expr, state, data)</computeroutput>
+                </para>
+              </returns>
+            </method>
+          </method-group>
+        </struct>
+        <typedef name="proto_grammar">
+          <type>typename Grammar::proto_grammar</type>
+        </typedef>
+      </struct-specialization>
+
+      <struct-specialization name="when">
+        <template>
+          <template-type-parameter name="Grammar"/>
         </template>
         <specialization>
           <template-arg>Grammar</template-arg>

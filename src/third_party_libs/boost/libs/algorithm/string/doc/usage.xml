@@ -9,7 +9,7 @@
 -->
 
 
-<section id="string_algo.usage" last-revision="$Date$">
+<section id="string_algo.usage" last-revision="$Date: 2012-08-15 22:16:42 -0700 (Wed, 15 Aug 2012) $">
     <title>Usage</title>
 
     <using-namespace name="boost"/>
@@ -130,17 +130,17 @@
     string str1("command.com");
     cout 
         &lt;&lt; str1
-        &lt;&lt; (is_executable("command.com")? "is": "is not") 
+        &lt;&lt; (is_executable(str1)? "is": "is not") 
         &lt;&lt; "an executable" 
         &lt;&lt; endl; // prints "command.com is an executable"
     
     //..
-    char text1[]="hello world!";
+    char text1[]="hello";
     cout 
         &lt;&lt; text1 
-        &lt;&lt; (all( text1, is_lower() )? "is": "is not")
+        &lt;&lt; (all( text1, is_lower() )? " is": " is not")
         &lt;&lt; " written in the lower case" 
-        &lt;&lt; endl; // prints "hello world! is written in the lower case"
+        &lt;&lt; endl; // prints "hello is written in the lower case"
         </programlisting>
         <para>
             The predicates determine whether if a substring is contained in the input string
@@ -148,6 +148,11 @@
             ends with the substring, 
             simply contains the substring or if both strings are equal. See the reference for 
             <headername>boost/algorithm/string/predicate.hpp</headername> for more details. 
+        </para>
+        <para>  
+            Note that if we had used "hello world" as the input to the test, it would have
+            output "hello world is not written in the lower case" because the space in the
+            input string is not a lower case letter.
         </para>
         <para>  
             In addition the algorithm <functionname>all()</functionname> checks
@@ -163,7 +168,7 @@
         <title>Trimming</title>
         
         <para>
-            When parsing the input from a user, strings usually have unwanted leading or trailing 
+            When parsing the input from a user, strings often have unwanted leading or trailing 
             characters. To get rid of them, we need trim functions:
         </para>
         <programlisting>
