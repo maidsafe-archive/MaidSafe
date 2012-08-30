@@ -38,7 +38,7 @@ inline DWORD wait_for_exit(const Process &p)
 template <class Process>
 inline DWORD wait_for_exit(const Process &p, boost::system::error_code &ec)
 {
-    DWORD exit_code;
+    DWORD exit_code(0);
 
     if (::WaitForSingleObject(p.process_handle(), INFINITE) == WAIT_FAILED)
         BOOST_PROCESS_RETURN_LAST_SYSTEM_ERROR(ec);
