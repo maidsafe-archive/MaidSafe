@@ -19,10 +19,10 @@
 
 // if compiler has std::tuple use it instead of boost::tuple
 // because boost::tuple does not have variadic template support at present.
-#ifdef BOOST_NO_CXX11_HDR_TUPLE
-#include <boost/tuple.hpp>
-#define BOOST_SIGNALS2_TUPLE boost::tuple
-#else
+// #ifdef BOOST_NO_CXX11_HDR_TUPLE
+// #include <boost/tuple.hpp>
+// #define BOOST_SIGNALS2_TUPLE boost::tuple
+// #else
 #include <tuple>
 #define BOOST_SIGNALS2_TUPLE std::tuple
 #endif
