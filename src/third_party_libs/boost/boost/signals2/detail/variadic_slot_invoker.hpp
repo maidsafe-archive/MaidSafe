@@ -25,7 +25,7 @@
 // #else
 #include <tuple>
 #define BOOST_SIGNALS2_TUPLE std::tuple
-#endif
+// #endif
 
 namespace boost
 {
