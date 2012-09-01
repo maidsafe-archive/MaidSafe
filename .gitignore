@@ -53,3 +53,4 @@ build*
 *.filters
 *.vcproj
 *.vcxproj
+*install_me*
