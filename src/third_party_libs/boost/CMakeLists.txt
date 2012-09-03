@@ -129,7 +129,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 boost_report_pretty("Boost.CMake version" BOOST_CMAKE_VERSION)
 
 include(BoostConfig)
-set(BUILD_PROJECTS chrono;date_time;filesystem;iostreams;program_options;regex;serialization;system;thread)  # random;test
+set(BUILD_PROJECTS chrono;date_time;filesystem;iostreams;program_options;regex;system;thread)  # random;serialization;test
 
 include(BoostCore)
 #include(BoostDocs)
