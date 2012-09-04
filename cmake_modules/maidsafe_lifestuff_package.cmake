@@ -66,7 +66,7 @@ if(UNIX AND NOT APPLE)
   set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/lifestuff DESTINATION /usr/bin)
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/pd-vault DESTINATION /usr/bin)
-  install(PROGRAMS ${PACKAGE_BINARY_DIR}/DEMOinvigilator RENAME  lifestuff-invigilator DESTINATION /usr/bin)
+  install(PROGRAMS ${PACKAGE_BINARY_DIR}/invigilator RENAME  lifestuff-invigilator DESTINATION /usr/bin)
   install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/lifestuff_client.desktop RENAME lifestuff.desktop DESTINATION /usr/share/application/)
   execute_process(
     COMMAND /usr/bin/dpkg --print-architecture
