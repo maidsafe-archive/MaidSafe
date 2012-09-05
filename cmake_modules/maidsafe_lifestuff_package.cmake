@@ -66,8 +66,8 @@ if(UNIX AND NOT APPLE)
   set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/lifestuff DESTINATION /usr/bin)
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/pd-vault DESTINATION /usr/bin)
-  install(PROGRAMS ${PACKAGE_BINARY_DIR}/DEMOinvigilator RENAME  lifestuff-invigilator DESTINATION /usr/bin)
-  install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/lifestuff_client.desktop RENAME lifestuff.desktop DESTINATION /usr/share/application/)
+  install(PROGRAMS ${PACKAGE_BINARY_DIR}/invigilator RENAME  lifestuff-invigilator DESTINATION /usr/bin)
+  install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/lifestuff_client.desktop RENAME lifestuff.desktop DESTINATION /usr/share/applications/)
   execute_process(
     COMMAND /usr/bin/dpkg --print-architecture
     OUTPUT_VARIABLE CPACK_DEBIAN_PACKAGE_ARCHITECTURE
@@ -115,7 +115,7 @@ elseif(WIN32)
   set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/package/Windows ${CMAKE_MODULE_PATH})
   install(FILES ${PACKAGE_BINARY_DIR}/lifestuff.exe DESTINATION .)
   install(FILES ${PACKAGE_BINARY_DIR}/cbfs_driver.exe DESTINATION .)
-  install(FILES ${PACKAGE_BINARY_DIR}/vault-manager.exe DESTINATION .)
+  install(FILES ${PACKAGE_BINARY_DIR}/invigilator.exe DESTINATION .)
   install(FILES ${PACKAGE_BINARY_DIR}/pd-vault.exe DESTINATION .)
   install(FILES ${drive_SOURCE_DIR}/drivers/windows/cbfs/cbfs.cab DESTINATION driver)
   if(CMAKE_CL_64)
@@ -130,7 +130,7 @@ elseif(WIN32)
   install(FILES ${VCCORLIB110} DESTINATION .)
   install(FILES ${QtLibsRelease} DESTINATION .)
   install(FILES ${QtImageFormatsPluginsRelease} DESTINATION plugins/imageformats)
-  # install(FILES ${CMAKE_BINARY_DIR}/Release/resources/help_page.rcc DESTINATION resources)
+  install(FILES ${CMAKE_BINARY_DIR}/Release/resources/help_page.rcc DESTINATION resources)
   install(FILES ${CMAKE_BINARY_DIR}/Release/resources/lifestuff_tour.rcc DESTINATION resources)
   install(FILES ${CMAKE_BINARY_DIR}/Release/sounds/launch_lifestuff_gui.wav DESTINATION sounds)
   install(FILES ${CMAKE_BINARY_DIR}/Release/sounds/notification_alert.wav DESTINATION sounds)
@@ -143,8 +143,8 @@ elseif(WIN32)
   set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
     !define MUI_HEADERIMAGE_BITMAP \\\"${lifestuff_gui_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\top_left_image.bmp\\\"
     !define MUI_HEADERIMAGE_UNBITMAP \\\"${lifestuff_gui_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\top_left_image.bmp\\\"
-    !define MUI_WELCOMEFINISHPAGE_BITMAP \\\"${lifestuff_gui_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\Installer-Image.bmp\\\"
-    !define MUI_UNWELCOMEFINISHPAGE_BITMAP \\\"${lifestuff_gui_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\Installer-Image.bmp\\\"
+    !define MUI_WELCOMEFINISHPAGE_BITMAP \\\"${lifestuff_gui_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\Installer-Image-Beta.bmp\\\"
+    !define MUI_UNWELCOMEFINISHPAGE_BITMAP \\\"${lifestuff_gui_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\Installer-Image-Beta.bmp\\\"
   ")
   set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "")
   set(CPACK_NSIS_MODIFY_PATH ON)
