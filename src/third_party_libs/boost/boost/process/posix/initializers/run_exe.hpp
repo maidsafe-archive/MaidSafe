@@ -45,17 +45,17 @@ private:
     boost::shared_array<char*> cmd_line_;
 };
 
-run_exe_ run_exe(const char *s)
+inline run_exe_ run_exe(const char *s)
 {
     return run_exe_(s);
 }
 
-run_exe_ run_exe(const std::string &s)
+inline run_exe_ run_exe(const std::string &s)
 {
     return run_exe_(s);
 }
 
-run_exe_ run_exe(const boost::filesystem::path &p)
+inline run_exe_ run_exe(const boost::filesystem::path &p)
 {
     return run_exe_(p.string());
 }

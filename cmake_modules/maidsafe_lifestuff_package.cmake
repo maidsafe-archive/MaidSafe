@@ -67,7 +67,7 @@ if(UNIX AND NOT APPLE)
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/lifestuff DESTINATION /usr/bin)
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/pd-vault DESTINATION /usr/bin)
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/invigilator RENAME  lifestuff-invigilator DESTINATION /usr/bin)
-  install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/lifestuff_client.desktop RENAME lifestuff.desktop DESTINATION /usr/share/application/)
+  install(FILES ${lifestuff_gui_SOURCE_DIR}/installer/linux/scripts/lifestuff_client.desktop RENAME lifestuff.desktop DESTINATION /usr/share/applications/)
   execute_process(
     COMMAND /usr/bin/dpkg --print-architecture
     OUTPUT_VARIABLE CPACK_DEBIAN_PACKAGE_ARCHITECTURE
