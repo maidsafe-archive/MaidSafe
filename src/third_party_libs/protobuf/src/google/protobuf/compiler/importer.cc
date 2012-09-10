@@ -415,7 +415,7 @@ io::ZeroCopyInputStream* DiskSourceTree::OpenVirtualFile(
     return NULL;
   }
 
-  for (int i = 0; i < mappings_.size(); i++) {
+  for (size_t i = 0; i < mappings_.size(); i++) {
     string temp_disk_file;
     if (ApplyMapping(virtual_file, mappings_[i].virtual_path,
                      mappings_[i].disk_path, &temp_disk_file)) {

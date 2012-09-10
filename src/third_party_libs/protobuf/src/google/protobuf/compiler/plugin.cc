@@ -133,7 +133,7 @@ int PluginMain(int argc, char* argv[], const CodeGenerator* generator) {
   CodeGeneratorResponse response;
   GeneratorResponseContext context(&response, parsed_files);
 
-  for (int i = 0; i < parsed_files.size(); i++) {
+  for (size_t i = 0; i < parsed_files.size(); i++) {
     const FileDescriptor* file = parsed_files[i];
 
     string error;

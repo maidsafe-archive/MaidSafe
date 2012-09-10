@@ -226,7 +226,7 @@ class FieldGroup {
 void OptimizePadding(vector<const FieldDescriptor*>* fields) {
   // First divide fields into those that align to 1 byte, 4 bytes or 8 bytes.
   vector<FieldGroup> aligned_to_1, aligned_to_4, aligned_to_8;
-  for (int i = 0; i < fields->size(); ++i) {
+  for (size_t i = 0; i < fields->size(); ++i) {
     switch (EstimateAlignmentSize((*fields)[i])) {
       case 1: aligned_to_1.push_back(FieldGroup(i, (*fields)[i])); break;
       case 4: aligned_to_4.push_back(FieldGroup(i, (*fields)[i])); break;
@@ -238,9 +238,9 @@ void OptimizePadding(vector<const FieldDescriptor*>* fields) {
 
   // Now group fields aligned to 1 byte into sets of 4, and treat those like a
   // single field aligned to 4 bytes.
-  for (int i = 0; i < aligned_to_1.size(); i += 4) {
+  for (size_t i = 0; i < aligned_to_1.size(); i += 4) {
     FieldGroup field_group;
-    for (int j = i; j < aligned_to_1.size() && j < i + 4; ++j) {
+    for (size_t j = i; j < aligned_to_1.size() && j < i + 4; ++j) {
       field_group.Append(aligned_to_1[j]);
     }
     aligned_to_4.push_back(field_group);
@@ -251,9 +251,9 @@ void OptimizePadding(vector<const FieldDescriptor*>* fields) {
 
   // Now group fields aligned to 4 bytes (or the 4-field groups created above)
   // into pairs, and treat those like a single field aligned to 8 bytes.
-  for (int i = 0; i < aligned_to_4.size(); i += 2) {
+  for (size_t i = 0; i < aligned_to_4.size(); i += 2) {
     FieldGroup field_group;
-    for (int j = i; j < aligned_to_4.size() && j < i + 2; ++j) {
+    for (size_t j = i; j < aligned_to_4.size() && j < i + 2; ++j) {
       field_group.Append(aligned_to_4[j]);
     }
     if (i == aligned_to_4.size() - 1) {
@@ -268,7 +268,7 @@ void OptimizePadding(vector<const FieldDescriptor*>* fields) {
 
   // Now pull out all the FieldDescriptors in order.
   fields->clear();
-  for (int i = 0; i < aligned_to_8.size(); ++i) {
+  for (size_t i = 0; i < aligned_to_8.size(); ++i) {
     fields->insert(fields->end(),
                    aligned_to_8[i].fields().begin(),
                    aligned_to_8[i].fields().end());
@@ -631,7 +631,7 @@ GenerateClassDefinition(io::Printer* printer) {
     fields.push_back(descriptor_->field(i));
   }
   OptimizePadding(&fields);
-  for (int i = 0; i < fields.size(); ++i) {
+  for (size_t i = 0; i < fields.size(); ++i) {
     field_generators_.get(fields[i]).GeneratePrivateMembers(printer);
   }
 
