@@ -18,9 +18,15 @@
 
 
 add_definitions(-DCOMPANY_NAME=maidsafe -DAPPLICATION_NAME=lifestuff)
-add_definitions(-DAPPLICATION_VERSION_MAJOR=0
-                -DAPPLICATION_VERSION_MINOR=09
-                -DAPPLICATION_VERSION_PATCH=00)
+
+set(APPLICATION_VERSION_MAJOR 0)
+set(APPLICATION_VERSION_MINOR 09)
+set(APPLICATION_VERSION_PATCH 00)
+
+add_definitions(-DAPPLICATION_VERSION_MAJOR=${APPLICATION_VERSION_MAJOR}
+                -DAPPLICATION_VERSION_MINOR=${APPLICATION_VERSION_MINOR}
+                -DAPPLICATION_VERSION_PATCH=${APPLICATION_VERSION_PATCH})
+
 add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_FILESYSTEM_VERSION=3)
 
 if(MSVC)
@@ -157,12 +163,12 @@ elseif(UNIX)
     add_definitions(-DDEBUG)
   endif()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -Wunused-parameter -Wno-system-headers -Wno-deprecated")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wwrite-strings -Wundef -D_FORTIFY_SOURCE=2")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wwrite-strings -Wundef")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wuninitialized -Wparentheses")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wfloat-equal -Wstrict-overflow -Wstrict-overflow=5 -Wredundant-decls")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -pedantic -pedantic-errors -Weffc++  ")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -ggdb ${COVERAGE_FLAGS}")
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG")
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG -D_FORTIFY_SOURCE=2")
   set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} ${COVERAGE_FLAGS}")
   unset(COVERAGE CACHE)
 endif()
