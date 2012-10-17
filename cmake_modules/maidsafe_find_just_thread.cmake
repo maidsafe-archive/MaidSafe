@@ -41,7 +41,8 @@ else()
         "E:/Program Files/JustSoftwareSolutions/JustThread"
         "C:/Program Files (x86)/JustSoftwareSolutions/JustThread"
         "D:/Program Files (x86)/JustSoftwareSolutions/JustThread"
-        "E:/Program Files (x86)/JustSoftwareSolutions/JustThread")
+        "E:/Program Files (x86)/JustSoftwareSolutions/JustThread"
+        "/usr")
 endif()
 
 if(MSVC)
@@ -57,9 +58,9 @@ else()
   set(JustThread_LIB_NAME_DEBUG "justthread")
 endif()
 
-find_library(JustThread_LIBRARY NAMES ${JustThread_LIB_NAME} PATHS ${JUST_THREAD_ROOT_DIR} PATH_SUFFIXES lib NO_DEFAULT_PATH)
-find_library(JustThread_LIBRARY_DEBUG NAMES ${JustThread_LIB_NAME_DEBUG} PATHS ${JUST_THREAD_ROOT_DIR} PATH_SUFFIXES lib NO_DEFAULT_PATH)
-find_path(JustThread_INCLUDE_DIR thread PATHS ${JUST_THREAD_ROOT_DIR} PATH_SUFFIXES include NO_DEFAULT_PATH)
+find_library(JustThread_LIBRARY NAMES ${JustThread_LIB_NAME} PATHS ${JUST_THREAD_ROOT_DIR} PATH_SUFFIXES lib  lib32 lib64 NO_DEFAULT_PATH)
+find_library(JustThread_LIBRARY_DEBUG NAMES ${JustThread_LIB_NAME_DEBUG} PATHS ${JUST_THREAD_ROOT_DIR} PATH_SUFFIXES lib lib32 lib64 NO_DEFAULT_PATH)
+find_path(JustThread_INCLUDE_DIR thread PATHS ${JUST_THREAD_ROOT_DIR} PATH_SUFFIXES include include/justthread  NO_DEFAULT_PATH)
 
 if(NOT JustThread_LIBRARY)
   set(ERROR_MESSAGE "\nCould not find just::thread.  NO just::thread LIBRARY - ")
