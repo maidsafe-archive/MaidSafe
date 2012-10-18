@@ -64,6 +64,11 @@ message("${HR}")
 include(cmake_modules/maidsafe_find_just_thread.cmake)
 
 
+# Find just::thread
+message("${HR}")
+include(cmake_modules/maidsafe_find_just_thread.cmake)
+
+
 add_subdirectory(src/third_party_libs)
 
 

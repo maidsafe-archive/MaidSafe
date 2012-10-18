@@ -246,7 +246,7 @@ _CPP_HEADERS = frozenset([
     'atomic', 'type_traits', 'chrono', 'initializer_list', 'tuple',
     'scoped_allocator', 'array', 'forward_list', 'unordered_set', 'unordered_map',
     'ratio', 'cfenv', 'codecvt', 'regex', 'thread', 'mutex', 'future', 'condition_variable',
-    'cstdint', 
+    'cstdint', 'system_error',
     ])
 
 
