@@ -27,7 +27,7 @@ unset(JustThread_LIBRARY CACHE)
 unset(JustThread_LIBRARY_DEBUG CACHE)
 unset(JustThread_FOUND CACHE)
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR UNIX)
   message(STATUS "Won't use just::thread in conjunction with Clang compiler.")
   return()
 endif()
