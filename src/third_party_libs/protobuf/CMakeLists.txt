@@ -15,7 +15,7 @@ if(WIN32)
 endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
-add_definitions(-D_CONSOLE )
+add_definitions(-D_CONSOLE)
 
 # library
 FILE(GLOB_RECURSE LIB_PROTBUF_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/*.cc")
@@ -37,8 +37,12 @@ add_executable(protoc ${PROTOC_DIR})
 set_target_properties(protobuf protoc PROPERTIES FOLDER "Third Party/Google Protocol Buffers")
 
 
-if( UNIX )
-  target_link_libraries(protoc -lpthread )
+if(UNIX)
+  target_link_libraries(protoc -lpthread)
 endif()
 
 target_link_libraries(protoc protobuf)
+
+if(JustThread_FOUND)
+  target_link_libraries(protobuf optimized ${JustThread_LIBRARY} debug ${JustThread_LIBRARY_DEBUG})
+endif()
