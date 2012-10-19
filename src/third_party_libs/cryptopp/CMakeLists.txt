@@ -99,6 +99,10 @@ add_custom_command(TARGET cryptest
 
 target_link_libraries(cryptest cryptopp)
 #target_link_libraries(TESTcryptopp cryptopp gtest)
+if(JustThread_FOUND)
+  target_link_libraries(cryptest optimized ${JustThread_LIBRARY} debug ${JustThread_LIBRARY_DEBUG})
+#  target_link_libraries(TESTcryptopp optimized ${JustThread_LIBRARY} debug ${JustThread_LIBRARY_DEBUG})
+endif()
 
 if(UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")

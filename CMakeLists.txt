@@ -50,6 +50,19 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 # set(MAIDSAFE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/${COMPILER}/installed" )
 # set(MAIDSAFE_INCLUDE_DIR "${MAIDSAFE_INSTALL_PREFIX}/include")
 
+if(APPLE)
+  if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    set(ErrorMsg "\nThe Default Compiler is not setup as Clang.  ")
+    set(ErrorMsg "${ErrorMsg}Please run\n    ")
+    set(ErrorMsg "${ErrorMsg}export CC=/usr/bin/clang\n    export CXX=/usr/bin/clang++")
+    message(FATAL_ERROR ${ErrorMsg})
+  endif()
+endif()
+
+# Find just::thread
+message("${HR}")
+include(cmake_modules/maidsafe_find_just_thread.cmake)
+
 
 add_subdirectory(src/third_party_libs)
 
