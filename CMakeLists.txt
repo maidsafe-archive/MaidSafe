@@ -133,4 +133,5 @@ message("${HR}")
 
 cleanup_temp_dir()
 
+unset(MAKECOMMAND CACHE)
 include(CTest)
