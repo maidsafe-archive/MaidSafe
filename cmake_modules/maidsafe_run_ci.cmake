@@ -292,6 +292,7 @@ foreach(EACH_MODULE ${ALL_MODULE_LIST})
       )
   if(${ret_var} EQUAL 0)
     set(${EACH_MODULE}_CURRENT_COMMIT ${out_var})
+    string(REPLACE "\n" "" ${EACH_MODULE}_CURRENT_COMMIT "${${EACH_MODULE}_CURRENT_COMMIT}")
     execute_process(WORKING_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY}
         COMMAND ${Git_EXECUTABLE} log -1 --format="Hash: %H%nAuthor: %an%nCommitter: %cn%nCommit Message: %s"
         RESULT_VARIABLE ret_var
@@ -320,6 +321,7 @@ foreach(EACH_MODULE ${ALL_MODULE_LIST})
       )
     if(${ret_var} EQUAL 0)
       set(${EACH_MODULE}_NEW_COMMIT ${out_var})
+      string(REPLACE "\n" "" ${EACH_MODULE}_NEW_COMMIT "${${EACH_MODULE}_NEW_COMMIT}")
       execute_process(WORKING_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY}
           COMMAND ${Git_EXECUTABLE} log -1 --format="Hash: %H%nAuthor: %an%nCommitter: %cn%nCommit Message: %s"
           RESULT_VARIABLE ret_var
