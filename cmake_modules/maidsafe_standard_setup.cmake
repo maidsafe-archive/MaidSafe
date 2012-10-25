@@ -130,6 +130,7 @@ if(UNIX)
   set(MEMORYCHECK_COMMAND_OPTIONS "--tool=memcheck --quiet --verbose --trace-children=yes --demangle=yes --num-callers=50 --show-below-main=yes --leak-check=full --show-reachable=yes --track-origins=yes --gen-suppressions=all")
 endif()
 
+unset(MAKECOMMAND CACHE)
 include(CTest)
 include(maidsafe_add_gtests)
 
