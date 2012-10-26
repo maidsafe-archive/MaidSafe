@@ -246,7 +246,7 @@ message("=======================================================================
 
 foreach(EACH_MODULE ${ALL_MODULE_LIST})
   set(${EACH_MODULE}_SOURCE_DIRECTORY ${CTEST_SCRIPT_DIRECTORY}/../src/${${EACH_MODULE}})
-  set(${EACH_MODULE}_BINARY_DIRECTORY ${CTEST_SCRIPT_DIRECTORY}/../build/src/${${EACH_MODULE}})
+  set(${EACH_MODULE}_BINARY_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/${${EACH_MODULE}})
 
   if(NOT EXISTS ${${EACH_MODULE}_SOURCE_DIRECTORY})
     message(FATAL_ERROR "Unable to find ${EACH_MODULE} source directory: ${${EACH_MODULE}_SOURCE_DIRECTORY}")
@@ -369,7 +369,7 @@ foreach(EACH_MODULE ${ALL_MODULE_LIST})
 
     CTEST_START(${DASHBOARD_MODEL} TRACK ${DASHBOARD_MODEL})
     CTEST_READ_CUSTOM_FILES(${CTEST_BINARY_DIRECTORY})
-    CTEST_CONFIGURE(BUILD "${CTEST_SCRIPT_DIRECTORY}/../build" SOURCE "${CTEST_SCRIPT_DIRECTORY}/..")
+    CTEST_CONFIGURE(BUILD "${CMAKE_CURRENT_BINARY_DIR}" SOURCE "${CTEST_SCRIPT_DIRECTORY}/.." OPTIONS "-DCI_BUILD_ENVIRONMENT=TRUE -DCLEAN_TEMP=ALWAYS")
     CTEST_BUILD()
     CTEST_TEST()
 
@@ -380,20 +380,22 @@ foreach(EACH_MODULE ${ALL_MODULE_LIST})
     string(REGEX REPLACE "[A-Za-z]+" "" TagId "${TagFileContents}")
 
     #Modify XML Files on Windows for Machine Build-Type x64
-    if(WIN32 AND ${MACHINE_BUILD_TYPE} STREQUAL "x64")
-      set(XML_FILES
-              "Configure.xml"
-              "Build.xml"
-              "Test.xml"
-              )
-      foreach(XML_FILE ${XML_FILES})
-        unset(ModFile CACHE)
-        unset(ModFileContents CACHE)
-        find_file(ModFile NAMES ${XML_FILE} PATHS ${CTEST_BINARY_DIRECTORY}/Testing/${TagId} NO_DEFAULT_PATH)
-        file(READ ${ModFile} ModFileContents)
-        string(REPLACE "OSPlatform=\"x86\"" "OSPlatform=\"${MACHINE_BUILD_TYPE}\"" ModFileContents "${ModFileContents}")
-        file(WRITE ${ModFile} "${ModFileContents}")
-      endforeach()
+    if(WIN32)
+      if(${MACHINE_BUILD_TYPE} STREQUAL "x64")
+        set(XML_FILES
+                "Configure.xml"
+                "Build.xml"
+                "Test.xml"
+                )
+        foreach(XML_FILE ${XML_FILES})
+          unset(ModFile CACHE)
+          unset(ModFileContents CACHE)
+          find_file(ModFile NAMES ${XML_FILE} PATHS ${CTEST_BINARY_DIRECTORY}/Testing/${TagId} NO_DEFAULT_PATH)
+          file(READ ${ModFile} ModFileContents)
+          string(REPLACE "OSPlatform=\"x86\"" "OSPlatform=\"${MACHINE_BUILD_TYPE}\"" ModFileContents "${ModFileContents}")
+          file(WRITE ${ModFile} "${ModFileContents}")
+        endforeach()
+      endif()
     endif()
 
     # Write Git-Update Details To File
