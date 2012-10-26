@@ -380,20 +380,22 @@ foreach(EACH_MODULE ${ALL_MODULE_LIST})
     string(REGEX REPLACE "[A-Za-z]+" "" TagId "${TagFileContents}")
 
     #Modify XML Files on Windows for Machine Build-Type x64
-    if(WIN32 AND ${MACHINE_BUILD_TYPE} STREQUAL "x64")
-      set(XML_FILES
-              "Configure.xml"
-              "Build.xml"
-              "Test.xml"
-              )
-      foreach(XML_FILE ${XML_FILES})
-        unset(ModFile CACHE)
-        unset(ModFileContents CACHE)
-        find_file(ModFile NAMES ${XML_FILE} PATHS ${CTEST_BINARY_DIRECTORY}/Testing/${TagId} NO_DEFAULT_PATH)
-        file(READ ${ModFile} ModFileContents)
-        string(REPLACE "OSPlatform=\"x86\"" "OSPlatform=\"${MACHINE_BUILD_TYPE}\"" ModFileContents "${ModFileContents}")
-        file(WRITE ${ModFile} "${ModFileContents}")
-      endforeach()
+    if(WIN32)
+      if(${MACHINE_BUILD_TYPE} STREQUAL "x64")
+        set(XML_FILES
+                "Configure.xml"
+                "Build.xml"
+                "Test.xml"
+                )
+        foreach(XML_FILE ${XML_FILES})
+          unset(ModFile CACHE)
+          unset(ModFileContents CACHE)
+          find_file(ModFile NAMES ${XML_FILE} PATHS ${CTEST_BINARY_DIRECTORY}/Testing/${TagId} NO_DEFAULT_PATH)
+          file(READ ${ModFile} ModFileContents)
+          string(REPLACE "OSPlatform=\"x86\"" "OSPlatform=\"${MACHINE_BUILD_TYPE}\"" ModFileContents "${ModFileContents}")
+          file(WRITE ${ModFile} "${ModFileContents}")
+        endforeach()
+      endif()
     endif()
 
     # Write Git-Update Details To File
