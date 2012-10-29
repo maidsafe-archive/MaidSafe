@@ -14,6 +14,9 @@
 #                                                                              #
 #  Module used to locate the just::thread include directories and libraries.   #
 #                                                                              #
+#  To enable checked libraries, set the following variable to ON:              #
+#    JUST_THREAD_DEADLOCK_CHECK                                                #
+#                                                                              #
 #  Variables set and cached by this module are:                                #
 #    JustThread_INCLUDE_DIR, JustThread_LIBRARY_DIR, JustThread_LIBRARY,       #
 #    JustThread_LIBRARY_DEBUG, and JustThread_FOUND.                           #
@@ -48,14 +51,26 @@ endif()
 if(MSVC)
   if(CMAKE_CL_64)
     set(JustThread_LIB_NAME "justthread_vc11x64_md")
-    set(JustThread_LIB_NAME_DEBUG "justthread_vc11x64_mdd")
+    if(JUST_THREAD_DEADLOCK_CHECK)
+      set(JustThread_LIB_NAME_DEBUG "justthread_check_vc11x64_mdd")
+    else()
+      set(JustThread_LIB_NAME_DEBUG "justthread_vc11x64_mdd")
+    endif()
   else()
     set(JustThread_LIB_NAME "justthread_vc11_md")
-    set(JustThread_LIB_NAME_DEBUG "justthread_vc11_mdd")
+    if(JUST_THREAD_DEADLOCK_CHECK)
+      set(JustThread_LIB_NAME_DEBUG "justthread_check_vc11_mdd")
+    else()
+      set(JustThread_LIB_NAME_DEBUG "justthread_vc11_mdd")
+    endif()
   endif()
 else()
   set(JustThread_LIB_NAME "justthread")
-  set(JustThread_LIB_NAME_DEBUG "justthread")
+  if(JUST_THREAD_DEADLOCK_CHECK)
+    set(JustThread_LIB_NAME_DEBUG "justthread_check")
+  else()
+    set(JustThread_LIB_NAME_DEBUG "justthread")
+  endif()
 endif()
 
 find_library(JustThread_LIBRARY NAMES ${JustThread_LIB_NAME} PATHS ${JUST_THREAD_ROOT_DIR} PATH_SUFFIXES lib  lib32 lib64 NO_DEFAULT_PATH)
