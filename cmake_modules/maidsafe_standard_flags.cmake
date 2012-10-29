@@ -100,7 +100,7 @@ if(MSVC)
   #      Gy (allows the compiler to package individual functions in the form of
   #          packaged functions)
   # GL - Whole program optimisation
-  # MT - Use the multithread, static version of the C run-time library.
+  # MD - Use the multithread, dynamic version of the C run-time library.
   set(CMAKE_CXX_FLAGS_RELEASE "/O2 /GL /D \"NDEBUG\" /MD")
 
   # Zi -   Produce a program database (.pdb) that contains type information and
@@ -108,7 +108,7 @@ if(MSVC)
   # Od -   No optimizations in the program (speeds compilation).
   # RTC1 - Enables stack frame run-time error checking and checking for
   #        unintialised variables.
-  # MTd -  Use the debug multithread, static version of the C run-time library.
+  # MDd -  Use the debug multithread, dynamic version of the C run-time library.
   set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /D \"_DEBUG\" /D \"DEBUG\" /RTC1 /MDd")
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MDd")
