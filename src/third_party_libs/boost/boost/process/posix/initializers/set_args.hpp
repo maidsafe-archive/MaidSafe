@@ -8,23 +8,23 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- * \file boost/process/posix/initializers/set_cmd_line.hpp
+ * \file boost/process/posix/initializers/set_args.hpp
  *
- * Defines an initializer to set the command line.
+ * Defines an initializer to set the command line arguments.
  */
 
-#ifndef BOOST_PROCESS_POSIX_INITIALIZERS_SET_CMD_LINE_HPP
-#define BOOST_PROCESS_POSIX_INITIALIZERS_SET_CMD_LINE_HPP
+#ifndef BOOST_PROCESS_POSIX_INITIALIZERS_SET_ARGS_HPP
+#define BOOST_PROCESS_POSIX_INITIALIZERS_SET_ARGS_HPP
 
 #include <boost/process/posix/initializers/initializer_base.hpp>
-#include <boost/tokenizer.hpp>
+#include <boost/range/algorithm/transform.hpp>
 #include <boost/shared_array.hpp>
 #include <string>
-#include <vector>
 
 namespace boost { namespace process { namespace posix { namespace initializers {
 
-class set_cmd_line : public initializer_base
+template <class Range>
+class set_args_ : public initializer_base
 {
 private:
     static char *c_str(const std::string &s)
@@ -33,27 +33,28 @@ private:
     }
 
 public:
-    explicit set_cmd_line(const std::string &s)
+    explicit set_args_(const Range &args)
     {
-        typedef boost::tokenizer<boost::escaped_list_separator<char> > tokenizer;
-        boost::escaped_list_separator<char> sep('\\', ' ', '\"');
-        tokenizer tok(s, sep);
-        args_.assign(tok.begin(), tok.end());
-        cmd_line_.reset(new char*[args_.size() + 1]);
-        boost::transform(args_, cmd_line_.get(), c_str);
-        cmd_line_[args_.size()] = 0;
+        args_.reset(new char*[args.size() + 1]);
+        boost::transform(args, args_.get(), c_str);
+        args_[args.size()] = 0;
     }
 
     template <class PosixExecutor>
     void on_exec_setup(PosixExecutor &e) const
     {
-        e.cmd_line = cmd_line_.get();
+        e.cmd_line = args_.get();
     }
 
 private:
-    std::vector<std::string> args_;
-    boost::shared_array<char*> cmd_line_;
+    boost::shared_array<char*> args_;
 };
+
+template <class Range>
+set_args_<Range> set_args(const Range &range)
+{
+    return set_args_<Range>(range);
+}
 
 }}}}
 

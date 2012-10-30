@@ -35,7 +35,7 @@ template <class Predicate>
 class close_fds_if_ : public initializer_base
 {
 private:
-    void close(int fd) const
+    static void close(int fd)
     {
         ::fcntl(fd, F_SETFD, FD_CLOEXEC);
     }

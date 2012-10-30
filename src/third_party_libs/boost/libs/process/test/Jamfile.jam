@@ -16,6 +16,8 @@ project : requirements
   <target-os>linux:<linkflags>-lpthread
 ;
 
+searched-lib shell32 ;
+
 import testing ;
 
 exe sparring_partner : sparring_partner.cpp /boost//program_options /boost//filesystem /boost//iostreams ;
@@ -35,11 +37,17 @@ run posix_specific.cpp /boost//iostreams : : sparring_partner : <build>no <targe
 run run_exe.cpp : : sparring_partner ;
 run run_exe_path.cpp /boost//filesystem : : sparring_partner ;
 run run_exe_wstring.cpp /boost//filesystem : : sparring_partner : <build>no <target-os>windows:<build>yes ;
+run search_path.cpp /boost//filesystem : : : <target-os>windows:<source>shell32 ;
+run search_path_wstring.cpp /boost//filesystem shell32 : : : <build>no <target-os>windows:<build>yes ;
+run set_args.cpp /boost//iostreams : : sparring_partner ;
+run set_args_wstring.cpp /boost//iostreams /boost//filesystem : : sparring_partner : <build>no <target-os>windows:<build>yes ;
 run set_cmd_line.cpp /boost//iostreams : : sparring_partner ;
 run set_cmd_line_wstring.cpp /boost//iostreams /boost//filesystem : : sparring_partner : <build>no <target-os>windows:<build>yes ;
 run set_env.cpp /boost//iostreams : : sparring_partner ;
 run set_env_wstring.cpp /boost//iostreams /boost//filesystem : : sparring_partner : <build>no <target-os>windows:<build>yes ;
 run set_on_error.cpp : : sparring_partner ;
+run shell_path.cpp /boost//filesystem ;
+run shell_path_wstring.cpp /boost//filesystem : : : <build>no <target-os>windows:<build>yes ;
 run show_window.cpp /boost//iostreams : : sparring_partner : <build>no <target-os>windows:<build>yes ;
 run start_in_dir.cpp /boost//iostreams /boost//filesystem : : sparring_partner ;
 run start_in_dir_wstring.cpp /boost//iostreams /boost//filesystem : : sparring_partner : <build>no <target-os>windows:<build>yes ;

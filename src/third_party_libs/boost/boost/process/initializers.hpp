@@ -353,7 +353,31 @@ public:
 };
 
 /**
+ * Sets the command line arguments.
+ *
+ * Use \c set_cmd_line if you don't want to pass a collection of
+ * command line arguments but set the command line as one string.
+ */
+class set_args : public initializer_base
+{
+public:
+    /**
+     * Constructor.
+     *
+     * On Windows \c range_type must be a <tt>std::string</tt>-range.
+     * If Unicode is used, \c range_type must be a
+     * <tt>std::wstring</tt>-range.
+     *
+     * On POSIX \c range_type must be a <tt>std::string</tt>-range.
+     */
+    explicit set_args(const range_type &r);
+};
+
+/**
  * Sets the command line.
+ *
+ * Use \c set_args if you don't want to set the command line as
+ * one string but pass a collection of command line arguments.
  */
 class set_cmd_line : public initializer_base
 {

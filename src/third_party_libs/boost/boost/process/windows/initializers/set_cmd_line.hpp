@@ -26,9 +26,12 @@ namespace boost { namespace process { namespace windows { namespace initializers
 template <class String>
 class set_cmd_line_ : public initializer_base
 {
+private:
+    typedef typename String::value_type Char;
+
 public:
     explicit set_cmd_line_(const String &s)
-        : cmd_line_(new typename String::value_type[s.size() + 1])
+        : cmd_line_(new Char[s.size() + 1])
     {
         boost::copy(s, cmd_line_.get());
         cmd_line_[s.size()] = 0;
@@ -41,7 +44,7 @@ public:
     }
 
 private:
-    boost::shared_array<typename String::value_type> cmd_line_;
+    boost::shared_array<Char> cmd_line_;
 };
 
 #if defined(_UNICODE) || defined(UNICODE)

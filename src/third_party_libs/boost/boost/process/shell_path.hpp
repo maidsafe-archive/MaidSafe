@@ -8,39 +8,37 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- * \file boost/process/create_pipe.hpp
+ * \file boost/process/shell_path.hpp
  *
- * Defines a function to create a pipe.
+ * Defines a function to return the absolute path to a shell executable.
  */
 
-#ifndef BOOST_PROCESS_CREATE_PIPE_HPP
-#define BOOST_PROCESS_CREATE_PIPE_HPP
+#ifndef BOOST_PROCESS_SHELL_PATH_HPP
+#define BOOST_PROCESS_SHELL_PATH_HPP
 
 #include <boost/process/config.hpp>
 
-#include BOOST_PROCESS_PLATFORM_PROMOTE_PATH(create_pipe)
-BOOST_PROCESS_PLATFORM_PROMOTE_NAMESPACE(create_pipe)
+#include BOOST_PROCESS_PLATFORM_PROMOTE_PATH(shell_path)
+BOOST_PROCESS_PLATFORM_PROMOTE_NAMESPACE(shell_path)
 
 #if defined(BOOST_PROCESS_DOXYGEN)
 namespace boost { namespace process {
 
 /**
- * Creates an anonymous pipe.
+ * Returns the absolute path to a shell executable.
  *
- * \note On Windows anonymous pipes don't support
- *       asynchronous I/O.
+ * \returns the path to cmd.exe on Windows and /bin/sh on POSIX.
  *
  * \throws boost::system::system_error in case of an error
  */
-pipe create_pipe();
+boost::filesystem::path shell_path();
 
 /**
- * Creates an anonymous pipe.
+ * Returns the absolute path to a shell executable.
  *
- * \note On Windows anonymous pipes don't support
- *       asynchronous I/O.
+ * \returns the path to cmd.exe on Windows and /bin/sh on POSIX.
  */
-pipe create_pipe(boost::system::error_code &ec);
+boost::filesystem::path shell_path(boost::system::error_code &ec);
 
 }}
 #endif

@@ -16,6 +16,7 @@ project : requirements
 
 import testing ;
 
+compile args.cpp ;
 compile async_io.cpp ;
 compile cleanup.cpp ;
 compile cmd_line.cpp ;

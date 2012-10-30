@@ -39,6 +39,8 @@ You can refer to programs in other directories with an absolute or relative path
 
 [execute_path]
 
+Boost.Process provides two utility functions to lookup executables: Call [funcref boost::process::search_path search_path] if you want to find an executable in the directories of the environment variable PATH. Or call [funcref boost::process::shell_path shell_path] for the system's shell.
+
 [endsect]
 
 [section Cleaning up resources]
@@ -84,7 +86,14 @@ Use the initializer [classref boost::process::initializers::set_cmd_line set_cmd
 
 You can use [classref boost::process::initializers::set_cmd_line set_cmd_line] to set a command line like you would do if you started the program in the shell. Just like in the shell you must start the command line with the name of the program.
 
-[note If you don't use [classref boost::process::initializers::set_cmd_line set_cmd_line] the path you pass to [classref boost::process::initializers::run_exe run_exe] is forwarded as the only argument to a program. That is the argument which is accessible through `argv[0]` (assuming `argv` is the name of the parameter in `main`).]
+Alternatively use the initializer [classref boost::process::initializers::set_args set_args] to pass a collection of command line arguments:
+
+[import ../example/args.cpp]
+[args]
+
+[classref boost::process::initializers::set_args set_args] escapes command line arguments if they contain a space.
+
+[note If you don't use [classref boost::process::initializers::set_cmd_line set_cmd_line] or [classref boost::process::initializers::set_args set_args] the path you pass to [classref boost::process::initializers::run_exe run_exe] is forwarded as the only argument to a program. That is the argument which is accessible through `argv[0]` (assuming `argv` is the name of the parameter in `main`).]
 
 [endsect]
 

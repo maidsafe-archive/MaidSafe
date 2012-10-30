@@ -22,6 +22,8 @@
 #include <boost/process/executor.hpp>
 #include <boost/process/initializers.hpp>
 #include <boost/process/pipe.hpp>
+#include <boost/process/search_path.hpp>
+#include <boost/process/shell_path.hpp>
 #include <boost/process/terminate.hpp>
 #include <boost/process/wait_for_exit.hpp>
 
