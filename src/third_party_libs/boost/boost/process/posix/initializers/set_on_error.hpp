@@ -60,11 +60,10 @@ public:
         if (!ec_)
         {
             ::close(fds_[1]);
-            char buffer[sizeof(int)];
-            if (::read(fds_[0], buffer, sizeof(int)) > 0)
+            int code;
+            if (::read(fds_[0], &code, sizeof(int)) > 0)
             {
-                ec_ = boost::system::error_code(
-                    *reinterpret_cast<int*>(buffer),
+                ec_ = boost::system::error_code(code,
                     boost::system::system_category());
             }
             ::close(fds_[0]);
@@ -85,7 +84,9 @@ public:
     {
         if (!ec_)
         {
-            ::write(fds_[1], &errno, sizeof(int));
+            int e = errno;
+            while (::write(fds_[1], &e, sizeof(int)) == -1 && errno == EINTR)
+                ;
             ::close(fds_[1]);
         }
     }

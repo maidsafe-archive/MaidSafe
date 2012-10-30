@@ -60,12 +60,12 @@ public:
     void on_fork_success(PosixExecutor&) const
     {
         ::close(fds_[1]);
-        char buffer[sizeof(int)];
-        if (::read(fds_[0], buffer, sizeof(int)) > 0)
+        int code;
+        if (::read(fds_[0], &code, sizeof(int)) > 0)
         {
             ::close(fds_[0]);
             BOOST_PROCESS_THROW(boost::system::system_error(
-                boost::system::error_code(*reinterpret_cast<int*>(buffer),
+                boost::system::error_code(code,
                 boost::system::system_category()),
                 BOOST_PROCESS_SOURCE_LOCATION "execve(2) failed"));
         }
@@ -81,7 +81,9 @@ public:
     template <class PosixExecutor>
     void on_exec_error(PosixExecutor&) const
     {
-        ::write(fds_[1], &errno, sizeof(int));
+        int e = errno;
+        while (::write(fds_[1], &e, sizeof(int)) == -1 && errno == EINTR)
+            ;
         ::close(fds_[1]);
     }
 

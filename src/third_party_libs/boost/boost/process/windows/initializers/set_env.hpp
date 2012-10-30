@@ -31,19 +31,21 @@ template <class Range, bool Unicode>
 class set_env_ : public initializer_base
 {
 private:
-    static std::size_t add_size(std::size_t size,
-        const typename Range::value_type &s)
+    typedef typename Range::value_type String;
+    typedef typename String::value_type Char;
+
+    static std::size_t add_size(std::size_t size, const String &s)
     {
         return size + s.size() + 1u;
     }
 
     struct copy
     {
-        typename Range::value_type::value_type *it_;
+        Char *it_;
 
-        copy(typename Range::value_type::value_type *it) : it_(it) {}
+        copy(Char *it) : it_(it) {}
 
-        void operator()(const typename Range::value_type &s)
+        void operator()(const String &s)
         {
             it_ = boost::copy(s, it_);
             *it_ = 0;
@@ -54,7 +56,7 @@ private:
 public:
     set_env_(const Range &envs)
         : size_(boost::accumulate(envs, 0, add_size) + 1),
-        env_(new typename Range::value_type::value_type[size_])
+        env_(new Char[size_])
     {
         boost::for_each(envs, copy(env_.get()));
         env_[size_ - 1] = 0;
@@ -70,7 +72,7 @@ public:
 
 private:
     std::size_t size_;
-    boost::shared_array<typename Range::value_type::value_type> env_;
+    boost::shared_array<Char> env_;
 };
 
 #if defined(_UNICODE) || defined(UNICODE)

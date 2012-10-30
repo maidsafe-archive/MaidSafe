@@ -8,27 +8,29 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- * \file boost/process/posix/pipe.hpp
+ * \file boost/process/posix/shell_path.hpp
  *
- * Defines a pipe.
+ * Defines a function to return the absolute path to a shell executable.
  */
 
-#ifndef BOOST_PROCESS_POSIX_PIPE_HPP
-#define BOOST_PROCESS_POSIX_PIPE_HPP
+#ifndef BOOST_PROCESS_POSIX_SHELL_PATH_HPP
+#define BOOST_PROCESS_POSIX_SHELL_PATH_HPP
+
+#include <boost/process/config.hpp>
+#include <boost/system/error_code.hpp>
+#include <boost/filesystem/path.hpp>
 
 namespace boost { namespace process { namespace posix {
 
-struct pipe
+inline boost::filesystem::path shell_path()
 {
-    int source;
-    int sink;
+    return "/bin/sh";
+}
 
-    pipe(int source, int sink) : source(source), sink(sink) {}
-};
-
-inline pipe make_pipe(int source, int sink)
+inline boost::filesystem::path shell_path(boost::system::error_code &ec)
 {
-    return pipe(source, sink);
+    ec.clear();
+    return "/bin/sh";
 }
 
 }}}
