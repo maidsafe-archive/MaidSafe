@@ -44,6 +44,7 @@ Thumbs.db
 ~.swp
 *.kdev*
 *desktop.ini
+*maidsafe_log.ini
 
 # build dir(s) #
 ###############

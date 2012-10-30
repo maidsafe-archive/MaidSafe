@@ -18,7 +18,8 @@
 # update variables in the function scope.
 macro(fix_default_compiler_settings_)
   include(${maidsafe_SOURCE_DIR}/cmake_modules/maidsafe_standard_flags.cmake)
-#   if (MSVC)
+  if (MSVC)
+    string(REGEX REPLACE "/GL " "" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
 #     # For MSVC, CMake sets certain flags to defaults we want to override.
 #     # This replacement code is taken from sample in the CMake Wiki at
 #     # http://www.cmake.org/Wiki/CMake_FAQ#Dynamic_Replace.
@@ -42,7 +43,7 @@ macro(fix_default_compiler_settings_)
 #       # Replaces /W3 with /W4 in defaults.
 #       string(REPLACE "/W3" "-W4" ${flag_var} "${${flag_var}}")
 #     endforeach()
-#   endif()
+   endif()
 endmacro()
 
 # Defines the compiler/linker flags used to build Google Test and

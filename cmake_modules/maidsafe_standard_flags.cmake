@@ -100,7 +100,7 @@ if(MSVC)
   #      Gy (allows the compiler to package individual functions in the form of
   #          packaged functions)
   # GL - Whole program optimisation
-  # MT - Use the multithread, static version of the C run-time library.
+  # MD - Use the multithread, dynamic version of the C run-time library.
   set(CMAKE_CXX_FLAGS_RELEASE "/O2 /GL /D \"NDEBUG\" /MD")
 
   # Zi -   Produce a program database (.pdb) that contains type information and
@@ -108,10 +108,14 @@ if(MSVC)
   # Od -   No optimizations in the program (speeds compilation).
   # RTC1 - Enables stack frame run-time error checking and checking for
   #        unintialised variables.
-  # MTd -  Use the debug multithread, static version of the C run-time library.
+  # MDd -  Use the debug multithread, dynamic version of the C run-time library.
   set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /D \"_DEBUG\" /D \"DEBUG\" /RTC1 /MDd")
   set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MDd")
+  if(JUST_THREAD_DEADLOCK_CHECK)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D \"_JUST_THREAD_DEADLOCK_CHECK\"")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /D \"_JUST_THREAD_DEADLOCK_CHECK\"")
+  endif()
 
   set_target_properties(${ALL_LIBRARIES} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
 
@@ -170,6 +174,9 @@ elseif(UNIX)
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -ggdb ${COVERAGE_FLAGS}")
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG -D_FORTIFY_SOURCE=2")
   set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} ${COVERAGE_FLAGS}")
+  if(JUST_THREAD_DEADLOCK_CHECK)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_JUST_THREAD_DEADLOCK_CHECK")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -D_JUST_THREAD_DEADLOCK_CHECK")
+  endif()
   unset(COVERAGE CACHE)
 endif()
-

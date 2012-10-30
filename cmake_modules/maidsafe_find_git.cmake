@@ -28,7 +28,7 @@ unset(Git_EXECUTABLE CACHE)
 if(GIT_ROOT_DIR)
   set(GIT_ROOT_DIR ${GIT_ROOT_DIR} CACHE PATH "Path to Git directory" FORCE)
 else()
-  set(GIT_ROOT_DIR "C:/Program Files/Git" "D:/Program Files/Git" "usr" "usr/local")
+  set(GIT_ROOT_DIR "C:/Program Files/Git" "C:/Program Files (x86)/Git" "D:/Program Files/Git" "usr" "usr/local")
 endif()
 
 set(GIT_PATH_SUFFIXES cmd bin)
