@@ -131,5 +131,10 @@ else()
   set(INCLUDE_DIRS ${INCLUDE_DIRS} ${JustThread_INCLUDE_DIR})
 endif()
 
+if(UNIX)
+  set(JustThread_LIBRARY ${JustThread_LIBRARY} rt)
+  set(JustThread_LIBRARY_DEBUG ${JustThread_LIBRARY_DEBUG} rt)
+endif()
+
 message(STATUS "Found library ${JustThread_LIBRARY}")
 message(STATUS "Found library ${JustThread_LIBRARY_DEBUG}")
