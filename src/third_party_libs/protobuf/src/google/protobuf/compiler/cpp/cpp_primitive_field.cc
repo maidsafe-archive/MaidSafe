@@ -267,7 +267,7 @@ GenerateSwappingCode(io::Printer* printer) const {
 }
 
 void RepeatedPrimitiveFieldGenerator::
-GenerateConstructorCode(io::Printer* printer) const {
+GenerateConstructorCode(io::Printer* /* printer */) const {
   // Not needed for repeated fields.
 }
 

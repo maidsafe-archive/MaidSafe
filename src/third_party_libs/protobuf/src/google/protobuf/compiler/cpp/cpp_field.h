@@ -82,7 +82,7 @@ class FieldGenerator {
   // placed somewhere in the .cc file.
   // Most field types don't need this, so the default implementation is empty.
   virtual void GenerateNonInlineAccessorDefinitions(
-    io::Printer* printer) const {}
+    io::Printer* /* printer */) const {}
 
   // Generate lines of code (statements, not declarations) which clear the
   // field.  This is used to define the clear_$name$() method as well as
@@ -112,7 +112,7 @@ class FieldGenerator {
   // Generate any code that needs to go in the class's SharedDtor() method,
   // invoked by the destructor.
   // Most field types don't need this, so the default implementation is empty.
-  virtual void GenerateDestructorCode(io::Printer* printer) const {}
+  virtual void GenerateDestructorCode(io::Printer* /* printer */) const {}
 
   // Generate lines to decode this field, which will be placed inside the
   // message's MergeFromCodedStream() method.
