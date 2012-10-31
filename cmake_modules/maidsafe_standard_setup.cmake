@@ -108,7 +108,7 @@ if(UNIX)
   set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /usr/lib/i386-linux-gnu/ /usr/lib/x86_64-linux-gnu/ /usr/lib/)
   set(CMAKE_THREAD_PREFER_PTHREAD true)
   find_package(Threads REQUIRED)
-  set(SYS_LIB ${CMAKE_THREAD_LIBS_INIT})
+  set(SYS_LIB ${CMAKE_THREAD_LIBS_INIT} rt)
 endif()
 
 
