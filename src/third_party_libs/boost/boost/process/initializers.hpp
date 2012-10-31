@@ -459,7 +459,7 @@ public:
      * On POSIX \c string_type must be <tt>const char*</tt>,
      * <tt>std::string</tt> or <tt>boost::filesystem::path</tt>.
      */
-    explicit start_in_dir_(const string_type &s);
+    explicit start_in_dir(const string_type &s);
 };
 
 /**
