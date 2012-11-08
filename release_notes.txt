@@ -1,0 +1,37 @@
+OS tested:
+--------------
+	Windows7
+
+
+
+Services:
+--------------
+	Lifestuff Manager - success, listening on 127.0.0.1:5483
+
+
+
+Process check: 
+--------------
+	Install - 	files installed to 	C:\Program Files (x86)\maidsafe\lifestuff
+						C:\ProgramData\maidsafe\lifestuff
+						C:\Users\<user>\.lifestuff
+			
+			3rd party library installation cannot be verified at this stage.
+			Client running on reboot.
+
+
+	Create User - 	new user cannot be created, processes subsequent to successful login cannot be tested.
+
+	
+	Update - 	new version found and retrieved.
+
+	
+	Uninstall - 	Lifestuff manager service stopped.
+			files removed from 	C:\Program Files (x86)\maidsafe
+						C:\ProgramData\maidsafe
+			files not removed from 	C:\Users\<user>\.lifestuff
+
+
+
+
+Git tag (0.1.001) not applied at this stage as code changes are required to allow new format to correspond to version in executable file.
