@@ -59,6 +59,12 @@ if(APPLE)
   endif()
 endif()
 
+
+# Get target platform details
+include(cmake_modules/maidsafe_utils.cmake)
+get_target_platform()
+get_target_architecture()
+
 # Find just::thread
 message("${HR}")
 include(cmake_modules/maidsafe_find_just_thread.cmake)
