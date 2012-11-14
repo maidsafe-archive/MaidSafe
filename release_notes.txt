@@ -1,56 +1,41 @@
-Monday 12/11/2012
+Tuesday 13/11/2012
+
+!!! Version 0.1.001
 
 Installation
 ------------
-OS tested: Windows7
+OS tested: Windows 7 32 & 64 bits
 
 Services: Lifestuff Manager - success, listening on 127.0.0.1:5483
 
 Process with installation check on Windows 7:
 	Install - 	files installed to 	C:\Program Files (x86)\maidsafe\lifestuff
-						C:\ProgramData\maidsafe\lifestuff
-						C:\Users\<user>\.lifestuff
-			
-			3rd party library installation cannot be verified at this stage.
-			Client running on reboot.
+						                      C:\ProgramData\maidsafe\lifestuff
+
+	CBFS installed correctly.
+	Client running on reboot.
 
 
 	Create User - 	new user cannot be created, processes subsequent to successful login cannot be tested.
 
-	
 	Update - 	new version found and retrieved.
 
-	
 	Uninstall - 	Lifestuff manager service stopped.
-			files removed from 	C:\Program Files (x86)\maidsafe
-						C:\ProgramData\maidsafe
-			files not removed from 	C:\Users\<user>\.lifestuff
-
-
+			          files removed from 	C:\Program Files (x86)\maidsafe
+						                        C:\ProgramData\maidsafe
 
 Tagging
 -------
-
-Git tag (0.1.001) not applied at this stage as code changes are required to allow new format to correspond to version in executable file.
-Will soon have newest ls-mgr to start tagging.
-
+First tag aaplied.
 
 API Tests:
 ----------
 
 Most tests are pending to be reviewed for validity.
 
-Routing.- All tests pass. Waiting for caching test and new_bootstrap_endpoint test.
+Routing.- All tests pass. STILL waiting for caching test and new_bootstrap_endpoint test.
 
-PD.- Experimental showed this tests failing:
-PdTest.FUNC_ChunkCorruption
-PdTest.FUNC_ChunkDeletion
-PdTest.FUNC_ChunkDeletionForMultipleClients
-PdTest.FUNC_ChunkSharing
-PdTest.FUNC_RcsOrder
-PdTest.FUNC_RemoteChunkStore
-PdTest.FUNC_SynchronisationAndPruning
-Changes to bootstrapping handling will probably correct some.
+PD.- All API tests failing pending routing change.
 
 Lifestuff.- Working tests when run individually:
 FUNC_CreateLogoutLoginLogout
@@ -72,7 +57,7 @@ Manual tests:
 
 Setting up a network with script/manually works. However, the network becomes unusable after creating several users.
 command line lifestuff and lifestuff can create a user, a public id, mount a drive and quit on Linux.
-Windows has a problem joining created vaults to the network. User creation failing as with the installed version.
+Windows now creates a user on a local network. Tests with QA network pending.
 
 Continuous Integration:
 -----------------------
