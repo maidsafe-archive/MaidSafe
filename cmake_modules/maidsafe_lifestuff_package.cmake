@@ -12,14 +12,19 @@
 #                                                                              #
 #==============================================================================#
 
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-  message(FATAL_ERROR "\n Package build is not allowed in Debug build type !!!
-          \n-- To build the package, use: \n cmake . -DCMAKE_BUILD_TYPE=Release -DPACKAGE_BUILD=ON \n")
+
+if(NOT MSVC)
+  set(ErrorMessage "Package build must be in Release mode.\nrun:      cmake . -DCMAKE_BUILD_TYPE=Release -DPACKAGE_BUILD=ON\n\n")
+  if(NOT CMAKE_BUILD_TYPE)
+    message(FATAL_ERROR ${ErrorMessage})
+  elseif(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    message(FATAL_ERROR ${ErrorMessage})
+  endif()
 endif()
 
 # NOTE : This variable must be always used to pick binaries for package build to avoid accidental debug build inclusion.
 #set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR}/package/bin/Release)
-if (MSVC)
+if(MSVC)
   set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR}/Release)
 else()
   set(PACKAGE_BINARY_DIR ${CMAKE_BINARY_DIR})
