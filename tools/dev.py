@@ -1,10 +1,15 @@
 #!/usr/bin/env python
 import os
+import sys
 import subprocess
 
 all = { "Common" : 'common', "Rudp" : 'rudp', "Routing" : 'routing',
         "Private" : 'private', "Pd" : 'pd', "Encrypt" : 'encrypt',
         "Drive" : 'drive', "Lifestuff" : 'lifestuff' }
+
+encoding = sys.getfilesystemencoding()
+script_path = os.path.dirname(unicode(__file__, encoding))
+cpplint_path = os.path.join(script_path, 'cpplint.py')
 
 # style check 
 def StyleCheck():
@@ -18,12 +23,13 @@ def StyleCheck():
     print("Invalid choice please choose again")
     StyleCheck()
   directory = os.path.join(os.path.curdir, '..', 'src', all[library])
+  style_check = ""
   for r,d,f in os.walk(directory):
     for files in f:
       if (files.endswith(".cc") or files.endswith(".h")) and not \
          (files.endswith(".pb.cc") or files.endswith(".pb.h")):
         style_check = os.path.join(r,files)
-        subprocess.Popen(['python', 'cpplint.py', style_check])
+        subprocess.call(['python', cpplint_path , style_check])
 
 
 # coverage (linux only)
