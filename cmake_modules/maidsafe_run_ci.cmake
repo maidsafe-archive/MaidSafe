@@ -19,7 +19,7 @@
 # Example ctest -S maidsafe_run_ci.cmake,Debug,"Visual Studio 11 Win64"       #
 ###############################################################################
 
-set(SCRIPT_VERSION 1)
+set(SCRIPT_VERSION 2)
 file(READ "${CTEST_SCRIPT_DIRECTORY}/${CTEST_SCRIPT_NAME}" INSTALLED_VERSION_INFO)
 STRING(REGEX MATCH "SCRIPT_VERSION [0-9]+" INSTALLED_VERSION ${INSTALLED_VERSION_INFO})
 STRING(REGEX REPLACE "SCRIPT_VERSION " "" INSTALLED_VERSION ${INSTALLED_VERSION})
@@ -221,9 +221,9 @@ endif()
 # Check Current branch & Update Super Project                                 #
 ###############################################################################
 message("Updating Super Project on master branch")
-#Update Super Project on master branch
+#Update Super Project on next branch
 execute_process(WORKING_DIRECTORY ${CTEST_SCRIPT_DIRECTORY}/..
-    COMMAND ${Git_EXECUTABLE} checkout master
+    COMMAND ${Git_EXECUTABLE} checkout next
     RESULT_VARIABLE ret_var
     OUTPUT_VARIABLE out_var
     )
