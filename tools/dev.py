@@ -7,40 +7,53 @@ all = { "Common" : 'common', "Rudp" : 'rudp', "Routing" : 'routing',
         "Private" : 'private', "Pd" : 'pd', "Encrypt" : 'encrypt',
         "Drive" : 'drive', "Lifestuff" : 'lifestuff' }
 
-encoding = sys.getfilesystemencoding()
-script_path = os.path.dirname(unicode(__file__, encoding))
-cpplint_path = os.path.join(script_path, 'cpplint.py')
+def CppLint():
+  encoding = sys.getfilesystemencoding()
+  script_path = os.path.dirname(unicode(__file__, encoding))
+  return os.path.join(script_path, 'cpplint.py')
+
+def ClearScreen():
+  os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )
+
+def GetLib():
+  option = ''
+  while option not in all.values() and option != 'q':
+    print ("Libraries available")
+    print ("-------------------")
+    for library in all:
+      print (all[library])
+    print ("-------------------")
+    option = raw_input("please type library name (q to exit): ")
+  return option
 
 # style check 
 def StyleCheck():
-  print ("Libraries available")
-  print ("-------------------")
-  for library in all:
-    print (all[library])
-  print ("-------------------")
-  option = raw_input("please type library name to check: ")
-  if option not in all.values():
-    print("Invalid choice please choose again")
-    StyleCheck()
-  directory = os.path.join(os.path.curdir, '..', 'src', all[library])
+  option = GetLib()
+  if option == 'q':
+    ClearScreen()
+    return
+  directory = os.path.join(os.path.curdir, '..', 'src', option)
   style_check = ""
   for r,d,f in os.walk(directory):
     for files in f:
       if (files.endswith(".cc") or files.endswith(".h")) and not \
          (files.endswith(".pb.cc") or files.endswith(".pb.h")):
         style_check = os.path.join(r,files)
-        subprocess.call(['python', cpplint_path , style_check])
+        subprocess.call(['python', CppLint() , style_check])
+
 
 
 # coverage (linux only)
 
 # memcheck
 
+
+
 # etc.
 
 def main():
   option = 'a'
-  os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )
+  ClearScreen()
   while(option != 'q'):
     print ("MaidSafe Development helper tool")
     print ("================================")
