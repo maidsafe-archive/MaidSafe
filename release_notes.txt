@@ -1,37 +1,65 @@
-OS tested:
---------------
-	Windows7
+Tuesday 13/11/2012
 
+!!! Version 0.1.001
 
+Installation
+------------
+OS tested: Windows 7 32 & 64 bits
 
-Services:
---------------
-	Lifestuff Manager - success, listening on 127.0.0.1:5483
+Services: Lifestuff Manager - success, listening on 127.0.0.1:5483
 
-
-
-Process check: 
---------------
+Process with installation check on Windows 7:
 	Install - 	files installed to 	C:\Program Files (x86)\maidsafe\lifestuff
-						C:\ProgramData\maidsafe\lifestuff
-						C:\Users\<user>\.lifestuff
-			
-			3rd party library installation cannot be verified at this stage.
-			Client running on reboot.
+						                      C:\ProgramData\maidsafe\lifestuff
+
+	CBFS installed correctly.
+	Client running on reboot.
 
 
 	Create User - 	new user cannot be created, processes subsequent to successful login cannot be tested.
 
-	
 	Update - 	new version found and retrieved.
 
-	
 	Uninstall - 	Lifestuff manager service stopped.
-			files removed from 	C:\Program Files (x86)\maidsafe
-						C:\ProgramData\maidsafe
-			files not removed from 	C:\Users\<user>\.lifestuff
+			          files removed from 	C:\Program Files (x86)\maidsafe
+						                        C:\ProgramData\maidsafe
+
+Tagging
+-------
+First tag aaplied.
+
+API Tests:
+----------
+
+Most tests are pending to be reviewed for validity.
+
+Routing.- All tests pass. STILL waiting for caching test and new_bootstrap_endpoint test.
+
+PD.- All API tests failing pending routing change.
+
+Lifestuff.- Working tests when run individually:
+FUNC_CreateLogoutLoginLogout
+FUNC_ChangeCredentials
+FUNC_ChangePinAndPasswordSimultaneously
+FUNC_ChangeKeywordAndPasswordSimultaneously
+FUNC_ChangePinAndKeywordSimultaneously
+FUNC_CreateInvalidUsers
+FUNC_TryChangeCredentialsToInvalid
+FUNC_ChangeCredentialsWhenLoggedOut
+FUNC_LogInFromTwoPlaces
+FUNC_LogInAfterCreateUser
+FUNC_CreateSameUserSimultaneously
+Two issues have been raised regarding vault network teardown and key storing on tests. 19 more tests failing.
 
 
+Manual tests:
+-------------
 
+Setting up a network with script/manually works. However, the network becomes unusable after creating several users.
+command line lifestuff and lifestuff can create a user, a public id, mount a drive and quit on Linux.
+Windows now creates a user on a local network. Tests with QA network pending.
 
-Git tag (0.1.001) not applied at this stage as code changes are required to allow new format to correspond to version in executable file.
+Continuous Integration:
+-----------------------
+
+Machines running CI on: Windows 7 64 and 32 bits, Ubuntu 12.04 64 and 32 bits.

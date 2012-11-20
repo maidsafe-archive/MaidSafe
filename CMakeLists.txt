@@ -44,6 +44,13 @@ foreach(SubModule ${SubModules})
   endif()
 endforeach()
 
+set(APPLICATION_VERSION_MAJOR 0)
+set(APPLICATION_VERSION_MINOR 1)
+set(APPLICATION_VERSION_PATCH 001)
+
+# Testing environment if APPLICATION_VERSION_MINOR is odd
+math(EXPR MAIDSAFE_TESTING ${APPLICATION_VERSION_MINOR}%2)
+
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
@@ -58,6 +65,12 @@ if(APPLE)
     message(FATAL_ERROR ${ErrorMsg})
   endif()
 endif()
+
+
+# Get target platform details
+include(cmake_modules/maidsafe_utils.cmake)
+get_target_platform()
+get_target_architecture()
 
 # Find just::thread
 message("${HR}")
