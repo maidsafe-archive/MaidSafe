@@ -220,7 +220,7 @@ endif()
 ###############################################################################
 # Check Current branch & Update Super Project                                 #
 ###############################################################################
-message("Updating Super Project on master branch")
+message("Updating Super Project on next branch")
 #Update Super Project on next branch
 execute_process(WORKING_DIRECTORY ${CTEST_SCRIPT_DIRECTORY}/..
     COMMAND ${Git_EXECUTABLE} checkout next
