@@ -129,7 +129,6 @@ endforeach()
 
 message("${HR}")
 
-
 # When this target is built, it removes all .gcda files from the build directory and its subdirectories
 if(UNIX)
   find_file(CLEAN_COVERAGE clean_coverage.cmake cmake_modules/)
@@ -143,6 +142,13 @@ message(STATUS "To include all tests,                    cmake . -DMAIDSAFE_TEST
 message(STATUS "To include behavioural tests,            cmake . -DMAIDSAFE_TEST_TYPE=BEH")
 message(STATUS "To include functional tests,             cmake . -DMAIDSAFE_TEST_TYPE=FUNC")
 message("${HR}")
+
+# create links for hooks if they don't exist
+if(UNIX)
+  message("Running setup for hooks")
+  execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/hooks/scripts/hooks.py)
+  message("${HR}")
+endif()
 
 cleanup_temp_dir()
 
