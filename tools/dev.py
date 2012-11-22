@@ -2,6 +2,7 @@
 import os
 import sys
 import subprocess
+from subprocess import Popen, PIPE, STDOUT
 import multiprocessing
 
 all = { "Common" : 'common', "Rudp" : 'rudp', "Routing" : 'routing',
@@ -82,10 +83,12 @@ def RunNetwork(number_of_vaults):
   pool = multiprocessing.Pool(processes=number_of_vaults)
   pool.map(work, [FindFile('TESTcommon', os.curdir)] * number_of_vaults)
 
-
 def RunQaCheck():
-  print("Not yet implemented")
-  RunNetwork(50)
+  p = Popen(['./routing_node', '-s', '-i', '4', '-p', '192.168.0.129:61922'], stdout=PIPE, stdin=PIPE)
+#  p = Popen(['./routing_node', '-s -i 4 -p 192.168.0.129:61922'], shell=False, stdout=STDOUT, stdin=PIPE, stderr=STDOUT)
+  print(PIPE)
+#  p.communicate(input='help\n')[0]
+#  print(grep_stdout)
 # coverage (linux only)
 
 # memcheck
