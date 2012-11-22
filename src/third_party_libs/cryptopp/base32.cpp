@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "base32.h"
+#include <mutex>
 
 NAMESPACE_BEGIN(CryptoPP)
 
@@ -25,14 +26,9 @@ void Base32Decoder::IsolatedInitialize(const NameValuePairs &parameters)
 
 const int *Base32Decoder::GetDefaultDecodingLookupArray()
 {
-	static volatile bool s_initialized = false;
+	static std::once_flag s_initialized;
 	static int s_array[256];
-
-	if (!s_initialized)
-	{
-		InitializeDecodingLookupArray(s_array, s_vecUpper, 32, true);
-		s_initialized = true;
-	}
+  std::call_once(s_initialized, [](){ InitializeDecodingLookupArray(s_array, s_vecUpper, 32, true); });
 	return s_array;
 }
 
