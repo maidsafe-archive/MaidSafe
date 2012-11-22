@@ -40,7 +40,10 @@ def KillLifeStuff():
   for proc in psutil.process_iter():
     if proc.name.find(PROC) >= 0:
       print("Killing process : " + proc.name)
-      proc.kill()
+      try:
+        proc.kill()
+      except:
+        print("Could not kill all instances")
 
 def main():
   KillLifeStuff()
