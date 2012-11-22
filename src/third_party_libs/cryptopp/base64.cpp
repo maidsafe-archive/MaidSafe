@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "base64.h"
 #include <atomic>
+#include <thread>
 #include <mutex>
 
 NAMESPACE_BEGIN(CryptoPP)

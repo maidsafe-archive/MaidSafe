@@ -6,6 +6,7 @@
 
 #include "hex.h"
 #include <atomic>
+#include <thread>
 #include <mutex>
 
 NAMESPACE_BEGIN(CryptoPP)
