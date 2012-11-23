@@ -83,6 +83,23 @@ def RunNetwork(number_of_vaults):
   pool = multiprocessing.Pool(processes=number_of_vaults)
   pool.map(work, [FindFile('TESTcommon', os.curdir)] * number_of_vaults)
 
+def RoutingSetupKeys(num):
+  p = Popen(['./routing_key_helper', '-c', '-n', num], shell = True, stdout=PIPE, stdin=PIPE)
+
+def RoutingSetupBootstrap():
+  p_b0 = Popen('./routing_node -s -b -i 0', shell = True, stdout=PIPE, stdin=PIPE)
+  p_b1 = Popen('./routing_node -s -b -i 1', shell = True, stdout=PIPE, stdin=PIPE)
+
+def Routing_JAV1():
+  RoutingSetupKeys(20)
+  RoutingSetupBootstrap()
+
+  p_v = Popen('./routing_node -s -i 2', shell = True, stdout=PIPE, stdin=PIPE)
+
+  # check if "Current Node joined" get printed from p_v.stdout
+  p_v.stdin.write('exit\n')
+  # check the process doesn't run in backgroud
+
 def RunQaCheck():
 #  f = open('./temp_log.txt','w')
   p = Popen('./routing_node -s -i 2 -p 192.168.0.131:14378', shell = True, stdout=PIPE, stdin=PIPE)
