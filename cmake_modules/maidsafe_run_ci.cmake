@@ -19,7 +19,7 @@
 # Example ctest -S maidsafe_run_ci.cmake,Debug,"Visual Studio 11 Win64"       #
 ###############################################################################
 
-set(SCRIPT_VERSION 2)
+set(SCRIPT_VERSION 3)
 file(READ "${CTEST_SCRIPT_DIRECTORY}/${CTEST_SCRIPT_NAME}" INSTALLED_VERSION_INFO)
 STRING(REGEX MATCH "SCRIPT_VERSION [0-9]+" INSTALLED_VERSION ${INSTALLED_VERSION_INFO})
 STRING(REGEX REPLACE "SCRIPT_VERSION " "" INSTALLED_VERSION ${INSTALLED_VERSION})
@@ -153,9 +153,26 @@ endfunction()
 ###############################################################################
 # Variable(s) determined after running cmake                                  #
 ###############################################################################
+unset(MODEL CACHE)
 unset(RESULT_GENERATOR CACHE)
 unset(RESULT_CONFIG CACHE)
 unset(RESULT_CMAKE CACHE)
+
+# Select the model (Nightly, Experimental, Continuous & Weekly).
+SCRIPT_ARGUMENT_AT(2 MODEL)
+if(${MODEL} MATCHES Continuous)
+  set(DASHBOARD_MODEL Continuous)
+elseif(${MODEL} MATCHES Nightly)
+  set(DASHBOARD_MODEL Nightly)
+elseif(${MODEL} MATCHES Experimental)
+  set(DASHBOARD_MODEL Experimental)
+elseif(${MODEL} MATCHES Weekly)
+  set(DASHBOARD_MODEL Weekly)
+endif()
+
+if(NOT DEFINED DASHBOARD_MODEL)
+  set(DASHBOARD_MODEL Continuous)  #default to "Continuous"
+endif()
 
 SCRIPT_ARGUMENT_AT(1 RESULT_GENERATOR)
 set(CTEST_CMAKE_GENERATOR ${RESULT_GENERATOR})
@@ -169,7 +186,7 @@ if(${RESULT_CONFIG} STREQUAL "Debug")
 else()
   set(CTEST_CONFIGURATION_TYPE "Release")
 endif()
-set(DASHBOARD_MODEL "Continuous")
+
 set(MEMORY_CHECK_NEEDED FALSE)
 
 find_program(HOSTNAME_CMD NAMES hostname)
@@ -342,6 +359,9 @@ foreach(EACH_MODULE ${ALL_MODULE_LIST})
   else()
     message(FATAL_ERROR "Unable to pull from next. Aborting Process")
   endif()
+  if(NOT ${DASHBOARD_MODEL} STREQUAL "Continuous")
+    SET_TEST_NEEDED_FOR_DEPENDANTS(${EACH_MODULE})
+  endif()
 endforeach()
 message("================================================================================")
 
@@ -351,82 +371,82 @@ message("=======================================================================
 
 foreach(EACH_MODULE ${ALL_MODULE_LIST})
   if(${EACH_MODULE}_NEEDS_TESTED)
-    message("Running CTest Build & Test for - ${EACH_MODULE}")
-    unset(MODULE_SOURCE_DIRECTORY CACHE)
-    unset(MODULE_BINARY_DIRECTORY CACHE)
-    unset(CTEST_SOURCE_DIRECTORY CACHE)
-    unset(CTEST_BINARY_DIRECTORY CACHE)
-    unset(CTEST_BUILD_NAME CACHE)
-    unset(CTEST_CUSTOM_COVERAGE_EXCLUDE)
-    unset(CTEST_CUSTOM_MEMCHECK_IGNORE)
-    unset(CTEST_NOTES_FILES CACHE)
+		message("Running CTest Build & Test for - ${EACH_MODULE}")
+		unset(MODULE_SOURCE_DIRECTORY CACHE)
+		unset(MODULE_BINARY_DIRECTORY CACHE)
+		unset(CTEST_SOURCE_DIRECTORY CACHE)
+		unset(CTEST_BINARY_DIRECTORY CACHE)
+		unset(CTEST_BUILD_NAME CACHE)
+		unset(CTEST_CUSTOM_COVERAGE_EXCLUDE)
+		unset(CTEST_CUSTOM_MEMCHECK_IGNORE)
+		unset(CTEST_NOTES_FILES CACHE)
 
-    set(CTEST_BUILD_NAME "CI Build - ${CTEST_CONFIGURATION_TYPE} ${MACHINE_BUILD_TYPE} , Script Version - ${SCRIPT_VERSION}")
-    set(MODULE_SOURCE_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY})
-    set(MODULE_BINARY_DIRECTORY ${${EACH_MODULE}_BINARY_DIRECTORY})
-    set(CTEST_SOURCE_DIRECTORY ${MODULE_SOURCE_DIRECTORY})
-    set(CTEST_BINARY_DIRECTORY ${MODULE_BINARY_DIRECTORY})
+		set(CTEST_BUILD_NAME "${DASHBOARD_MODEL} Build - ${CTEST_CONFIGURATION_TYPE} ${MACHINE_BUILD_TYPE} , Script Version - ${SCRIPT_VERSION}")
+		set(MODULE_SOURCE_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY})
+		set(MODULE_BINARY_DIRECTORY ${${EACH_MODULE}_BINARY_DIRECTORY})
+		set(CTEST_SOURCE_DIRECTORY ${MODULE_SOURCE_DIRECTORY})
+		set(CTEST_BINARY_DIRECTORY ${MODULE_BINARY_DIRECTORY})
 
-    CTEST_START(${DASHBOARD_MODEL} TRACK ${DASHBOARD_MODEL})
-    CTEST_READ_CUSTOM_FILES(${CTEST_BINARY_DIRECTORY})
-    if (WIN32)
-      CTEST_CONFIGURE(BUILD "${CMAKE_CURRENT_BINARY_DIR}" SOURCE "${CTEST_SCRIPT_DIRECTORY}/.." OPTIONS "-DCI_BUILD_ENVIRONMENT=TRUE -DCLEAN_TEMP=ALWAYS")
-    else()
-      CTEST_CONFIGURE(BUILD "${CMAKE_CURRENT_BINARY_DIR}" SOURCE "${CTEST_SCRIPT_DIRECTORY}/..")
-    endif()
-    CTEST_BUILD(RETURN_VALUE build_result)
-    CTEST_TEST()
+		CTEST_START(${DASHBOARD_MODEL} TRACK ${DASHBOARD_MODEL})
+		CTEST_READ_CUSTOM_FILES(${CTEST_BINARY_DIRECTORY})
+		if (WIN32)
+		  CTEST_CONFIGURE(BUILD "${CMAKE_CURRENT_BINARY_DIR}" SOURCE "${CTEST_SCRIPT_DIRECTORY}/.." OPTIONS "-DCI_BUILD_ENVIRONMENT=TRUE -DCLEAN_TEMP=ALWAYS")
+		else()
+		  CTEST_CONFIGURE(BUILD "${CMAKE_CURRENT_BINARY_DIR}" SOURCE "${CTEST_SCRIPT_DIRECTORY}/..")
+		endif()
+		CTEST_BUILD(RETURN_VALUE build_result)
+		CTEST_TEST()
 
-    unset(TagId CACHE)
-    find_file(TagFile NAMES TAG PATHS ${CTEST_BINARY_DIRECTORY}/Testing NO_DEFAULT_PATH)
-    file(READ ${TagFile} TagFileContents)
-    string(REPLACE "\n" "" TagFileContents "${TagFileContents}")
-    string(REGEX REPLACE "[A-Za-z]+" "" TagId "${TagFileContents}")
+		unset(TagId CACHE)
+		find_file(TagFile NAMES TAG PATHS ${CTEST_BINARY_DIRECTORY}/Testing NO_DEFAULT_PATH)
+		file(READ ${TagFile} TagFileContents)
+		string(REPLACE "\n" "" TagFileContents "${TagFileContents}")
+		string(REGEX REPLACE "[A-Za-z]+" "" TagId "${TagFileContents}")
 
-    #Modify XML Files on Windows for Machine Build-Type x64
-    if(WIN32)
-      if(${MACHINE_BUILD_TYPE} STREQUAL "x64")
-        set(XML_FILES
-                "Configure.xml"
-                "Build.xml"
-                "Test.xml"
-                )
-        foreach(XML_FILE ${XML_FILES})
-          unset(ModFile CACHE)
-          unset(ModFileContents CACHE)
-          find_file(ModFile NAMES ${XML_FILE} PATHS ${CTEST_BINARY_DIRECTORY}/Testing/${TagId} NO_DEFAULT_PATH)
-          file(READ ${ModFile} ModFileContents)
-          string(REPLACE "OSPlatform=\"x86\"" "OSPlatform=\"${MACHINE_BUILD_TYPE}\"" ModFileContents "${ModFileContents}")
-          file(WRITE ${ModFile} "${ModFileContents}")
-        endforeach()
-      endif()
-    endif()
+		#Modify XML Files on Windows for Machine Build-Type x64
+		if(WIN32)
+		  if(${MACHINE_BUILD_TYPE} STREQUAL "x64")
+		    set(XML_FILES
+		            "Configure.xml"
+		            "Build.xml"
+		            "Test.xml"
+		            )
+		    foreach(XML_FILE ${XML_FILES})
+		      unset(ModFile CACHE)
+		      unset(ModFileContents CACHE)
+		      find_file(ModFile NAMES ${XML_FILE} PATHS ${CTEST_BINARY_DIRECTORY}/Testing/${TagId} NO_DEFAULT_PATH)
+		      file(READ ${ModFile} ModFileContents)
+		      string(REPLACE "OSPlatform=\"x86\"" "OSPlatform=\"${MACHINE_BUILD_TYPE}\"" ModFileContents "${ModFileContents}")
+		      file(WRITE ${ModFile} "${ModFileContents}")
+		    endforeach()
+		  endif()
+		endif()
 
-    # Write Git-Update Details To File
-    unset(CHANGED_FILES CACHE)
-    execute_process(WORKING_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY}
-        COMMAND ${Git_EXECUTABLE} diff --stat ${${EACH_MODULE}_CURRENT_COMMIT} ${${EACH_MODULE}_NEW_COMMIT}
-        RESULT_VARIABLE ret_var
-        OUTPUT_VARIABLE CHANGED_FILES
-        )
-    if(ret_var EQUAL 0)
-      file(WRITE "${CTEST_BINARY_DIRECTORY}/Testing/${TagId}/GitDetails.txt" "Old Commit Details: \n${${EACH_MODULE}_CURRENT_COMMIT_LOG_MSG}
-          \nNew Commit: \n${${EACH_MODULE}_NEW_COMMIT_LOG_MSG}
-          \nFiles Changed:
-          \n${CHANGED_FILES}")
-      set(CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/Testing/${TagId}/GitDetails.txt")
-      CTEST_SUBMIT(PARTS Configure Build Test Notes RETURN_VALUE result)
-    else()
-      CTEST_SUBMIT(PARTS Configure Build Test RETURN_VALUE result)
-    endif()
-    if(${result} EQUAL 0)
-      message("CI Build Submitted - ${EACH_MODULE}")
-    else()
-      message("CI Build Failed to Submit - ${EACH_MODULE}")
-    endif()
-    if(NOT ${build_result} EQUAL 0)
-      message("${EACH_MODULE} failed during build, exiting script")
-      break()
-    endif()
+		# Write Git-Update Details To File
+		unset(CHANGED_FILES CACHE)
+		execute_process(WORKING_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY}
+		    COMMAND ${Git_EXECUTABLE} diff --stat ${${EACH_MODULE}_CURRENT_COMMIT} ${${EACH_MODULE}_NEW_COMMIT}
+		    RESULT_VARIABLE ret_var
+		    OUTPUT_VARIABLE CHANGED_FILES
+		    )
+		if(ret_var EQUAL 0)
+		  file(WRITE "${CTEST_BINARY_DIRECTORY}/Testing/${TagId}/GitDetails.txt" "Old Commit Details: \n${${EACH_MODULE}_CURRENT_COMMIT_LOG_MSG}
+		      \nNew Commit: \n${${EACH_MODULE}_NEW_COMMIT_LOG_MSG}
+		      \nFiles Changed:
+		      \n${CHANGED_FILES}")
+		  set(CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/Testing/${TagId}/GitDetails.txt")
+		  CTEST_SUBMIT(PARTS Configure Build Test Notes RETURN_VALUE result)
+		else()
+		  CTEST_SUBMIT(PARTS Configure Build Test RETURN_VALUE result)
+		endif()
+		if(${result} EQUAL 0)
+		  message("CI Build Submitted - ${EACH_MODULE}")
+		else()
+		  message("CI Build Failed to Submit - ${EACH_MODULE}")
+		endif()
+		if(NOT ${build_result} EQUAL 0)
+		  message("${EACH_MODULE} failed during build, exiting script")
+		  break()
+		endif()
   endif()
 endforeach()
