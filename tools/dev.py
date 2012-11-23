@@ -121,14 +121,13 @@ def RoutingSetupBootstrap():
     print "Failed to set up bootstrap 1!"
     return -1
 
-  sleep(2)
+  sleep(1)
 
   p_b0.stdin.write('peer ' + peer_1 + '\n')
   p_b1.stdin.write('peer ' + peer_0 + '\n')
-  sleep(5)
   p_b0.stdin.write('zerostatejoin\n')
-  p_b0.stdin.write('zerostatejoin\n')
-  sleep(10)
+  p_b1.stdin.write('zerostatejoin\n')
+  sleep(1)
 
   return [peer_0, p_b0, p_b1]
 
@@ -157,15 +156,15 @@ def Routing_JAV1():
     p_b1.stdin.write('exit\n')
     return -1
 
-#  p_v.stdin.write('exit\n')
-  sleep(10)
+  p_v.stdin.write('exit\n')
+  sleep(2)
   if p_v.poll() == None:
     print "Failed to stop node 2!"
   else:
     print "Node 2 stopped successfully"
 
-#  p_b0.stdin.write('exit\n')
-#  p_b1.stdin.write('exit\n')
+  p_b0.stdin.write('exit\n')
+  p_b1.stdin.write('exit\n')
 
 def RunQaCheck():
   Routing_JAV1()
