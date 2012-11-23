@@ -4,6 +4,7 @@ import subprocess
 import sys
 
 style_check = "../../tools/cpplint.py"
+files_checked = []
 
 # necessary check for initial commit
 git_check = subprocess.call(["git", "rev-parse", "--verify",  "HEAD"], stdout=open(os.devnull, 'w'))
@@ -16,12 +17,12 @@ else :
 error = 0
 
 # get a list of staged files
-changed_files = subprocess.Popen(["git", "diff-index", "--cached", "--full-index", against], stdout=subprocess.PIPE)
+changed_files = subprocess.Popen(["git", "diff-index", "--cached", "--name-status", against], stdout=subprocess.PIPE)
 
 for entry in iter(changed_files.stdout.readline, '') :
   parts = entry.split()
-  status = parts[4]
-  filename = parts[5]
+  status = parts[0]
+  filename = parts[1]
 
   # file extension
   name,ext = os.path.splitext(filename)
@@ -35,11 +36,14 @@ for entry in iter(changed_files.stdout.readline, '') :
   if status == "D" :
     continue
 
+  files_checked.append(filename)
   result = subprocess.call([style_check, filename])
   if result != 0 :
     error = 1
-    subprocess.call(["git", "reset", "HEAD", filename])
+    #subprocess.call(["git", "reset", "HEAD", filename])
 
 if error == 1 :
   print "Style check failed."
+  for filename in files_checked :
+    subprocess.call(["git", "reset", "HEAD", filename])
   sys.exit(1)
