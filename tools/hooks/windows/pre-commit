@@ -1,0 +1,12 @@
+#!/bin/sh
+
+scripts_dir=../../tools/hooks/windows/scripts
+
+#run style check
+$scripts_dir/run_style_check.exe `pwd`
+return_code=$?
+
+if [ $return_code != 0 ]
+then
+  exit $return_code
+fi
