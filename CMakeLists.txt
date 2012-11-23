@@ -143,12 +143,12 @@ message(STATUS "To include behavioural tests,            cmake . -DMAIDSAFE_TEST
 message(STATUS "To include functional tests,             cmake . -DMAIDSAFE_TEST_TYPE=FUNC")
 message("${HR}")
 
-# create links for hooks if they don't exist
+# create hooks
+message("Running setup for hooks")
 if(UNIX)
-  message("Running setup for hooks")
-  execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/hooks/scripts/hooks.py)
-  message("${HR}")
+  execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/hooks/linux/scripts/hooks.py)
 endif()
+message("${HR}")
 
 cleanup_temp_dir()
 
