@@ -347,6 +347,12 @@ foreach(EACH_MODULE ${ALL_MODULE_LIST})
       if(${ret_var} EQUAL 0)
         string(REPLACE "\"" "" out_var ${out_var})
         set(${EACH_MODULE}_NEW_COMMIT_LOG_MSG ${out_var})
+        execute_process(WORKING_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY}
+            COMMAND ${Git_EXECUTABLE} log -1 --format="%an"
+            RESULT_VARIABLE ret_var2
+            OUTPUT_VARIABLE author
+            )
+        set(${EACH_MODULE}_NEW_COMMIT_LOG_AUTHOR ${author})
       else()
         set(${EACH_MODULE}_NEW_COMMIT_LOG_MSG "N/A")
       endif()
@@ -446,7 +452,28 @@ foreach(EACH_MODULE ${ALL_MODULE_LIST})
 		endif()
 		if(NOT ${build_result} EQUAL 0)
 		  message("${EACH_MODULE} failed during build, exiting script")
+      if(WIN32)
+        # TODO(Viv) Check OS Version
+        execute_process(WORKING_DIRECTORY "${CTEST_SCRIPT_DIRECTORY}/../tools"
+            COMMAND cmd /c "ci_build_reporter.py win7 ${MACHINE_BUILD_TYPE} fail ${EACH_MODULE} ${${EACH_MODULE}_NEW_COMMIT_LOG_AUTHOR}"
+            RESULT_VARIABLE ret_var
+            OUTPUT_VARIABLE output
+            )
+      else()
+        # Need Linux Execute Script Command with argument detections
+      endif()
 		  break()
+    elseif(${EACH_MODULE} STREQUAL "LIFESTUFF_GUI")
+      if(WIN32)
+        # TODO(Viv) Check OS Version
+        execute_process(WORKING_DIRECTORY "${CTEST_SCRIPT_DIRECTORY}/../tools"
+            COMMAND cmd /c "ci_build_reporter.py win7 ${MACHINE_BUILD_TYPE} ok ${EACH_MODULE} ${${EACH_MODULE}_NEW_COMMIT_LOG_AUTHOR}"
+            RESULT_VARIABLE ret_var
+            OUTPUT_VARIABLE output
+            )
+      else()
+        # Need Linux Execute Script Command with argument detections
+      endif()
 		endif()
   endif()
 endforeach()

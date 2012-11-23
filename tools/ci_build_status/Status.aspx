@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
   <link href="style.css" rel="stylesheet" type="text/css" />
-    <title></title>
+    <title>CI Build Status</title>
     <link rel="shortcut icon" href="images/favicon.ico" />
     <link rel="icon" type="image/ico" href="images/favicon.ico" />
 </head>
