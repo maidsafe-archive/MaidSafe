@@ -84,10 +84,31 @@ def RunNetwork(number_of_vaults):
   pool.map(work, [FindFile('TESTcommon', os.curdir)] * number_of_vaults)
 
 def RunQaCheck():
-  p = Popen(['./routing_node', '-s', '-i', '4', '-p', '192.168.0.129:61922'], stdout=PIPE, stdin=PIPE)
+#  f = open('./temp_log.txt','w')
+  p = Popen('./routing_node -s -i 2 -p 192.168.0.131:14378', shell = True, stdout=PIPE, stdin=PIPE)
+  s = Popen('./routing_node -s -i 3 -p 192.168.0.131:14378', shell = True, stdout=PIPE, stdin=PIPE)
+#  while True:
+#    next_line = p.stdout.readline()
+#    if not next_line:
+#      break
+#    print next_line.rstrip()
+
+  p.stdin.write('help\n')
+
+#  while True:
+#    next_line = p.stdout.readline()
+#    if not next_line:
+#      break
+#    print next_line.rstrip()
+
+  p.stdin.write('exit\n')
+  s.stdin.write('exit\n')
+
+#time.sleep(2)
 #  p = Popen(['./routing_node', '-s -i 4 -p 192.168.0.129:61922'], shell=False, stdout=STDOUT, stdin=PIPE, stderr=STDOUT)
-  print(PIPE)
-#  p.communicate(input='help\n')[0]
+#  print(PIPE)
+
+#  p.communicate(input='help\n')
 #  print(grep_stdout)
 # coverage (linux only)
 
