@@ -129,8 +129,8 @@ else()
 endif()
 
 if(UNIX AND NOT APPLE)
-  set(JustThread_LIBRARY ${JustThread_LIBRARY} rt)
-  set(JustThread_LIBRARY_DEBUG ${JustThread_LIBRARY_DEBUG} rt)
+  set(JustThread_LIBRARY ${JustThread_LIBRARY} rt pthread)
+  set(JustThread_LIBRARY_DEBUG ${JustThread_LIBRARY_DEBUG} rt pthread)
 endif()
 
 message(STATUS "Found library ${JustThread_LIBRARY}")
