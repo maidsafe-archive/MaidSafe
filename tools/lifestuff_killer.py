@@ -45,8 +45,7 @@ def KillLifeStuff():
       except:
         print("Could not kill all instances")
 
-def main():
-  KillLifeStuff()
+def  Exists():
   for proc in psutil.process_iter():
     if proc.name.find(PROC) >= 0:
       print("Failed to kill process : " + proc.name)
@@ -54,6 +53,9 @@ def main():
     print("No lifestuff processes running (now)")
     return 0
 
+def main():
+  KillLifeStuff()
+  return Exists()
 
 if __name__ == "__main__":
   sys.exit(main())
