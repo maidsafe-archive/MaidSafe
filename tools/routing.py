@@ -92,8 +92,11 @@ def KillBootstraps(p_b0, p_b1):
   p_b0.kill()
   p_b1.kill()
 
-def AddRoutingObject(peer):
-  p_v = Popen('./routing_node -s -i 2 -p ' + peer, shell = True, stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+def AddRoutingObject(peer, idx):
+  if idx < 10:
+    p_v = Popen('./routing_node -s -i ' + str(idx) + ' -p ' + peer, shell = True, stdout=PIPE, stdin=PIPE)
+  if idx >= 10:
+    p_v = Popen('./routing_node -s -c -i ' + str(idx) + ' -p ' + peer, shell = True, stdout=PIPE, stdin=PIPE)
 
   i = 0
   line_limit = 100
@@ -112,6 +115,23 @@ def AddRoutingObject(peer):
     return -1
   return p_v
 
+def SetupRoutingNodes(peer, num_vaults, num_clients):
+  p_nodes = range(num_vaults + num_clients)
+  i = 0;
+  while i < (num_vaults + num_clients):
+    if i < num_vaults:
+      p_nodes[i] = AddRoutingObject(peer, i + 2)
+    if i >= num_vaults:
+      p_nodes[i] = AddRoutingObject(peer, 10 + (i - num_vaults))
+    if p_nodes[i] == -1:
+      print 'Failed to add routing object ' + str(i + 2) + ' !'
+      #TODO cleanup the previous opened nodes
+      return -1
+    i = i + 1
+    sleep(1)
+  return p_nodes
+
+
 def JAV1():
   if not SetupKeys(20) == 0:
     return -1
@@ -122,13 +142,13 @@ def JAV1():
   p_b0 = items[1]
   p_b1 = items[2]
 
-  p_v = AddRoutingObject(peer)
+  p_v = AddRoutingObject(peer, 2)
   if p_v == -1:
     print 'Failed to add routing object!'
     StopBootstraps(p_b0, p_b1)
     return -1
 
-  p_v.stdin.write('exit\n')
+  p_v.stdin.write('exit' + '\n')
   sleep(2)
   if p_v.poll() == None:
     print "Failed to stop node 2!"
@@ -138,12 +158,46 @@ def JAV1():
   StopBootstraps(p_b0, p_b1)
   return 0
 
+def P1():
+  if not SetupKeys(20) == 0:
+    return -1
+  items = SetupBootstraps()
+  if items == -1:
+    return -1
+  peer = items[0]
+  p_b0 = items[1]
+  p_b1 = items[2]
+
+  p_nodes = SetupRoutingNodes(peer, 6, 6)
+  if p_nodes == -1:
+    return -1;
+  p_nodes[0].stdin.write('datasize 10485760' + '\n')
+  p_nodes[0].stdin.write('senddirect 1' + '\n')
+
+  t_start = datetime.datetime.now()
+  time_delta = datetime.datetime.now() - t_start
+  timeout = 3
+  while time_delta < datetime.timedelta(seconds=timeout):
+    next_line = p_nodes[0].stdout.readline()
+#    print 'p_nodes[0]\t' + next_line
+    if next_line.find('Response received in') != -1:
+      break
+    time_delta = datetime.datetime.now() - t_start
+  if time_delta >= datetime.timedelta(seconds=timeout):
+    return -1
+  duration = next_line.split()[3]
+  print("10MB data exchanged in " + duration + " seconds")
+
+  StopBootstraps(p_b0, p_b1)
+  return 0
+
+
 def SanityCheck():
   print("Running Routing Sanity Check, please wait ....")
-  if JAV1() == 0:
-    print 'Routing Sanity Check    : PASSED'
+  if P1() == 0:
+    print 'Routing Sanity Check  Test P1  : PASSED'
   else:
-    print 'Routing Sanity Check    : FAILED'
+    print 'Routing Sanity Check  Test P1  : FAILED'
 
 def main():
   print("This is the suite for lifestuff Qa analysis")
