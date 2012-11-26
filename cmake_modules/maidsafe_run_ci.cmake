@@ -13,216 +13,83 @@
 #  Script Purpose: Run CI on All Submodules of MaidSafe/MaidSafe               #
 #==============================================================================#
 
-###############################################################################
-# Pre-requirement: Use MS-Super Project (master branch)                       #
-# Script Required Arguments: Build-Config (Debug / Release), CMAKE_GENERATOR  #
-# Example ctest -S maidsafe_run_ci.cmake,Debug,"Visual Studio 11 Win64"       #
-###############################################################################
+################################################################################
+# Pre-requirement: Use MS-Super Project                                        #
+# Script Required Arguments: Build-Config (Debug / Release), CMAKE_GENERATOR   #
+# Example ctest -S maidsafe_run_ci.cmake,Debug,"Visual Studio 11 Win64"        #
+################################################################################
+set(ScriptVersion 4)
+set(CTEST_SOURCE_DIRECTORY ..)
+set(CTEST_BINARY_DIRECTORY .)
+include("${CTEST_SOURCE_DIRECTORY}/CTestConfig.cmake")
 
-set(SCRIPT_VERSION 3)
-file(READ "${CTEST_SCRIPT_DIRECTORY}/${CTEST_SCRIPT_NAME}" INSTALLED_VERSION_INFO)
-STRING(REGEX MATCH "SCRIPT_VERSION [0-9]+" INSTALLED_VERSION ${INSTALLED_VERSION_INFO})
-STRING(REGEX REPLACE "SCRIPT_VERSION " "" INSTALLED_VERSION ${INSTALLED_VERSION})
-if(NOT ${SCRIPT_VERSION} EQUAL ${INSTALLED_VERSION})
-   message("New installed Version: ${INSTALLED_VERSION}")
-   message("Current running version: ${SCRIPT_VERSION}")
-   message(FATAL_ERROR "This script is updated. Start the script again !!!")
-endif()
 
-###############################################################################
-# List of Modules and Paths                                                   #
-###############################################################################
-
-set(ALL_MODULE_LIST
-    "MAIDSAFE_COMMON"
-    "MAIDSAFE_PRIVATE"
-    "MAIDSAFE_RUDP"
-    "MAIDSAFE_ROUTING"
-    "MAIDSAFE_ENCRYPT"
-    "MAIDSAFE_DRIVE"
-    "MAIDSAFE_PD"
-    "MAIDSAFE_PASSPORT"
-    "LIFESTUFF"
-    "LIFESTUFF_GUI"
-    )
-message("================================================================================")
-
-###############################################################################
-# Module configurations                                                       #
-###############################################################################
-
-#sub-module folder-name
-set(MAIDSAFE_COMMON "common")
-set(MAIDSAFE_PRIVATE "private")
-set(MAIDSAFE_RUDP "rudp")
-set(MAIDSAFE_ROUTING "routing")
-set(MAIDSAFE_ENCRYPT "encrypt")
-set(MAIDSAFE_DRIVE "drive")
-set(MAIDSAFE_PD "pd")
-set(MAIDSAFE_PASSPORT "passport")
-set(LIFESTUFF "lifestuff")
-set(LIFESTUFF_GUI "lifestuff-gui")
-
-#List of dependants for each sub-module
-set(MAIDSAFE_COMMON_DEPENDANTS
-    MAIDSAFE_COMMON
-    MAIDSAFE_PRIVATE
-    MAIDSAFE_RUDP
-    MAIDSAFE_ROUTING
-    MAIDSAFE_ENCRYPT
-    MAIDSAFE_DRIVE
-    MAIDSAFE_PD
-    MAIDSAFE_PASSPORT
-    LIFESTUFF
-    LIFESTUFF_GUI
-    )
-set(MAIDSAFE_PRIVATE_DEPENDANTS
-    MAIDSAFE_PRIVATE
-    MAIDSAFE_ROUTING
-    MAIDSAFE_ENCRYPT
-    MAIDSAFE_DRIVE
-    MAIDSAFE_PD
-    MAIDSAFE_PASSPORT
-    LIFESTUFF
-    LIFESTUFF_GUI
-    )
-set(MAIDSAFE_RUDP_DEPENDANTS
-    MAIDSAFE_RUDP
-    MAIDSAFE_ROUTING
-    MAIDSAFE_PD
-    LIFESTUFF
-    LIFESTUFF_GUI
-    )
-set(MAIDSAFE_ROUTING_DEPENDANTS
-    MAIDSAFE_ROUTING
-    MAIDSAFE_PD
-    LIFESTUFF
-    LIFESTUFF_GUI
-    )
-set(MAIDSAFE_ENCRYPT_DEPENDANTS
-    MAIDSAFE_ENCRYPT
-    MAIDSAFE_DRIVE
-    LIFESTUFF
-    LIFESTUFF_GUI
-    )
-set(MAIDSAFE_DRIVE_DEPENDANTS
-    MAIDSAFE_DRIVE
-    LIFESTUFF
-    LIFESTUFF_GUI
-    )
-set(MAIDSAFE_PD_DEPENDANTS
-    MAIDSAFE_PD
-    LIFESTUFF
-    LIFESTUFF_GUI
-    )
-set(MAIDSAFE_PASSPORT_DEPENDANTS
-    MAIDSAFE_PASSPORT
-    LIFESTUFF
-    LIFESTUFF_GUI
-    )
-set(LIFESTUFF_DEPENDANTS
-    LIFESTUFF
-    LIFESTUFF_GUI
-    )
-set(LIFESTUFF_GUI_DEPENDANTS
-    LIFESTUFF_GUI
-    )
-
-###############################################################################
-# Helper Functions                                                            #
-###############################################################################
-
-function(SET_TEST_NEEDED_FOR_DEPENDANTS MODULE_NAME)
-  foreach(EACH_MODULE ${${MODULE_NAME}_DEPENDANTS})
-    if(NOT ${EACH_MODULE}_NEEDS_TESTED)
-      set(${EACH_MODULE}_NEEDS_TESTED 1 PARENT_SCOPE)
-      message("    Flagging ${${EACH_MODULE}} to be Tested in this Cycle")
-    endif()
-  endforeach()
-endfunction()
-
-function(SCRIPT_ARGUMENT_AT INDEX RESULT)
-  string(REPLACE "," ";" SCRIPT_LIST ${CTEST_SCRIPT_ARG})
-  list(LENGTH SCRIPT_LIST ARGUMENT_LIST_LENGTH)
-  if(${INDEX} LESS ${ARGUMENT_LIST_LENGTH} AND ${INDEX} GREATER -1)
-    list(GET SCRIPT_LIST ${INDEX} RETURN_VAL)
-    set(${RESULT} ${RETURN_VAL} PARENT_SCOPE)
+################################################################################
+# Helper Functions                                                             #
+################################################################################
+function(script_argument_at Index Result)
+  string(REPLACE "," ";" ScriptList ${CTEST_SCRIPT_ARG})
+  list(LENGTH ScriptList ArgumentListLength)
+  if(${Index} LESS ${ArgumentListLength} AND ${Index} GREATER -1)
+    list(GET ScriptList ${Index} ReturnVal)
+    set(${Result} ${ReturnVal} PARENT_SCOPE)
   endif()
 endfunction()
 
-###############################################################################
-# Variable(s) determined after running cmake                                  #
-###############################################################################
-unset(MODEL CACHE)
-unset(RESULT_GENERATOR CACHE)
-unset(RESULT_CONFIG CACHE)
-unset(RESULT_CMAKE CACHE)
 
-# Select the model (Nightly, Experimental, Continuous & Weekly).
-SCRIPT_ARGUMENT_AT(2 MODEL)
-if(${MODEL} MATCHES Continuous)
-  set(DASHBOARD_MODEL Continuous)
-elseif(${MODEL} MATCHES Nightly)
-  set(DASHBOARD_MODEL Nightly)
-elseif(${MODEL} MATCHES Experimental)
-  set(DASHBOARD_MODEL Experimental)
-elseif(${MODEL} MATCHES Weekly)
-  set(DASHBOARD_MODEL Weekly)
+################################################################################
+# Variable(s) determined after running cmake                                   #
+################################################################################
+unset(DashboardModel CACHE)
+
+script_argument_at(0 CTEST_CONFIGURATION_TYPE)
+if(NOT "${CTEST_CONFIGURATION_TYPE}" MATCHES "^(Debug|Release)")
+  message(FATAL_ERROR "Allowed arguments are Debug, Release \n eg. ctest -S ${CTEST_SCRIPT_NAME},Debug,\"Visual Studio 11 Win64\",Continuous")
 endif()
 
-if(NOT DEFINED DASHBOARD_MODEL)
-  set(DASHBOARD_MODEL Continuous)  #default to "Continuous"
+script_argument_at(1 CTEST_CMAKE_GENERATOR)
+
+# Select the model (Continuous, Experimental, Nightly, or Weekly).
+script_argument_at(2 DashboardModel)
+if(NOT ${DashboardModel} MATCHES Continuous
+   AND NOT ${DashboardModel} MATCHES Experimental
+   AND NOT ${DashboardModel} MATCHES Nightly
+   AND NOT ${DashboardModel} MATCHES Weekly)
+  set(DashboardModel Continuous)
 endif()
 
-SCRIPT_ARGUMENT_AT(1 RESULT_GENERATOR)
-set(CTEST_CMAKE_GENERATOR ${RESULT_GENERATOR})
-
-SCRIPT_ARGUMENT_AT(0 RESULT_CONFIG)
-if(NOT "${RESULT_CONFIG}" MATCHES "^(Debug|Release)")
-  message(FATAL_ERROR "Allowed arguments are Debug, Release \n eg. ctest -S ${CTEST_SCRIPT_NAME},Debug,\"Visual Studio 11 Win64\"")
-endif()
-if(${RESULT_CONFIG} STREQUAL "Debug")
-  set(CTEST_CONFIGURATION_TYPE "Debug")
-else()
-  set(CTEST_CONFIGURATION_TYPE "Release")
-endif()
-
-set(MEMORY_CHECK_NEEDED FALSE)
-
-find_program(HOSTNAME_CMD NAMES hostname)
-EXEC_PROGRAM(${HOSTNAME_CMD} ARGS OUTPUT_VARIABLE HOSTNAME)
-set(CTEST_SITE "${HOSTNAME}")
+find_program(HostnameCommand NAMES hostname)
+execute_process(COMMAND ${HostnameCommand} OUTPUT_VARIABLE Hostname OUTPUT_STRIP_TRAILING_WHITESPACE)
+set(CTEST_SITE "${Hostname}")
 
 if(WIN32)
   if(CTEST_CMAKE_GENERATOR MATCHES "64$")
-    set(MACHINE_BUILD_TYPE "x64")
+    set(MachineBuildType "x64")
   else()
-    set(MACHINE_BUILD_TYPE "x86")
+    set(MachineBuildType "x86")
   endif()
 endif()
 
-message("Dashboard Model Selected:      ${DASHBOARD_MODEL}")
+message("Dashboard Model Selected:      ${DashboardModel}")
 message("Build Configuration Selected:  ${CTEST_CONFIGURATION_TYPE}")
-message("Hostname:                      ${HOSTNAME}")
+message("Hostname:                      ${Hostname}")
 message("Make Generator:                ${CTEST_CMAKE_GENERATOR}")
 if(WIN32)
-  message("Build Type:                    ${MACHINE_BUILD_TYPE}")
+  message("Build Type:                    ${MachineBuildType}")
 endif()
 message("================================================================================")
 
-###############################################################################
-# Finding Programs & Commands                                                 #
-###############################################################################
+
+################################################################################
+# Find programs & commands                                                     #
+################################################################################
 find_program(CTEST_CMAKE_COMMAND NAMES cmake)
 if(NOT CTEST_CMAKE_COMMAND)
-  SCRIPT_ARGUMENT_AT(2 RESULT_CMAKE)
-  if(RESULT_CMAKE)
-    set(CTEST_CMAKE_COMMAND ${RESULT_CMAKE})
-  else()
+  SCRIPT_ARGUMENT_AT(2 CTEST_CMAKE_COMMAND)
+  if(NOT CTEST_CMAKE_COMMAND)
     message(FATAL_ERROR "Couldn't find CMake executable. Provide Cmake Path as 3rd Script Argument")
   endif()
 endif()
-message(STATUS "Found CMake")
 
 set(CMAKE_MODULE_PATH ${CTEST_SCRIPT_DIRECTORY})
 include(maidsafe_find_git)
@@ -234,219 +101,205 @@ elseif(NOT DEFINED CTEST_USE_LAUNCHERS)
   set(CTEST_USE_LAUNCHERS 1)
 endif()
 
-###############################################################################
-# Check Current branch & Update Super Project                                 #
-###############################################################################
-message("Updating Super Project on next branch")
+
+################################################################################
+# Check current branch & update super project                                  #
+################################################################################
+message("Updating super project on 'next'")
 #Update Super Project on next branch
-execute_process(WORKING_DIRECTORY ${CTEST_SCRIPT_DIRECTORY}/..
-    COMMAND ${Git_EXECUTABLE} checkout next
-    RESULT_VARIABLE ret_var
-    OUTPUT_VARIABLE out_var
-    )
-if(NOT ${ret_var} EQUAL 0)
-  message(FATAL_ERROR "Failed to Switch to branch master in Super Project.")
+execute_process(COMMAND ${Git_EXECUTABLE} checkout next
+                WORKING_DIRECTORY ${CTEST_SCRIPT_DIRECTORY}/..
+                RESULT_VARIABLE ResultVar
+                OUTPUT_VARIABLE OutputVar
+                ERROR_QUIET)
+if(NOT ${ResultVar} EQUAL 0)
+  message(FATAL_ERROR "Failed to switch to branch next in super project:\n\n${OutputVar}")
 endif()
-execute_process(WORKING_DIRECTORY ${CTEST_SCRIPT_DIRECTORY}/..
-    COMMAND ${Git_EXECUTABLE} pull
-    RESULT_VARIABLE ret_var
-    OUTPUT_VARIABLE out_var
-    )
-if(NOT ${ret_var} EQUAL 0)
-  message(FATAL_ERROR "Failed to Pull Updates in Super Project.")
+execute_process(COMMAND ${Git_EXECUTABLE} pull
+                WORKING_DIRECTORY ${CTEST_SCRIPT_DIRECTORY}/..
+                RESULT_VARIABLE ResultVar
+                OUTPUT_VARIABLE OutputVar
+                ERROR_QUIET)
+if(NOT ${ResultVar} EQUAL 0)
+  message(FATAL_ERROR "Failed to pull updates in super project:\n\n${OutputVar}")
 endif()
 message("================================================================================")
 
-###############################################################################
-# Check Current branch & Update Sub Projects                                  #
-###############################################################################
 
-foreach(EACH_MODULE ${ALL_MODULE_LIST})
-  set(${EACH_MODULE}_SOURCE_DIRECTORY ${CTEST_SCRIPT_DIRECTORY}/../src/${${EACH_MODULE}})
-  set(${EACH_MODULE}_BINARY_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/${${EACH_MODULE}})
-
-  if(NOT EXISTS ${${EACH_MODULE}_SOURCE_DIRECTORY})
-    message(FATAL_ERROR "Unable to find ${EACH_MODULE} source directory: ${${EACH_MODULE}_SOURCE_DIRECTORY}")
+################################################################################
+# Check current branch & update sub-projects                                   #
+################################################################################
+foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
+  if(${SubProject} STREQUAL "Vault")
+    set(${SubProject}SourceDirectory ${CTEST_SCRIPT_DIRECTORY}/../src/pd)
+    set(${SubProject}BinaryDirectory ${CMAKE_CURRENT_BINARY_DIR}/src/pd)
+  else()
+    set(${SubProject}SourceDirectory ${CTEST_SCRIPT_DIRECTORY}/../src/${SubProject})
+    set(${SubProject}BinaryDirectory ${CMAKE_CURRENT_BINARY_DIR}/src/${SubProject})
   endif()
-
-  if(NOT EXISTS ${${EACH_MODULE}_BINARY_DIRECTORY})
-    message(FATAL_ERROR "Unable to find ${EACH_MODULE} binary directory")
+  if(NOT EXISTS ${${SubProject}SourceDirectory} OR NOT EXISTS ${${SubProject}BinaryDirectory})
+    message(FATAL_ERROR "Unable to find ${SubProject} source (${${SubProject}SourceDirectory}) or binary (${${SubProject}BinaryDirectory}) directory.")
   endif()
 endforeach()
-message("All Sub-Project Sources & Binary Directories Verified")
-message("Verifying Current branches of Sub-Projects:")
-foreach(EACH_MODULE ${ALL_MODULE_LIST})
-  execute_process(WORKING_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY}
-      COMMAND ${Git_EXECUTABLE} status --short --branch
-      RESULT_VARIABLE ret_var
-      OUTPUT_VARIABLE out_var
-      )
-  if(${ret_var} EQUAL 0)
-    string(REGEX REPLACE "\n.*" "" CURRENT_BRANCH ${out_var})
-    string(REGEX REPLACE "[.][.][.].*" "" CURRENT_BRANCH ${CURRENT_BRANCH})
-    string(REGEX REPLACE "## " "" CURRENT_BRANCH ${CURRENT_BRANCH})
-    message("  ${${EACH_MODULE}} : ${CURRENT_BRANCH}")
-    set(${EACH_MODULE}_CURRENT_BRANCH ${CURRENT_BRANCH})
+message("All sub-project source & binary directories verified")
+
+foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
+  execute_process(COMMAND ${Git_EXECUTABLE} status --short --branch
+                  WORKING_DIRECTORY ${${SubProject}SourceDirectory}
+                  OUTPUT_VARIABLE OutputVar
+                  RESULT_VARIABLE ResultVar)
+  if(${ResultVar} EQUAL 0)
+    string(REGEX REPLACE "\n.*" "" CurrentBranch ${OutputVar})
+    string(REGEX REPLACE "[.][.][.].*" "" CurrentBranch ${CurrentBranch})
+    string(REGEX REPLACE "## " "" CurrentBranch ${CurrentBranch})
+    set(${SubProject}CurrentBranch ${CurrentBranch})
   else()
-    set(${EACH_MODULE}_CURRENT_BRANCH "unknown")
+    set(${SubProject}CurrentBranch "unknown")
   endif()
 
-  if(NOT ${EACH_MODULE}_CURRENT_BRANCH STREQUAL "next")
-    execute_process(WORKING_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY}
-        COMMAND ${Git_EXECUTABLE} checkout next
-        RESULT_VARIABLE ret_var
-        OUTPUT_VARIABLE out_var
-        )
-    if(NOT ${ret_var} EQUAL 0)
-      message(FATAL_ERROR "  Unable to switch branch to next")
+  if(NOT ${SubProject}CurrentBranch STREQUAL "next")
+    execute_process(COMMAND ${Git_EXECUTABLE} checkout next
+                    WORKING_DIRECTORY ${${SubProject}SourceDirectory}
+                    RESULT_VARIABLE ResultVar
+                    OUTPUT_VARIABLE OutputVar)
+    if(NOT ${ResultVar} EQUAL 0)
+      message(FATAL_ERROR "  Unable to switch branch to next:\n\n${OutputVar}")
     endif()
   endif()
 
-  execute_process(WORKING_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY}
-      COMMAND ${Git_EXECUTABLE} rev-parse --verify HEAD
-      RESULT_VARIABLE ret_var
-      OUTPUT_VARIABLE out_var
-      )
-  if(${ret_var} EQUAL 0)
-    set(${EACH_MODULE}_CURRENT_COMMIT ${out_var})
-    string(REPLACE "\n" "" ${EACH_MODULE}_CURRENT_COMMIT "${${EACH_MODULE}_CURRENT_COMMIT}")
-    execute_process(WORKING_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY}
-        COMMAND ${Git_EXECUTABLE} log -1 --format="Hash: %H%nAuthor: %an%nCommitter: %cn%nCommit Message: %s"
-        RESULT_VARIABLE ret_var
-        OUTPUT_VARIABLE out_var
-        )
-    if(${ret_var} EQUAL 0)
-      string(REPLACE "\"" "" out_var ${out_var})
-      set(${EACH_MODULE}_CURRENT_COMMIT_LOG_MSG ${out_var})
+  execute_process(COMMAND ${Git_EXECUTABLE} rev-parse --verify HEAD
+                  WORKING_DIRECTORY ${${SubProject}SourceDirectory}
+                  RESULT_VARIABLE ResultVar
+                  OUTPUT_VARIABLE OutputVar)
+  if(${ResultVar} EQUAL 0)
+    set(${SubProject}CurrentCommit ${OutputVar})
+    string(REPLACE "\n" "" ${SubProject}CurrentCommit "${${SubProject}CurrentCommit}")
+    execute_process(COMMAND ${Git_EXECUTABLE} log -1 --format="Hash: %H%nAuthor: %an%nCommitter: %cn%nCommit Message: %s"
+                    WORKING_DIRECTORY ${${SubProject}SourceDirectory}
+                    RESULT_VARIABLE ResultVar
+                    OUTPUT_VARIABLE OutputVar)
+    if(${ResultVar} EQUAL 0)
+      string(REPLACE "\"" "" OutputVar ${OutputVar})
+      set(${SubProject}CurrentCommitLogMsg ${OutputVar})
     else()
-      set(${EACH_MODULE}_CURRENT_COMMIT_LOG_MSG "N/A")
+      set(${SubProject}CurrentCommitLogMsg "N/A")
     endif()
   else()
-    set(${EACH_MODULE}_CURRENT_COMMIT "unknown")
+    set(${SubProject}CurrentCommit "unknown")
   endif()
 
-  execute_process(WORKING_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY}
-      COMMAND ${Git_EXECUTABLE} pull
-      RESULT_VARIABLE ret_var
-      OUTPUT_VARIABLE out_var
-      )
-  if(${ret_var} EQUAL 0)
-    execute_process(WORKING_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY}
-      COMMAND ${Git_EXECUTABLE} rev-parse --verify HEAD
-      RESULT_VARIABLE ret_var
-      OUTPUT_VARIABLE out_var
-      )
-    if(${ret_var} EQUAL 0)
-      set(${EACH_MODULE}_NEW_COMMIT ${out_var})
-      string(REPLACE "\n" "" ${EACH_MODULE}_NEW_COMMIT "${${EACH_MODULE}_NEW_COMMIT}")
-      execute_process(WORKING_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY}
-          COMMAND ${Git_EXECUTABLE} log -1 --format="Hash: %H%nAuthor: %an%nCommitter: %cn%nCommit Message: %s"
-          RESULT_VARIABLE ret_var
-          OUTPUT_VARIABLE out_var
-          )
-      if(${ret_var} EQUAL 0)
-        string(REPLACE "\"" "" out_var ${out_var})
-        set(${EACH_MODULE}_NEW_COMMIT_LOG_MSG ${out_var})
+  execute_process(COMMAND ${Git_EXECUTABLE} pull
+                  WORKING_DIRECTORY ${${SubProject}SourceDirectory}
+                  RESULT_VARIABLE ResultVar
+                  OUTPUT_VARIABLE OutputVar
+                  ERROR_QUIET)
+  if(${ResultVar} EQUAL 0)
+    execute_process(COMMAND ${Git_EXECUTABLE} rev-parse --verify HEAD
+                    WORKING_DIRECTORY ${${SubProject}SourceDirectory}
+                    RESULT_VARIABLE ResultVar
+                    OUTPUT_VARIABLE OutputVar)
+    if(${ResultVar} EQUAL 0)
+      set(${SubProject}NewCommit ${OutputVar})
+      string(REPLACE "\n" "" ${SubProject}NewCommit "${${SubProject}NewCommit}")
+      execute_process(COMMAND ${Git_EXECUTABLE} log -1 --format="Hash: %H%nAuthor: %an%nCommitter: %cn%nCommit Message: %s"
+                      WORKING_DIRECTORY ${${SubProject}SourceDirectory}
+                      RESULT_VARIABLE ResultVar
+                      OUTPUT_VARIABLE OutputVar)
+      if(${ResultVar} EQUAL 0)
+        string(REPLACE "\"" "" OutputVar ${OutputVar})
+        set(${SubProject}NewCommitLogMsg ${OutputVar})
       else()
-        set(${EACH_MODULE}_NEW_COMMIT_LOG_MSG "N/A")
+        set(${SubProject}NewCommitLogMsg "N/A")
       endif()
-      if(NOT ${EACH_MODULE}_NEW_COMMIT STREQUAL ${EACH_MODULE}_CURRENT_COMMIT)
-        SET_TEST_NEEDED_FOR_DEPENDANTS(${EACH_MODULE})
-      endif()
+#       if(NOT ${SubProject}NewCommit STREQUAL ${SubProject}CurrentCommit)
+#         SET_TEST_NEEDED_FOR_DEPENDANTS(${SubProject})
+#       endif()
     else()
-      message(FATAL_ERROR "Unable to retrieve commit id. Aborting Process")
+      message(FATAL_ERROR "Unable to retrieve commit ID. Aborting Process:\n\n${OutputVar}")
     endif()
   else()
-    message(FATAL_ERROR "Unable to pull from next. Aborting Process")
+    message(FATAL_ERROR "Unable to pull from next. Aborting Process:\n\n${OutputVar}")
   endif()
-  if(NOT ${DASHBOARD_MODEL} STREQUAL "Continuous")
-    SET_TEST_NEEDED_FOR_DEPENDANTS(${EACH_MODULE})
-  endif()
+  string(SUBSTRING ${${SubProject}CurrentCommit} 0 7 OldCommit)
+  string(SUBSTRING ${${SubProject}NewCommit} 0 7 NewCommit)
+  message("-- ${SubProject} \t on '${CurrentBranch}'.  Old commit: ${OldCommit}  New commit: ${NewCommit}")
 endforeach()
 message("================================================================================")
 
-###############################################################################
-# Build Project & Run tests if needed                                         #
-###############################################################################
 
-foreach(EACH_MODULE ${ALL_MODULE_LIST})
-  if(${EACH_MODULE}_NEEDS_TESTED)
-		message("Running CTest Build & Test for - ${EACH_MODULE}")
-		unset(MODULE_SOURCE_DIRECTORY CACHE)
-		unset(MODULE_BINARY_DIRECTORY CACHE)
-		unset(CTEST_SOURCE_DIRECTORY CACHE)
-		unset(CTEST_BINARY_DIRECTORY CACHE)
-		unset(CTEST_BUILD_NAME CACHE)
-		unset(CTEST_CUSTOM_COVERAGE_EXCLUDE)
-		unset(CTEST_CUSTOM_MEMCHECK_IGNORE)
-		unset(CTEST_NOTES_FILES CACHE)
+################################################################################
+# Build Project & Run tests if needed                                          #
+################################################################################
+ctest_start(${DashboardModel} TRACK ${DashboardModel})
 
-		set(CTEST_BUILD_NAME "${DASHBOARD_MODEL} Build - ${CTEST_CONFIGURATION_TYPE} ${MACHINE_BUILD_TYPE} , Script Version - ${SCRIPT_VERSION}")
-		set(MODULE_SOURCE_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY})
-		set(MODULE_BINARY_DIRECTORY ${${EACH_MODULE}_BINARY_DIRECTORY})
-		set(CTEST_SOURCE_DIRECTORY ${MODULE_SOURCE_DIRECTORY})
-		set(CTEST_BINARY_DIRECTORY ${MODULE_BINARY_DIRECTORY})
+foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
+	message("Running CTest build & test for ${SubProject}")
+# 	unset(CTEST_SOURCE_DIRECTORY CACHE)
+# 	unset(CTEST_BINARY_DIRECTORY CACHE)
+# 	unset(CTEST_BUILD_NAME CACHE)
+# 	unset(CTEST_NOTES_FILES CACHE)
+  set_property(GLOBAL PROPERTY SubProject ${SubProject})
+  set_property(GLOBAL PROPERTY Label ${SubProject})
 
-		CTEST_START(${DASHBOARD_MODEL} TRACK ${DASHBOARD_MODEL})
-		CTEST_READ_CUSTOM_FILES(${CTEST_BINARY_DIRECTORY})
-		if (WIN32)
-		  CTEST_CONFIGURE(BUILD "${CMAKE_CURRENT_BINARY_DIR}" SOURCE "${CTEST_SCRIPT_DIRECTORY}/.." OPTIONS "-DCI_BUILD_ENVIRONMENT=TRUE -DCLEAN_TEMP=ALWAYS")
-		else()
-		  CTEST_CONFIGURE(BUILD "${CMAKE_CURRENT_BINARY_DIR}" SOURCE "${CTEST_SCRIPT_DIRECTORY}/..")
-		endif()
-		CTEST_BUILD(RETURN_VALUE build_result)
-		CTEST_TEST()
+	set(CTEST_BUILD_NAME "${DashboardModel} Build - ${CTEST_CONFIGURATION_TYPE} ${MachineBuildType}, Script Version - ${ScriptVersion}")
+# 	set(CTEST_SOURCE_DIRECTORY ${${SubProject}SourceDirectory})
+# 	set(CTEST_BINARY_DIRECTORY ${${SubProject}BinaryDirectory})
+  set(CTEST_BUILD_TARGET "All${SubProject}")
 
-		unset(TagId CACHE)
-		find_file(TagFile NAMES TAG PATHS ${CTEST_BINARY_DIRECTORY}/Testing NO_DEFAULT_PATH)
-		file(READ ${TagFile} TagFileContents)
-		string(REPLACE "\n" "" TagFileContents "${TagFileContents}")
-		string(REGEX REPLACE "[A-Za-z]+" "" TagId "${TagFileContents}")
+	ctest_read_custom_files(${CTEST_BINARY_DIRECTORY})
+	if(WIN32)
+	  ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}" SOURCE "${CTEST_SCRIPT_DIRECTORY}/.." OPTIONS "-DCI_BUILD_ENVIRONMENT=TRUE -DCLEAN_TEMP=ALWAYS")
+	else()
+	  ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}" SOURCE "${CTEST_SCRIPT_DIRECTORY}/..")
+	endif()
+	ctest_build(BUILD "${CTEST_BINARY_DIRECTORY}" RETURN_VALUE BuildResult)
 
-		#Modify XML Files on Windows for Machine Build-Type x64
-		if(WIN32)
-		  if(${MACHINE_BUILD_TYPE} STREQUAL "x64")
-		    set(XML_FILES
-		            "Configure.xml"
-		            "Build.xml"
-		            "Test.xml"
-		            )
-		    foreach(XML_FILE ${XML_FILES})
-		      unset(ModFile CACHE)
-		      unset(ModFileContents CACHE)
-		      find_file(ModFile NAMES ${XML_FILE} PATHS ${CTEST_BINARY_DIRECTORY}/Testing/${TagId} NO_DEFAULT_PATH)
-		      file(READ ${ModFile} ModFileContents)
-		      string(REPLACE "OSPlatform=\"x86\"" "OSPlatform=\"${MACHINE_BUILD_TYPE}\"" ModFileContents "${ModFileContents}")
-		      file(WRITE ${ModFile} "${ModFileContents}")
-		    endforeach()
-		  endif()
-		endif()
+  # runs only tests that have a LABELS property matching "${SubProject}"
+  ctest_test(BUILD "${CTEST_BINARY_DIRECTORY}" INCLUDE_LABEL "${SubProject}")
 
-		# Write Git-Update Details To File
-		unset(CHANGED_FILES CACHE)
-		execute_process(WORKING_DIRECTORY ${${EACH_MODULE}_SOURCE_DIRECTORY}
-		    COMMAND ${Git_EXECUTABLE} diff --stat ${${EACH_MODULE}_CURRENT_COMMIT} ${${EACH_MODULE}_NEW_COMMIT}
-		    RESULT_VARIABLE ret_var
-		    OUTPUT_VARIABLE CHANGED_FILES
-		    )
-		if(ret_var EQUAL 0)
-		  file(WRITE "${CTEST_BINARY_DIRECTORY}/Testing/${TagId}/GitDetails.txt" "Old Commit Details: \n${${EACH_MODULE}_CURRENT_COMMIT_LOG_MSG}
-		      \nNew Commit: \n${${EACH_MODULE}_NEW_COMMIT_LOG_MSG}
-		      \nFiles Changed:
-		      \n${CHANGED_FILES}")
-		  set(CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/Testing/${TagId}/GitDetails.txt")
-		  CTEST_SUBMIT(PARTS Configure Build Test Notes RETURN_VALUE result)
-		else()
-		  CTEST_SUBMIT(PARTS Configure Build Test RETURN_VALUE result)
-		endif()
-		if(${result} EQUAL 0)
-		  message("CI Build Submitted - ${EACH_MODULE}")
-		else()
-		  message("CI Build Failed to Submit - ${EACH_MODULE}")
-		endif()
-		if(NOT ${build_result} EQUAL 0)
-		  message("${EACH_MODULE} failed during build, exiting script")
-		  break()
-		endif()
-  endif()
+ 	unset(TagId CACHE)
+	find_file(TagFile NAMES TAG PATHS ${CTEST_BINARY_DIRECTORY}/Testing NO_DEFAULT_PATH)
+	file(READ ${TagFile} TagFileContents)
+	string(REPLACE "\n" "" TagFileContents "${TagFileContents}")
+	string(REGEX REPLACE "[A-Za-z]+" "" TagId "${TagFileContents}")
+
+	# Modify XML files on x64 Windows
+	if(WIN32)
+	  if(${MachineBuildType} STREQUAL "x64")
+	    set(XML_Files "Configure.xml" "Build.xml" "Test.xml")
+	    foreach(XML_File ${XML_Files})
+	      unset(ModFile CACHE)
+	      unset(ModFileContents CACHE)
+	      find_file(ModFile NAMES ${XML_File} PATHS ${CTEST_BINARY_DIRECTORY}/Testing/${TagId} NO_DEFAULT_PATH)
+	      file(READ ${ModFile} ModFileContents)
+	      string(REPLACE "OSPlatform=\"x86\"" "OSPlatform=\"${MachineBuildType}\"" ModFileContents "${ModFileContents}")
+	      file(WRITE ${ModFile} "${ModFileContents}")
+	    endforeach()
+	  endif()
+	endif()
+
+	# Write git update details to file
+	unset(ChangedFiles CACHE)
+	execute_process(COMMAND ${Git_EXECUTABLE} diff --stat ${${SubProject}CurrentCommit} ${${SubProject}NewCommit}
+            	    WORKING_DIRECTORY ${${SubProject}SourceDirectory}
+            	    RESULT_VARIABLE ResultVar
+            	    OUTPUT_VARIABLE ChangedFiles)
+	if(ResultVar EQUAL 0)
+	  file(WRITE "${CTEST_BINARY_DIRECTORY}/Testing/${TagId}/GitDetails.txt" "Old Commit Details: \n${${SubProject}CurrentCommitLogMsg}
+	      \nNew Commit: \n${${SubProject}NewCommitLogMsg}
+	      \nFiles Changed:
+	      \n${CHANGED_FILES}")
+	  set(CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/Testing/${TagId}/GitDetails.txt")
+	endif()
+  ctest_submit(RETURN_VALUE ReturnVar)
+
+	if(${ReturnVar} EQUAL 0)
+	  message("CI Build Submitted - ${SubProject}")
+	else()
+	  message("CI Build Failed to Submit - ${SubProject}")
+	endif()
+	if(NOT ${BuildResult} EQUAL 0)
+	  message("${SubProject} failed during build, exiting script")
+	  break()
+	endif()
 endforeach()

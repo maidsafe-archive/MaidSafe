@@ -15,12 +15,12 @@ def main():
   root_path = sys.argv[4]
 
   # check if lifestuff_killer.py is needed an run it
-  retcode = subprocess.call([sys.executable, root_path + "/tools/lifestuff_killer.py"])
+  retcode = subprocess.call([sys.executable, os.path.join(root_path, "tools", "lifestuff_killer.py")])
   if retcode != 0:
     print("Failed executing lifestuff_killer.py")
     return retcode
 
-  # print "Percieved command: ", test_exe, test_filter, catch_exceptions
+  # print ("Percieved command: ", test_exe, test_filter, catch_exceptions)
   retcode = subprocess.call([test_exe, test_filter, catch_exceptions])
   return retcode
 
