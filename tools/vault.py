@@ -76,10 +76,19 @@ def RemoveChunkStores(num):
     if os.path.exists(directory):
           sh.rmtree(directory)
 
+def work(cmd):
+    return subprocess.call(cmd, shell=False)
+
+def RunNetwork(number_of_vaults):
+  pool = multiprocessing.Pool(processes=number_of_vaults)
+  pool.map(work, [utils.FindFile('TESTcommon', os.curdir)] * number_of_vaults)
+
+
 def SetUpNextNode(endpoint):
   prog = utils.GetProg('lifestuff_vault')
   print(prog, '--peer=' + endpoint.lstrip(), '--identity_index=2', '--chunk_path=.cs2')
-  return subprocess.call([prog, '--peer=' + endpoint.lstrip(), '--identity_index=2', '--chunk_path=.cs2'])
+  return subprocess.Popen([prog, '--peer=' + endpoint.lstrip(), '--identity_index=2', '--chunk_path=.cs2', '--start'])
+
 
 def SetUpRemainingNodes():
     print("todo")
@@ -92,8 +101,6 @@ def SanityCheck(num):
   else:
     print("Vault Sanity Check Passed")
     return True
-
-
 
 def main():
   print("This is the suite of Qa anaysis info for vaults")
