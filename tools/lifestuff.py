@@ -26,36 +26,9 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import sys
-try:
-    import psutil
-except ImportError:
-    print("please install psutil 'pip install psutil'")
-    print("or 'easy_install psutil'")
-    print("Website : http://code.google.com/p/psutil/")
-    sys.exit(1)
-
-PROC = "lifestuff_"
-
-def KillLifeStuff():
-  for proc in psutil.process_iter():
-    if proc.name.find(PROC) >= 0:
-      print("Killing process : " + proc.name)
-      try:
-        proc.kill()
-      except:
-        print("Could not kill all instances")
-
-def  Exists():
-  for proc in psutil.process_iter():
-    if proc.name.find(PROC) >= 0:
-      print("Failed to kill process : " + proc.name)
-      return -1;
-    print("No lifestuff processes running (now)")
-    return 0
 
 def main():
-  KillLifeStuff()
-  return Exists()
+  print("This is the suite for routing Qa analysis")
 
 if __name__ == "__main__":
   sys.exit(main())
