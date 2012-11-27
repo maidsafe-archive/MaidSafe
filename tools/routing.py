@@ -33,6 +33,11 @@ import random
 from subprocess import Popen, PIPE, STDOUT
 from time import sleep
 
+num_of_nodes = 20
+num_of_bootstraps = 2
+num_of_vaults = num_of_nodes / 2 - num_of_bootstraps
+num_of_clients = num_of_nodes - num_of_vaults - num_of_bootstraps
+
 
 def SetupKeys(num):
   print("Setting up keys ... ")
@@ -88,21 +93,10 @@ def SetupBootstraps():
   return [peer_0, p_b0, p_b1]
 
 
-def StopBootstraps(p_b0, p_b1):
-  p_b0.stdin.write('exit\n')
-  p_b1.stdin.write('exit\n')
-
-
-def KillBootstraps(p_b0, p_b1):
-  # TODO - needs to kill all 4 processes. Currently only kills 2.
-  p_b0.kill()
-  p_b1.kill()
-
-
 def AddRoutingObject(peer, idx):
-  if idx < 10:
+  if idx < (num_of_nodes / 2):
     p_v = Popen('./routing_node -s -i ' + str(idx) + ' -p ' + peer, shell = True, stdout=PIPE, stdin=PIPE)
-  if idx >= 10:
+  if idx >= (num_of_nodes / 2):
     p_v = Popen('./routing_node -s -c -i ' + str(idx) + ' -p ' + peer, shell = True, stdout=PIPE, stdin=PIPE)
 
   key_line = SearchKeyWordLine(p_v, 'Current Node joined', 3)
@@ -117,11 +111,11 @@ def SetupRoutingNodes(peer, num_vaults, num_clients):
   i = 0;
   while i < (num_vaults + num_clients):
     if i < num_vaults:
-      p_nodes[i] = AddRoutingObject(peer, i + 2)
+      p_nodes[i] = AddRoutingObject(peer, i + num_of_bootstraps)
     if i >= num_vaults:
-      p_nodes[i] = AddRoutingObject(peer, 10 + (i - num_vaults))
+      p_nodes[i] = AddRoutingObject(peer, (num_of_nodes / 2) + (i - num_vaults))
     if p_nodes[i] == -1:
-      print 'Failed to add routing object ' + str(i + 2) + ' !'
+      print 'Failed to add routing object ' + str(i + num_of_bootstraps) + ' !'
       #TODO cleanup the previous opened nodes
       return -1
     i = i + 1
@@ -153,12 +147,12 @@ def JAV1(peer):
 
 
 def SendDirectMsg(p_nodes, src, dst, datasize):
-  print("Sending a " + str(datasize) + " Bytes msg from " + str(src + 2) + " to " + str(dst) + ", please wait ...")
+  print("Sending a " + str(datasize) + " Bytes msg from " + str(src) + " to " + str(dst) + ", please wait ...")
   p_nodes[src].stdin.write('datasize ' + str(datasize) + '\n')
   p_nodes[src].stdin.write('senddirect ' + str(dst) + '\n')
   key_line = SearchKeyWordLine(p_nodes[src], 'Response received in', 10)
   if key_line == -1:
-    print("Failed in sending a msg from " + str(src + 2) + " to " + str(dst))
+    print("Failed in sending a msg from " + str(src) + " to " + str(dst))
     return -1;
   duration = key_line.split()[3]
   print(str(datasize) + " Bytes data exchanged in " + duration + " seconds")
@@ -172,9 +166,9 @@ def P1(peer, p_nodes):
   duration = 0
   num_iteration = 5
   for i in range(num_iteration): # vault to vault
-    source = random.randint(0, 5)
-    dest = random.randint(0, 7) # dest can be a bootstrap node
-    if dest != source + 2: # send to self will be super quick, shall be excluded
+    source = random.randint(0, num_of_nodes / 2 - 1)
+    dest = random.randint(0, num_of_nodes / 2 - 1) # dest can be a bootstrap node
+    if dest != source: # send to self will be super quick, shall be excluded
       result = SendDirectMsg(p_nodes, source, dest, 1048576)
       if result == -1:
         return -1
@@ -185,8 +179,8 @@ def P1(peer, p_nodes):
 
   duration = 0
   for i in range(num_iteration): # client to vault
-    source = random.randint(6, 11)
-    dest = random.randint(0, 7) # dest can be a bootstrap node
+    source = random.randint(num_of_nodes / 2, num_of_nodes - 1)
+    dest = random.randint(0, num_of_nodes / 2 - 1) # dest can be a bootstrap node
     result = SendDirectMsg(p_nodes, source, dest, 1048576)
     if result == -1:
       return -1
@@ -198,28 +192,27 @@ def P1(peer, p_nodes):
 def SanityCheck():
   print("Running Routing Sanity Check, please wait ....")
 
-  if not SetupKeys(20) == 0:
+  if not SetupKeys(num_of_nodes) == 0:
     return -1
   items = SetupBootstraps()
   if items == -1:
     return -1
   peer = items[0]
-  p_b0 = items[1]
-  p_b1 = items[2]
+  p_bs = [items[1], items[2]]
 
   if JAV1(peer) == 0:
     print 'Routing Sanity Check  Test JAV1  : PASSED'
   else:
     print 'Routing Sanity Check  Test JAV1  : FAILED'
 
-  p_nodes = SetupRoutingNodes(peer, 6, 6)
+  p_new_nodes = SetupRoutingNodes(peer, num_of_vaults, num_of_clients)
+  p_nodes = p_bs + p_new_nodes
   if P1(peer, p_nodes) == 0:
     print 'Routing Sanity Check  Test P1  : PASSED'
   else:
     print 'Routing Sanity Check  Test P1  : FAILED'
 
   StopNodes(p_nodes)
-  StopBootstraps(p_b0, p_b1)
 
 
 def main():
