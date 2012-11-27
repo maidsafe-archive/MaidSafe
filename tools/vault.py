@@ -29,16 +29,22 @@ import sys
 import os
 import subprocess
 from subprocess import PIPE, STDOUT
+from multiprocessing import Process
 import utils
 import re
+import psutil
+import time
 import datetime
 import shutil
+import lifestuff_killer
 
 def SetupBootstraps(num):
   print("Setting up keys ... ")
   prog = utils.GetProg('pd_key_helper')
+  CreateChunkStores(num)
   print prog;
-  proc = subprocess.Popen([prog, '-c', '-b', '-n', str(num)], shell = False, stdout=PIPE)
+  proc = subprocess.Popen([prog, '-c', '-b', '-n', str(num + 6)], shell = False, stdout=PIPE,\
+      stderr=None)
   print("Started bootstrap with PID " + str(proc.pid))
   i = 0
   line_limit = 50
@@ -54,6 +60,7 @@ def SetupBootstraps(num):
       boostrap_endpoint1 = ep[0]
       boostrap_endpoint2 = data[2]
       if SetUpNextNode(data[1]+ ':' + ep[0]):
+        time.sleep(2) # allow node to bootstrap
         break
       else:
         return False
@@ -62,30 +69,68 @@ def SetupBootstraps(num):
   if i == line_limit or time_delta >= datetime.timedelta(seconds=timeout):
     print "Failed to get endpoint (timeout ??)"
     return False
+  proc.kill()
+  RunNetwork(num, data[1])
+  print("Wait 20 secs for network")
+  time.sleep(10)
   return True
+
+def SaveKeys():
+  prog = utils.GetProg('pd_key_helper')
+  subprocess.call([prog, '-ls', '--peer=' + utils.GetIp() + ':5483'], shell = False, stdout=None,\
+      stderr=None)
+
+def ExtendedTest(num):
+  prog = utils.GetProg('pd_key_helper')
+  SaveKeys()
+  subprocess.call([prog, '-lx', '--peer=' + utils.GetIp() + ':5483',\
+    '--chunk_set_count=' + str(num)], shell = False, stdout=None, stderr=None)
+
+def SetUpKeys(num):
+  print("Setting up keys ... ")
+  prog = utils.GetProg('pd_key_helper')
+  CreateChunkStores(num)
+  print prog;
+  return subprocess.call([prog, '-c', '-n', str(num) ],\
+         shell = False, stdout=None, stderr=None)
 
 def CreateChunkStores(num):
   for dir_num in range(num):
-    directory = os.path.join(os.curdir, 'cs', str(dir_num))
+    directory = os.path.join(os.curdir, '.cs' + str(dir_num))
     if not os.path.exists(directory):
           os.makedirs(directory)
 
 def RemoveChunkStores(num):
   for dir_num in range(num):
-    directory = os.path.join(os.curdir, 'cs', str(dir_num))
+    directory = os.path.join(os.curdir, '.cs' + str(dir_num))
     if os.path.exists(directory):
-          sh.rmtree(directory)
+          shutil.rmtree(directory)
+
+def work(number, ip_address):
+  prog = utils.GetProg('lifestuff_vault')
+  return subprocess.call([prog, '--peer=' + ip_address.lstrip() + ':5483' ,\
+        '--identity_index=' + str(number),\
+        '--chunk_path=.cs' + str(number), '--start'],\
+        shell = False, stdout=None, stderr=None)
+
+
+def RunNetwork(number_of_vaults, ip_address):
+  for vault in range(3, number_of_vaults):
+    p = Process(target = work, args=(vault, ip_address))
+    p.start()
+
 
 def SetUpNextNode(endpoint):
   prog = utils.GetProg('lifestuff_vault')
-  print(prog, '--peer=' + endpoint.lstrip(), '--identity_index=2', '--chunk_path=.cs2')
-  return subprocess.call([prog, '--peer=' + endpoint.lstrip(), '--identity_index=2', '--chunk_path=.cs2'])
+  return subprocess.Popen([prog, '--peer=' + endpoint.lstrip(), '--identity_index=2',\
+      '--chunk_path=.cs2', '--start'], shell = False, stdout=None, stderr=None)
 
 def SetUpRemainingNodes():
     print("todo")
 
 def SanityCheck(num):
-  pid = SetupBootstraps(10)
+  pid = SetupBootstraps(num)
+  RemoveChunkStores(num)
   if pid == False:
     print("Vault Sanity Check failed")
     return False
@@ -93,11 +138,41 @@ def SanityCheck(num):
     print("Vault Sanity Check Passed")
     return True
 
+def VaultMenu():
+  option = 'a'
+  utils.ClearScreen()
+  while(option != 'm'):
+    utils.ClearScreen()
+    print(str(utils.CountProcs('lifestuff_vault')) + " Vaults running on this machine")
+    print ("================================")
+    print ("MaidSafe Quality Assurance Suite | Vault Actions")
+    print ("================================")
+    print ("1: Bootstrap and set up vaults")
+    print ("2: Set up vaults only (bootstrap elsewhere)")
+    print ("3: Extended Checks")
+    print ("4: Kill all vaults on this machine")
+    option = raw_input("Please select an option (m for main Qa menu): ")
+    if (option == "1"):
+      number = raw_input("Please input number of vaults to run (minimum 10): ")
+      SanityCheck(int(number) + 2)
+      SaveKeys()
+    if (option == "2"):
+      number = raw_input("Please input number of vaults to run")
+      ip = raw_input("Please input ip address of bootstrap machine")
+      SaveKeys()
+      RunNetwork(int(number), ip)
+    if (option == "3"):
+      number = raw_input("Please input number of chunks in test (def 10)")
+      ExtendedTest(number)
+    if (option == "4"):
+      lifestuff_killer.KillLifeStuff()
+  utils.ClearScreen()
+
 
 
 def main():
   print("This is the suite of Qa anaysis info for vaults")
-
+  VaultMenu()
 if __name__ == "__main__":
   sys.exit(main())
 
