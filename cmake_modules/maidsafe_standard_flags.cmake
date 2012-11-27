@@ -121,7 +121,7 @@ if(MSVC)
 
   set_target_properties(${ALL_LIBRARIES} PROPERTIES STATIC_LIBRARY_FLAGS_RELEASE "/LTCG")
 
-  set_target_properties(${ALL_EXECUTABLES} PROPERTIES
+  set_target_properties(${AllExesForCurrentProject} PROPERTIES
                           LINK_FLAGS_RELEASE "/OPT:REF /OPT:ICF /LTCG /INCREMENTAL:NO"
                           LINK_FLAGS_DEBUG "/DEBUG"
                           LINK_FLAGS_RELWITHDEBINFO "/DEBUG /LTCG /INCREMENTAL:NO"
