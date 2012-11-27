@@ -152,8 +152,22 @@ def JAV1(peer):
   return 0
 
 
+def JAV2(peer):
+  print("Running Routing Sanity Check JAV2 Test, please wait ....")
+  p_v = AddRoutingObject(peer, 8)
+  if p_v == -1:
+    print 'Failed to add routing object!'
+    return -1
+  #TODO - self-message
+  p_v.stdin.write('exit' + '\n')
+  sleep(2)
+  if p_v.poll() == None:
+    print "Failed to stop node 2!"
+    return -1
+  return 0
+
 def SendDirectMsg(p_nodes, src, dst, datasize):
-  print("Sending a " + str(datasize) + " Bytes msg from " + str(src + 2) + " to " + str(dst) + ", please wait ...")
+  print("\tSending a " + str(datasize) + " Bytes msg from " + str(src + 2) + " to " + str(dst) + ", please wait ...")
   p_nodes[src].stdin.write('datasize ' + str(datasize) + '\n')
   p_nodes[src].stdin.write('senddirect ' + str(dst) + '\n')
   key_line = SearchKeyWordLine(p_nodes[src], 'Response received in', 10)
@@ -161,7 +175,7 @@ def SendDirectMsg(p_nodes, src, dst, datasize):
     print("Failed in sending a msg from " + str(src + 2) + " to " + str(dst))
     return -1;
   duration = key_line.split()[3]
-  print(str(datasize) + " Bytes data exchanged in " + duration + " seconds")
+  print("\t"+ str(datasize) + " Bytes data exchanged in " + duration + " seconds")
   return ParseSecondsFromString(duration)
 
 
@@ -181,7 +195,7 @@ def P1(peer, p_nodes):
       duration = duration + result
     else:
       i = i - 1
-  print('Average transmission time of 1 MB data from vault to vault is : ' + str(duration / num_iteration))
+  print('\tAverage transmission time of 1 MB data from vault to vault is : ' + str(duration / num_iteration))
 
   duration = 0
   for i in range(num_iteration): # client to vault
@@ -191,7 +205,7 @@ def P1(peer, p_nodes):
     if result == -1:
       return -1
     duration = duration + result
-  print('Average transmission time of 1 MB data from client to vault is : ' + str(duration / num_iteration))
+  print('\tAverage transmission time of 1 MB data from client to vault is : ' + str(duration / num_iteration))
   return 0
 
 
@@ -208,15 +222,21 @@ def SanityCheck():
   p_b1 = items[2]
 
   if JAV1(peer) == 0:
-    print 'Routing Sanity Check  Test JAV1  : PASSED'
+    print 'Routing Sanity Check  Test JAV1  : PASSED\n'
   else:
-    print 'Routing Sanity Check  Test JAV1  : FAILED'
+    print 'Routing Sanity Check  Test JAV1  : FAILED\n'
 
   p_nodes = SetupRoutingNodes(peer, 6, 6)
-  if P1(peer, p_nodes) == 0:
-    print 'Routing Sanity Check  Test P1  : PASSED'
+
+  if JAV2(peer) == 0:
+    print 'Routing Sanity Check  Test JAV2  : PASSED\n'
   else:
-    print 'Routing Sanity Check  Test P1  : FAILED'
+    print 'Routing Sanity Check  Test JAV2  : FAILED\n'
+
+  if P1(peer, p_nodes) == 0:
+    print 'Routing Sanity Check  Test P1  : PASSED\n'
+  else:
+    print 'Routing Sanity Check  Test P1  : FAILED\n'
 
   StopNodes(p_nodes)
   StopBootstraps(p_b0, p_b1)
