@@ -29,51 +29,21 @@ import sys
 import datetime
 import subprocess
 import utils
+import random
 from subprocess import Popen, PIPE, STDOUT
 from time import sleep
-from threading  import Thread
-try:
-    from Queue import Queue, Empty
-except ImportError:
-    from queue import Queue, Empty  # python 3.x
 
 
 def SetupKeys(num):
   print("Setting up keys ... ")
   return subprocess.call(['./routing_key_helper', '-c', '-p', '-n', str(num)], stdout=PIPE)
 
-def enqueue_output(out, queue):
-  for line in iter(out.readline, b''):
-    queue.put(line)
-  try:
-    out.close()
-  except Exception, e:
-    print("Exception when closing : " + repr(e))
-
 
 def SearchKeyWordLine(process, keyword, timeout):
-  q = Queue()
-  t = Thread(target=enqueue_output, args=(process.stdout, q))
-  t.daemon = True # thread dies with the program
-  t.start()
-
-  next_line = b''
-  t_start = datetime.datetime.now()
-  time_delta = datetime.datetime.now() - t_start
+  next_line = process.stdout.readline()
   while next_line.find(keyword) == -1:
-    # read line without blocking
-    try:  next_line = q.get(timeout = 1)
-    except Empty:
-      next_line = b''
-#      print('no output yet')
-#    else: # got line
-#      print 'process\t' + next_line.rstrip()
-
-    if time_delta > datetime.timedelta(seconds=timeout):
-      print('timed out when searching keyword : ' + keyword)
-      return -1
-    time_delta = datetime.datetime.now() - t_start
-
+    next_line = process.stdout.readline()
+#    print 'process\t' + next_line.rstrip()
   return next_line
 
 
@@ -83,6 +53,14 @@ def ExtractNodeEndpoint(p_b):
     return -1
   peer = peer_line.split()[7]
   return peer
+
+
+def ParseSecondsFromString(duration):
+  times = duration.split(':')
+  hour = float(times[0])
+  minute = float(times[1])
+  second = float(times[2])
+  return hour * 3600 + minute * 60 + second
 
 
 def SetupBootstraps():
@@ -119,6 +97,7 @@ def KillBootstraps(p_b0, p_b1):
   # TODO - needs to kill all 4 processes. Currently only kills 2.
   p_b0.kill()
   p_b1.kill()
+
 
 def AddRoutingObject(peer, idx):
   if idx < 10:
@@ -173,18 +152,46 @@ def JAV1(peer):
   return 0
 
 
+def SendDirectMsg(p_nodes, src, dst, datasize):
+  print("Sending a " + str(datasize) + " Bytes msg from " + str(src + 2) + " to " + str(dst) + ", please wait ...")
+  p_nodes[src].stdin.write('datasize ' + str(datasize) + '\n')
+  p_nodes[src].stdin.write('senddirect ' + str(dst) + '\n')
+  key_line = SearchKeyWordLine(p_nodes[src], 'Response received in', 10)
+  if key_line == -1:
+    print("Failed in sending a msg from " + str(src + 2) + " to " + str(dst))
+    return -1;
+  duration = key_line.split()[3]
+  print(str(datasize) + " Bytes data exchanged in " + duration + " seconds")
+  return ParseSecondsFromString(duration)
+
+
 def P1(peer, p_nodes):
   if p_nodes == -1:
     return -1;
   print("Running Routing Sanity Check P1 Test, please wait ....")
-  p_nodes[0].stdin.write('datasize 1048576' + '\n')
-  p_nodes[0].stdin.write('senddirect 1' + '\n')
+  duration = 0
+  num_iteration = 5
+  for i in range(num_iteration): # vault to vault
+    source = random.randint(0, 5)
+    dest = random.randint(0, 7) # dest can be a bootstrap node
+    if dest != source + 2: # send to self will be super quick, shall be excluded
+      result = SendDirectMsg(p_nodes, source, dest, 1048576)
+      if result == -1:
+        return -1
+      duration = duration + result
+    else:
+      i = i - 1
+  print('Average transmission time of 1 MB data from vault to vault is : ' + str(duration / num_iteration))
 
-  key_line = SearchKeyWordLine(p_nodes[0], 'Response received in', 10)
-  if key_line == -1:
-    return -1;
-  duration = key_line.split()[3]
-  print("1MB data exchanged in " + duration + " seconds")
+  duration = 0
+  for i in range(num_iteration): # client to vault
+    source = random.randint(6, 11)
+    dest = random.randint(0, 7) # dest can be a bootstrap node
+    result = SendDirectMsg(p_nodes, source, dest, 1048576)
+    if result == -1:
+      return -1
+    duration = duration + result
+  print('Average transmission time of 1 MB data from client to vault is : ' + str(duration / num_iteration))
   return 0
 
 
