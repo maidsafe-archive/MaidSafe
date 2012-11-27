@@ -31,23 +31,54 @@ import subprocess
 import utils
 from subprocess import Popen, PIPE, STDOUT
 from time import sleep
+from threading  import Thread
+try:
+    from Queue import Queue, Empty
+except ImportError:
+    from queue import Queue, Empty  # python 3.x
 
 
 def SetupKeys(num):
   print("Setting up keys ... ")
   return subprocess.call(['./routing_key_helper', '-c', '-p', '-n', str(num)], stdout=PIPE)
 
+def enqueue_output(out, queue):
+  for line in iter(out.readline, b''):
+    queue.put(line)
+  try:
+    out.close()
+  except Exception, e:
+    print("Exception when closing : " + repr(e))
 
-def SearchKeyWordLine(process, keyword):
-  next_line = process.stdout.readline()
+
+def SearchKeyWordLine(process, keyword, timeout):
+  q = Queue()
+  t = Thread(target=enqueue_output, args=(process.stdout, q))
+  t.daemon = True # thread dies with the program
+  t.start()
+
+  next_line = b''
+  t_start = datetime.datetime.now()
+  time_delta = datetime.datetime.now() - t_start
   while next_line.find(keyword) == -1:
-    next_line = process.stdout.readline()
-#    print 'process\t' + next_line.rstrip()
+    # read line without blocking
+    try:  next_line = q.get(timeout = 1)
+    except Empty:
+      next_line = b''
+#      print('no output yet')
+#    else: # got line
+#      print 'process\t' + next_line.rstrip()
+
+    if time_delta > datetime.timedelta(seconds=timeout):
+      print('timed out when searching keyword : ' + keyword)
+      return -1
+    time_delta = datetime.datetime.now() - t_start
+
   return next_line
 
 
 def ExtractNodeEndpoint(p_b):
-  peer_line = SearchKeyWordLine(p_b, 'Current BootStrap node endpoint info')
+  peer_line = SearchKeyWordLine(p_b, 'Current BootStrap node endpoint info', 3)
   if peer_line == -1:
     return -1
   peer = peer_line.split()[7]
@@ -95,7 +126,7 @@ def AddRoutingObject(peer, idx):
   if idx >= 10:
     p_v = Popen('./routing_node -s -c -i ' + str(idx) + ' -p ' + peer, shell = True, stdout=PIPE, stdin=PIPE)
 
-  key_line = SearchKeyWordLine(p_v, 'Current Node joined')
+  key_line = SearchKeyWordLine(p_v, 'Current Node joined', 3)
   if key_line == -1:
     return -1;
   return p_v
@@ -146,14 +177,14 @@ def P1(peer, p_nodes):
   if p_nodes == -1:
     return -1;
   print("Running Routing Sanity Check P1 Test, please wait ....")
-  p_nodes[0].stdin.write('datasize 10485760' + '\n')
+  p_nodes[0].stdin.write('datasize 1048576' + '\n')
   p_nodes[0].stdin.write('senddirect 1' + '\n')
 
-  key_line = SearchKeyWordLine(p_nodes[0], 'Response received in')
+  key_line = SearchKeyWordLine(p_nodes[0], 'Response received in', 10)
   if key_line == -1:
     return -1;
   duration = key_line.split()[3]
-  print("10MB data exchanged in " + duration + " seconds")
+  print("1MB data exchanged in " + duration + " seconds")
   return 0
 
 
