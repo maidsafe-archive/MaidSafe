@@ -58,9 +58,9 @@ function(checkout_to_branch SourceDir Branch)
                   WORKING_DIRECTORY ${SourceDir}
                   RESULT_VARIABLE ResultVar
                   OUTPUT_VARIABLE OutputVar
-                  ERROR_QUIET)
+                  ERROR_VARIABLE ErrorVar)
   if(NOT ${ResultVar} EQUAL 0)
-    message(FATAL_ERROR "Failed to switch to 'next' in ${SourceDir}:\n\n${OutputVar}")
+    message(FATAL_ERROR "Failed to switch to '${Branch}' in ${SourceDir}:\n\n${ErrorVar}")
   endif()
 endfunction()
 
@@ -87,19 +87,51 @@ function(get_git_log SourceDir CommitHash CommitMessage)
   set(${CommitMessage} ${${CommitMessage}} PARENT_SCOPE)
 endfunction()
 
-function(build_and_run SubProject ForceRun)
-  set_property(GLOBAL PROPERTY SubProject ${SubProject})
-  set_property(GLOBAL PROPERTY Label ${SubProject})
-  set(CTEST_BUILD_TARGET "All${SubProject}")
-  
-  if(NOT ${DashboardModel} STREQUAL Experimental)
+function(update_super_project)
+  if(DashboardModel STREQUAL "Continuous")
+    get_git_log(CTEST_SOURCE_DIRECTORY SuperCurrentCommit SuperCurrentCommitLogMsg)
+    execute_process(COMMAND ${CTEST_GIT_COMMAND} pull
+                    WORKING_DIRECTORY ${CTEST_SOURCE_DIRECTORY}
+                    RESULT_VARIABLE ResultVar
+                    OUTPUT_VARIABLE OutputVar
+                    ERROR_VARIABLE ErrorVar)
+    if(NOT ${ResultVar} EQUAL 0)
+      message(FATAL_ERROR "Failed to pull super project:\n\n${ErrorVar}")
+    endif()
+    get_git_log(CTEST_SOURCE_DIRECTORY SuperNewCommit SuperNewCommitLogMsg)
+    if(NOT ${SuperNewCommit} STREQUAL ${SuperCurrentCommit})
+      set(ForceRun ON PARENT_SCOPE)
+    endif()
+  elseif(DashboardModel STREQUAL "Nightly" OR DashboardModel STREQUAL "Weekly")
+    message("Updating super project")
+    ctest_update(RETURN_VALUE UpdatedCount)
+    if(UpdatedCount LESS 0)
+      message(FATAL_ERROR "Failed to update the super project.")
+    endif()
+  endif()
+endfunction()
+
+macro(update_sub_project SubProject)
+  if(DashboardModel STREQUAL "Continuous")
     message("Updating ${SubProject}")
     get_git_log(${SubProject}SourceDirectory ${SubProject}CurrentCommit ${SubProject}CurrentCommitLogMsg)
     ctest_update(SOURCE ${${SubProject}SourceDirectory} RETURN_VALUE UpdatedCount)
+    if(UpdatedCount LESS 0)
+      message(FATAL_ERROR "Failed to update ${SubProject}.")
+    elseif(UpdatedCount GREATER 0)
+      set(${SubProject}ShouldRun ON)
+    else()
+                                                                           # Look at project's dependencies
+      set(${SubProject}ShouldRun OFF)
+    endif()
     get_git_log(${SubProject}SourceDirectory ${SubProject}NewCommit ${SubProject}NewCommitLogMsg)
+  else()
+    set(${SubProject}ShouldRun ON)
   endif()
-  
-  if(${DashboardModel} STREQUAL Continuous AND NOT ${ForceRun} AND NOT ${UpdatedCount})
+endmacro()
+
+function(build_and_run SubProject ForceRun)
+  if(NOT ${SubProject}ShouldRun AND NOT ${ForceRun})
     return()
   endif()
 
@@ -112,7 +144,7 @@ function(build_and_run SubProject ForceRun)
   message("Testing ${SubProject}")
   ctest_test(INCLUDE_LABEL "${SubProject}")
 
-  if(NOT ${DashboardModel} STREQUAL Experimental)
+  if(NOT DashboardModel STREQUAL "Experimental")
    	unset(TagId CACHE)
   	find_file(TagFile NAMES TAG PATHS ${CTEST_BINARY_DIRECTORY}/Testing NO_DEFAULT_PATH)
   	file(READ ${TagFile} TagFileContents)
@@ -199,47 +231,54 @@ endforeach()
 
 
 ################################################################################
-# Checkout to 'next' if applicable                                             #
+# Prepare for tests                                                            #
 ################################################################################
-if(NOT ${DashboardModel} STREQUAL Experimental)
-  message("Checking out projects to 'next'")
-  checkout_to_branch(${CTEST_SOURCE_DIRECTORY} ci_script)
-  foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
-    checkout_to_branch(${${SubProject}SourceDirectory} next)
-  endforeach()
-  message("================================================================================")
+set(ForceRun OFF)
+if(DashboardModel STREQUAL "Experimental")
+elseif(DashboardModel STREQUAL "Continuous")
+#  ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
+  message("Checking out super project to 'next'")
+                                                                                                              checkout_to_branch(${CTEST_SOURCE_DIRECTORY} ci_script)
+  execute_process(COMMAND ${CTEST_GIT_COMMAND} pull
+                  WORKING_DIRECTORY ${CTEST_SOURCE_DIRECTORY}
+                  RESULT_VARIABLE ResultVar
+                  OUTPUT_VARIABLE OutputVar
+                  ERROR_VARIABLE ErrorVar)
+  if(NOT ${ResultVar} EQUAL 0)
+    message(FATAL_ERROR "Failed to pull super project:\n\n${ErrorVar}")
+  endif()
+elseif(DashboardModel STREQUAL "Nightly")
+  ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
+  message("Checking out super project to 'next'")
+  checkout_to_branch(${CTEST_SOURCE_DIRECTORY} next)
+elseif(DashboardModel STREQUAL "Weekly")
+  ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
+  message("Checking out super project to 'next'")
+  checkout_to_branch(${CTEST_SOURCE_DIRECTORY} next)
 endif()
+message("================================================================================")
 
 
 ################################################################################
 # Build project & run tests if needed                                          #
 ################################################################################
 while(${CTEST_ELAPSED_TIME} LESS 72000)
-  set(StartTime ${CTEST_ELAPSED_TIME})
   ctest_start(${DashboardModel} TRACK ${DashboardModel})
-
-  if(NOT ${DashboardModel} STREQUAL Experimental)
-    message("Updating super project")
-    ctest_update(RETURN_VALUE UpdatedCount)
-    message("Updated super project ---  ${UpdatedCount}")
-    if(UpdatedCount LESS 0)
-      message(FATAL_ERROR "Failed to update the super project.")
-    endif()
-  endif()
-  
-  set(ForceRun OFF)
-  if(${DashboardModel} STREQUAL Continuous AND UpdatedCount GREATER 0)
-    set(ForceRun ON)
-  endif()
+  update_super_project()
   ctest_submit(FILES "${CTEST_SOURCE_DIRECTORY}/Project.xml")
+
+  foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
+    set_property(GLOBAL PROPERTY SubProject ${SubProject})
+    set_property(GLOBAL PROPERTY Label ${SubProject})
+    set(CTEST_BUILD_TARGET "All${SubProject}")
+    update_sub_project(${SubProject})
+  endforeach()
 
   foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
     build_and_run(${SubProject} ${ForceRun})
   endforeach()
 
-  if(${DashboardModel} STREQUAL Continuous)
-    ctest_sleep(${StartTime} 300 ${CTEST_ELAPSED_TIME})
-  else()
+  if(NOT DashboardModel STREQUAL "Continuous")
     return()
   endif()
 endwhile()
