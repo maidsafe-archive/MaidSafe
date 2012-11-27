@@ -17,7 +17,7 @@
 # Pre-requirement: Use MS-Super Project                                        #
 # Example ctest -S CI_Continuous_Release.cmake                                 #
 ################################################################################
-set(ScriptVersion 4)
+set(ScriptVersion 5)
 include("${CTEST_SOURCE_DIRECTORY}/CTestConfig.cmake")
 
 # Avoid non-ascii characters in tool output.
