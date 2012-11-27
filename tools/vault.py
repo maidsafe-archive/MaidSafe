@@ -72,14 +72,19 @@ def SetupBootstraps(num):
   proc.kill()
   RunNetwork(num, data[1])
   print("Wait 20 secs for network")
-  time.sleep(20)
+  time.sleep(10)
   return True
 
 def SaveKeys():
   prog = utils.GetProg('pd_key_helper')
-  subprocess.call([prog, '-s', '--peer=' + utils.GetIp() + ':5483'], shell = False, stdout=None,\
+  subprocess.call([prog, '-ls', '--peer=' + utils.GetIp() + ':5483'], shell = False, stdout=None,\
       stderr=None)
 
+def ExtendedTest(num):
+  prog = utils.GetProg('pd_key_helper')
+  SaveKeys()
+  subprocess.call([prog, '-lx', '--peer=' + utils.GetIp() + ':5483',\
+    '--chunk_set_count=' + str(num)], shell = False, stdout=None, stderr=None)
 
 def SetUpKeys(num):
   print("Setting up keys ... ")
@@ -143,8 +148,8 @@ def VaultMenu():
     print ("MaidSafe Quality Assurance Suite | Vault Actions")
     print ("================================")
     print ("1: Bootstrap and set up vaults")
-    print ("2: Set up vaults only")
-    print ("3: Performance checks")
+    print ("2: Set up vaults only (bootstrap elsewhere)")
+    print ("3: Extended Checks")
     print ("4: Kill all vaults on this machine")
     option = raw_input("Please select an option (m for main Qa menu): ")
     if (option == "1"):
@@ -152,15 +157,13 @@ def VaultMenu():
       SanityCheck(int(number) + 2)
       SaveKeys()
     if (option == "2"):
-      number = raw_input("Please input number of vaults to run: ")
-      SaveKeys()
-      SetUpKeys(int(number))
-      RunNetwork(int(number), utils.GetIp())
-    if (option == "3"):
       number = raw_input("Please input number of vaults to run")
       ip = raw_input("Please input ip address of bootstrap machine")
       SaveKeys()
       RunNetwork(int(number), ip)
+    if (option == "3"):
+      number = raw_input("Please input number of chunks in test (def 10)")
+      ExtendedTest(number)
     if (option == "4"):
       lifestuff_killer.KillLifeStuff()
   utils.ClearScreen()
