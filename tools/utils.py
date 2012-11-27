@@ -24,8 +24,10 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+import socket
 import os
 import sys
+import psutil
 import subprocess
 import multiprocessing
 import lifestuff_killer
@@ -41,6 +43,13 @@ def CppLint():
   encoding = sys.getfilesystemencoding()
   script_path = os.path.dirname(unicode(__file__, encoding))
   return os.path.join(script_path, 'cpplint.py')
+
+def CountProcs(name):
+  num = 0
+  for proc in psutil.process_iter():
+    if proc.name.find(name) >= 0:
+       num = num + 1
+  return num
 
 def YesNo(question, default="yes"):
     valid = {"yes":True,   "y":True,  "ye":True,
@@ -63,6 +72,13 @@ def YesNo(question, default="yes"):
             return valid[choice]
         else:
             sys.stdout.write("Please respond with 'yes' or 'no' (or 'y' or 'n').\n")
+
+def GetIp():
+  s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+  s.connect(('8.8.8.8', 53))
+  ip = s.getsockname()[0]
+  s.close()
+  return ip
 
 def GetProg(prog):
   if os.name =='nt':
