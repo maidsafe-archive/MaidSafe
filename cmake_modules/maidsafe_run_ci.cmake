@@ -18,7 +18,6 @@
 # Example ctest -S CI_Continuous_Release.cmake                                 #
 ################################################################################
 set(ScriptVersion 4)
-set(CTEST_SOURCE_DIRECTORY ${CTEST_SCRIPT_DIRECTORY}/..)
 include("${CTEST_SOURCE_DIRECTORY}/CTestConfig.cmake")
 
 # Avoid non-ascii characters in tool output.
@@ -32,8 +31,8 @@ if(WIN32)
   endif()
 endif()
 
-set(CTEST_BINARY_DIRECTORY ${CTEST_SOURCE_DIRECTORY}/build_CI_${DashboardModel}_${CTEST_CONFIGURATION_TYPE})
 set(CTEST_BUILD_NAME "${DashboardModel} Build - ${CTEST_CONFIGURATION_TYPE} ${MachineBuildType}, Script Version - ${ScriptVersion}")
+
 if(NOT "${CTEST_CMAKE_GENERATOR}" MATCHES "[Mm]ake")
   set(CTEST_USE_LAUNCHERS 0)
 elseif(NOT DEFINED CTEST_USE_LAUNCHERS)
@@ -42,7 +41,7 @@ endif()
 
 message("Dashboard Model Selected:      ${DashboardModel}")
 message("Build Configuration Selected:  ${CTEST_CONFIGURATION_TYPE}")
-message("Hostname:                      ${Hostname}")
+message("Hostname:                      ${CTEST_SITE}")
 message("Make Generator:                ${CTEST_CMAKE_GENERATOR}")
 if(WIN32)
   message("Build Type:                    ${MachineBuildType}")
@@ -55,7 +54,7 @@ message("=======================================================================
 ################################################################################
 message("Updating super project on 'next'")
 #Update Super Project on next branch
-execute_process(COMMAND ${Git_EXECUTABLE} checkout next
+execute_process(COMMAND ${CTEST_GIT_COMMAND} checkout next
                 WORKING_DIRECTORY ${CTEST_SOURCE_DIRECTORY}
                 RESULT_VARIABLE ResultVar
                 OUTPUT_VARIABLE OutputVar
@@ -63,7 +62,7 @@ execute_process(COMMAND ${Git_EXECUTABLE} checkout next
 if(NOT ${ResultVar} EQUAL 0)
   message(FATAL_ERROR "Failed to switch to branch next in super project:\n\n${OutputVar}")
 endif()
-execute_process(COMMAND ${Git_EXECUTABLE} pull
+execute_process(COMMAND ${CTEST_GIT_COMMAND} pull
                 WORKING_DIRECTORY ${CTEST_SOURCE_DIRECTORY}
                 RESULT_VARIABLE ResultVar
                 OUTPUT_VARIABLE OutputVar
@@ -92,7 +91,7 @@ endforeach()
 message("All sub-project source & binary directories verified")
 
 foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
-  execute_process(COMMAND ${Git_EXECUTABLE} status --short --branch
+  execute_process(COMMAND ${CTEST_GIT_COMMAND} status --short --branch
                   WORKING_DIRECTORY ${${SubProject}SourceDirectory}
                   OUTPUT_VARIABLE OutputVar
                   RESULT_VARIABLE ResultVar)
@@ -106,7 +105,7 @@ foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
   endif()
 
   if(NOT ${SubProject}CurrentBranch STREQUAL "next")
-    execute_process(COMMAND ${Git_EXECUTABLE} checkout next
+    execute_process(COMMAND ${CTEST_GIT_COMMAND} checkout next
                     WORKING_DIRECTORY ${${SubProject}SourceDirectory}
                     RESULT_VARIABLE ResultVar
                     OUTPUT_VARIABLE OutputVar)
@@ -115,14 +114,14 @@ foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
     endif()
   endif()
 
-  execute_process(COMMAND ${Git_EXECUTABLE} rev-parse --verify HEAD
+  execute_process(COMMAND ${CTEST_GIT_COMMAND} rev-parse --verify HEAD
                   WORKING_DIRECTORY ${${SubProject}SourceDirectory}
                   RESULT_VARIABLE ResultVar
                   OUTPUT_VARIABLE OutputVar)
   if(${ResultVar} EQUAL 0)
     set(${SubProject}CurrentCommit ${OutputVar})
     string(REPLACE "\n" "" ${SubProject}CurrentCommit "${${SubProject}CurrentCommit}")
-    execute_process(COMMAND ${Git_EXECUTABLE} log -1 --format="Hash: %H%nAuthor: %an%nCommitter: %cn%nCommit Message: %s"
+    execute_process(COMMAND ${CTEST_GIT_COMMAND} log -1 --format="Hash: %H%nAuthor: %an%nCommitter: %cn%nCommit Message: %s"
                     WORKING_DIRECTORY ${${SubProject}SourceDirectory}
                     RESULT_VARIABLE ResultVar
                     OUTPUT_VARIABLE OutputVar)
@@ -136,20 +135,20 @@ foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
     set(${SubProject}CurrentCommit "unknown")
   endif()
 
-  execute_process(COMMAND ${Git_EXECUTABLE} pull
+  execute_process(COMMAND ${CTEST_GIT_COMMAND} pull
                   WORKING_DIRECTORY ${${SubProject}SourceDirectory}
                   RESULT_VARIABLE ResultVar
                   OUTPUT_VARIABLE OutputVar
                   ERROR_QUIET)
   if(${ResultVar} EQUAL 0)
-    execute_process(COMMAND ${Git_EXECUTABLE} rev-parse --verify HEAD
+    execute_process(COMMAND ${CTEST_GIT_COMMAND} rev-parse --verify HEAD
                     WORKING_DIRECTORY ${${SubProject}SourceDirectory}
                     RESULT_VARIABLE ResultVar
                     OUTPUT_VARIABLE OutputVar)
     if(${ResultVar} EQUAL 0)
       set(${SubProject}NewCommit ${OutputVar})
       string(REPLACE "\n" "" ${SubProject}NewCommit "${${SubProject}NewCommit}")
-      execute_process(COMMAND ${Git_EXECUTABLE} log -1 --format="Hash: %H%nAuthor: %an%nCommitter: %cn%nCommit Message: %s"
+      execute_process(COMMAND ${CTEST_GIT_COMMAND} log -1 --format="Hash: %H%nAuthor: %an%nCommitter: %cn%nCommit Message: %s"
                       WORKING_DIRECTORY ${${SubProject}SourceDirectory}
                       RESULT_VARIABLE ResultVar
                       OUTPUT_VARIABLE OutputVar)
@@ -187,7 +186,7 @@ foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
   set_property(GLOBAL PROPERTY Label ${SubProject})
   set(CTEST_BUILD_TARGET "All${SubProject}")
 
-  ctest_configure(OPTIONS ${ExtraConfigureArgs})
+  ctest_configure(OPTIONS "${ExtraConfigureArgs}")
   ctest_read_custom_files()
 	ctest_build(RETURN_VALUE BuildResult)
 
@@ -216,7 +215,7 @@ foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
 	endif()
 
 	# Write git update details to file
-	execute_process(COMMAND ${Git_EXECUTABLE} diff --stat ${${SubProject}CurrentCommit} ${${SubProject}NewCommit}
+	execute_process(COMMAND ${CTEST_GIT_COMMAND} diff --stat ${${SubProject}CurrentCommit} ${${SubProject}NewCommit}
             	    WORKING_DIRECTORY ${${SubProject}SourceDirectory}
             	    RESULT_VARIABLE ResultVar
             	    OUTPUT_VARIABLE ChangedFiles)
