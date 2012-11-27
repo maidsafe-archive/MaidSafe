@@ -38,23 +38,20 @@ def SetupKeys(num):
   return subprocess.call(['./routing_key_helper', '-c', '-p', '-n', str(num)], stdout=PIPE)
 
 
-def ExtractNodeEndpoint(p_b):
-  i = 0
-  line_limit = 50
-  t_start = datetime.datetime.now()
-  time_delta = datetime.datetime.now() - t_start
-  timeout = 30
-  while i < line_limit and time_delta < datetime.timedelta(seconds=timeout):
-    next_line = p_b.stdout.readline()
-    if next_line.find('Current BootStrap node endpoint info') != -1:
-      peer = next_line.split()[7]
-      return peer
-    i = i + 1
-    time_delta = datetime.datetime.now() - t_start
+def SearchKeyWordLine(process, keyword):
+  next_line = process.stdout.readline()
+  while next_line.find(keyword) == -1:
+    next_line = process.stdout.readline()
+#    print 'process\t' + next_line.rstrip()
+  return next_line
 
-  if i == line_limit or time_delta >= datetime.timedelta(seconds=timeout):
-    print "Failed to get endpoint"
+
+def ExtractNodeEndpoint(p_b):
+  peer_line = SearchKeyWordLine(p_b, 'Current BootStrap node endpoint info')
+  if peer_line == -1:
     return -1
+  peer = peer_line.split()[7]
+  return peer
 
 
 def SetupBootstraps():
@@ -98,24 +95,14 @@ def AddRoutingObject(peer, idx):
   if idx >= 10:
     p_v = Popen('./routing_node -s -c -i ' + str(idx) + ' -p ' + peer, shell = True, stdout=PIPE, stdin=PIPE)
 
-  i = 0
-  line_limit = 100
-  t_start = datetime.datetime.now()
-  time_delta = datetime.datetime.now() - t_start
-  timeout = 3
-  while i < line_limit and time_delta < datetime.timedelta(seconds=timeout):
-    next_line = p_v.stdout.readline()
-#    print 'p_v\t' + next_line.rstrip()
-    if next_line.find('Current Node joined') != -1:
-      break
-    i = i + 1
-    time_delta = datetime.datetime.now() - t_start
-
-  if i == line_limit or time_delta >= datetime.timedelta(seconds=timeout):
-    return -1
+  key_line = SearchKeyWordLine(p_v, 'Current Node joined')
+  if key_line == -1:
+    return -1;
   return p_v
 
+
 def SetupRoutingNodes(peer, num_vaults, num_clients):
+  print("Setup " + str(num_vaults) + " vaults and " + str(num_clients) + " clients, please wait ....")
   p_nodes = range(num_vaults + num_clients)
   i = 0;
   while i < (num_vaults + num_clients):
@@ -132,72 +119,70 @@ def SetupRoutingNodes(peer, num_vaults, num_clients):
   return p_nodes
 
 
-def JAV1():
-  if not SetupKeys(20) == 0:
-    return -1
-  items = SetupBootstraps()
-  if items == -1:
-    return -1
-  peer = items[0]
-  p_b0 = items[1]
-  p_b1 = items[2]
+def StopNodes(p_nodes):
+  for p_node in p_nodes:
+    p_node.stdin.write('exit' + '\n')
+  sleep(1)
+  if p_node.poll() == None:
+    print "Failed to stop a node!"
+  return 0    
 
+
+def JAV1(peer):
+  print("Running Routing Sanity Check JAV1 Test, please wait ....")
   p_v = AddRoutingObject(peer, 2)
   if p_v == -1:
     print 'Failed to add routing object!'
-    StopBootstraps(p_b0, p_b1)
     return -1
-
   p_v.stdin.write('exit' + '\n')
   sleep(2)
   if p_v.poll() == None:
     print "Failed to stop node 2!"
-    StopBootstraps(p_b0, p_b1)
     return -1
-
-  StopBootstraps(p_b0, p_b1)
   return 0
 
-def P1():
-  if not SetupKeys(20) == 0:
-    return -1
-  items = SetupBootstraps()
-  if items == -1:
-    return -1
-  peer = items[0]
-  p_b0 = items[1]
-  p_b1 = items[2]
 
-  p_nodes = SetupRoutingNodes(peer, 6, 6)
+def P1(peer, p_nodes):
   if p_nodes == -1:
     return -1;
+  print("Running Routing Sanity Check P1 Test, please wait ....")
   p_nodes[0].stdin.write('datasize 10485760' + '\n')
   p_nodes[0].stdin.write('senddirect 1' + '\n')
 
-  t_start = datetime.datetime.now()
-  time_delta = datetime.datetime.now() - t_start
-  timeout = 3
-  while time_delta < datetime.timedelta(seconds=timeout):
-    next_line = p_nodes[0].stdout.readline()
-#    print 'p_nodes[0]\t' + next_line
-    if next_line.find('Response received in') != -1:
-      break
-    time_delta = datetime.datetime.now() - t_start
-  if time_delta >= datetime.timedelta(seconds=timeout):
-    return -1
-  duration = next_line.split()[3]
+  key_line = SearchKeyWordLine(p_nodes[0], 'Response received in')
+  if key_line == -1:
+    return -1;
+  duration = key_line.split()[3]
   print("10MB data exchanged in " + duration + " seconds")
-
-  StopBootstraps(p_b0, p_b1)
   return 0
 
 
 def SanityCheck():
   print("Running Routing Sanity Check, please wait ....")
-  if P1() == 0:
+
+  if not SetupKeys(20) == 0:
+    return -1
+  items = SetupBootstraps()
+  if items == -1:
+    return -1
+  peer = items[0]
+  p_b0 = items[1]
+  p_b1 = items[2]
+
+  if JAV1(peer) == 0:
+    print 'Routing Sanity Check  Test JAV1  : PASSED'
+  else:
+    print 'Routing Sanity Check  Test JAV1  : FAILED'
+
+  p_nodes = SetupRoutingNodes(peer, 6, 6)
+  if P1(peer, p_nodes) == 0:
     print 'Routing Sanity Check  Test P1  : PASSED'
   else:
     print 'Routing Sanity Check  Test P1  : FAILED'
+
+  StopNodes(p_nodes)
+  StopBootstraps(p_b0, p_b1)
+
 
 def main():
   print("This is the suite for lifestuff Qa analysis")
