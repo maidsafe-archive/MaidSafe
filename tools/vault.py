@@ -118,6 +118,7 @@ def work(number, ip_address):
 
 def RunNetwork(number_of_vaults, ip_address):
   for vault in range(3, number_of_vaults):
+    time.sleep(2)
     p = Process(target = work, args=(vault, ip_address))
     p.start()
 
