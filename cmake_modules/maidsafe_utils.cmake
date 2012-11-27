@@ -100,12 +100,12 @@ endfunction()
 
 
 function(add_coverage_exclude REGEX)
-  file(APPEND ${PROJECT_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_COVERAGE_EXCLUDE \${CTEST_CUSTOM_COVERAGE_EXCLUDE} \"${REGEX}\")\n")
+  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_COVERAGE_EXCLUDE \${CTEST_CUSTOM_COVERAGE_EXCLUDE} \"${REGEX}\")\n")
 endfunction()
 
 
 function(add_memcheck_ignore TEST_NAME)
-  file(APPEND ${PROJECT_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_MEMCHECK_IGNORE \${CTEST_CUSTOM_MEMCHECK_IGNORE} \"${TEST_NAME}\")\n")
+  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_MEMCHECK_IGNORE \${CTEST_CUSTOM_MEMCHECK_IGNORE} \"${TEST_NAME}\")\n")
 endfunction()
 
 
@@ -191,6 +191,41 @@ function(cleanup_temp_dir)
       set(CLEAN_TEMP "OFF" CACHE INTERNAL "Cleanup of temp test folders, options are: ONCE, OFF, ALWAYS" FORCE)
     endif()
   endif()
+endfunction()
+
+
+function(get_command_line_args)
+  get_cmake_property(CacheVars CACHE_VARIABLES)
+  foreach(CacheVar ${CacheVars})
+    get_property(CacheVarHelpString CACHE ${CacheVar} PROPERTY HELPSTRING)
+    if(CacheVarHelpString STREQUAL "No help, variable specified on the command line.")
+      get_property(CacheVarType CACHE ${CacheVar} PROPERTY TYPE)
+      if(CacheVarType STREQUAL "UNINITIALIZED")
+        set(CacheVarType)
+      else()
+        set(CacheVarType :${CacheVarType})
+      endif()
+      set(CMakeArgs "${CMakeArgs} -D${CacheVar}${CacheVarType}=\"${${CacheVar}}\"" PARENT_SCOPE)
+    endif()
+  endforeach()
+endfunction()
+
+
+# Set up CI test scripts
+function(setup_ci_scripts)
+  get_command_line_args()
+  if(WIN32)
+    set(CMakeArgs "${CMakeArgs} -DCI_BUILD_ENVIRONMENT=TRUE")
+  endif()
+  include(${CMAKE_SOURCE_DIR}/cmake_modules/maidsafe_find_git.cmake)
+  find_program(HostnameCommand NAMES hostname)
+  execute_process(COMMAND ${HostnameCommand} OUTPUT_VARIABLE Hostname OUTPUT_STRIP_TRAILING_WHITESPACE)
+  set(ThisSite "${Hostname}")
+  foreach(TestConfType Debug Release)
+    foreach(DashType Experimental Continuous Nightly Weekly)
+      configure_file(${CMAKE_SOURCE_DIR}/CI.cmake.in ${CMAKE_BINARY_DIR}/CI_${DashType}_${TestConfType}.cmake ESCAPE_QUOTES)
+    endforeach()
+  endforeach()
 endfunction()
 
 # Gets the target platform name

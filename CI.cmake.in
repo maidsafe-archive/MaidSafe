@@ -1,0 +1,7 @@
+set(DashboardModel @DashType@)
+set(CTEST_CONFIGURATION_TYPE @TestConfType@)
+set(CTEST_SITE "@ThisSite@")
+set(CTEST_CMAKE_GENERATOR "@CMAKE_GENERATOR@")
+set(CTEST_CMAKE_COMMAND "@CMAKE_COMMAND@")
+set(CTEST_UPDATE_COMMAND "@Git_EXECUTABLE@")
+set(ExtraConfigureArgs "@CMakeArgs@")

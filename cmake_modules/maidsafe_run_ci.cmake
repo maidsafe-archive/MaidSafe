@@ -15,52 +15,14 @@
 
 ################################################################################
 # Pre-requirement: Use MS-Super Project                                        #
-# Script Required Arguments: Build-Config (Debug / Release), CMAKE_GENERATOR   #
-# Example ctest -S maidsafe_run_ci.cmake,Debug,"Visual Studio 11 Win64"        #
+# Example ctest -S CI_Continuous_Release.cmake                                 #
 ################################################################################
 set(ScriptVersion 4)
-set(CTEST_SOURCE_DIRECTORY ..)
-set(CTEST_BINARY_DIRECTORY .)
+set(CTEST_SOURCE_DIRECTORY ${CTEST_SCRIPT_DIRECTORY}/..)
 include("${CTEST_SOURCE_DIRECTORY}/CTestConfig.cmake")
 
-
-################################################################################
-# Helper Functions                                                             #
-################################################################################
-function(script_argument_at Index Result)
-  string(REPLACE "," ";" ScriptList ${CTEST_SCRIPT_ARG})
-  list(LENGTH ScriptList ArgumentListLength)
-  if(${Index} LESS ${ArgumentListLength} AND ${Index} GREATER -1)
-    list(GET ScriptList ${Index} ReturnVal)
-    set(${Result} ${ReturnVal} PARENT_SCOPE)
-  endif()
-endfunction()
-
-
-################################################################################
-# Variable(s) determined after running cmake                                   #
-################################################################################
-unset(DashboardModel CACHE)
-
-script_argument_at(0 CTEST_CONFIGURATION_TYPE)
-if(NOT "${CTEST_CONFIGURATION_TYPE}" MATCHES "^(Debug|Release)")
-  message(FATAL_ERROR "Allowed arguments are Debug, Release \n eg. ctest -S ${CTEST_SCRIPT_NAME},Debug,\"Visual Studio 11 Win64\",Continuous")
-endif()
-
-script_argument_at(1 CTEST_CMAKE_GENERATOR)
-
-# Select the model (Continuous, Experimental, Nightly, or Weekly).
-script_argument_at(2 DashboardModel)
-if(NOT ${DashboardModel} MATCHES Continuous
-   AND NOT ${DashboardModel} MATCHES Experimental
-   AND NOT ${DashboardModel} MATCHES Nightly
-   AND NOT ${DashboardModel} MATCHES Weekly)
-  set(DashboardModel Continuous)
-endif()
-
-find_program(HostnameCommand NAMES hostname)
-execute_process(COMMAND ${HostnameCommand} OUTPUT_VARIABLE Hostname OUTPUT_STRIP_TRAILING_WHITESPACE)
-set(CTEST_SITE "${Hostname}")
+# Avoid non-ascii characters in tool output.
+set(ENV{LC_ALL} C)
 
 if(WIN32)
   if(CTEST_CMAKE_GENERATOR MATCHES "64$")
@@ -68,6 +30,14 @@ if(WIN32)
   else()
     set(MachineBuildType "x86")
   endif()
+endif()
+
+set(CTEST_BINARY_DIRECTORY ${CTEST_SOURCE_DIRECTORY}/build_CI_${DashboardModel}_${CTEST_CONFIGURATION_TYPE})
+set(CTEST_BUILD_NAME "${DashboardModel} Build - ${CTEST_CONFIGURATION_TYPE} ${MachineBuildType}, Script Version - ${ScriptVersion}")
+if(NOT "${CTEST_CMAKE_GENERATOR}" MATCHES "[Mm]ake")
+  set(CTEST_USE_LAUNCHERS 0)
+elseif(NOT DEFINED CTEST_USE_LAUNCHERS)
+  set(CTEST_USE_LAUNCHERS 1)
 endif()
 
 message("Dashboard Model Selected:      ${DashboardModel}")
@@ -81,34 +51,12 @@ message("=======================================================================
 
 
 ################################################################################
-# Find programs & commands                                                     #
-################################################################################
-find_program(CTEST_CMAKE_COMMAND NAMES cmake)
-if(NOT CTEST_CMAKE_COMMAND)
-  SCRIPT_ARGUMENT_AT(2 CTEST_CMAKE_COMMAND)
-  if(NOT CTEST_CMAKE_COMMAND)
-    message(FATAL_ERROR "Couldn't find CMake executable. Provide Cmake Path as 3rd Script Argument")
-  endif()
-endif()
-
-set(CMAKE_MODULE_PATH ${CTEST_SCRIPT_DIRECTORY})
-include(maidsafe_find_git)
-set(CTEST_UPDATE_COMMAND "${Git_EXECUTABLE}")
-
-if(NOT "${CTEST_CMAKE_GENERATOR}" MATCHES "Make")
-  set(CTEST_USE_LAUNCHERS 0)
-elseif(NOT DEFINED CTEST_USE_LAUNCHERS)
-  set(CTEST_USE_LAUNCHERS 1)
-endif()
-
-
-################################################################################
 # Check current branch & update super project                                  #
 ################################################################################
 message("Updating super project on 'next'")
 #Update Super Project on next branch
 execute_process(COMMAND ${Git_EXECUTABLE} checkout next
-                WORKING_DIRECTORY ${CTEST_SCRIPT_DIRECTORY}/..
+                WORKING_DIRECTORY ${CTEST_SOURCE_DIRECTORY}
                 RESULT_VARIABLE ResultVar
                 OUTPUT_VARIABLE OutputVar
                 ERROR_QUIET)
@@ -116,7 +64,7 @@ if(NOT ${ResultVar} EQUAL 0)
   message(FATAL_ERROR "Failed to switch to branch next in super project:\n\n${OutputVar}")
 endif()
 execute_process(COMMAND ${Git_EXECUTABLE} pull
-                WORKING_DIRECTORY ${CTEST_SCRIPT_DIRECTORY}/..
+                WORKING_DIRECTORY ${CTEST_SOURCE_DIRECTORY}
                 RESULT_VARIABLE ResultVar
                 OUTPUT_VARIABLE OutputVar
                 ERROR_QUIET)
@@ -131,10 +79,10 @@ message("=======================================================================
 ################################################################################
 foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
   if(${SubProject} STREQUAL "Vault")
-    set(${SubProject}SourceDirectory ${CTEST_SCRIPT_DIRECTORY}/../src/pd)
+    set(${SubProject}SourceDirectory ${CTEST_SOURCE_DIRECTORY}/src/pd)
     set(${SubProject}BinaryDirectory ${CMAKE_CURRENT_BINARY_DIR}/src/pd)
   else()
-    set(${SubProject}SourceDirectory ${CTEST_SCRIPT_DIRECTORY}/../src/${SubProject})
+    set(${SubProject}SourceDirectory ${CTEST_SOURCE_DIRECTORY}/src/${SubProject})
     set(${SubProject}BinaryDirectory ${CMAKE_CURRENT_BINARY_DIR}/src/${SubProject})
   endif()
   if(NOT EXISTS ${${SubProject}SourceDirectory} OR NOT EXISTS ${${SubProject}BinaryDirectory})
@@ -231,31 +179,20 @@ message("=======================================================================
 # Build Project & Run tests if needed                                          #
 ################################################################################
 ctest_start(${DashboardModel} TRACK ${DashboardModel})
+ctest_submit(FILES "${CTEST_SOURCE_DIRECTORY}/Project.xml")
 
 foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
-	message("Running CTest build & test for ${SubProject}")
-# 	unset(CTEST_SOURCE_DIRECTORY CACHE)
-# 	unset(CTEST_BINARY_DIRECTORY CACHE)
-# 	unset(CTEST_BUILD_NAME CACHE)
-# 	unset(CTEST_NOTES_FILES CACHE)
+  message("Running CTest build & test for ${SubProject}")
   set_property(GLOBAL PROPERTY SubProject ${SubProject})
   set_property(GLOBAL PROPERTY Label ${SubProject})
-
-	set(CTEST_BUILD_NAME "${DashboardModel} Build - ${CTEST_CONFIGURATION_TYPE} ${MachineBuildType}, Script Version - ${ScriptVersion}")
-# 	set(CTEST_SOURCE_DIRECTORY ${${SubProject}SourceDirectory})
-# 	set(CTEST_BINARY_DIRECTORY ${${SubProject}BinaryDirectory})
   set(CTEST_BUILD_TARGET "All${SubProject}")
 
-	ctest_read_custom_files(${CTEST_BINARY_DIRECTORY})
-	if(WIN32)
-	  ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}" SOURCE "${CTEST_SCRIPT_DIRECTORY}/.." OPTIONS "-DCI_BUILD_ENVIRONMENT=TRUE -DCLEAN_TEMP=ALWAYS")
-	else()
-	  ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}" SOURCE "${CTEST_SCRIPT_DIRECTORY}/..")
-	endif()
-	ctest_build(BUILD "${CTEST_BINARY_DIRECTORY}" RETURN_VALUE BuildResult)
+  ctest_configure(OPTIONS ${ExtraConfigureArgs})
+  ctest_read_custom_files()
+	ctest_build(RETURN_VALUE BuildResult)
 
   # runs only tests that have a LABELS property matching "${SubProject}"
-  ctest_test(BUILD "${CTEST_BINARY_DIRECTORY}" INCLUDE_LABEL "${SubProject}")
+  ctest_test(INCLUDE_LABEL "${SubProject}")
 
  	unset(TagId CACHE)
 	find_file(TagFile NAMES TAG PATHS ${CTEST_BINARY_DIRECTORY}/Testing NO_DEFAULT_PATH)
@@ -279,7 +216,6 @@ foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
 	endif()
 
 	# Write git update details to file
-	unset(ChangedFiles CACHE)
 	execute_process(COMMAND ${Git_EXECUTABLE} diff --stat ${${SubProject}CurrentCommit} ${${SubProject}NewCommit}
             	    WORKING_DIRECTORY ${${SubProject}SourceDirectory}
             	    RESULT_VARIABLE ResultVar

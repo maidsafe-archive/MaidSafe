@@ -158,4 +158,6 @@ cleanup_temp_dir()
 unset(MAKECOMMAND CACHE)
 include(CTest)
 
+setup_ci_scripts()
+
 unset(QA_BUILD CACHE)
