@@ -154,6 +154,7 @@ endif()
 message("${HR}")
 
 cleanup_temp_dir()
+rename_outdated_built_exes()
 
 unset(MAKECOMMAND CACHE)
 include(CTest)
