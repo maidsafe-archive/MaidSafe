@@ -17,7 +17,7 @@
 # Pre-requirement: Use MS-Super Project                                        #
 # Example ctest -S CI_Continuous_Release.cmake                                 #
 ################################################################################
-set(ScriptVersion 4)
+set(ScriptVersion 6)
 include("${CTEST_SOURCE_DIRECTORY}/CTestConfig.cmake")
 
 # Avoid non-ascii characters in tool output.
@@ -32,6 +32,7 @@ if(WIN32)
 endif()
 
 set(CTEST_BUILD_NAME "${DashboardModel} Build - ${CTEST_CONFIGURATION_TYPE} ${MachineBuildType}, Script Version - ${ScriptVersion}")
+set(CTEST_UPDATE_COMMAND ${CTEST_GIT_COMMAND})
 
 if(NOT "${CTEST_CMAKE_GENERATOR}" MATCHES "[Mm]ake")
   set(CTEST_USE_LAUNCHERS 0)
@@ -50,31 +51,137 @@ message("=======================================================================
 
 
 ################################################################################
-# Check current branch & update super project                                  #
+# Helper functions                                                             #
 ################################################################################
-message("Updating super project on 'next'")
-#Update Super Project on next branch
-execute_process(COMMAND ${CTEST_GIT_COMMAND} checkout next
-                WORKING_DIRECTORY ${CTEST_SOURCE_DIRECTORY}
-                RESULT_VARIABLE ResultVar
-                OUTPUT_VARIABLE OutputVar
-                ERROR_QUIET)
-if(NOT ${ResultVar} EQUAL 0)
-  message(FATAL_ERROR "Failed to switch to branch next in super project:\n\n${OutputVar}")
-endif()
-execute_process(COMMAND ${CTEST_GIT_COMMAND} pull
-                WORKING_DIRECTORY ${CTEST_SOURCE_DIRECTORY}
-                RESULT_VARIABLE ResultVar
-                OUTPUT_VARIABLE OutputVar
-                ERROR_QUIET)
-if(NOT ${ResultVar} EQUAL 0)
-  message(FATAL_ERROR "Failed to pull updates in super project:\n\n${OutputVar}")
-endif()
-message("================================================================================")
+function(checkout_to_branch SourceDir Branch)
+  execute_process(COMMAND ${CTEST_GIT_COMMAND} checkout ${Branch}
+                  WORKING_DIRECTORY ${SourceDir}
+                  RESULT_VARIABLE ResultVar
+                  OUTPUT_VARIABLE OutputVar
+                  ERROR_QUIET)
+  if(NOT ${ResultVar} EQUAL 0)
+    message(FATAL_ERROR "Failed to switch to 'next' in ${SourceDir}:\n\n${OutputVar}")
+  endif()
+endfunction()
+
+function(get_git_log SourceDir CommitHash CommitMessage)
+  execute_process(COMMAND ${CTEST_GIT_COMMAND} rev-parse --verify HEAD
+                  WORKING_DIRECTORY ${${SourceDir}}
+                  RESULT_VARIABLE ResultVar
+                  OUTPUT_VARIABLE ${CommitHash}
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(${ResultVar} EQUAL 0)
+    execute_process(COMMAND ${CTEST_GIT_COMMAND} log -1 --format="Hash: %H%nAuthor: %an%nCommitter: %cn%nCommit Message: %s"
+                    WORKING_DIRECTORY ${${SourceDir}}
+                    RESULT_VARIABLE ResultVar
+                    OUTPUT_VARIABLE ${CommitMessage})
+    if(${ResultVar} EQUAL 0)
+      string(REPLACE "\"" "" ${CommitMessage} ${${CommitMessage}})
+    else()
+      set(${CommitMessage} "N/A")
+    endif()
+  else()
+    set(${${CommitHash}} "unknown")
+  endif()
+  set(${CommitHash} ${${CommitHash}} PARENT_SCOPE)
+  set(${CommitMessage} ${${CommitMessage}} PARENT_SCOPE)
+endfunction()
+
+function(build_and_run SubProject ForceRun)
+  set_property(GLOBAL PROPERTY SubProject ${SubProject})
+  set_property(GLOBAL PROPERTY Label ${SubProject})
+  set(CTEST_BUILD_TARGET "All${SubProject}")
+  
+  if(NOT ${DashboardModel} STREQUAL Experimental)
+    message("Updating ${SubProject}")
+    get_git_log(${SubProject}SourceDirectory ${SubProject}CurrentCommit ${SubProject}CurrentCommitLogMsg)
+    ctest_update(SOURCE ${${SubProject}SourceDirectory} RETURN_VALUE UpdatedCount)
+    get_git_log(${SubProject}SourceDirectory ${SubProject}NewCommit ${SubProject}NewCommitLogMsg)
+  endif()
+  
+  if(${DashboardModel} STREQUAL Continuous AND NOT ${ForceRun} AND NOT ${UpdatedCount})
+    return()
+  endif()
+
+  message("Building ${SubProject}")
+  ctest_configure(OPTIONS "${ExtraConfigureArgs}")
+  ctest_read_custom_files(${CMAKE_CURRENT_BINARY_DIR})
+	ctest_build(RETURN_VALUE BuildResult)
+
+  # runs only tests that have a LABELS property matching "${SubProject}"
+  message("Testing ${SubProject}")
+  ctest_test(INCLUDE_LABEL "${SubProject}")
+
+  if(NOT ${DashboardModel} STREQUAL Experimental)
+   	unset(TagId CACHE)
+  	find_file(TagFile NAMES TAG PATHS ${CTEST_BINARY_DIRECTORY}/Testing NO_DEFAULT_PATH)
+  	file(READ ${TagFile} TagFileContents)
+  	string(REPLACE "\n" "" TagFileContents "${TagFileContents}")
+  	string(REGEX REPLACE "[A-Za-z]+" "" TagId "${TagFileContents}")
+  
+  	# Modify XML files on x64 Windows
+  	if(WIN32)
+  	  if(${MachineBuildType} STREQUAL "x64")
+  	    set(XML_Files "Configure.xml" "Build.xml" "Test.xml")
+  	    foreach(XML_File ${XML_Files})
+  	      unset(ModFile CACHE)
+  	      find_file(ModFile NAMES ${XML_File} PATHS ${CTEST_BINARY_DIRECTORY}/Testing/${TagId} NO_DEFAULT_PATH)
+  	      file(READ ${ModFile} ModFileContents)
+  	      string(REPLACE "OSPlatform=\"x86\"" "OSPlatform=\"${MachineBuildType}\"" ModFileContents "${ModFileContents}")
+  	      file(WRITE ${ModFile} "${ModFileContents}")
+  	    endforeach()
+  	  endif()
+  	endif()
+  
+  	# Write git update details to file
+  	execute_process(COMMAND ${CTEST_GIT_COMMAND} diff --stat ${${SubProject}CurrentCommit} ${${SubProject}NewCommit}
+              	    WORKING_DIRECTORY ${${SubProject}SourceDirectory}
+              	    RESULT_VARIABLE ResultVar
+              	    OUTPUT_VARIABLE ChangedFiles)
+  	if(ResultVar EQUAL 0)
+  	  file(WRITE "${CTEST_BINARY_DIRECTORY}/Testing/${TagId}/GitDetails.txt" "Old Commit Details: \n${${SubProject}CurrentCommitLogMsg}
+  	      \nNew Commit: \n${${SubProject}NewCommitLogMsg}
+  	      \nFiles Changed:
+  	      \n${ChangedFiles}")
+  	  set(CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/Testing/${TagId}/GitDetails.txt")
+  	endif()
+  endif()
+  
+  ctest_submit(RETURN_VALUE ReturnVar)
+
+	if(${ReturnVar} EQUAL 0)
+	  message("Submitted results for ${SubProject}\n-----------------------------------")
+	else()
+	  message("Failed to submit results for ${SubProject}\n-------------------------------------------")
+	endif()
+	if(NOT ${BuildResult} EQUAL 0)
+	  message("${SubProject} failed during build, exiting script")
+    if(WIN32)
+      # TODO(Viv) Check OS Version
+      execute_process(COMMAND cmd /c "ci_build_reporter.py win7 ${MachineBuildType} fail ${SubProject} ${${SubProject}NewCommitLogAuthor}"
+                      WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
+                      RESULT_VARIABLE ResultVar
+                      OUTPUT_VARIABLE OutputVar)
+    else()
+      # Need Linux Execute Script Command with argument detections
+    endif()
+	  break()
+  elseif(${SubProject} STREQUAL "LifestuffGui")
+    if(WIN32)
+      # TODO(Viv) Check OS Version
+      execute_process(COMMAND cmd /c "ci_build_reporter.py win7 ${MachineBuildType} ok ${SubProject} ${${SubProject}NewCommitLogAuthor}"
+                      WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
+                      RESULT_VARIABLE ResultVar
+                      OUTPUT_VARIABLE OutputVar)                      
+    else()
+      # Need Linux Execute Script Command with argument detections
+    endif()
+	endif()
+endfunction()
 
 
 ################################################################################
-# Check current branch & update sub-projects                                   #
+# Set sub-projects' source and binary directories                              #
 ################################################################################
 foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
   if(${SubProject} STREQUAL "Vault")
@@ -89,153 +196,50 @@ foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
     message(FATAL_ERROR "Unable to find ${SubProject} source (${${SubProject}SourceDirectory}) or binary (${${SubProject}BinaryDirectory}) directory.")
   endif()
 endforeach()
-message("All sub-project source & binary directories verified")
-
-foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
-  execute_process(COMMAND ${CTEST_GIT_COMMAND} status --short --branch
-                  WORKING_DIRECTORY ${${SubProject}SourceDirectory}
-                  OUTPUT_VARIABLE OutputVar
-                  RESULT_VARIABLE ResultVar)
-  if(${ResultVar} EQUAL 0)
-    string(REGEX REPLACE "\n.*" "" CurrentBranch ${OutputVar})
-    string(REGEX REPLACE "[.][.][.].*" "" CurrentBranch ${CurrentBranch})
-    string(REGEX REPLACE "## " "" CurrentBranch ${CurrentBranch})
-    set(${SubProject}CurrentBranch ${CurrentBranch})
-  else()
-    set(${SubProject}CurrentBranch "unknown")
-  endif()
-
-  if(NOT ${SubProject}CurrentBranch STREQUAL "next")
-    execute_process(COMMAND ${CTEST_GIT_COMMAND} checkout next
-                    WORKING_DIRECTORY ${${SubProject}SourceDirectory}
-                    RESULT_VARIABLE ResultVar
-                    OUTPUT_VARIABLE OutputVar)
-    if(NOT ${ResultVar} EQUAL 0)
-      message(FATAL_ERROR "  Unable to switch branch to next:\n\n${OutputVar}")
-    endif()
-  endif()
-
-  execute_process(COMMAND ${CTEST_GIT_COMMAND} rev-parse --verify HEAD
-                  WORKING_DIRECTORY ${${SubProject}SourceDirectory}
-                  RESULT_VARIABLE ResultVar
-                  OUTPUT_VARIABLE OutputVar)
-  if(${ResultVar} EQUAL 0)
-    set(${SubProject}CurrentCommit ${OutputVar})
-    string(REPLACE "\n" "" ${SubProject}CurrentCommit "${${SubProject}CurrentCommit}")
-    execute_process(COMMAND ${CTEST_GIT_COMMAND} log -1 --format="Hash: %H%nAuthor: %an%nCommitter: %cn%nCommit Message: %s"
-                    WORKING_DIRECTORY ${${SubProject}SourceDirectory}
-                    RESULT_VARIABLE ResultVar
-                    OUTPUT_VARIABLE OutputVar)
-    if(${ResultVar} EQUAL 0)
-      string(REPLACE "\"" "" OutputVar ${OutputVar})
-      set(${SubProject}CurrentCommitLogMsg ${OutputVar})
-    else()
-      set(${SubProject}CurrentCommitLogMsg "N/A")
-    endif()
-  else()
-    set(${SubProject}CurrentCommit "unknown")
-  endif()
-
-  execute_process(COMMAND ${CTEST_GIT_COMMAND} pull
-                  WORKING_DIRECTORY ${${SubProject}SourceDirectory}
-                  RESULT_VARIABLE ResultVar
-                  OUTPUT_VARIABLE OutputVar
-                  ERROR_QUIET)
-  if(${ResultVar} EQUAL 0)
-    execute_process(COMMAND ${CTEST_GIT_COMMAND} rev-parse --verify HEAD
-                    WORKING_DIRECTORY ${${SubProject}SourceDirectory}
-                    RESULT_VARIABLE ResultVar
-                    OUTPUT_VARIABLE OutputVar)
-    if(${ResultVar} EQUAL 0)
-      set(${SubProject}NewCommit ${OutputVar})
-      string(REPLACE "\n" "" ${SubProject}NewCommit "${${SubProject}NewCommit}")
-      execute_process(COMMAND ${CTEST_GIT_COMMAND} log -1 --format="Hash: %H%nAuthor: %an%nCommitter: %cn%nCommit Message: %s"
-                      WORKING_DIRECTORY ${${SubProject}SourceDirectory}
-                      RESULT_VARIABLE ResultVar
-                      OUTPUT_VARIABLE OutputVar)
-      if(${ResultVar} EQUAL 0)
-        string(REPLACE "\"" "" OutputVar ${OutputVar})
-        set(${SubProject}NewCommitLogMsg ${OutputVar})
-      else()
-        set(${SubProject}NewCommitLogMsg "N/A")
-      endif()
-#       if(NOT ${SubProject}NewCommit STREQUAL ${SubProject}CurrentCommit)
-#         SET_TEST_NEEDED_FOR_DEPENDANTS(${SubProject})
-#       endif()
-    else()
-      message(FATAL_ERROR "Unable to retrieve commit ID. Aborting Process:\n\n${OutputVar}")
-    endif()
-  else()
-    message(FATAL_ERROR "Unable to pull from next. Aborting Process:\n\n${OutputVar}")
-  endif()
-  string(SUBSTRING ${${SubProject}CurrentCommit} 0 7 OldCommit)
-  string(SUBSTRING ${${SubProject}NewCommit} 0 7 NewCommit)
-  message("-- ${SubProject} \t on '${CurrentBranch}'.  Old commit: ${OldCommit}  New commit: ${NewCommit}")
-endforeach()
-message("================================================================================")
 
 
 ################################################################################
-# Build Project & Run tests if needed                                          #
+# Checkout to 'next' if applicable                                             #
 ################################################################################
-ctest_start(${DashboardModel} TRACK ${DashboardModel})
-ctest_submit(FILES "${CTEST_SOURCE_DIRECTORY}/Project.xml")
+if(NOT ${DashboardModel} STREQUAL Experimental)
+  message("Checking out projects to 'next'")
+  checkout_to_branch(${CTEST_SOURCE_DIRECTORY} ci_script)
+  foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
+    checkout_to_branch(${${SubProject}SourceDirectory} next)
+  endforeach()
+  message("================================================================================")
+endif()
 
-foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
-  message("Running CTest build & test for ${SubProject}")
-  set_property(GLOBAL PROPERTY SubProject ${SubProject})
-  set_property(GLOBAL PROPERTY Label ${SubProject})
-  set(CTEST_BUILD_TARGET "All${SubProject}")
 
-  ctest_configure(OPTIONS "${ExtraConfigureArgs}")
-  ctest_read_custom_files(${CMAKE_CURRENT_BINARY_DIR})
-	ctest_build(RETURN_VALUE BuildResult)
+################################################################################
+# Build project & run tests if needed                                          #
+################################################################################
+while(${CTEST_ELAPSED_TIME} LESS 72000)
+  set(StartTime ${CTEST_ELAPSED_TIME})
+  ctest_start(${DashboardModel} TRACK ${DashboardModel})
 
-  # runs only tests that have a LABELS property matching "${SubProject}"
-  ctest_test(INCLUDE_LABEL "${SubProject}")
+  if(NOT ${DashboardModel} STREQUAL Experimental)
+    message("Updating super project")
+    ctest_update(RETURN_VALUE UpdatedCount)
+    message("Updated super project ---  ${UpdatedCount}")
+    if(UpdatedCount LESS 0)
+      message(FATAL_ERROR "Failed to update the super project.")
+    endif()
+  endif()
+  
+  set(ForceRun OFF)
+  if(${DashboardModel} STREQUAL Continuous AND UpdatedCount GREATER 0)
+    set(ForceRun ON)
+  endif()
+  ctest_submit(FILES "${CTEST_SOURCE_DIRECTORY}/Project.xml")
 
- 	unset(TagId CACHE)
-	find_file(TagFile NAMES TAG PATHS ${CTEST_BINARY_DIRECTORY}/Testing NO_DEFAULT_PATH)
-	file(READ ${TagFile} TagFileContents)
-	string(REPLACE "\n" "" TagFileContents "${TagFileContents}")
-	string(REGEX REPLACE "[A-Za-z]+" "" TagId "${TagFileContents}")
+  foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
+    build_and_run(${SubProject} ${ForceRun})
+  endforeach()
 
-	# Modify XML files on x64 Windows
-	if(WIN32)
-	  if(${MachineBuildType} STREQUAL "x64")
-	    set(XML_Files "Configure.xml" "Build.xml" "Test.xml")
-	    foreach(XML_File ${XML_Files})
-	      unset(ModFile CACHE)
-	      unset(ModFileContents CACHE)
-	      find_file(ModFile NAMES ${XML_File} PATHS ${CTEST_BINARY_DIRECTORY}/Testing/${TagId} NO_DEFAULT_PATH)
-	      file(READ ${ModFile} ModFileContents)
-	      string(REPLACE "OSPlatform=\"x86\"" "OSPlatform=\"${MachineBuildType}\"" ModFileContents "${ModFileContents}")
-	      file(WRITE ${ModFile} "${ModFileContents}")
-	    endforeach()
-	  endif()
-	endif()
-
-	# Write git update details to file
-	execute_process(COMMAND ${CTEST_GIT_COMMAND} diff --stat ${${SubProject}CurrentCommit} ${${SubProject}NewCommit}
-            	    WORKING_DIRECTORY ${${SubProject}SourceDirectory}
-            	    RESULT_VARIABLE ResultVar
-            	    OUTPUT_VARIABLE ChangedFiles)
-	if(ResultVar EQUAL 0)
-	  file(WRITE "${CTEST_BINARY_DIRECTORY}/Testing/${TagId}/GitDetails.txt" "Old Commit Details: \n${${SubProject}CurrentCommitLogMsg}
-	      \nNew Commit: \n${${SubProject}NewCommitLogMsg}
-	      \nFiles Changed:
-	      \n${CHANGED_FILES}")
-	  set(CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/Testing/${TagId}/GitDetails.txt")
-	endif()
-  ctest_submit(RETURN_VALUE ReturnVar)
-
-	if(${ReturnVar} EQUAL 0)
-	  message("CI Build Submitted - ${SubProject}")
-	else()
-	  message("CI Build Failed to Submit - ${SubProject}")
-	endif()
-	if(NOT ${BuildResult} EQUAL 0)
-	  message("${SubProject} failed during build, exiting script")
-	  break()
-	endif()
-endforeach()
+  if(${DashboardModel} STREQUAL Continuous)
+    ctest_sleep(${StartTime} 300 ${CTEST_ELAPSED_TIME})
+  else()
+    return()
+  endif()
+endwhile()
