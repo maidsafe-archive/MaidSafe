@@ -109,6 +109,14 @@ function(add_memcheck_ignore TEST_NAME)
 endfunction()
 
 
+function(label_as_critical_tests)
+  foreach(CriticalTest ${ARGV})
+    get_test_property(${CriticalTest} LABELS CurrentLabels)
+    set_property(TEST ${CriticalTest} PROPERTY LABELS Critical ${CurrentLabels})
+  endforeach()
+endfunction()
+
+
 # Appends ".old" to executable files found (recursively) within the build tree
 # which don't match current target filenames.  This avoids accidentally running
 # outdated executables in the case of renaming a CMake Target.
