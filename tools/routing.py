@@ -45,10 +45,14 @@ def SetupKeys(num):
 
 
 def SearchKeyWordLine(process, keyword, timeout):
+  t_start = datetime.datetime.now()
   next_line = process.stdout.readline()
   while next_line.find(keyword) == -1:
     next_line = process.stdout.readline()
-#    print 'process\t' + next_line.rstrip()
+    # print 'process\t' + next_line.rstrip()
+    time_delta = datetime.datetime.now() - t_start
+    if time_delta >= datetime.timedelta(seconds=timeout):
+      return -1
   return next_line
 
 
@@ -132,40 +136,48 @@ def StopNodes(p_nodes):
   return 0    
 
 
-def CheckClientNodeIsNotInRoutingTable(p_c, to_index):
-  for index in range(0, to_index):
+def CheckClientNodeIsNotInRoutingTable(p_c):
+  for index in range(num_of_nodes / 2):
     p_c.stdin.write('rrt ' + str(index) + '\n')
     sleep(1)
-  p_c.stdin.write('help\n')
-  node_id = ''
-  count = 0
-  stop = False
-  while stop == False:
+    p_c.stdin.write('\n')
+    p_c.stdin.write('\n')
+    next_line = SearchKeyWordLine(p_c, 'Sending a msg from ', 2)
+    node_id = ((next_line.split(':')[1]).split(' ')[1])
+    # print 'checking routing , node_id : ' + node_id
     next_line = p_c.stdout.readline()
-    if next_line.find('Sending a msg from ') != -1:
-      node_id = ((next_line.split(':')[1]).split(' ')[1])
- #     print 'node_id ' + node_id
-      count = count -1
-    if node_id != '':
+    while next_line.find('Enter command >') == -1:
+      # print 'checking routing in ' + str(index) + '\t' + next_line.rstrip()
+      next_line = p_c.stdout.readline()
       if next_line.find(node_id) != -1:
-        count = count + 1
-    if next_line.find('exit Exit application.') != -1:
-      stop = True
-  return count
+        return -1
+  return 0
+
 
 def SendGroup(p, target):
-#  print 'Send group message to ' + str(target)
-  p.stdin.write('sendgroup ' + str(target) + '\n')
+  if target != -1:
+    p.stdin.write('sendgroup ' + str(target) + '\n')
+  else:
+    p.stdin.write('sendgroup' + '\n')
   sleep(1)
-  p.stdin.write('help\n')
-  stop = False
-  while stop == False:
-    next_line = p.stdout.readline()
-    if next_line.find('Failure') != -1:
-      return -1
-    if next_line.find('exit Exit application.') != -1:
-      stop = True
+  p.stdin.write('\n')
+  p.stdin.write('\n')
+  # TODO: detailed check if respondents are really expected
+  if SearchKeyWordLine(p, 'Received response', 5) == -1:
+    return -1
   return 0
+
+
+def SendDirectMsg(p_n, dst, datasize):
+  p_n.stdin.write('datasize ' + str(datasize) + '\n')
+  p_n.stdin.write('senddirect ' + str(dst) + '\n')
+  key_line = SearchKeyWordLine(p_n, 'Response received in', 10)
+  if key_line == -1:
+    print("Failed in sending a msg to " + str(dst))
+    return -1;
+  duration = key_line.split()[3]
+  print("\t"+ str(datasize) + " Bytes data exchanged in " + duration + " seconds")
+  return ParseSecondsFromString(duration)
 
 
 def JAV1(peer):
@@ -188,29 +200,20 @@ def JAV2(peer):
   if p_v == -1:
     print 'Failed to add routing object!'
     return -1
-  #TODO - self-message
+  result = 0
+  if SendDirectMsg(p_v, 1, 1024) == -1:
+    result = -1
+
   p_v.stdin.write('exit' + '\n')
   sleep(2)
   if p_v.poll() == None:
     print "Failed to stop node 2!"
     return -1
-  return 0
+
+  return result
 
 
-def SendDirectMsg(p_nodes, src, dst, datasize):
-  print("\tSending a " + str(datasize) + " Bytes msg from " + str(src) + " to " + str(dst) + ", please wait ...")
-  p_nodes[src].stdin.write('datasize ' + str(datasize) + '\n')
-  p_nodes[src].stdin.write('senddirect ' + str(dst) + '\n')
-  key_line = SearchKeyWordLine(p_nodes[src], 'Response received in', 10)
-  if key_line == -1:
-    print("Failed in sending a msg from " + str(src) + " to " + str(dst))
-    return -1;
-  duration = key_line.split()[3]
-  print("\t"+ str(datasize) + " Bytes data exchanged in " + duration + " seconds")
-  return ParseSecondsFromString(duration)
-
-
-def P1(peer, p_nodes):
+def P1(p_nodes):
   if p_nodes == -1:
     return -1;
   print("Running Routing Sanity Check P1 Test, please wait ....")
@@ -220,7 +223,8 @@ def P1(peer, p_nodes):
     source = random.randint(0, num_of_nodes / 2 - 1)
     dest = random.randint(0, num_of_nodes / 2 - 1) # dest can be a bootstrap node
     if dest != source: # send to self will be super quick, shall be excluded
-      result = SendDirectMsg(p_nodes, source, dest, 1048576)
+      print("\tSending a 1MB msg from " + str(source) + " to " + str(dest) + ", please wait ...")
+      result = SendDirectMsg(p_nodes[source], dest, 1048576)
       if result == -1:
         return -1
       duration = duration + result
@@ -232,7 +236,8 @@ def P1(peer, p_nodes):
   for i in range(num_iteration): # client to vault
     source = random.randint(num_of_nodes / 2, num_of_nodes - 1)
     dest = random.randint(0, num_of_nodes / 2 - 1) # dest can be a bootstrap node
-    result = SendDirectMsg(p_nodes, source, dest, 1048576)
+    print("\tSending a 1MB msg from " + str(source) + " to " + str(dest) + ", please wait ...")
+    result = SendDirectMsg(p_nodes[source], dest, 1048576)
     if result == -1:
       return -1
     duration = duration + result
@@ -240,160 +245,61 @@ def P1(peer, p_nodes):
   return 0
 
 
-def JAC1():
-  print 'Tesing JAC1'
-  if not SetupKeys(20) == 0:
-    return -1
-  items = SetupBootstraps()
-  if items == -1:
-    return -1
-  peer = items[0]
-  p_b0 = items[1]
-  p_b1 = items[2]
-
-  p_vs = AddRoutingObjects(peer, 2, 6, '')
-  if p_vs == -1:
-    print 'At lease one node among 6 nodes failed to start'
-    StopBootstrap(p_b0, p_b1)
-    return -1
-
-  p_c = AddTypedRoutingObject(peer, 11, 'Client')
+def JAC1(peer):
+  print("Running Routing Sanity Check JAC1 Test, please wait ....")
+  p_c = AddRoutingObject(peer, 12)
+  result = 0
   if p_c == -1:
-    print 'Failed to start client node'
-    StopBootstraps(p_b0, p_b1)
-    StopRoutingNodes(p_vs)
+    print 'Failed to add routing object!'
     return -1
-  p_vs.append(p_c)
+  if SendDirectMsg(p_c, 12, 1024) != -1:
+    print 'Client shall not be able to send to itself'
+    result = -1
 
-  if SendToDirect(p_c, 11) != -1:
-#    print 'Client failed to send to self'
-    StopBootstraps(p_b0, p_b1)
-    StopRoutingObjects(p_vs)
+  if SendDirectMsg(p_c, 5, 1024) == -1:
+    print 'Client failed to send to vault 5'
+    result = -1
+  if CheckClientNodeIsNotInRoutingTable(p_c) == -1:
+    result = -1
+  p_c.stdin.write('exit' + '\n')
+  sleep(2)
+  if p_c.poll() == None:
+    print "Failed to stop node 12!"
     return -1
+  return result
 
-  if SendToDirect(p_c, 5) == -1:
-    print 'Client failed to send to vault'
-    StopBootstraps(p_b0, p_b1)
-    StopRoutingObjects(p_vs)
+
+def JAC2(peer, p_nodes):
+  print("Running Routing Sanity Check JAC2 Test, please wait ....")
+  v_drop = 3
+  # drop the vault first
+  p_nodes[v_drop].stdin.write('exit' + '\n')
+  sleep(1)
+  if p_nodes[v_drop].poll() == None:
+    print "Failed to stop a node!"
+  # join the node back
+  p_nodes[v_drop] = AddRoutingObject(peer, 2)
+  if p_nodes[v_drop] == -1:
+    print "Failed to join the dropped node back!"
     return -1
+  # check routing table
+  result = 0
+  for i in range(num_of_nodes / 2, num_of_nodes):
+    # print '----------------- :' + str(i)
+    if CheckClientNodeIsNotInRoutingTable(p_nodes[i]) == -1:
+      result = -1
+  return result
 
-  if CheckClientNodeIsNotInRoutingTable(p_c, 6) != 0:
-    StopBootstraps(p_b0, p_b1)
-    StopRoutingObjects(p_vs)
-    return -1
-
-  print ''
-  print 'Removing nodes ...'
-  StopBootstraps(p_b0, p_b1)
-  StopRoutingObjects(p_vs)
-  print 'PASSED'
-  return 0
-
-def JAC2():
-  print 'Testing JAC2'
-  if not SetupKeys(20) == 0:
-    return -1
-  items = SetupBootstraps()
-  if items == -1:
-    return -1
-  peer = items[0]
-  p_b0 = items[1]
-  p_b1 = items[2]
-
-  p_vs = AddRoutingObjects(peer, 2, 6, '')
-  if p_vs == -1:
-    print 'At lease one node among 6 nodes failed to start'
-    StopBootstrap(p_b0, p_b1)
-    return -1
-
-  p_cs = AddRoutingObjects(peer, 11, 6, 'Client')
-  if p_cs == -1:
-    print 'At lease one node among 6 nodes failed to start'
-    StopBootstraps(p_b0, p_b1)
-    StopRoutingNodes(p_vs)
-    return -1
-  p_vs = p_vs + p_cs
-
-  p_v = AddTypedRoutingObject(peer, 8, '')
-  if p_v == -1:
-    print 'Failed to join the network'
-    StopBootstraps(p_b0, p_b1)
-    StopRoutingObjects(p_vs)
-    return -1
-
-  p_vs.append(p_v)
-  print 'Validate routing table',
-  for p_c in p_cs:
-    print '...',
-    if CheckClientNodeIsNotInRoutingTable(p_c, 8) != 0:
-      print "Routing tables are not valid"
-      StopBootstraps(p_b0, p_b1)
-      StopRoutingObjects(p_vs)
+def  SGM1(p_nodes):
+  print("Running Routing Sanity Check SGM1 Test, please wait ....")
+  num_iteration = 5
+  for i in range(num_iteration):
+    rnd = random.randint(0, num_of_nodes / 2 - 1)
+    if SendGroup(p_nodes[rnd], -1) != 0:
       return -1
-  print ''
-  print 'Removing nodes ...'
-  StopBootstraps(p_b0, p_b1)
-  StopRoutingObjects(p_vs)
-  print 'PASSED'
-  return 0
-
-def  SGM1():
-  print 'Testing SGM1'
-  if not SetupKeys(20) == 0:
-    return -1
-  items = SetupBootstraps()
-  if items == -1:
-    return -1
-  peer = items[0]
-  p_b0 = items[1]
-  p_b1 = items[2]
-
-  p_vs = items[1:3]
-  p_vs = p_vs + AddRoutingObjects(peer, 2, 6, '')
-  if p_vs == -1:
-    print 'At lease one node among 6 nodes failed to start'
-    StopRoutingObjects(p_vs)
-    return -1
-
-  p_cs = AddRoutingObjects(peer, 11, 6, 'Client')
-  if p_cs == -1:
-    print 'At lease one node among 6 nodes failed to start'
-#    StopBootstraps(p_b0, p_b1)
-    StopRoutingObjects(p_vs)
-    return -1
-  p_vs = p_vs + p_cs
-
-  print 'Send group messages to self [',
-  for i in range(1, 20):
-    rnd = random.randint(0, 13)
-    target = rnd;
-    if rnd > 7:
-      target = rnd + 3
-#    print 'rnd, dest: ' + str(rnd) + ', ' + str(target)
-    print str(target),
-    if SendGroup(p_vs[rnd], target) != 0:
-      print "Failed to send group message"
-#      StopBootstraps(p_b0, p_b1)
-      StopRoutingNodes(p_vs)
+    target = random.randint(0, num_of_nodes - 1)
+    if SendGroup(p_nodes[rnd], target) != 0:
       return -1
-  print ']'
-
-  print 'Send group messages to random destinations from [',
-  for i in range(1, 20):
-    rnd = random.randint(0, 13)
-    target = random.randint(0, 19)
-    if rnd > 7:
-      print str(rnd + 3),
-    else:
-      print str(rnd),
-    if SendGroup(p_vs[rnd], target) != 0:
-      print "Failed to send group message"
-#      StopBootstraps(p_b0, p_b1)
-      StopRoutingNodes(p_vs)
-      return -1
-  print ']'
-
-  StopRoutingObjects(p_vs)
   return 0
 
 
@@ -418,13 +324,29 @@ def SanityCheck():
   else:
     print 'Routing Sanity Check  Test JAV2  : FAILED\n'
 
-  p_new_nodes = SetupRoutingNodes(peer, num_of_vaults, num_of_clients)
-  p_nodes = p_bs + p_new_nodes
+  p_vaults = SetupRoutingNodes(peer, num_of_vaults, 0)
+  if JAC1(peer) == 0:
+    print 'Routing Sanity Check  Test JAC1  : PASSED\n'
+  else:
+    print 'Routing Sanity Check  Test JAC1  : FAILED\n'
 
-  if P1(peer, p_nodes) == 0:
+  p_clients = SetupRoutingNodes(peer, 0, num_of_clients)
+  p_nodes = p_bs + p_vaults + p_clients
+
+  if SGM1(p_nodes) == 0:
+    print 'Routing Sanity Check  Test SGM1  : PASSED\n'
+  else:
+    print 'Routing Sanity Check  Test SGM1  : FAILED\n'
+
+  if P1(p_nodes) == 0:
     print 'Routing Sanity Check  Test P1  : PASSED\n'
   else:
     print 'Routing Sanity Check  Test P1  : FAILED\n'
+
+  if JAC2(peer, p_nodes) == 0:
+    print 'Routing Sanity Check  Test JAC2  : PASSED\n'
+  else:
+    print 'Routing Sanity Check  Test JAC2  : FAILED\n'
 
   StopNodes(p_nodes)
 
