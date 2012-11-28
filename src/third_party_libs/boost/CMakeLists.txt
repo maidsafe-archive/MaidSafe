@@ -129,7 +129,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 boost_report_pretty("Boost.CMake version" BOOST_CMAKE_VERSION)
 
 include(BoostConfig)
-set(BUILD_PROJECTS chrono;date_time;filesystem;iostreams;program_options;regex;system;thread)  # random;serialization;test
+set(BUILD_PROJECTS chrono;date_time;filesystem;iostreams;program_options;python;regex;system;thread)  # random;serialization;test
 
 include(BoostCore)
 #include(BoostDocs)
@@ -228,8 +228,8 @@ set(BOOST_LIB_INSTALL_DIR
 # boost_report_pretty("Install include dir" BOOST_INCLUDE_INSTALL_DIR)
 # boost_report_pretty("Install lib dir" BOOST_LIB_INSTALL_DIR)
 
-# include(BoostExternals)
-
+include(BoostExternals)
+set(PYTHON_INCLUDE_PATH ${PYTHON_INCLUDE_PATH} PARENT_SCOPE)
 
 # if (BOOST_VERSION_OVERRIDE)
   # install(FILES ${CMAKE_BINARY_DIR}/version.hpp
