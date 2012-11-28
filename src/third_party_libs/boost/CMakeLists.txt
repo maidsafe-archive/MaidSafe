@@ -229,7 +229,6 @@ set(BOOST_LIB_INSTALL_DIR
 # boost_report_pretty("Install lib dir" BOOST_LIB_INSTALL_DIR)
 
 include(BoostExternals)
-set(PYTHON_INCLUDE_PATH ${PYTHON_INCLUDE_PATH} PARENT_SCOPE)
 
 # if (BOOST_VERSION_OVERRIDE)
   # install(FILES ${CMAKE_BINARY_DIR}/version.hpp

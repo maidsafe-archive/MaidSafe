@@ -36,6 +36,9 @@ elseif(UNIX)
 endif()
 
 
+foreach(BoostExternal BZIP2 DOXYGEN EXPAT ICU MPI XSLTPROC VALGRIND ZLIB)
+  set(WITH_${BoostExternal} OFF)
+endforeach()
 add_subdirectory(boost)
 if(WIN32)
   set(BoostChronoLibs debug boost_chrono-static-debug optimized boost_chrono-static PARENT_SCOPE)
@@ -58,7 +61,7 @@ else()
   set(BoostRegexLibs boost_regex-static PARENT_SCOPE)
   set(BoostPythonLibs boost_python-static PARENT_SCOPE)
 endif()
-set(PYTHON_INCLUDE_PATH ${PYTHON_INCLUDE_PATH} PARENT_SCOPE)
+
 
 add_subdirectory(cryptopp)
 add_subdirectory(googlemock)
