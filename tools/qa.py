@@ -35,6 +35,7 @@ import utils
 import lifestuff_killer
 import routing
 import lifestuff
+import client
 import vault
 
 # all = { "Common" : 'common', "Rudp" : 'rudp', "Routing" : 'routing',
@@ -144,6 +145,8 @@ def QaMenu():
       routing.SanityCheck()
     if (option == "2"):
       vault.VaultMenu()
+    if (option == "3"):
+      client.ClientMenu()
   utils.ClearScreen()
 
 def main():
