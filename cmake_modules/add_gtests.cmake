@@ -313,7 +313,7 @@ function(add_maidsafe_test GTEST_FIXTURE_NAME GTEST_NAME FULL_GTEST_NAME TEST_EX
         add_test(${FULL_GTEST_NAME} "__disabled__")
       else()
         string(REPLACE "/" "" TEST_EXECUTABLE ${TEST_EXECUTABLE})
-        if(WIN32 AND RUNNING_AS_CTEST_SCRIPT)
+        if(RUNNING_AS_CTEST_SCRIPT)
           set(CATCH_EXCEPTIONS "1")
         else()
           set(CATCH_EXCEPTIONS "0")
