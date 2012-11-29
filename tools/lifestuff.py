@@ -25,10 +25,25 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from lifestuff_python_api import *
+import random
 import sys
 
+kSuccess = 0
+
+def Test():
+  life_stuff = LifeStuff({}, "/tmp/ls_py_test/")
+  user_name = "testuser" + str(random.randint(10000, 99999))
+  result = life_stuff.CreateUser(user_name, "1234", "password")
+  if result != kSuccess:
+    print "Failed to create user '%s': %s" % (user_name, result)
+    return result
+  print "Test successful."
+  return kSuccess
+
 def main():
-  print("This is the suite for routing Qa analysis")
+  print("This is the suite for QA analysis of LifeStuff")
+  Test()
 
 if __name__ == "__main__":
   sys.exit(main())
