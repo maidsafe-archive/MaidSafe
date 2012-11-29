@@ -86,8 +86,8 @@ include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/googlemo
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/googlemock/include")
 
 
-include(maidsafe_utils)
-include(maidsafe_run_protoc)
+include(utils)
+include(run_protoc)
 
 
 # Create CTestCustom.cmake to avoid inclusion of coverage results from test files, protocol buffer files and main.cc files
@@ -134,7 +134,7 @@ endif()
 
 unset(MAKECOMMAND CACHE)
 include(CTest)
-include(maidsafe_add_gtests)
+include(add_gtests)
 
 set(CPACK_STRIP_FILES TRUE)
 

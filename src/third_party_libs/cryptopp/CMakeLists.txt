@@ -73,15 +73,15 @@ set(cryptopp_TEST_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/bench.h
                           ${CMAKE_CURRENT_SOURCE_DIR}/factory.h
                           ${CMAKE_CURRENT_SOURCE_DIR}/validate.h)
 
-
-add_executable(cryptest ${cryptopp_TEST_SOURCES} ${cryptopp_TEST_HEADERS})
+set(CurrentCamelCaseProjectName ${CamelCaseProjectName})
+set(CamelCaseProjectName Common)
+ms_add_executable(cryptest "Tests/Common" ${cryptopp_TEST_SOURCES} ${cryptopp_TEST_HEADERS})
+set(CamelCaseProjectName ${CurrentCamelCaseProjectName})
 
 #add_executable(TESTcryptopp ${TESTcryptopp_DIR})
 
 add_library(cryptopp STATIC ${cryptopp_SOURCES} ${cryptopp_HEADERS})
-
-set_target_properties(cryptest cryptopp  PROPERTIES FOLDER "Third Party/Crypto++")
-
+set_target_properties(cryptopp PROPERTIES FOLDER "Third Party/Crypto++")
 
 
 add_custom_command(TARGET cryptest

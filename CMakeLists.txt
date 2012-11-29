@@ -68,7 +68,7 @@ endif()
 
 
 # Get target platform details
-include(cmake_modules/maidsafe_utils.cmake)
+include(cmake_modules/utils.cmake)
 get_target_platform()
 get_target_architecture()
 
