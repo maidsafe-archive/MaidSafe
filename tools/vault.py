@@ -29,7 +29,8 @@ import sys
 import os
 import subprocess
 from subprocess import PIPE, STDOUT
-from multiprocessing import Process
+from multiprocessing import Process, Pool
+import multiprocessing
 import utils
 import re
 import psutil
@@ -72,14 +73,20 @@ def SetupBootstraps(num):
   proc.kill()
   RunNetwork(num, data[1])
   print("Wait 20 secs for network")
-  time.sleep(20)
+  time.sleep(10)
   return True
 
 def SaveKeys():
   prog = utils.GetProg('pd_key_helper')
-  subprocess.call([prog, '-s', '--peer=' + utils.GetIp() + ':5483'], shell = False, stdout=None,\
+  return subprocess.call([prog, '-ls', '--peer=' + utils.GetIp() + ':5483'], shell = False, stdout=None,\
       stderr=None)
 
+def ExtendedTest(num):
+  prog = utils.GetProg('pd_key_helper')
+  SaveKeys()
+  subprocess.call([prog, '-lx', '--peer=' + utils.GetIp() + ':5483',\
+    '--chunk_set_count=' + str(num)], shell = False, stdout=None, stderr=None)
+  raw_input("Press any key to continue")
 
 def SetUpKeys(num):
   print("Setting up keys ... ")
@@ -90,13 +97,13 @@ def SetUpKeys(num):
          shell = False, stdout=None, stderr=None)
 
 def CreateChunkStores(num):
-  for dir_num in range(num):
+  for dir_num in range(int(num)):
     directory = os.path.join(os.curdir, '.cs' + str(dir_num))
     if not os.path.exists(directory):
           os.makedirs(directory)
 
 def RemoveChunkStores(num):
-  for dir_num in range(num):
+  for dir_num in range(int(num)):
     directory = os.path.join(os.curdir, '.cs' + str(dir_num))
     if os.path.exists(directory):
           shutil.rmtree(directory)
@@ -111,6 +118,7 @@ def work(number, ip_address):
 
 def RunNetwork(number_of_vaults, ip_address):
   for vault in range(3, number_of_vaults):
+    #time.sleep(2)
     p = Process(target = work, args=(vault, ip_address))
     p.start()
 
@@ -125,7 +133,6 @@ def SetUpRemainingNodes():
 
 def SanityCheck(num):
   pid = SetupBootstraps(num)
-  RemoveChunkStores(num)
   if pid == False:
     print("Vault Sanity Check failed")
     return False
@@ -138,31 +145,41 @@ def VaultMenu():
   utils.ClearScreen()
   while(option != 'm'):
     utils.ClearScreen()
-    print(str(utils.CountProcs('lifestuff_vault')) + " Vaults running on this machine")
+    procs = utils.CountProcs('lifestuff_vault')
+    print(str(procs) + " Vaults running on this machine")
     print ("================================")
     print ("MaidSafe Quality Assurance Suite | Vault Actions")
     print ("================================")
     print ("1: Bootstrap and set up vaults")
-    print ("2: Set up vaults only")
-    print ("3: Performance checks")
-    print ("4: Kill all vaults on this machine")
+    if procs == 0:
+      print ("2: Set up vaults only (bootstrap elsewhere)")
+    else:
+      print ("3: Extended Checks")
+      print ("4: Kill all vaults on this machine")
     option = raw_input("Please select an option (m for main Qa menu): ")
     if (option == "1"):
-      number = raw_input("Please input number of vaults to run (minimum 10): ")
-      SanityCheck(int(number) + 2)
+      num = 0
+      while 10 > num:
+        number = raw_input("Please input number of vaults to run (minimum 10): ")
+        num = int(number)
+      RemoveChunkStores(num)
+      SanityCheck(num + 2)
       SaveKeys()
-    if (option == "2"):
-      number = raw_input("Please input number of vaults to run: ")
-      SaveKeys()
-      SetUpKeys(int(number))
-      RunNetwork(int(number), utils.GetIp())
-    if (option == "3"):
-      number = raw_input("Please input number of vaults to run")
-      ip = raw_input("Please input ip address of bootstrap machine")
-      SaveKeys()
-      RunNetwork(int(number), ip)
-    if (option == "4"):
-      lifestuff_killer.KillLifeStuff()
+    if procs == 0:
+      if (option == "2"):
+        number = raw_input("Please input number of vaults to run")
+        ip = raw_input("Please input ip address of bootstrap machine")
+        SaveKeys()
+        RunNetwork(int(number), ip)
+    else:
+      if (option == "3"):
+        number = 0
+        while number < 1 :
+          num = raw_input("Please input number of chunks in test: ")
+          number = int(num)
+        ExtendedTest(number)
+      if (option == "4"):
+        lifestuff_killer.KillLifeStuff()
   utils.ClearScreen()
 
 

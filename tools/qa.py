@@ -27,7 +27,10 @@
 import os
 import sys
 import subprocess
+from subprocess import Popen, PIPE, STDOUT
 import multiprocessing
+from time import sleep
+
 import utils
 import lifestuff_killer
 import routing
@@ -88,10 +91,13 @@ def RunNetwork(number_of_vaults):
   pool = multiprocessing.Pool(processes=number_of_vaults)
   pool.map(work, [utils.FindFile('TESTcommon', os.curdir)] * number_of_vaults)
 
-
 def RunQaCheck():
-  print("Not yet implemented")
-  RunNetwork(50)
+  print '------------START ROUTING TESTS------------'
+  if routing_tests.JAV1() == 0:
+    print 'TEST JAV1    : PASSED'
+  else:
+    print 'TEST JAV1    : FAILED'
+  print '-------------END ROUTING TESTS-------------\n'
 
 
 def MainMenu():
@@ -130,17 +136,14 @@ def QaMenu():
     print ("MaidSafe Quality Assurance Suite")
     print ("================================")
     print ("1: Routing:   sanity check")
-    print ("2: Vault:     feature checks")
-    print ("3: Vault:     performance checks")
-    print ("4: Client:    feature checks")
-    print ("5: Client:    performance checks")
-    print ("4: LifeStuff: feature checks (includes manager)")
-    print ("5: LifeStuff: performance (includes manager)")
+    print ("2: Vault:     Vault QA Menu")
+    print ("3: Client:    Client QA Menu")
+    print ("4: LifeStuff: performance (includes manager)")
     option = raw_input("Please select an option (m for main menu): ")
     if (option == "1"):
       routing.SanityCheck()
     if (option == "2"):
-      vault.SanityCheck(10)
+      vault.VaultMenu()
   utils.ClearScreen()
 
 def main():

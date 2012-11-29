@@ -77,21 +77,26 @@ message("${HR}")
 include(cmake_modules/maidsafe_find_just_thread.cmake)
 
 
-add_subdirectory(src/third_party_libs)
-
-
-# Python library search
-message("${HR}")
-include(FindPythonInterp)
-set(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
-find_package(PythonInterp)
-if(PYTHONINTERP_FOUND)
-  execute_process(COMMAND ${PYTHON_EXECUTABLE} -V ERROR_VARIABLE PYTHON_VERSION ERROR_STRIP_TRAILING_WHITESPACE)
-  string(REPLACE "Python " "" PYTHON_VERSION ${PYTHON_VERSION})
-  message(STATUS "Found python executable v${PYTHON_VERSION} - style checking enabled.")
-else()
-  message(STATUS "Didn't find python executable: style checking disabled.")
+# Python interpreter and library search
+if(NOT PYTHON_EXECUTABLE OR NOT PYTHONLIBS_FOUND)
+  message("${HR}")
 endif()
+set(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
+find_package(PythonInterp REQUIRED)
+if(NOT PYTHONINTERP_FOUND)
+  message(FATAL_ERROR "Didn't find python executable.")
+endif()
+if(WIN32)
+  get_filename_component(PythonPath ${PYTHON_EXECUTABLE} PATH)
+  get_filename_component(PythonLibName ${PythonPath} NAME)
+  string(TOLOWER "${PythonLibName}" PythonLibName)
+  find_library(PYTHON_LIBRARY NAMES ${PythonLibName} PATHS ${PythonPath}/libs NO_DEFAULT_PATH)
+  find_path(PYTHON_INCLUDE_DIR NAMES Python.h PATHS ${PythonPath}/include NO_DEFAULT_PATH)
+endif()
+find_package(PythonLibs REQUIRED)
+
+
+add_subdirectory(src/third_party_libs)
 
 
 # Build protoc if not already done
