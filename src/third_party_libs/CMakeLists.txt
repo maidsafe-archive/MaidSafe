@@ -36,9 +36,25 @@ elseif(UNIX)
 endif()
 
 
-foreach(BoostExternal BZIP2 DOXYGEN EXPAT ICU MPI XSLTPROC VALGRIND ZLIB)
-  set(WITH_${BoostExternal} OFF)
+# This is duplicated from src\third_party_libs\boost\tools\build\CMake\BoostExternals.cmake
+# which defaults each option to "ON".  This causes ALL options to be set ON during initial CMake
+# run forcing us to preempt the definition of the options here if we want to avoid having all ON
+# during the first run.
+foreach(BoostExternal
+    BZip2
+    Doxygen
+    Expat
+    ICU
+    MPI
+    Python
+    Xsltproc
+    Valgrind
+    ZLib
+    )
+  string(TOUPPER ${BoostExternal} BoostExternal)
+  option(WITH_${BoostExternal} "Attempt to find and configure ${BoostExternal}" OFF)
 endforeach()
+set(WITH_PYTHON ON)
 add_subdirectory(boost)
 if(WIN32)
   set(BoostChronoLibs debug boost_chrono-static-debug optimized boost_chrono-static PARENT_SCOPE)
