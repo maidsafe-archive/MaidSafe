@@ -122,7 +122,9 @@ endfunction()
 # outdated executables in the case of renaming a CMake Target.
 macro(rename_outdated_built_exes)
   if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
-    set(AllExesForAllProjects ${AllExesForAllProjects} protoc)
+    set(AllExesForAllProjects ${AllExesForAllProjects}
+        cryptest protoc CompilerIdC CompilerIdCXX
+        LifeStuff_${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}.${APPLICATION_VERSION_PATCH}_${TargetPlatform}_${TargetArchitecture})
     if(MSVC)
       file(GLOB_RECURSE BuiltExes RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/*.exe")
     else()
