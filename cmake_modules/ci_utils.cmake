@@ -71,9 +71,9 @@ function(update_super_project)
       message(FATAL_ERROR "Failed to pull super project:\n\n${ErrorVar}")
     endif()
     get_git_log(CTEST_SOURCE_DIRECTORY SuperNewCommit SuperNewCommitLogMsg SuperNewCommitLogAuthor)
-                                                                                                        #    if(${SuperNewCommit} STREQUAL ${SuperCurrentCommit})
+    if(${SuperNewCommit} STREQUAL ${SuperCurrentCommit})
       set(RunAll OFF PARENT_SCOPE)
-                                                                                                        #    endif()
+    endif()
   elseif(DashboardModel STREQUAL "Nightly" OR DashboardModel STREQUAL "Weekly")
     message("Updating super project")
     ctest_update(RETURN_VALUE UpdatedCount)
@@ -141,10 +141,10 @@ function(handle_failed_build)
   message("${SubProject} failed during build, exiting script")
   if(WIN32)
     # TODO(Viv) Check OS Version
-#     execute_process(COMMAND cmd /c "ci_build_reporter.py win7 ${MachineBuildType} fail ${SubProject} ${${SubProject}NewCommitLogAuthor}"
-#                     WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
-#                     RESULT_VARIABLE ResultVar
-#                     OUTPUT_VARIABLE OutputVar)
+    execute_process(COMMAND cmd /c "ci_build_reporter.py win7 ${MachineBuildType} fail ${SubProject} ${${SubProject}NewCommitLogAuthor}"
+                    WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
+                    RESULT_VARIABLE ResultVar
+                    OUTPUT_VARIABLE OutputVar)
   else()
     # Need Linux Execute Script Command with argument detections
   endif()
@@ -190,10 +190,10 @@ function(build_and_run SubProject RunAll)
   elseif(${SubProject} STREQUAL "LifestuffGui")
     if(WIN32)
       # TODO(Viv) Check OS Version
-#       execute_process(COMMAND cmd /c "ci_build_reporter.py win7 ${MachineBuildType} ok ${SubProject} ${${SubProject}NewCommitLogAuthor}"
-#                       WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
-#                       RESULT_VARIABLE ResultVar
-#                       OUTPUT_VARIABLE OutputVar)                      
+      execute_process(COMMAND cmd /c "ci_build_reporter.py win7 ${MachineBuildType} ok ${SubProject} ${${SubProject}NewCommitLogAuthor}"
+                      WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
+                      RESULT_VARIABLE ResultVar
+                      OUTPUT_VARIABLE OutputVar)
     else()
       # Need Linux Execute Script Command with argument detections
     endif()
