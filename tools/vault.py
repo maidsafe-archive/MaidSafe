@@ -76,14 +76,14 @@ def SetupBootstraps(num):
   time.sleep(10)
   return True
 
-def SaveKeys():
+def SaveKeys(peer):
   prog = utils.GetProg('pd_key_helper')
-  return subprocess.call([prog, '-ls', '--peer=' + utils.GetIp() + ':5483'], shell = False, stdout=None,\
+  return subprocess.call([prog, '-ls', '--peer=' + peer + ':5483'], shell = False, stdout=None,\
       stderr=None)
 
 def ExtendedTest(num):
   prog = utils.GetProg('pd_key_helper')
-  SaveKeys()
+  SaveKeys(utils.GetIp())
   subprocess.call([prog, '-lx', '--peer=' + utils.GetIp() + ':5483',\
     '--chunk_set_count=' + str(num)], shell = False, stdout=None, stderr=None)
   raw_input("Press any key to continue")
@@ -164,12 +164,12 @@ def VaultMenu():
         num = int(number)
       RemoveChunkStores(num)
       SanityCheck(num + 2)
-      SaveKeys()
+      SaveKeys(utils.GetIp())
     if procs == 0:
       if (option == "2"):
         number = raw_input("Please input number of vaults to run")
         ip = raw_input("Please input ip address of bootstrap machine")
-        SaveKeys()
+        SaveKeys(ip)
         RunNetwork(int(number), ip)
     else:
       if (option == "3"):
