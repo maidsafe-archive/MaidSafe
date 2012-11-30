@@ -30,19 +30,42 @@ from time import sleep
 from lifestuff_python_api import *
 import random
 import string
+import utils
 
+# as per return_codes.h
 kSuccess = 0
+
+# as per LifeStuffState in lifestuff.h
+kZeroth = 0
+kInitialised = 1
+kConnected = 2
+kLoggedIn = 3
 
 kChangePassword = 3
 kChangePin = 4
 kChangeKeyword = 5
 kCreatePublicId = 6
 
+kKeywordIndex = 0
+kPinIndex = 1
+kPasswordIndex = 2
+kPublicIdIndex = 3
+kHasPublicIdIndex = 4
+
 #-----Helpers-----
 
 def GenerateWord():
   length = random.randrange(5, 31)
   return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for x in range(length))
+
+
+def GenerateKeyword():
+  return GenerateWord()
+
+
+def GeneratePassword():
+  return GenerateWord()
+
 
 def GeneratePin():
   pin = '0000'
@@ -62,77 +85,84 @@ def PrintStuff(string):
   sleep(2)
 
 
-def DoFullCreateUser(life_stuff, keyword, pin, password):
+def DoFullCreateUser(life_stuff, credentials):
+  keyword = credentials[kKeywordIndex]
+  pin = credentials[kPinIndex]
+  password = credentials[kPasswordIndex]
   result = life_stuff.CreateUser(keyword, pin, password)
   if result != kSuccess:
-    print "Failed to create user."
+    print "\tFailed to create user."
     return result
-  print "Created user successfully."
+  print "\tCreated user successfully."
 
   result = life_stuff.MountDrive()
   if result != kSuccess:
-    print "Failed to mount drive."
+    print "\tFailed to mount drive."
     return result
-  print "Mounted drive successfully."
+  print "\tMounted drive successfully."
   return kSuccess
 
 
-def DoFullLogIn(life_stuff, keyword, pin, password, public_id=''):
+def DoFullLogIn(life_stuff, credentials):
+  keyword = credentials[kKeywordIndex]
+  pin = credentials[kPinIndex]
+  password = credentials[kPasswordIndex]
+  has_public_id = credentials[kHasPublicIdIndex]
   result = life_stuff.LogIn(keyword, pin, password)
   if result != kSuccess:
-    print "Failed to log in."
+    print "\tFailed to log in."
     return result
-  print "Logged in successfully."
+  print "\tLogged in successfully."
 
   result = life_stuff.MountDrive()
   if result != kSuccess:
-    print "Failed to mount drive."
+    print "\tFailed to mount drive."
     return result
-  print "Mounted drive successfully."
+  print "\tMounted drive successfully."
 
-  if public_id != '':
+  if has_public_id:
     result = life_stuff.StartMessagesAndIntros()
     if result != kSuccess:
-      print "Failed to start messages and intros."
+      print "\tFailed to start messages and intros."
       return result
-    print "Started messages and intros successfully."
+    print "\tStarted messages and intros successfully."
 
   return kSuccess
 
 
-
-def DoFullLogOut(life_stuff, public_id = ''):
-  if public_id != '':
+def DoFullLogOut(life_stuff, credentials):
+  has_public_id = credentials[kHasPublicIdIndex]
+  if has_public_id:
     result = life_stuff.StopMessagesAndIntros()
     if result != kSuccess:
-      print "Failed to stop messages and intros."
+      print "\tFailed to stop messages and intros."
       return result
-    print "Stopped messages and intros successfully."
+    print "\tStopped messages and intros successfully."
 
   result = life_stuff.UnMountDrive()
   if result != kSuccess:
-    print "Failed to unmount drive."
+    print "\tFailed to unmount drive."
     return result
-  print "Unmounted drive successfully."
+  print "\tUnmounted drive successfully."
 
   result = life_stuff.LogOut()
   if result != kSuccess:
-    print "Failed to log out."
+    print "\tFailed to log out."
     return result
-  print "Logged out successfully."
+  print "\tLogged out successfully."
 
   return kSuccess
 
 
-def CheckLogInLogOut(keyword, pin, password):
-  print "Checking LogIn and Logout..."
+def CheckLogInLogOut(credentials):
+  print "Checking LogIn and LogOut..."
   life_stuff = LifeStuff({}, "")
-  result = DoFullLogIn(life_stuff, keyword, pin, password)
+  result = DoFullLogIn(life_stuff, credentials)
   if result != 0:
     print "Failed to log in with result: " + str(result)
     return result
 
-  result = DoFullLogOut(life_stuff)
+  result = DoFullLogOut(life_stuff, credentials)
   if result != 0:
     print "Failed to log out with result: " + str(result)
     return result
@@ -143,15 +173,18 @@ def CheckLogInLogOut(keyword, pin, password):
 
 #-----Options-----
 
-def CreateUserLocal(keyword, pin, password):
+def CreateUserLocal(credentials):
+  keyword = credentials[kKeywordIndex]
+  pin = credentials[kPinIndex]
+  password = credentials[kPasswordIndex]
   print "Creating user..."
   life_stuff = LifeStuff({}, "")
-  result = DoFullCreateUser(life_stuff, keyword, pin, password)
+  result = DoFullCreateUser(life_stuff, credentials)
   if result != 0:
     print "Failed to create user with result: " + str(result)
     return result
 
-  result = DoFullLogOut(life_stuff)
+  result = DoFullLogOut(life_stuff, credentials)
   if result != 0:
     print "Failed to log out with result: " + str(result)
     return result
@@ -159,106 +192,170 @@ def CreateUserLocal(keyword, pin, password):
 
 
 def CreateUserIp():
+  # TODO
   print "Sorry, joining a network by providing an IP address isn't implemented yet."
-  raw_input("Press any key to continue.")
+  raw_input("Press enter to continue.")
   #peer = raw_input("Please enter IP address: ")
 
 
-def TestChangePassword(keyword, pin, password):
-  return TestCreateOrChangeCredential(keyword, pin, password, kChangePassword)
+def TestChangePassword(credentials):
+  return TestCreateOrChangeCredential(credentials, kChangePassword)
 
 
-def TestChangePin(keyword, pin, password):
-  return TestCreateOrChangeCredential(keyword, pin, password, kChangePin)
+def TestChangePin(credentials):
+  return TestCreateOrChangeCredential(credentials, kChangePin)
 
 
-def TestChangeKeyword(keyword, pin, password):
-  return TestCreateOrChangeCredential(keyword, pin, password, kChangeKeyword)
+def TestChangeKeyword(credentials):
+  return TestCreateOrChangeCredential(credentials, kChangeKeyword)
 
 
-def TestCreatePublicId(keyword, pin, password, public_id):
-  return TestCreateOrChangeCredential(keyword, pin, password, kCreatePublicId, public_id)
+def TestCreatePublicId(credentials):
+  return TestCreateOrChangeCredential(credentials, kCreatePublicId)
 
 
 def TestChangePublicId():
+  # TODO
   print "Sorry, changing Public IDs isn't implemented yet."
-  raw_input("Press any key to continue.")
-#  return TestCreateOrChangeCredential(keyword, pin, password, kChangePublicId)
+  raw_input("Press enter to continue.")
 
-def TestCreateOrChangeCredential(keyword, pin, password, action, public_id=''):
+
+def TestCreateOrChangeCredential(credentials, action):
   if action != kChangePassword and action != kChangePin and action != kChangeKeyword and action != kCreatePublicId:
     print "Action is not recognised."
     return -1
 
+  keyword = credentials[kKeywordIndex]
+  pin = credentials[kPinIndex]
+  password = credentials[kPasswordIndex]
+  public_id = credentials[kPublicIdIndex]
+
   print "Logging in..."
   life_stuff = LifeStuff({}, "")
-  result = DoFullLogIn(life_stuff, keyword, pin, password)
+  result = DoFullLogIn(life_stuff, credentials)
   if result != 0:
     print "Failed to log in with result: " + str(result)
     return result
 
   if action == kChangePassword:
     new_password = GenerateWord()
+    print "Changing password from %s to %s..." % (password, new_password)
     result = life_stuff.ChangePassword(new_password, password)
     if result != 0:
       print "Failed to change password with result: " + str(result)
       return result
-    password = new_password
+    credentials[kPasswordIndex] = new_password
+    print "Changed password successfully."
   elif action == kChangePin:
     new_pin = GeneratePin()
+    print "Changing PIN from %s to %s..." % (pin, new_pin)
     result = life_stuff.ChangePin(new_pin, password)
     if result != 0:
       print "Failed to change pin with result: " + str(result)
       return result
-    pin = new_pin
+    credentials[kPinIndex] = new_pin
+    print "Changed PIN successfully."
   elif action == kChangeKeyword:
     new_keyword = GenerateWord()
+    print "Changing keyword from %s to %s..." % (keyword, new_keyword)
     result = life_stuff.ChangeKeyword(new_keyword, password)
     if result != 0:
       print "Failed to change keyword with result: " + str(result)
       return result
-    keyword = new_keyword
+    credentials[kKeywordIndex] = new_keyword
+    print "Changed keyword successfully."
   elif action == kCreatePublicId:
-    if public_id == '':
-      print "Can't create empty public ID!"
-      return -1
+    print "Creating public id %s..." % public_id
     result = life_stuff.CreatePublicId(public_id)
     if result != 0:
       print "Failed to create public id with result: " + str(result)
       return result
+    credentials[kHasPublicIdIndex] = True
+    print "Created public ID successfully."
 
-  result = DoFullLogOut(life_stuff)
+  print "Logging out..."
+  result = DoFullLogOut(life_stuff, credentials)
   if result != 0:
     print "Failed to log out with result: " + str(result)
     return result
 
-  result = CheckLogInLogout(life_stuff, keyword, pin, password)
-  if result != 0:
-    print "Failed to log in and out with result: " + str(result)
-    return result
+  if action != kCreatePublicId:
+    result = CheckLogInLogOut(credentials)
+    if result != 0:
+      print "Failed to log in and out with result: " + str(result)
+      return result
 
   return kSuccess
 
-def TestMultipleInstances():
-  num_instances = raw_input("Please enter the number of instances to run: ")
-  #TODO
+
+def TestMultipleInstances(credentials):
+  # TODO - verify test. Currently get exception on LogIn of second lifestuff instance,
+  # as in TESTlifestuff_api_user_credentials.FUNC_LogInFromTwoPlaces
+  num_instances = int(raw_input("Please enter the number of instances to run: "))
+  while num_instances > 10 or num_instances < 2:
+    print "Currently the number of instances should be between 2 and 10."
+    num_instances = int(raw_input("Please enter the number of instances to run: "))
+  life_stuffs = []
+
+  for i in range(num_instances):
+    print "Starting instance %d..." % i
+    life_stuff = LifeStuff({}, "")
+    result = DoFullLogIn(life_stuff, credentials)
+    if result != kSuccess:
+      print "Failed to log instance %d in with result %d" % (i, result)
+      return result
+    life_stuffs.append(life_stuff)
+    sleep(random.randrange(1, 6))
+
+  if len(life_stuffs) != num_instances:
+    print "Only managed %d of %d instances." % (len(life_stuffs), num_instances)
+  
+  num_logged_in = 0
+  for life_stuff in lifestuffs:
+    if life_stuff.state() == kLoggedIn:
+      num_logged_in += 1
+  
+  if num_logged_in != 1:
+    print "Wrong number of logged in instances: %d" % num_logged_in
+    return -1
+
+  return kSuccess
 
 
-def ShowCredentials(keyword, pin, password, public_id):
-  print "Keyword: " + keyword
-  print "PIN: " + pin
-  print "Password: " + password
-  print "Public ID: " + public_id
-  raw_input("Press any key to continue.")
+def ShowCredentials(credentials):
+  print "\tKeyword:   " + credentials[kKeywordIndex]
+  print "\tPIN:       " + credentials[kPinIndex]
+  print "\tPassword:  " + credentials[kPasswordIndex]
+  print "\tPublic ID: " + credentials[kPublicIdIndex]
+  if credentials[kHasPublicIdIndex]:
+    print "\tHas created public id."
+  else :
+    print "\tHasn't created public ID."
+
+
+def RegenerateCredentials(credentials):
+  print "Old credentials:"
+  ShowCredentials(credentials)
+  GenerateCredentials(credentials)
+  print "New credentials:"
+  ShowCredentials(credentials)
+  raw_input("Press enter to continue.")
+
+
+def GenerateCredentials(credentials):
+  del credentials[:]
+  credentials.append(GenerateKeyword())
+  credentials.append(GeneratePin())
+  credentials.append(GeneratePassword())
+  credentials.append(GeneratePublicId())
+  credentials.append(False)
 
 
 def ClientMenu():
-  keyword = GenerateWord()
-  pin = GeneratePin()
-  password = GenerateWord()
-  public_id = GeneratePublicId()
   option = 'a'
   utils.ClearScreen()
+  credentials = []
+  GenerateCredentials(credentials) 
   while(option != 'm'):
     utils.ClearScreen()
     print ("MaidSafe Quality Assurance Suite | Client Actions")
@@ -271,26 +368,33 @@ def ClientMenu():
     print "6: Login, create Public ID, logout"
     print "7: Login, change Public ID, logout; login, logout"
     print "8: Login multiple instances (supply number), check only last one exists"
-    print "9: Show credentials"
+    print "9: Show credentials"   # TODO - remove
+    print "10: Regenerate credentials (current credentials will be lost)"  # TODO - remove
+    print "11: Login, logout"  # TODO - remove
     option = raw_input("Please select an option (m for main Qa menu): ")
     if option == "1":
-      CreateUserLocal(keyword, pin, password)
+      CreateUserLocal(credentials)
     elif option == "2":
       CreateUserIp()
     elif option == "3":
-      TestChangePassword()
+      TestChangePassword(credentials)
     elif option == "4":
-      TestChangePin()
+      TestChangePin(credentials)
     elif option == "5":
-      TestChangeKeyword()
+      TestChangeKeyword(credentials)
     elif option == "6":
-      TestCreatePublicId()
+      TestCreatePublicId(credentials)
     elif option == "7":
       TestChangePublicId()
     elif option == "8":
-      TestMultipleInstances()
-    elif option == "9":
-      ShowCredentials(keyword, pin, password, public_id)
+      TestMultipleInstances(credentials)
+    elif option == "9":  # TODO - remove
+      ShowCredentials(credentials)
+      raw_input("Press enter to continue.")
+    elif option == "10":  # TODO - remove
+      RegenerateCredentials(credentials)
+    elif option == "11":  # TODO - remove
+      CheckLogInLogOut(credentials)
   utils.ClearScreen()
 
 
