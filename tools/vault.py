@@ -73,12 +73,12 @@ def SetupBootstraps(num):
   proc.kill()
   RunNetwork(num, data[1])
   print("Wait 20 secs for network")
-  time.sleep(10)
+  time.sleep(30)
   return True
 
 def SaveKeys():
   prog = utils.GetProg('pd_key_helper')
-  return subprocess.call([prog, '-ls', '--peer=' + utils.GetIp() + ':5483'], shell = False, stdout=None,\
+  return subprocess.call([prog, '-ls', '--peer=' + utils.GetIp() + ':5483', '--log_pd', 'I'], shell = False, stdout=None,\
       stderr=None)
 
 def ExtendedTest(num):
@@ -100,7 +100,7 @@ def CreateChunkStores(num):
   for dir_num in range(int(num)):
     directory = os.path.join(os.curdir, '.cs' + str(dir_num))
     if not os.path.exists(directory):
-          os.makedirs(directory)
+      os.makedirs(directory)
 
 def RemoveChunkStores(num):
   for dir_num in range(int(num)):
@@ -110,17 +110,18 @@ def RemoveChunkStores(num):
 
 def work(number, ip_address):
   prog = utils.GetProg('lifestuff_vault')
-  return subprocess.call([prog, '--peer=' + ip_address.lstrip() + ':5483' ,\
-        '--identity_index=' + str(number),\
-        '--chunk_path=.cs' + str(number), '--start'],\
-        shell = False, stdout=None, stderr=None)
+  return subprocess.Popen([prog, '--peer=' + ip_address.lstrip() + ':5483',
+                          '--identity_index=' + str(number),
+                          '--chunk_path=.cs' + str(number), '--start'],
+                          shell=False, stdout=None, stderr=None)
 
 
 def RunNetwork(number_of_vaults, ip_address):
   for vault in range(3, number_of_vaults):
+    work(vault, ip_address)
     #time.sleep(2)
-    p = Process(target = work, args=(vault, ip_address))
-    p.start()
+    #p = Process(target = work, args=(vault, ip_address))
+    #p.start()
 
 
 def SetUpNextNode(endpoint):
