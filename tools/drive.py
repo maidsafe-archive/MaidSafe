@@ -32,6 +32,35 @@ import time
 
 kSuccess = 0
 
+def WriteTestFile(path):
+  content = "test" + str(random.randint(1000000, 9999999))
+  print "Writing test file..."
+  try:
+    f = open(path, "w")
+    f.write(content)
+  except:
+    print "Failed to write to", path
+    content = ""
+  finally:
+    f.close()
+  return content
+
+def CheckTestFile(path, expected_content):
+  print "Reading test file..."
+  result = False
+  try:
+    f = open(path, "r")
+    content = f.read()
+    if content != expected_content:
+      raise Exception("Contents don't match. ('%s' should be '%s')." % (content, expected_content))
+  except Exception as ex:
+    print "Failed to read test file:", ex
+  else:
+    result = True
+  finally:
+    f.close()
+  return result
+
 def Test():
   life_stuff = LifeStuff({}, "")
 
@@ -53,11 +82,11 @@ def Test():
 
   print "Drive mounted:", life_stuff.mount_path()
 
-  print "Writing test file..."
-
-  with open(life_stuff.mount_path() + "/test.txt", "w") as f:
-    f.write(user_name)
-  f.close()
+  content = WriteTestFile(life_stuff.mount_path() + "/test.txt")
+  if not CheckTestFile(life_stuff.mount_path() + "/test.txt", content):
+    life_stuff.UnMountDrive()
+    life_stuff.LogOut()
+    return -1
 
   print "Unmounting Drive..."
 
@@ -77,15 +106,9 @@ def Test():
 
   print "Drive mounted:", life_stuff.mount_path()
 
-  print "Reading test file..."
-
-  with open(life_stuff.mount_path() + "/test.txt", "r") as f:
-    contents = f.read()
-  f.close()
-
-  if contents != user_name:
-    print "Failed to read test file contents."
+  if not CheckTestFile(life_stuff.mount_path() + "/test.txt", content):
     life_stuff.UnMountDrive()
+    life_stuff.LogOut()
     return -1
 
   print "Unmounting Drive..."
