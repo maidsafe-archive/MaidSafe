@@ -35,6 +35,7 @@ import utils
 import lifestuff_killer
 import routing
 import lifestuff
+import client
 import vault
 
 # all = { "Common" : 'common', "Rudp" : 'rudp', "Routing" : 'routing',
@@ -136,17 +137,16 @@ def QaMenu():
     print ("MaidSafe Quality Assurance Suite")
     print ("================================")
     print ("1: Routing:   sanity check")
-    print ("2: Vault:     feature checks")
-    print ("3: Vault:     performance checks")
-    print ("4: Client:    feature checks")
-    print ("5: Client:    performance checks")
-    print ("4: LifeStuff: feature checks (includes manager)")
-    print ("5: LifeStuff: performance (includes manager)")
+    print ("2: Vault:     Vault QA Menu")
+    print ("3: Client:    Client QA Menu")
+    print ("4: LifeStuff: performance (includes manager)")
     option = raw_input("Please select an option (m for main menu): ")
     if (option == "1"):
       routing.SanityCheck()
     if (option == "2"):
-      vault.SanityCheck(10)
+      vault.VaultMenu()
+    if (option == "3"):
+      client.ClientMenu()
   utils.ClearScreen()
 
 def main():

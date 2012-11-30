@@ -36,6 +36,25 @@ elseif(UNIX)
 endif()
 
 
+# This is duplicated from src\third_party_libs\boost\tools\build\CMake\BoostExternals.cmake
+# which defaults each option to "ON".  This causes ALL options to be set ON during initial CMake
+# run forcing us to preempt the definition of the options here if we want to avoid having all ON
+# during the first run.
+foreach(BoostExternal
+    BZip2
+    Doxygen
+    Expat
+    ICU
+    MPI
+    Python
+    Xsltproc
+    Valgrind
+    ZLib
+    )
+  string(TOUPPER ${BoostExternal} BoostExternal)
+  option(WITH_${BoostExternal} "Attempt to find and configure ${BoostExternal}" OFF)
+endforeach()
+set(WITH_PYTHON ON)
 add_subdirectory(boost)
 if(WIN32)
   set(BoostChronoLibs debug boost_chrono-static-debug optimized boost_chrono-static PARENT_SCOPE)
@@ -46,6 +65,7 @@ if(WIN32)
   set(BoostSystemLibs debug boost_system-static-debug optimized boost_system-static PARENT_SCOPE)
   set(BoostThreadLibs debug boost_thread-static-debug optimized boost_thread-static PARENT_SCOPE)
   set(BoostRegexLibs debug boost_regex-static-debug optimized boost_regex-static PARENT_SCOPE)
+  set(BoostPythonLibs debug boost_python-static-debug optimized boost_python-static PARENT_SCOPE)
 else()
   set(BoostChronoLibs boost_chrono-static PARENT_SCOPE)
   set(BoostDateTimeLibs boost_date_time-static PARENT_SCOPE)
@@ -55,7 +75,9 @@ else()
   set(BoostSystemLibs boost_system-static PARENT_SCOPE)
   set(BoostThreadLibs boost_thread-static PARENT_SCOPE)
   set(BoostRegexLibs boost_regex-static PARENT_SCOPE)
+  set(BoostPythonLibs boost_python-static PARENT_SCOPE)
 endif()
+
 
 add_subdirectory(cryptopp)
 add_subdirectory(googlemock)

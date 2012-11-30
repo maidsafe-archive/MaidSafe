@@ -28,23 +28,86 @@
 from lifestuff_python_api import *
 import random
 import sys
+import time
 
 kSuccess = 0
 
 def Test():
-  life_stuff = LifeStuff({}, "/tmp/ls_py_test/")
+  life_stuff = LifeStuff({}, "")
+
   user_name = "testuser" + str(random.randint(10000, 99999))
+
+  print "Creating user %s..." % user_name
+
   result = life_stuff.CreateUser(user_name, "1234", "password")
   if result != kSuccess:
     print "Failed to create user '%s': %s" % (user_name, result)
     return result
+
+  print "Mounting Drive..."
+
+  result = life_stuff.MountDrive()
+  if result != kSuccess:
+    print "Failed to mount Drive:", result
+    return result
+
+  print "Drive mounted:", life_stuff.mount_path()
+
+  print "Writing test file..."
+
+  with open(life_stuff.mount_path() + "/test.txt", "w") as f:
+    f.write(user_name)
+  f.close()
+
+  print "Unmounting Drive..."
+
+  result = life_stuff.UnMountDrive()
+  if result != kSuccess:
+    print "Failed to unmount Drive:", result
+    return result
+
+  time.sleep(3)
+
+  print "Re-mounting Drive..."
+
+  result = life_stuff.MountDrive()
+  if result != kSuccess:
+    print "Failed to re-mount Drive:", result
+    return result
+
+  print "Drive mounted:", life_stuff.mount_path()
+
+  print "Reading test file..."
+
+  with open(life_stuff.mount_path() + "/test.txt", "r") as f:
+    contents = f.read()
+  f.close()
+
+  if contents != user_name:
+    print "Failed to read test file contents."
+    life_stuff.UnMountDrive()
+    return -1
+
+  print "Unmounting Drive..."
+
+  result = life_stuff.UnMountDrive()
+  if result != kSuccess:
+    print "Failed to unmount Drive:", result
+    return result
+
+  print "Logging out..."
+
+  result = life_stuff.LogOut()
+  if result != kSuccess:
+    print "Failed to log out:", result
+    return result
+
   print "Test successful."
   return kSuccess
 
 def main():
-  print("This is the suite for QA analysis of LifeStuff")
-  Test()
+  print("This script is for QA analysis of LifeStuff/Drive.")
+  return Test()
 
 if __name__ == "__main__":
   sys.exit(main())
-
