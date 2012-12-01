@@ -55,3 +55,7 @@ build*
 *.vcproj
 *.vcxproj
 *install_me*
+
+# swap files #
+# ############
+*.swp
