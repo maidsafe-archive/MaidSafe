@@ -78,12 +78,11 @@ def SetupBootstraps(num):
 
 def SaveKeys(peer):
   prog = utils.GetProg('pd_key_helper')
-  return subprocess.call([prog, '-ls', '--peer=' + peer + ':5483', '--log_pd', 'I'],
-                         shell=False, stdout=None, stderr=None)
+  return subprocess.call([prog, '-ls', '--peer=' + peer + ':5483', '--log_pd', 'I'])
 
 def ExtendedTest(num):
   prog = utils.GetProg('pd_key_helper')
-  SaveKeys(utils.GetIp() + ':5483')
+  SaveKeys(utils.GetIp())
   subprocess.call([prog, '-lx', '--peer=' + utils.GetIp() + ':5483',\
     '--chunk_set_count=' + str(num)], shell = False, stdout=None, stderr=None)
   raw_input("Press any key to continue")
@@ -97,6 +96,7 @@ def SetUpKeys(num):
          shell = False, stdout=None, stderr=None)
 
 def CreateChunkStores(num):
+  RemoveChunkStores(num)
   for dir_num in range(int(num)):
     directory = os.path.join(os.curdir, '.cs' + str(dir_num))
     if not os.path.exists(directory):
@@ -117,10 +117,8 @@ def work(number, ip_address):
 
 
 def RunNetwork(number_of_vaults, ip_address):
-  RemoveChunkStores(number_of_vaults)
   CreateChunkStores(number_of_vaults)
   for vault in range(3, number_of_vaults):
-    # work(vault, ip_address)
     #time.sleep(2)
     p = Process(target = work, args=(vault, ip_address))
     p.start()
@@ -171,10 +169,15 @@ def VaultMenu():
       SaveKeys(utils.GetIp())
     if procs == 0:
       if (option == "2"):
-        number = raw_input("Please input number of vaults to run")
-        ip = raw_input("Please input ip address of bootstrap machine")
-        SaveKeys(ip)
-        RunNetwork(int(number), ip)
+        number = raw_input("Please input number of vaults to run: ")
+        ip = raw_input("Please input ip address of bootstrap machine: ")
+        prog = utils.GetProg('pd_key_helper')
+        CreateChunkStores(number)
+        subprocess.call([prog, '-c', '-n', str(int(number) + 3)])
+        if SaveKeys(ip) == 0:
+          RunNetwork(int(number) + 3, ip)
+        else:
+          raw_input("Could not store keys, giving up ! (press any key)")
     else:
       if (option == "3"):
         number = 0
