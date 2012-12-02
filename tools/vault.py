@@ -122,7 +122,6 @@ def RunNetwork(number_of_vaults, ip_address):
     #time.sleep(2)
     p = Process(target = work, args=(vault, ip_address))
     p.start()
-  SaveKeys(utils.GetIp())
 
 
 def SetUpNextNode(endpoint):

@@ -2,6 +2,7 @@
 
 import sys
 import os.path
+os.chdir("..")
 
 def main():
   file_in = open('clang_complete_template', "r")
