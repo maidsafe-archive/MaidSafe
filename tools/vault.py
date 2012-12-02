@@ -83,7 +83,7 @@ def SaveKeys(peer):
 
 def ExtendedTest(num):
   prog = utils.GetProg('pd_key_helper')
-  SaveKeys(utils.GetIp())
+  SaveKeys(utils.GetIp() + ':5483')
   subprocess.call([prog, '-lx', '--peer=' + utils.GetIp() + ':5483',\
     '--chunk_set_count=' + str(num)], shell = False, stdout=None, stderr=None)
   raw_input("Press any key to continue")
@@ -117,11 +117,14 @@ def work(number, ip_address):
 
 
 def RunNetwork(number_of_vaults, ip_address):
+  RemoveChunkStores(number_of_vaults)
+  CreateChunkStores(number_of_vaults)
   for vault in range(3, number_of_vaults):
-    work(vault, ip_address)
+    # work(vault, ip_address)
     #time.sleep(2)
-    #p = Process(target = work, args=(vault, ip_address))
-    #p.start()
+    p = Process(target = work, args=(vault, ip_address))
+    p.start()
+  SaveKeys(utils.GetIp())
 
 
 def SetUpNextNode(endpoint):
@@ -160,8 +163,8 @@ def VaultMenu():
     option = raw_input("Please select an option (m for main Qa menu): ")
     if (option == "1"):
       num = 0
-      while 10 > num:
-        number = raw_input("Please input number of vaults to run (minimum 10): ")
+      while 12 > num:
+        number = raw_input("Please input number of vaults to run (minimum 12): ")
         num = int(number)
       RemoveChunkStores(num)
       SanityCheck(num + 2)
