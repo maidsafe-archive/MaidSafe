@@ -32,7 +32,7 @@ import subprocess
 import multiprocessing
 import lifestuff_killer
 import routing
-import lifestuff
+#import lifestuff
 import vault
 
 all = { "Common" : 'common', "Rudp" : 'rudp', "Routing" : 'routing',

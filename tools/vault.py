@@ -73,17 +73,16 @@ def SetupBootstraps(num):
   proc.kill()
   RunNetwork(num, data[1])
   print("Wait 20 secs for network")
-  time.sleep(10)
+  time.sleep(30)
   return True
 
-def SaveKeys():
+def SaveKeys(peer):
   prog = utils.GetProg('pd_key_helper')
-  return subprocess.call([prog, '-ls', '--peer=' + utils.GetIp() + ':5483'], shell = False, stdout=None,\
-      stderr=None)
+  return subprocess.call([prog, '-ls', '--peer=' + peer + ':5483'])
 
 def ExtendedTest(num):
   prog = utils.GetProg('pd_key_helper')
-  SaveKeys()
+  SaveKeys(utils.GetIp())
   subprocess.call([prog, '-lx', '--peer=' + utils.GetIp() + ':5483',\
     '--chunk_set_count=' + str(num)], shell = False, stdout=None, stderr=None)
   raw_input("Press any key to continue")
@@ -97,10 +96,11 @@ def SetUpKeys(num):
          shell = False, stdout=None, stderr=None)
 
 def CreateChunkStores(num):
+  RemoveChunkStores(num)
   for dir_num in range(int(num)):
     directory = os.path.join(os.curdir, '.cs' + str(dir_num))
     if not os.path.exists(directory):
-          os.makedirs(directory)
+      os.makedirs(directory)
 
 def RemoveChunkStores(num):
   for dir_num in range(int(num)):
@@ -110,13 +110,14 @@ def RemoveChunkStores(num):
 
 def work(number, ip_address):
   prog = utils.GetProg('lifestuff_vault')
-  return subprocess.call([prog, '--peer=' + ip_address.lstrip() + ':5483' ,\
-        '--identity_index=' + str(number),\
-        '--chunk_path=.cs' + str(number), '--start'],\
-        shell = False, stdout=None, stderr=None)
+  return subprocess.Popen([prog, '--peer=' + ip_address.lstrip() + ':5483',
+                          '--identity_index=' + str(number),
+                          '--chunk_path=.cs' + str(number), '--start'],
+                          shell=False, stdout=None, stderr=None)
 
 
 def RunNetwork(number_of_vaults, ip_address):
+  CreateChunkStores(number_of_vaults)
   for vault in range(3, number_of_vaults):
     #time.sleep(2)
     p = Process(target = work, args=(vault, ip_address))
@@ -159,18 +160,23 @@ def VaultMenu():
     option = raw_input("Please select an option (m for main Qa menu): ")
     if (option == "1"):
       num = 0
-      while 10 > num:
-        number = raw_input("Please input number of vaults to run (minimum 10): ")
+      while 12 > num:
+        number = raw_input("Please input number of vaults to run (minimum 12): ")
         num = int(number)
       RemoveChunkStores(num)
       SanityCheck(num + 2)
-      SaveKeys()
+      SaveKeys(utils.GetIp())
     if procs == 0:
       if (option == "2"):
-        number = raw_input("Please input number of vaults to run")
-        ip = raw_input("Please input ip address of bootstrap machine")
-        SaveKeys()
-        RunNetwork(int(number), ip)
+        number = raw_input("Please input number of vaults to run: ")
+        ip = raw_input("Please input ip address of bootstrap machine: ")
+        prog = utils.GetProg('pd_key_helper')
+        CreateChunkStores(number)
+        subprocess.call([prog, '-c', '-n', str(int(number) + 3)])
+        if SaveKeys(ip) == 0:
+          RunNetwork(int(number) + 3, ip)
+        else:
+          raw_input("Could not store keys, giving up ! (press any key)")
     else:
       if (option == "3"):
         number = 0
