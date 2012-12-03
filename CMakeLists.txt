@@ -76,6 +76,19 @@ get_target_architecture()
 message("${HR}")
 include(cmake_modules/maidsafe_find_just_thread.cmake)
 
+# Coverage:When this target is built, it removes all .gcda files from the build directory and its subdirectories
+if(UNIX)
+  find_file(CLEAN_COVERAGE clean_coverage.cmake cmake_modules/)
+  if(CLEAN_COVERAGE)
+    add_custom_target(CleanCoverage COMMAND ${CMAKE_COMMAND} -DSEARCH_DIR=${CMAKE_BINARY_DIR} -P ${CLEAN_COVERAGE})
+  endif()
+  if (COVERAGE MATCHES "ON")
+    # message("coveragesation")
+    set(MAIDSAFE_COVERAGE "ON")
+  else()
+    set(MAIDSAFE_COVERAGE "OFF")
+  endif()
+endif()
 
 # Python interpreter and library search
 if(NOT PYTHON_EXECUTABLE OR NOT PYTHONLIBS_FOUND)
@@ -133,15 +146,6 @@ foreach(SubModule ${SubModules})
 endforeach()
 
 message("${HR}")
-
-# When this target is built, it removes all .gcda files from the build directory and its subdirectories
-if(UNIX)
-  find_file(CLEAN_COVERAGE clean_coverage.cmake cmake_modules/)
-  if(CLEAN_COVERAGE)
-    add_custom_target(CleanCoverage COMMAND ${CMAKE_COMMAND} -DSEARCH_DIR=${CMAKE_BINARY_DIR} -P ${CLEAN_COVERAGE})
-  endif()
-endif()
-
 
 message(STATUS "To include all tests,                    cmake . -DMAIDSAFE_TEST_TYPE=ALL")
 message(STATUS "To include behavioural tests,            cmake . -DMAIDSAFE_TEST_TYPE=BEH")
