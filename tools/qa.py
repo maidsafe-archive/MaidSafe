@@ -108,6 +108,8 @@ def MainMenu():
     print ("Not a build dir please cd to build dir i.e. the location of CMakeCache.txt")
     return -1;
   while(option != 'q'):
+    procs = utils.CountProcs('lifestuff_vault')
+    print(str(procs) + " Vaults running on this machine")
     print ("MaidSafe Development helper tool")
     print ("Using " +  utils.BuildType() + " build")
     print ("================================")
@@ -134,6 +136,8 @@ def QaMenu():
   option = 'a'
   utils.ClearScreen()
   while(option != 'm'):
+    procs = utils.CountProcs('lifestuff_vault')
+    print(str(procs) + " Vaults running on this machine")
     print ("MaidSafe Quality Assurance Suite")
     print ("================================")
     print ("1: Routing:   sanity check")

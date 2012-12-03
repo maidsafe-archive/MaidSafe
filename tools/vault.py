@@ -115,22 +115,18 @@ def work(number, ip_address):
                           '--chunk_path=.cs' + str(number), '--start'],
                           shell=False, stdout=None, stderr=None)
 
-
 def RunNetwork(number_of_vaults, ip_address):
   CreateChunkStores(number_of_vaults)
   for vault in range(3, number_of_vaults):
+    work(vault, ip_address)
     #time.sleep(2)
-    p = Process(target = work, args=(vault, ip_address))
-    p.start()
-
+    #p = Process(target = work, args=(vault, ip_address))
+    #p.start()
 
 def SetUpNextNode(endpoint):
   prog = utils.GetProg('lifestuff_vault')
   return subprocess.Popen([prog, '--peer=' + endpoint.lstrip(), '--identity_index=2',\
-      '--chunk_path=.cs2', '--start'], shell = False, stdout=None, stderr=None)
-
-def SetUpRemainingNodes():
-    print("todo")
+      '--chunk_path=.cs2', '--start'], shell = False, stdout=None, stderr=None) \
 
 def SanityCheck(num):
   pid = SetupBootstraps(num)

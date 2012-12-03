@@ -358,6 +358,8 @@ def ClientMenu():
   GenerateCredentials(credentials) 
   while(option != 'm'):
     utils.ClearScreen()
+    procs = utils.CountProcs('lifestuff_vault')
+    print(str(procs) + " Vaults running on this machine")
     print ("MaidSafe Quality Assurance Suite | Client Actions")
     print ("================================")
     print "1: Create user, logout (use local network)"
