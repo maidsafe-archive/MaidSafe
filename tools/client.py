@@ -25,11 +25,11 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import utils
-from time import sleep
+import client_environment
 from lifestuff_python_api import *
 import random
 import string
+from time import sleep
 import utils
 
 # as per return_codes.h
@@ -173,7 +173,16 @@ def CheckLogInLogOut(credentials):
 
 #-----Options-----
 
-def CreateUserLocal(credentials):
+def StartManagerCreateUser(credentials, use_peer):
+  if use_peer:
+    peer = raw_input("Please enter IP address: ")
+    result = client_environment.StartLifeStuffMgr(peer, None, None, None)
+  else:
+    result = client_environment.StartLifeStuffMgr(None, None, None, None)
+  if result != kSuccess:
+    print "Failed to start LifeStuff Manager."
+    return result
+
   keyword = credentials[kKeywordIndex]
   pin = credentials[kPinIndex]
   password = credentials[kPasswordIndex]
@@ -189,13 +198,6 @@ def CreateUserLocal(credentials):
     print "Failed to log out with result: " + str(result)
     return result
   return kSuccess
-
-
-def CreateUserIp():
-  # TODO
-  print "Sorry, joining a network by providing an IP address isn't implemented yet."
-  raw_input("Press enter to continue.")
-  #peer = raw_input("Please enter IP address: ")
 
 
 def TestChangePassword(credentials):
@@ -373,9 +375,9 @@ def ClientMenu():
     print "11: Login, logout"  # TODO - remove
     option = raw_input("Please select an option (m for main Qa menu): ")
     if option == "1":
-      CreateUserLocal(credentials)
+      StartManagerCreateUser(credentials, False)
     elif option == "2":
-      CreateUserIp()
+      StartManagerCreateUser(credentials, True)
     elif option == "3":
       TestChangePassword(credentials)
     elif option == "4":
