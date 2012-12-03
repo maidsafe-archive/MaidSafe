@@ -78,7 +78,7 @@ def SetupBootstraps(num):
 
 def SaveKeys(peer):
   prog = utils.GetProg('pd_key_helper')
-  return subprocess.call([prog, '-ls', '--peer=' + peer + ':5483', '--log_pd', 'I'])
+  return subprocess.call([prog, '-ls', '--peer=' + peer + ':5483'])
 
 def ExtendedTest(num):
   prog = utils.GetProg('pd_key_helper')
