@@ -31,61 +31,231 @@ import subprocess
 import urllib2
 import zipfile
 import shutil
+import time
+import logging
+import tempfile
 
-def download(url_string): 
+def timed_function(function):
+  def wrapper(*arg):
+    t1 = time.time()
+    result = function(*arg)
+    t2 = time.time()
+    logging.info('%s took %0.3f ms', function.func_name, (t2-t1)*1000.0)
+    return result
+  return wrapper
+
+@timed_function
+def download(url_string):
   file_name = url_string.split('/')[-1]
   url = urllib2.urlopen(url_string)
 
-  file = open(os.path.join(os.curdir, file_name), 'wb')
+  file = open(os.path.join(tempfile.gettempdir(), file_name), 'wb')
   meta = url.info()
   file_size = int(meta.getheaders("Content-Length")[0])
-  print "Downloading: %s size (bytes): %s" % (file_name, file_size)
+  print "Downloading... %s size: %s B" % (file_name, file_size)
 
   downloaded = 0
-  block_sz = 8192
+  block_sz = 65536
   while True:
       buffer = url.read(block_sz)
       if not buffer:
           break
       downloaded += len(buffer)
       file.write(buffer)
-      status = r"%10d  [%3.2f%%]" % (file_size_dl, downloaded * 100. / file_size)
+      status = r"%10d  [%3.2f%%]" % (downloaded, downloaded * 100. / file_size)
       status = status + chr(8)*(len(status)+1)
       print status,
 
   file.close()
 
-
-def run_drive():
+def mount_drive():
+  print "Mounting drive..."
+  sys.stdout.flush()
   process = subprocess.Popen(["../build/Release/drive_demo.exe"]).pid
+  time.sleep(3)
 
-
-def unzip_file(url): 
+@timed_function
+def unzip_file(url):
   file_name = url.split('/')[-1]
-  with zipfile.ZipFile(os.path.join(os.curdir, file_name), 'r') as file:
-    file.extractall(os.path.join(os.curdir , os.path.splitext(file_name)[0]))
+  print "Unzipping file... %s" % (file_name)
+  sys.stdout.flush()
+  with zipfile.ZipFile(os.path.join(tempfile.gettempdir(), file_name), 'r') as file:
+    file.extractall(os.path.join(tempfile.gettempdir(), os.path.splitext(file_name)[0]))
 
-def copy_unzipped_file(url): 
+# Copy files to drive...
+@timed_function
+def copy_files_to_drive(url, folder):
   file_name = url.split('/')[-1]
-  directory_name = os.path.splitext(file_name)[0]
-  directory = os.path.join(os.curdir, directory_name)
-  shutil.copytree(directory, "S:" + directory_name)
+  directory_name = os.path.splitext(file_name)[0] + folder
+  print "Copying %s to drive..." % (directory_name)
+  sys.stdout.flush()
+  logging.info('Copying %s to drive...', directory_name)
+  directory = os.path.join(tempfile.gettempdir(), directory_name)
+  shutil.copytree(directory, "S:/" + directory_name)
 
+# Copy files on drive...
+@timed_function
+def copy_files_on_drive(url, folder):
+  print "Copying %s on drive..." % (folder)
+  sys.stdout.flush()
+  logging.info('Copying %s on drive...', folder)
+  try:
+    os.makedirs("S:/" + "Copied")
+  except OSError:
+    pass
+  file_name = url.split('/')[-1]
+  directory_name = os.path.splitext(file_name)[0] + folder
+  directory = os.path.join(tempfile.gettempdir(), directory_name)
+  shutil.copytree("S:/" + directory_name, "S:/" + "Copied" + folder)
 
-# run from tools directory in repository...
+# Move files on drive...
+@timed_function
+def move_files_on_drive(url, folder):
+  print "Moving %s on drive..." % (folder)
+  sys.stdout.flush()
+  logging.info('Moving %s on drive...', folder)
+  try:
+    os.makedirs("S:/" + "Moved")
+  except OSError:
+    pass
+  file_name = url.split('/')[-1]
+  directory_name = os.path.splitext(file_name)[0] + folder
+  directory = os.path.join(tempfile.gettempdir(), directory_name)
+  shutil.move("S:/" + directory_name, "S:/" + "Moved" + folder)
+
+# Copy files on disk...
+@timed_function
+def copy_files_on_disk(url, folder):
+  print "Copying %s on disk..." % (folder)
+  sys.stdout.flush()
+  logging.info('Copying %s on disk...', folder)
+  try:
+    os.makedirs(tempfile.gettempdir() + "/Copied")
+  except OSError:
+    pass
+  file_name = url.split('/')[-1]
+  directory_name = '/' + os.path.splitext(file_name)[0] + folder
+  print "copy directory name = %s, tempdir = %s" % (directory_name, tempfile.gettempdir())
+  directory = os.path.join(tempfile.gettempdir(), directory_name)
+  shutil.copytree(tempfile.gettempdir() + directory_name, tempfile.gettempdir() + "/Copied" + folder)
+    
+
+# Move files on disk...
+@timed_function
+def move_files_on_disk(url, folder):
+  print "Moving %s on disk..." % (folder)
+  sys.stdout.flush()
+  logging.info('Moving %s on disk...', folder)
+  try:
+    os.makedirs(tempfile.gettempdir() + "/Moved")
+  except OSError:
+    pass
+  file_name = url.split('/')[-1]
+  directory_name = os.path.splitext(file_name)[0] + folder
+  print "move directory name = %s" % (directory_name)
+  directory = os.path.join(tempfile.gettempdir(), directory_name)
+  shutil.move(directory, tempfile.gettempdir() + "/Moved" + folder)
+
 def main():
-  print("This script is for QA user analysis of Drive.")
+  option = 'a'
   url = "http://dash.maidsafe.net/test_files.zip"
-  print "Downloading... %s" % (url)
-  #download(url)
-  print "Running drive..."
-  run_drive()
-  print "Unzipping... %s" % (url)
-  #unzip_file(url)
-  print "Copying unzipped files to drive..."
-  copy_unzipped_file(url)
-  print "Finished..."
-  return 0
+  log_file = os.path.join(tempfile.gettempdir(), 'timing.log')
+  if os.path.exists(log_file):
+    os.remove(log_file)
+  logging.basicConfig(filename = log_file, level = logging.INFO)
+  os.system([ 'clear', 'cls' ][ os.name == 'nt' ])
+  while(option != 'm'):
+    os.system([ 'clear', 'cls' ][ os.name == 'nt' ])
+    print ("MaidSafe Quality Assurance Suite | Drive Actions")
+    print ("================================")
+    print (" 1: Download zip file from http://dash.maidsafe.net.")
+    print (" 2: Unzip downloaded file.")
+    print (" 3: Mount drive.")
+    print (" 4: Disk to Drive copy doc files.")
+    print (" 5: Disk to Drive copy html files.")
+    print (" 6: Disk to Drive copy pdf files.")
+    print (" 7: Disk to Drive copy mp4 files.")
+    print (" 8: Disk to Drive copy wmv files.")
+    print (" 9: Drive to Drive copy doc files.")
+    print ("10: Drive to Drive copy html files.")
+    print ("11: Drive to Drive copy pdf files.")
+    print ("12: Drive to Drive copy mp4 files.")
+    print ("13: Drive to Drive copy wmv files.")
+    print ("14: Drive to Drive move doc files.")
+    print ("15: Drive to Drive move html files.")
+    print ("16: Drive to Drive move pdf files.")
+    print ("17: Drive to Drive move mp4 files.")
+    print ("18: Drive to Drive move wmv files.")
+    print ("19: Disk to Disk copy doc files.")
+    print ("20: Disk to Disk copy html files.")
+    print ("21: Disk to Disk copy pdf files.")
+    print ("22: Disk to Disk copy mp4 files.")
+    print ("23: Disk to Disk copy wmv files.")
+    print ("24: Disk to Disk move doc files.")
+    print ("25: Disk to Disk move html files.")
+    print ("26: Disk to Disk move pdf files.")
+    print ("27: Disk to Disk move mp4 files.")
+    print ("28: Disk to Disk move wmv files.")
+    option = input("Please select an option (m for main Qa menu): ")
+    if option == 1:
+      download(url)
+    elif option == 2:
+      unzip_file(url)
+    elif option == 3:
+      mount_drive()
+    elif option == 4:
+      copy_files_to_drive(url, "/5200 items/DOC")
+    elif option == 5:
+      copy_files_to_drive(url, "/5200 items/HTML")
+    elif option == 6:
+      copy_files_to_drive(url, "/5200 items/PDF")
+    elif option == 7:
+      copy_files_to_drive(url, "/5200 items/MP4")
+    elif option == 8:
+      copy_files_to_drive(url, "/5200 items/WMV")
+    elif option == 9:
+      copy_files_on_drive(url, "/5200 items/DOC")
+    elif option == 10:
+      copy_files_on_drive(url, "/5200 items/HTML")
+    elif option == 11:
+      copy_files_on_drive(url, "/5200 items/PDF")
+    elif option == 12:
+      copy_files_on_drive(url, "/5200 items/MP4")
+    elif option == 13:
+      copy_files_on_drive(url, "/5200 items/WMV")
+    elif option == 14:
+      move_files_on_drive(url, "/5200 items/DOC")
+    elif option == 15:
+      move_files_on_drive(url, "/5200 items/HTML")
+    elif option == 16:
+      move_files_on_drive(url, "/5200 items/PDF")
+    elif option == 17:
+      move_files_on_drive(url, "/5200 items/MP4")
+    elif option == 18:
+      move_files_on_drive(url, "/5200 items/WMV")
+    elif option == 19:
+      copy_files_on_disk(url, "/5200 items/DOC")
+    elif option == 20:
+      copy_files_on_disk(url, "/5200 items/HTML")
+    elif option == 21:
+      copy_files_on_disk(url, "/5200 items/PDF")
+    elif option == 22:
+      copy_files_on_disk(url, "/5200 items/MP4")
+    elif option == 23:
+      copy_files_on_disk(url, "/5200 items/WMV")
+    elif option == 24:
+      move_files_on_disk(url, "/5200 items/DOC")
+    elif option == 25:
+      move_files_on_disk(url, "/5200 items/HTML")
+    elif option == 26:
+      move_files_on_disk(url, "/5200 items/PDF")
+    elif option == 27:
+      move_files_on_disk(url, "/5200 items/MP4")
+    elif option == 28:
+      move_files_on_disk(url, "/5200 items/WMV")
+    else:
+      print "That's not a valid option."
+  os.system([ 'clear', 'cls' ][ os.name == 'nt' ])
 
 if __name__ == "__main__":
   sys.exit(main())
