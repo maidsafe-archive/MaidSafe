@@ -159,6 +159,10 @@ function(build_and_run SubProject RunAll)
 
   message("Building ${SubProject}")
   set(CTEST_BUILD_TARGET "All${SubProject}")
+  # add coverage flags
+  if(DashboardModel STREQUAL "Experimental")
+    set(ExtraConfigureArgs "${ExtraConfigureArgs};-DCOVERAGE=ON")
+  endif()
   ctest_configure(OPTIONS "${ExtraConfigureArgs}")
   ctest_read_custom_files(${CMAKE_CURRENT_BINARY_DIR})
   ctest_build(RETURN_VALUE BuildResult)
