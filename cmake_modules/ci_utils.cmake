@@ -152,13 +152,22 @@ endfunction()
 
 
 function(build_and_run SubProject RunAll)
+  # if(NOT ${SubProject} STREQUAL "Vault")
+  #   message("Temporarily skipping ${SubProject}")
+  #   return()
+  # endif()
   if(NOT ${SubProject}ShouldRun AND NOT RunAll)
     message("Not building or running tests in ${SubProject}")
     return()
   endif()
 
+
   message("Building ${SubProject}")
-  set(CTEST_BUILD_TARGET "All${SubProject}")
+  if(NOT ${SubProject} STREQUAL "Vault")
+    set(CTEST_BUILD_TARGET "All${SubProject}")
+  else()
+    set(CTEST_BUILD_TARGET "AllPd")
+  endif()
   # add coverage flags
   if(DashboardModel STREQUAL "Experimental")
     set(ExtraConfigureArgs "${ExtraConfigureArgs};-DCOVERAGE=ON")
