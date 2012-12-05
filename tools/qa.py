@@ -34,7 +34,6 @@ from time import sleep
 import utils
 import lifestuff_killer
 import routing
-import lifestuff
 import client
 import vault
 

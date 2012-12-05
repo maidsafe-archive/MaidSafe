@@ -25,12 +25,17 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import client_environment
-from lifestuff_python_api import *
 import random
 import string
 from time import sleep
 import utils
+import sys
+
+# maidsafe imports
+import client_environment
+import lifestuff_killer
+from lifestuff_python_api import *
+
 
 # as per return_codes.h
 kSuccess = 0
@@ -51,6 +56,8 @@ kPinIndex = 1
 kPasswordIndex = 2
 kPublicIdIndex = 3
 kHasPublicIdIndex = 4
+
+use_local_network = 0
 
 #-----Helpers-----
 
@@ -173,16 +180,7 @@ def CheckLogInLogOut(credentials):
 
 #-----Options-----
 
-def StartManagerCreateUser(credentials, use_peer):
-  if use_peer:
-    peer = raw_input("Please enter IP address: ")
-    result = client_environment.StartLifeStuffMgr(peer, None, None, None)
-  else:
-    result = client_environment.StartLifeStuffMgr(None, None, None, None)
-  if result != kSuccess:
-    print "Failed to start LifeStuff Manager."
-    return result
-
+def CreateUser(credentials):
   keyword = credentials[kKeywordIndex]
   pin = credentials[kPinIndex]
   password = credentials[kPasswordIndex]
@@ -311,12 +309,12 @@ def TestMultipleInstances(credentials):
 
   if len(life_stuffs) != num_instances:
     print "Only managed %d of %d instances." % (len(life_stuffs), num_instances)
-  
+
   num_logged_in = 0
   for life_stuff in lifestuffs:
     if life_stuff.state() == kLoggedIn:
       num_logged_in += 1
-  
+
   if num_logged_in != 1:
     print "Wrong number of logged in instances: %d" % num_logged_in
     return -1
@@ -352,59 +350,117 @@ def GenerateCredentials(credentials):
   credentials.append(GeneratePublicId())
   credentials.append(False)
 
+def LifeStuffClientHeader():
+  print ("MaidSafe Quality Assurance Suite | Client Actions")
+  print ("================================")
+
+def PrintMenu(procs):
+  LifeStuffClientHeader()
+  print(str(procs) + " Vaults running on this machine")
+  print "1: Create user, logout"
+  print "2: Login, change Password, logout; login, logout"
+  print "3: Login, change PIN, logout; login, logout"
+  print "4: Login, change Keyword, logout; login, logout"
+  print "5: Login, create Public ID, logout"
+ # print "6: Login, change Public ID, logout; login, logout"
+  print "7: Login multiple instances (supply number), check only last one exists"
+  print "8: Show credentials"   # TODO - remove
+  print "9: Regenerate credentials (current credentials will be lost)"  # TODO - remove
+  print "10: Login, logout"  # TODO - remove
+
 
 def ClientMenu():
-  option = 'a'
+  option = "a"
   utils.ClearScreen()
   credentials = []
-  GenerateCredentials(credentials) 
-  while(option != 'm'):
+  GenerateCredentials(credentials)
+  while(option != "m"):
     utils.ClearScreen()
-    procs = utils.CountProcs('lifestuff_vault')
-    print(str(procs) + " Vaults running on this machine")
-    print ("MaidSafe Quality Assurance Suite | Client Actions")
-    print ("================================")
-    print "1: Create user, logout (use local network)"
-    print "2: Create user, logout (join other network using IP address)"
-    print "3: Login, change Password, logout; login, logout"
-    print "4: Login, change PIN, logout; login, logout"
-    print "5: Login, change Keyword, logout; login, logout"
-    print "6: Login, create Public ID, logout"
-    print "7: Login, change Public ID, logout; login, logout"
-    print "8: Login multiple instances (supply number), check only last one exists"
-    print "9: Show credentials"   # TODO - remove
-    print "10: Regenerate credentials (current credentials will be lost)"  # TODO - remove
-    print "11: Login, logout"  # TODO - remove
+    procs = utils.CountProcs("lifestuff_vault")
+    PrintMenu(procs)
     option = raw_input("Please select an option (m for main Qa menu): ")
     if option == "1":
-      StartManagerCreateUser(credentials, False)
+      CreateUser(credentials)
     elif option == "2":
-      StartManagerCreateUser(credentials, True)
-    elif option == "3":
       TestChangePassword(credentials)
-    elif option == "4":
+    elif option == "3":
       TestChangePin(credentials)
-    elif option == "5":
+    elif option == "4":
       TestChangeKeyword(credentials)
-    elif option == "6":
+    elif option == "5":
       TestCreatePublicId(credentials)
-    elif option == "7":
+    elif option == "6":
       TestChangePublicId()
-    elif option == "8":
+    elif option == "7":
       TestMultipleInstances(credentials)
-    elif option == "9":  # TODO - remove
+    elif option == "8":  # TODO - remove
       ShowCredentials(credentials)
       raw_input("Press enter to continue.")
-    elif option == "10":  # TODO - remove
+    elif option == "9":  # TODO - remove
       RegenerateCredentials(credentials)
-    elif option == "11":  # TODO - remove
+    elif option == "10":  # TODO - remove
       CheckLogInLogOut(credentials)
   utils.ClearScreen()
 
+def PrintErrorMessage(error_message):
+  if error_message != "":
+    print "================================"
+    print "Error message from previous option: ", error_message
+    print "================================"
+
+def ProcessNetworkOption(option, error_message):
+  if option == "1":
+    vault_procs = utils.CountProcs("lifestuff_vault")
+    mgr_procs = utils.CountProcs("lifestuff_mgr")
+    if vault_procs > 0 or mgr_procs > 0:
+      error_message = "Already running vaults/lifestuff_mgr in this computer. Try option 2."
+      return -1
+    else:
+      vault_count = int(raw_input("How many vaults would you like to run (10-50): "))
+      result = client_environment.ParameterBasedStartup(None, None, None, None, vault_count, None)
+      if result != 0:
+        return result
+  elif option == "2":
+    use_local_network = -1
+    ip_address = raw_input("IP address of vault in the network (will use LIVE port): ")
+    if client_environment.CheckPassedInIp(ip_address) != 0:
+      error_message = "IP given is incomplete or incorrect."
+    else:
+      result = client_environment.ParameterBasedStartup(ip_address, None, None, None, None, None)
+      if result != 0:
+        return result
+
+  return 0
+
+def GeneralOptions():
+  option = "a"
+  error_message = ""
+  while(True):
+    utils.ClearScreen()
+    PrintErrorMessage(error_message)
+    LifeStuffClientHeader()
+    print "1: Create local network"
+    print "2: Use established network"
+    option = raw_input("Please select an option (m for main Qa menu): ")
+    if option == "m":
+      option = raw_input("Would you like to clean up the lifestuff processes that are running [y/n]? ")
+      if option == "y":
+        lifestuff_killer.KillLifeStuff()
+      return 1
+
+    result = ProcessNetworkOption(option, error_message)
+    if result != 0:
+      continue
+    else:
+      return 0
+
 
 def main():
-  print("This is the suite of Qa anaysis info for clients")
-  ClientMenu()
+  print "This is the suite of Qa anaysis info for clients"
+  result = GeneralOptions()
+  if result == 0:
+    ClientMenu()
+
 if __name__ == "__main__":
   sys.exit(main())
-  
+
