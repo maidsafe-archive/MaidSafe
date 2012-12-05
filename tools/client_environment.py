@@ -40,6 +40,10 @@ import vault
 ls_mgr_exe = "lifestuff_mgr"
 ls_vault_exe = "lifestuff_vault"
 
+if platform.system() == "Windows":
+  ls_mgr_exe = "Debug/" + ls_mgr_exe + ".exe"
+  ls_vault_exe = "Debug/" + ls_vault_exe + ".exe"
+
 def CheckPassedInIp(ip_address):
   try:
     socket.inet_aton(ip_address)

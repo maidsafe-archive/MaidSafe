@@ -105,7 +105,8 @@ def GetBuildDir():
   return
 
 def ClearScreen():
-  os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )
+  print "Clearing screen now."
+#  os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )
 
 def GetLib():
   option = ''
