@@ -82,7 +82,7 @@ def GetIp():
 
 def GetProg(prog):
   if os.name =='nt':
-    return os.path.join (os.curdir, utils.BuildType(), prog)
+    return os.path.join (os.curdir, prog + ".exe")
   else:
     return os.path.join (os.curdir, prog)
 
