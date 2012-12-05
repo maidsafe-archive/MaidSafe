@@ -86,7 +86,7 @@ def SetupNetwork(ip_address, vault_count, user_id):
   try:
     vault.RemoveChunkStores(vault_count)
 
-    bool_result = vault.SanityCheck(vault_count + 2)
+    bool_result = vault.SanityCheck(vault_count + 2, user_id)
     if bool_result == False:
       print("Failed in SanityCheck")
       return -1
@@ -153,7 +153,8 @@ def StartLifeStuffMgr(ip_address, port, config_path, logging):
     return result
 
   parameter_list = [full_ls_mgr_exe]
-  PopulateLifeStuffMgrParamters(cwd, parameter_list, ip_address, port, config_path, logging)
+  PopulateLifeStuffMgrParamters(cwd, parameter_list, ip_address, port, config_path, str(logging))
+  print parameter_list
 
   try:
     subprocess.Popen(parameter_list, shell=False, stdout=None, stderr=None)

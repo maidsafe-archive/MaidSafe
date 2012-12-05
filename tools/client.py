@@ -25,6 +25,7 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import platform
 import random
 import string
 from time import sleep
@@ -409,6 +410,9 @@ def PrintErrorMessage(error_message):
     print "================================"
 
 def ProcessNetworkOption(option, error_message):
+  user_id = ""
+  if platform.system() != "Windows":
+    user_id = raw_input("Vaults will use default user lifestuff to run unless another is given: ")
   if option == "1":
     vault_procs = utils.CountProcs("lifestuff_vault")
     mgr_procs = utils.CountProcs("lifestuff_mgr")
@@ -417,7 +421,7 @@ def ProcessNetworkOption(option, error_message):
       return -1
     else:
       vault_count = int(raw_input("How many vaults would you like to run (10-50): "))
-      result = client_environment.ParameterBasedStartup(None, None, None, None, vault_count, None)
+      result = client_environment.ParameterBasedStartup(None, None, None, None, vault_count, user_id)
       if result != 0:
         return result
   elif option == "2":
@@ -426,7 +430,7 @@ def ProcessNetworkOption(option, error_message):
     if client_environment.CheckPassedInIp(ip_address) != 0:
       error_message = "IP given is incomplete or incorrect."
     else:
-      result = client_environment.ParameterBasedStartup(ip_address, None, None, None, None, None)
+      result = client_environment.ParameterBasedStartup(ip_address, None, None, None, None, user_id)
       if result != 0:
         return result
 

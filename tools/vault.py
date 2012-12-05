@@ -43,7 +43,7 @@ import lifestuff_killer
 processes = []
 stop_churn = 'd'
 
-def SetupBootstraps(num):
+def SetupBootstraps(num, user_id):
   print("Setting up keys ... ")
   prog = utils.GetProg('pd_key_helper')
   print prog;
@@ -62,7 +62,8 @@ def SetupBootstraps(num):
       ep = data[2].split()
       boostrap_endpoint1 = ep[0]
       boostrap_endpoint2 = data[2]
-      if SetUpNextNode(data[1]+ ':' + ep[0], 2) and SetUpNextNode(data[1]+ ':' + ep[0], 3):
+      if SetUpNextNode(data[1]+ ':' + ep[0], 2, user_id) and\
+         SetUpNextNode(data[1]+ ':' + ep[0], 3, user_id):
         time.sleep(2) # allow node to bootstrap
         break
       else:
@@ -73,7 +74,7 @@ def SetupBootstraps(num):
     print "Failed to get endpoint (timeout ??)"
     return False
   proc.kill()
-  RunNetwork(num, data[1])
+  RunNetwork(num, data[1], user_id)
   print("Wait 30 secs for network")
   time.sleep(30)
   return True
@@ -110,16 +111,25 @@ def RemoveChunkStores(num):
     if os.path.exists(directory):
           shutil.rmtree(directory)
 
-def work(number, ip_address):
+def work(number, ip_address, user_id):
   prog = utils.GetProg('lifestuff_vault')
-  return subprocess.Popen([prog, '--peer=' + ip_address.lstrip() + ':5483',
-                          '--identity_index=' + str(number),
-                          '--chunk_path=.cs' + str(number), '--start'],
-                          shell=False, stdout=None, stderr=None)
+  if user_id == None:
+    return subprocess.Popen([prog, '--peer=' + ip_address.lstrip() + ':5483',
+                            '--identity_index=' + str(number),
+                            '--chunk_path=.cs' + str(number), '--start'],
+                            shell=False, stdout=None, stderr=None)
+  else:
+    return subprocess.Popen([prog,
+                            '--peer=' + ip_address.lstrip() + ':5483',
+                            '--identity_index=' + str(number),
+                            '--chunk_path=.cs' + str(number),
+                            '--usr_id=' + user_id,
+                            '--start'],
+                            shell=False, stdout=None, stderr=None)
 
-def RunNetwork(number_of_vaults, ip_address):
+def RunNetwork(number_of_vaults, ip_address, user_id):
   for vault in range(4, number_of_vaults):
-    processes.append(work(vault, ip_address))
+    processes.append(work(vault, ip_address, user_id))
     time.sleep(2)
 
 def SignalHandler(signal, frame):
@@ -144,17 +154,26 @@ def Churn(percent_per_minute):
 #        work(stopped.pop(random.choice(stopped)), GetIp())
   stop_churn = 'g'
 
-def SetUpNextNode(endpoint, index):
+def SetUpNextNode(endpoint, index, user_id):
   prog = utils.GetProg('lifestuff_vault')
-  return subprocess.Popen([prog,
-                          '--peer=' + endpoint.lstrip(),
-                          '--identity_index=' + str(index),
-                          '--chunk_path=.cs' + str(index),
-                          '--start'],
-                          shell=False, stdout=None, stderr=None)
+  if user_id == None:
+    return subprocess.Popen([prog,
+                            '--peer=' + endpoint.lstrip(),
+                            '--identity_index=' + str(index),
+                            '--chunk_path=.cs' + str(index),
+                            '--start'],
+                            shell=False, stdout=None, stderr=None)
+  else:
+    return subprocess.Popen([prog,
+                            '--peer=' + endpoint.lstrip(),
+                            '--identity_index=' + str(index),
+                            '--chunk_path=.cs' + str(index),
+                            '--usr_id=' + user_id,
+                            '--start'],
+                            shell=False, stdout=None, stderr=None)
 
-def SanityCheck(num):
-  pid = SetupBootstraps(num)
+def SanityCheck(num, user_id):
+  pid = SetupBootstraps(num, user_id)
   if pid == False:
     print("Vault Sanity Check failed")
     return False
@@ -186,7 +205,7 @@ def VaultMenu():
         number = raw_input("Please input number of vaults to run (minimum 12): ")
         num = int(number)
       RemoveChunkStores(num)
-      SanityCheck(num + 2)
+      SanityCheck(num + 2, None)
       SaveKeys(utils.GetIp())
     if procs == 0:
       if (option == "2"):
@@ -196,7 +215,7 @@ def VaultMenu():
         CreateChunkStores(number)
         subprocess.call([prog, '-c', '-n', str(int(number) + 3)])
         if SaveKeys(ip) == 0:
-          RunNetwork(int(number) + 3, ip)
+          RunNetwork(int(number) + 3, ip, None)
         else:
           raw_input("Could not store keys, giving up ! (press any key)")
     else:
