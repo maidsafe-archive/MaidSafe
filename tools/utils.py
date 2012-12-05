@@ -105,8 +105,7 @@ def GetBuildDir():
   return
 
 def ClearScreen():
-  print "Clearing screen now."
-#  os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )
+  os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )
 
 def GetLib():
   option = ''
@@ -119,7 +118,7 @@ def GetLib():
     option = raw_input("please type library name (q to exit): ")
   return option
 
-# style check 
+# style check
 def StyleCheck():
   option = GetLib()
   if option == 'q':
