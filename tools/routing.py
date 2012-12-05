@@ -350,10 +350,37 @@ def SanityCheck():
 
   StopNodes(p_nodes)
 
+def RoutingMenu():
+  option = 'a'
+  utils.ClearScreen()
+  while(option != 'm'):
+    utils.ClearScreen()
+    procs = utils.CountProcs('lifestuff_vault')
+    print(str(procs) + " Vaults running on this machine")
+    print ("================================")
+    print ("MaidSafe Quality Assurance Suite | routing Actions")
+    print ("================================")
+    print ("1: Bootstrap and set up routing network")
+    if procs == 0:
+      print ("2: Connect nodes to remote network")
+    else:
+      print ("3: Feature Checks")
+      print ("4: Kill all routing nodes on this machine")
+      print ("5: Random churn on this machine, rate (% churn per minute) (not yet implemented)")
+    option = raw_input("Please select an option (m for main Qa menu): ")
+    if (option == "1"):
+      num = 0
+      while 12 > num:
+        number = raw_input("Please input number of nodes to run (minimum 12): ")
+        num = int(number)
+
+  utils.ClearScreen()
+
 
 def main():
   print("This is the suite for lifestuff Qa analysis")
-  SanityCheck()
+  RoutingMenu()
+  #SanityCheck()
 
 if __name__ == "__main__":
   sys.exit(main())
