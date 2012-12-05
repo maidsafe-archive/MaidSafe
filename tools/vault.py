@@ -46,10 +46,8 @@ stop_churn = 'd'
 def SetupBootstraps(num):
   print("Setting up keys ... ")
   prog = utils.GetProg('pd_key_helper')
-  CreateChunkStores(num)
   print prog;
-  proc = subprocess.Popen([prog, '-c', '-b', '-n', str(num + 6)], shell = False, stdout=PIPE,\
-      stderr=None)
+  proc = subprocess.Popen([prog, '-c', '-b', '-n', str(num + 6)], shell = False, stdout=PIPE, stderr=None)
   print("Started bootstrap with PID " + str(proc.pid))
   i = 0
   line_limit = 50
@@ -64,7 +62,7 @@ def SetupBootstraps(num):
       ep = data[2].split()
       boostrap_endpoint1 = ep[0]
       boostrap_endpoint2 = data[2]
-      if SetUpNextNode(data[1]+ ':' + ep[0]):
+      if SetUpNextNode(data[1]+ ':' + ep[0], 2) and SetUpNextNode(data[1]+ ':' + ep[0], 3):
         time.sleep(2) # allow node to bootstrap
         break
       else:
@@ -76,7 +74,7 @@ def SetupBootstraps(num):
     return False
   proc.kill()
   RunNetwork(num, data[1])
-  print("Wait 20 secs for network")
+  print("Wait 30 secs for network")
   time.sleep(30)
   return True
 
@@ -120,12 +118,9 @@ def work(number, ip_address):
                           shell=False, stdout=None, stderr=None)
 
 def RunNetwork(number_of_vaults, ip_address):
-  CreateChunkStores(number_of_vaults)
-  for vault in range(3, number_of_vaults):
+  for vault in range(4, number_of_vaults):
     processes.append(work(vault, ip_address))
     time.sleep(2)
-    #p = Process(target = work, args=(vault, ip_address))
-    #p.start()
 
 def SignalHandler(signal, frame):
   print("Exiting churn ")
@@ -149,10 +144,14 @@ def Churn(percent_per_minute):
 #        work(stopped.pop(random.choice(stopped)), GetIp())
   stop_churn = 'g'
 
-def SetUpNextNode(endpoint):
+def SetUpNextNode(endpoint, index):
   prog = utils.GetProg('lifestuff_vault')
-  return subprocess.Popen([prog, '--peer=' + endpoint.lstrip(), '--identity_index=2',\
-      '--chunk_path=.cs2', '--start'], shell = False, stdout=None, stderr=None) \
+  return subprocess.Popen([prog,
+                          '--peer=' + endpoint.lstrip(),
+                          '--identity_index=' + str(index),
+                          '--chunk_path=.cs' + str(index),
+                          '--start'],
+                          shell=False, stdout=None, stderr=None)
 
 def SanityCheck(num):
   pid = SetupBootstraps(num)

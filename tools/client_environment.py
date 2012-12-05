@@ -197,12 +197,15 @@ def main():
   (options, args) = parser.parse_args()
 
   # check options
+  user_id = ""
+  if platform.system() != "Windows":
+    user_id = options.user_id
   result = ParameterBasedStartup(options.ip_address,
                                  options.ls_mgr_port,
                                  options.config_path,
                                  options.logging,
                                  options.vault_count,
-                                 options.user_id);
+                                 user_id);
   if result != 0:
     return result
 
