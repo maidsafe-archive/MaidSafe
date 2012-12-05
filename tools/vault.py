@@ -28,6 +28,7 @@
 import sys
 import os
 import subprocess
+import signal
 from subprocess import PIPE, STDOUT
 from multiprocessing import Process, Pool
 import multiprocessing
@@ -38,6 +39,9 @@ import time
 import datetime
 import shutil
 import lifestuff_killer
+
+processes = []
+stop_churn = 'd'
 
 def SetupBootstraps(num):
   print("Setting up keys ... ")
@@ -51,7 +55,7 @@ def SetupBootstraps(num):
   line_limit = 50
   t_start = datetime.datetime.now()
   time_delta = datetime.datetime.now() - t_start
-  timeout = 30
+  timeout = 300000
   while i < line_limit and time_delta < datetime.timedelta(seconds=timeout):
     line = proc.stdout.readline()
     print line
@@ -118,10 +122,32 @@ def work(number, ip_address):
 def RunNetwork(number_of_vaults, ip_address):
   CreateChunkStores(number_of_vaults)
   for vault in range(3, number_of_vaults):
-    work(vault, ip_address)
-    #time.sleep(2)
+    processes.append(work(vault, ip_address))
+    time.sleep(2)
     #p = Process(target = work, args=(vault, ip_address))
     #p.start()
+
+def SignalHandler(signal, frame):
+  print("Exiting churn ")
+  global stop_churn
+  stop_churn = 'q'
+
+signal.signal(signal.SIGINT, SignalHandler)
+
+def Churn(percent_per_minute):
+  num_vaults = len(processes)
+  per_second_churn = (num_vaults * (100 / percent_per_minute)) / 60
+  print("Running churn test churn test at a rate of " + str(per_second_churn) + " per second")
+  print("press Ctrl-C to stop")
+  stopped = []
+  global stop_churn
+  while  stop_churn != 'q':
+    time.sleep(per_second_churn)
+#    for i in range(per_second_churn)
+#      stopped.append(random.choice(processes))
+#      if len(stopped) > 0:
+#        work(stopped.pop(random.choice(stopped)), GetIp())
+  stop_churn = 'g'
 
 def SetUpNextNode(endpoint):
   prog = utils.GetProg('lifestuff_vault')
@@ -153,6 +179,7 @@ def VaultMenu():
     else:
       print ("3: Extended Checks")
       print ("4: Kill all vaults on this machine")
+      print ("5: Random churn on this machine, rate (% churn per minute) (not yet implemented)")
     option = raw_input("Please select an option (m for main Qa menu): ")
     if (option == "1"):
       num = 0
@@ -182,6 +209,13 @@ def VaultMenu():
         ExtendedTest(number)
       if (option == "4"):
         lifestuff_killer.KillLifeStuff()
+      if (option == "5"):
+        number = 999
+        while (0 < number > 100):
+          num = raw_input("Please input rate of churn per minute ")
+          number = int(num)
+        Churn(number)
+
   utils.ClearScreen()
 
 
