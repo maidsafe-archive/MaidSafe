@@ -167,14 +167,17 @@ def SendGroup(p, target):
 
 def TimeMsgRate(p_n, dst):
   count = 0
+  num_messages = 100
+  count = num_messages
   start_time = time.time()
-  for i in range (100000):
+  for i in range (num_messages):
     p_n.stdin.write('datasize ' + str(100) + '\n')
     p_n.stdin.write('senddirect ' + str(dst) + '\n')
     key_line = SearchKeyWordLine(p_n, 'Response received in', 10)
-    if key_line != -1:
-      ++count
-  print("Message rate: " + str(100000/(time.time() - start_time)) + " messages per second (100bytes)")
+    if key_line == -1:
+      --count
+  print("Message rate: " + str(count/(time.time() - start_time)) + " messages per second (100bytes)")
+  print("Lost " + str(num_messages - count) + " messages")
 
 
 def SendDirectMsg(p_n, dst, datasize):
@@ -227,9 +230,9 @@ def JAV2(peer, num_nodes):
 def P1(p_nodes, num_nodes):
   if p_nodes == -1:
     return -1;
-  print("Running Routing Sanity Check P1 Test, please wait ....")
+  print("Running 50 random select and send message, please wait ....")
   duration = 0
-  num_iteration = 5
+  num_iteration = 50
   for i in range(num_iteration): # vault to vault
     source = random.randint(0, num_nodes / 2 - 1)
     dest = random.randint(0, num_nodes / 2 - 1) # dest can be a bootstrap node
@@ -337,11 +340,11 @@ def SanityCheck(num_nodes):
   else:
     print 'Join a vault and send a message  : FAILED\n'
 
-#  p_vaults = SetupRoutingNodes(num_nodes, peer, num_of_vaults, 0)
-#  if JAC1(peer, num_nodes) == 0:
-#    print 'Add a client to the network and send message to self  : PASSED\n'
-#  else:
-#    print 'Add a client to the network and send message to self  : FAILED\n'
+  p_vaults = SetupRoutingNodes(num_nodes, peer, num_of_vaults, 0)
+  if JAC1(peer, num_nodes) == 0:
+    print 'Add a client to the network and send message to self  : PASSED\n'
+  else:
+    print 'Add a client to the network and send message to self  : FAILED\n'
 
 #  p_clients = SetupRoutingNodes(num_nodes, peer, 0, num_of_clients)
 #  p_nodes = p_bs + p_vaults + p_clients
@@ -351,10 +354,10 @@ def SanityCheck(num_nodes):
 #  else:
 #    print 'Stop and confirm client stops : FAILED\n'
 #
-#  if P1(p_nodes) == 0:
-#    print 'Stop and confirm vault stops : PASSED\n'
-#  else:
-#    print 'Stop and confirm vault stops  : FAILED\n'
+  if P1(p_nodes) == 0:
+    print 'Random sends stop and confirm vault stops : PASSED\n'
+  else:
+    print 'Random sends stop and confirm vault stops  : FAILED\n'
 #
 #  if JAC2(peer, p_nodes, num_nodes) == 0:
 #    print 'Send and confirm group message  : PASSED\n'
