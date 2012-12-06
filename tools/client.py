@@ -384,18 +384,25 @@ def ClientMenu():
     option = raw_input("Please select an option (m for main QA menu): ").lower()
     if option == "1":
       CreateUser(credentials)
+      raw_input("Press enter to continue.")
     elif option == "2":
       TestChangePassword(credentials)
+      raw_input("Press enter to continue.")
     elif option == "3":
       TestChangePin(credentials)
+      raw_input("Press enter to continue.")
     elif option == "4":
       TestChangeKeyword(credentials)
+      raw_input("Press enter to continue.")
     elif option == "5":
       TestCreatePublicId(credentials)
+      raw_input("Press enter to continue.")
     elif option == "6":
       TestChangePublicId()
+      raw_input("Press enter to continue.")
     elif option == "7":
       TestMultipleInstances(credentials)
+      raw_input("Press enter to continue.")
     elif option == "8":  # TODO - remove
       ShowCredentials(credentials)
       raw_input("Press enter to continue.")
