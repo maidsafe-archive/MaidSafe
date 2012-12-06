@@ -118,7 +118,7 @@ def GetLib():
     option = raw_input("please type library name (q to exit): ")
   return option
 
-# style check 
+# style check
 def StyleCheck():
   option = GetLib()
   if option == 'q':

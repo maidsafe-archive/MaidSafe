@@ -40,6 +40,10 @@ import vault
 ls_mgr_exe = "lifestuff_mgr"
 ls_vault_exe = "lifestuff_vault"
 
+if platform.system() == "Windows":
+  ls_mgr_exe = "Debug/" + ls_mgr_exe + ".exe"
+  ls_vault_exe = "Debug/" + ls_vault_exe + ".exe"
+
 def CheckPassedInIp(ip_address):
   try:
     socket.inet_aton(ip_address)
@@ -197,12 +201,15 @@ def main():
   (options, args) = parser.parse_args()
 
   # check options
+  user_id = ""
+  if platform.system() != "Windows":
+    user_id = options.user_id
   result = ParameterBasedStartup(options.ip_address,
                                  options.ls_mgr_port,
                                  options.config_path,
                                  options.logging,
                                  options.vault_count,
-                                 options.user_id);
+                                 user_id);
   if result != 0:
     return result
 
