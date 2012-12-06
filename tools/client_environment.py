@@ -37,12 +37,8 @@ from optparse import OptionParser
 import utils
 import vault
 
-ls_mgr_exe = "lifestuff_mgr"
-ls_vault_exe = "lifestuff_vault"
-
-if platform.system() == "Windows":
-  ls_mgr_exe = "Debug/" + ls_mgr_exe + ".exe"
-  ls_vault_exe = "Debug/" + ls_vault_exe + ".exe"
+ls_mgr_exe = utils.GetProg("lifestuff_mgr")
+ls_vault_exe = utils.GetProg("lifestuff_vault")
 
 def CheckPassedInIp(ip_address):
   try:
@@ -130,7 +126,7 @@ def PopulateLifeStuffMgrParamters(cwd, parameter_list, ip_address, port, config_
   # root of config path
   parameter_list.append("--root_dir")
   if config_path == None:
-    parameter_list.append(tempfile.mkdtemp(prefix="Maidsafe_Qa_Test"))
+    parameter_list.append(tempfile.mkdtemp(prefix="Maidsafe_QA_Test"))
   else:
     parameter_list.append(config_path)
 

@@ -24,6 +24,7 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 import os
 import sys
 import subprocess
@@ -31,20 +32,19 @@ from subprocess import Popen, PIPE, STDOUT
 import multiprocessing
 from time import sleep
 
+# MaidSafe imports
 import utils
 import lifestuff_killer
 import routing
 import client
 import vault
 
-# all = { "Common" : 'common', "Rudp" : 'rudp', "Routing" : 'routing',
-#         "Private" : 'private', "Pd" : 'pd', "Encrypt" : 'encrypt',
-#         "Drive" : 'drive', "Lifestuff" : 'lifestuff' }
 
 def CppLint():
   encoding = sys.getfilesystemencoding()
   script_path = os.path.dirname(unicode(__file__, encoding))
   return os.path.join(script_path, 'cpplint.py')
+
 
 def StyleCheck():
   option = utils.GetLib()
@@ -57,15 +57,13 @@ def StyleCheck():
     for files in f:
       if (files.endswith(".cc") or files.endswith(".h")) and not \
          (files.endswith(".pb.cc") or files.endswith(".pb.h")):
-        style_check = os.path.join(r,files)
-        subprocess.call(['python', CppLint() , style_check])
+        style_check = os.path.join(r, files)
+        subprocess.call(['python', CppLint(), style_check])
+
 
 def RunAllExperimentals():
-  for key, value in utils.all.iteritems():
-    if os.name == 'nt':
-      subprocess.call(['cl', "Exper" + key + ".exe"])
-    else:
-      subprocess.call(['make', "Exper" + key])
+  subprocess.call(['ctest', '-D', 'Experimental', '-C', 'Release'])
+
 
 def CppCheck():
   checker = utils.FindFile('cppcheck')
@@ -84,12 +82,14 @@ def CppCheck():
         subprocess.call([checker, file_to_check])
   return checker
 
+
 def work(cmd):
-    return subprocess.call(cmd, shell=False)
+  return subprocess.call(cmd, shell=False)
 
 def RunNetwork(number_of_vaults):
   pool = multiprocessing.Pool(processes=number_of_vaults)
   pool.map(work, [utils.FindFile('TESTcommon', os.curdir)] * number_of_vaults)
+
 
 def RunQaCheck():
   print '------------START ROUTING TESTS------------'
@@ -103,14 +103,14 @@ def RunQaCheck():
 def MainMenu():
   option = 'a'
   utils.ClearScreen()
-  if utils.BuildType() == None:
-    print ("Not a build dir please cd to build dir i.e. the location of CMakeCache.txt")
-    return -1;
+#  if utils.BuildType() == None:
+#    print ("Not a build dir please cd to build dir i.e. the location of CMakeCache.txt")
+#    return -1;
   while(option != 'q'):
     procs = utils.CountProcs('lifestuff_vault')
     print(str(procs) + " Vaults running on this machine")
     print ("MaidSafe Development helper tool")
-    print ("Using " +  utils.BuildType() + " build")
+#    print ("Using " +  utils.BuildType() + " build")
     print ("================================")
     print ("1: Style Check ")
     print ("2: All Experimentals ")
@@ -119,8 +119,8 @@ def MainMenu():
       print ("this will allow basic checks on c++ code")
     else:
       print ("3: cppcheck (found)")
-    print ("4: Qa Menu")
-    option = raw_input("Please select an option (q to quit): ")
+    print ("4: QA Menu")
+    option = raw_input("Please select an option (q to quit): ").lower()
     if (option == "1"):
       StyleCheck()
     if (option == "2"):
@@ -143,7 +143,7 @@ def QaMenu():
     print ("2: Vault:     Vault QA Menu")
     print ("3: Client:    Client QA Menu")
     print ("4: LifeStuff: performance (includes manager)")
-    option = raw_input("Please select an option (m for main menu): ")
+    option = raw_input("Please select an option (m for main menu): ").lower()
     if (option == "1"):
       routing.SanityCheck()
     if (option == "2"):
@@ -154,11 +154,10 @@ def QaMenu():
 
 def main():
   utils.ClearScreen()
-  build_dir = utils.GetBuildDir()
-  if build_dir == None:
-    return -1;
+  if not utils.CheckCurDirIsBuildDir():
+    return -1
   MainMenu()
 
 
 if __name__ == "__main__":
-      sys.exit(main())
+  sys.exit(main())

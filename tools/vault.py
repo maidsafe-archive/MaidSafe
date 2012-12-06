@@ -198,7 +198,7 @@ def VaultMenu():
       print ("3: Extended Checks")
       print ("4: Kill all vaults on this machine")
       print ("5: Random churn on this machine, rate (% churn per minute) (not yet implemented)")
-    option = raw_input("Please select an option (m for main Qa menu): ")
+    option = raw_input("Please select an option (m for main QA menu): ").lower()
     if (option == "1"):
       num = 0
       while 12 > num:
@@ -239,7 +239,7 @@ def VaultMenu():
 
 
 def main():
-  print("This is the suite of Qa anaysis info for vaults")
+  print("This is the suite of QA anaysis info for vaults")
   VaultMenu()
 if __name__ == "__main__":
   sys.exit(main())

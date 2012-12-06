@@ -367,7 +367,7 @@ def RoutingMenu():
       print ("3: Feature Checks")
       print ("4: Kill all routing nodes on this machine")
       print ("5: Random churn on this machine, rate (% churn per minute) (not yet implemented)")
-    option = raw_input("Please select an option (m for main Qa menu): ")
+    option = raw_input("Please select an option (m for main QA menu): ").lower()
     if (option == "1"):
       num = 0
       while 12 > num:
@@ -378,7 +378,7 @@ def RoutingMenu():
 
 
 def main():
-  print("This is the suite for lifestuff Qa analysis")
+  print("This is the suite for lifestuff QA analysis")
   RoutingMenu()
   #SanityCheck()
 

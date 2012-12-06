@@ -32,10 +32,9 @@ from time import sleep
 import utils
 import sys
 
-# maidsafe imports
+# MaidSafe imports
 import client_environment
 import lifestuff_killer
-from lifestuff_python_api import *
 
 
 # as per return_codes.h
@@ -379,7 +378,7 @@ def ClientMenu():
     utils.ClearScreen()
     procs = utils.CountProcs("lifestuff_vault")
     PrintMenu(procs)
-    option = raw_input("Please select an option (m for main Qa menu): ")
+    option = raw_input("Please select an option (m for main QA menu): ").lower()
     if option == "1":
       CreateUser(credentials)
     elif option == "2":
@@ -445,10 +444,9 @@ def GeneralOptions():
     LifeStuffClientHeader()
     print "1: Create local network"
     print "2: Use established network"
-    option = raw_input("Please select an option (m for main Qa menu): ")
+    option = raw_input("Please select an option (m for main QA menu): ").lower()
     if option == "m":
-      option = raw_input("Would you like to clean up the lifestuff processes that are running [y/n]? ")
-      if option == "y":
+      if utils.YesNo("Would you like to clean up the lifestuff processes that are running?"):
         lifestuff_killer.KillLifeStuff()
       return 1
 
@@ -460,7 +458,11 @@ def GeneralOptions():
 
 
 def main():
-  print "This is the suite of Qa anaysis info for clients"
+  utils.ClearScreen()
+  print "This is the suite of QA anaysis info for clients"
+  if not utils.CheckCurDirIsBuildDir():
+    return -1
+  from lifestuff_python_api import *
   result = GeneralOptions()
   if result == 0:
     ClientMenu()

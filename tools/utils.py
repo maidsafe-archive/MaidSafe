@@ -24,25 +24,35 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 import socket
+import platform
 import os
 import sys
 import psutil
 import subprocess
 import multiprocessing
+
+# MaidSafe imports
 import lifestuff_killer
 import routing
-#import lifestuff
 import vault
 
-all = { "Common" : 'common', "Rudp" : 'rudp', "Routing" : 'routing',
-        "Private" : 'private', "Pd" : 'pd', "Encrypt" : 'encrypt',
-        "Drive" : 'drive', "Lifestuff" : 'lifestuff' }
+
+all = { 'Common' : 'common', 'Rudp' : 'rudp', 'Routing' : 'routing',
+        'Private' : 'private', 'Pd' : 'pd', 'Encrypt' : 'encrypt',
+        'Drive' : 'drive', 'Lifestuff' : 'lifestuff' }
+
+
+def ClearScreen():
+  os.system( [ 'clear', 'cls' ][ platform.system() == 'Windows' ] )
+
 
 def CppLint():
   encoding = sys.getfilesystemencoding()
   script_path = os.path.dirname(unicode(__file__, encoding))
   return os.path.join(script_path, 'cpplint.py')
+
 
 def CountProcs(name):
   num = 0
@@ -51,27 +61,28 @@ def CountProcs(name):
        num = num + 1
   return num
 
-def YesNo(question, default="yes"):
-    valid = {"yes":True,   "y":True,  "ye":True,
-             "no":False,     "n":False}
-    if default == None:
-        prompt = " [y/n] "
-    elif default == "yes":
-        prompt = " [Y/n] "
-    elif default == "no":
-        prompt = " [y/N] "
-    else:
-        raise ValueError("invalid default answer: '%s'" % default)
 
-    while True:
-        sys.stdout.write(question + prompt)
-        choice = raw_input().lower()
-        if default is not None and choice == '':
-            return valid[default]
-        elif choice in valid:
-            return valid[choice]
-        else:
-            sys.stdout.write("Please respond with 'yes' or 'no' (or 'y' or 'n').\n")
+def YesNo(question, default='yes'):
+  valid = { 'yes':True, 'y':True, 'ye':True, 'no':False, 'n':False }
+  if default == None:
+    prompt = ' [y/n] '
+  elif default == 'yes':
+    prompt = ' [Y/n] '
+  elif default == 'no':
+    prompt = ' [y/N] '
+  else:
+    raise ValueError("invalid default answer: '%s'" % default)
+
+  while True:
+    sys.stdout.write(question + prompt)
+    choice = raw_input().lower()
+    if default is not None and choice == '':
+      return valid[default]
+    elif choice in valid:
+      return valid[choice]
+    else:
+      sys.stdout.write("Please respond with 'yes' or 'no' (or 'y' or 'n').\n")
+
 
 def GetIp():
   s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -80,58 +91,42 @@ def GetIp():
   s.close()
   return ip
 
+
 def GetProg(prog):
-  if os.name =='nt':
-    return os.path.join (os.curdir, prog + ".exe")
+  if platform.system() == 'Windows':
+    return os.path.join(os.curdir, prog + '.exe')
   else:
-    return os.path.join (os.curdir, prog)
+    return os.path.join(os.curdir, prog)
 
 
-def GetBuildDir():
-  if os.name == 'nt':
-    if FindFile('TESTcommon', os.path.join(os.curdir, 'Debug')) != None:
-      print("You seem to be running windows, found valid executibles in Debug")
-      if YesNo("Do you wish to use the Debug build for these tests"):
-        return os.path.join(os.curdir, Debug)
-    if FindFile('TESTcommon', os.path.join(os.curdir, 'Release')) != None:
-      print("You seem to be running windows, found valid executibles in Release")
-      if YesNo("Do you wish to use the Debug build for these tests"):
-        return os.path.join(os.curdir, Release)
+def CheckCurDirIsBuildDir():
+  if FindFile('lifestuff_python_api', os.path.join(os.curdir), ('.so','.pyd')) != None:
+    return True
+  print 'The current working directory does not contain lifestuff_python_api'
+  if not YesNo('Do you want to build lifestuff_python_api in this directory?'):
+    print "You need to run this script from a build directory."
+    return False
+
+  build_type = ''
+  while build_type == '':
+    sys.stdout.write('Specify Debug [d], Release [r], RelWithDebInfo [rwdi], or MinSizeRel [msr]: ')
+    choice = raw_input().lower()
+    if choice == 'd':
+      build_type = 'Debug'
+    elif choice == 'r':
+      build_type = 'Release'
+    elif choice == 'rwdi':
+      build_type = 'RelWithDebInfo'
+    elif choice == 'msr':
+      build_type = 'MinSizeRel'
+
+  if platform.system() == 'Windows':
+    return subprocess.call(['cmake', '--build', '.', '--target', 'lifestuff_python_api', '--config', build_type]) == 0
   else:
-    if FindFile('TESTcommon', os.path.join(os.curdir)) != None:
-      return os.path.join(os.curdir)
-  print("This does not look like a build directory, please run this from your build dir")
-  print("or build all project targets before running this tool")
-  return
+    if subprocess.call(['cmake', '..', '-DCMAKE_BUILD_TYPE=' + build_type]) != 0:
+      return False
+    return subprocess.call(['cmake', '--build', '.', '--target', 'lifestuff_python_api']) == 0
 
-def ClearScreen():
-  os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )
-
-def GetLib():
-  option = ''
-  while option.lower() not in all.values() and option != 'q':
-    print ("Libraries available")
-    print ("-------------------")
-    for key, value in all.iteritems():
-      print (key)
-    print ("-------------------")
-    option = raw_input("please type library name (q to exit): ")
-  return option
-
-# style check
-def StyleCheck():
-  option = GetLib()
-  if option == 'q':
-    ClearScreen()
-    return
-  directory = os.path.join(os.path.curdir, '..', 'src', option)
-  style_check = ""
-  for r,d,f in os.walk(directory):
-    for files in f:
-      if (files.endswith(".cc") or files.endswith(".h")) and not \
-         (files.endswith(".pb.cc") or files.endswith(".pb.h")):
-        style_check = os.path.join(r,files)
-        subprocess.call(['python', CppLint() , style_check])
 
 def BuildType():
   with open(os.path.join(os.curdir, 'CMakeCache.txt')) as cmake_cache:
@@ -140,6 +135,34 @@ def BuildType():
     return 'Debug'
   if any('CMAKE_BUILD_TYPE:STRING=Release' in s for s in content):
     return 'Release'
+
+
+def GetLib():
+  option = ''
+  while option.lower() not in all.values() and option != 'q':
+    print ('Libraries available')
+    print ('-------------------')
+    for key, value in all.iteritems():
+      print (key)
+    print ('-------------------')
+    option = raw_input('please type library name (q to exit): ')
+  return option
+
+
+def StyleCheck():
+  option = GetLib()
+  if option == 'q':
+    ClearScreen()
+    return
+  directory = os.path.join(os.path.curdir, '..', 'src', option)
+  style_check = ''
+  for r,d,f in os.walk(directory):
+    for files in f:
+      if (files.endswith('.cc') or files.endswith('.h')) and not \
+         (files.endswith('.pb.cc') or files.endswith('.pb.h')):
+        style_check = os.path.join(r,files)
+        subprocess.call(['python', CppLint() , style_check])
+
 
 def FindFile(name, path=None, exts=('','.exe')):
   path = path or os.environ['PATH']
@@ -150,6 +173,7 @@ def FindFile(name, path=None, exts=('','.exe')):
         return os.path.abspath(binpath)
   return None
 
+
 def CppCheck():
   checker = FindFile('cppcheck')
   if checker == None:
@@ -159,16 +183,18 @@ def CppCheck():
     ClearScreen()
     return
   directory = os.path.join(os.path.curdir, '..', 'src', option)
-  style_check = ""
+  style_check = ''
   for r,d,f in os.walk(directory):
     for files in f:
-      if (files.endswith(".cc") or files.endswith(".h")):
+      if (files.endswith('.cc') or files.endswith('.h')):
         file_to_check = os.path.join(r,files)
         subprocess.call([checker, file_to_check])
   return checker
 
+
 def work(cmd):
-    return subprocess.call(cmd, shell=False)
+  return subprocess.call(cmd, shell=False)
+
 
 def RunNetwork(number_of_vaults):
   pool = multiprocessing.Pool(processes=number_of_vaults)
@@ -177,10 +203,9 @@ def RunNetwork(number_of_vaults):
 
 def main():
   ClearScreen()
-  build_dir = GetBuildDir()
-  if build_dir == None:
-    return -1;
+  if not utils.CheckCurDirIsBuildDir():
+    return -1
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
       sys.exit(main())

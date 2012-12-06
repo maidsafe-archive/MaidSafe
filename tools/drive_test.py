@@ -35,6 +35,10 @@ import time
 import logging
 import tempfile
 
+# MaidSafe imports
+import utils
+
+
 def timed_function(function):
   def wrapper(*arg):
     t1 = time.time()
@@ -164,9 +168,9 @@ def main():
   if os.path.exists(log_file):
     os.remove(log_file)
   logging.basicConfig(filename = log_file, level = logging.INFO)
-  os.system([ 'clear', 'cls' ][ os.name == 'nt' ])
+  utils.ClearScreen()
   while(option != 'm'):
-    os.system([ 'clear', 'cls' ][ os.name == 'nt' ])
+    utils.ClearScreen()
     print ("MaidSafe Quality Assurance Suite | Drive Actions")
     print ("================================================")
     print ("Setup.")
@@ -208,7 +212,7 @@ def main():
     print ("27: Disk to Disk move mp4 files.")
     print ("28: Disk to Disk move wmv files.")
     print ("")
-    option = input("Please select an option (m for main Qa menu): ")
+    option = raw_input("Please select an option (m for main QA menu): ").lower()
     if option == 1:
       download(url)
     elif option == 2:
@@ -267,7 +271,7 @@ def main():
       move_files_on_disk(url, "/5200 items/WMV")
     else:
       print "That's not a valid option."
-  os.system([ 'clear', 'cls' ][ os.name == 'nt' ])
+  utils.ClearScreen()
 
 if __name__ == "__main__":
   sys.exit(main())
