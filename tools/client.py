@@ -35,6 +35,9 @@ import sys
 # MaidSafe imports
 import client_environment
 import lifestuff_killer
+verified_exes = utils.CheckCurDirIsBuildDir()
+if verified_exes == True:
+  from lifestuff_python_api import *
 
 
 # as per return_codes.h
@@ -459,11 +462,13 @@ def GeneralOptions():
 
 def main():
   utils.ClearScreen()
-  print "This is the suite of QA anaysis info for clients"
-  if not utils.CheckCurDirIsBuildDir():
+  LifeStuffClientHeader()
+  if verified_exes == False:
+    print "Build directory and executables not verified."
     return -1
-  from lifestuff_python_api import *
+
   result = GeneralOptions()
+  print result
   if result == 0:
     ClientMenu()
 

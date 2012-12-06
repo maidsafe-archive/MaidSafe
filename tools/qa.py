@@ -149,7 +149,7 @@ def QaMenu():
     if (option == "2"):
       vault.VaultMenu()
     if (option == "3"):
-      client.ClientMenu()
+      client.main()
   utils.ClearScreen()
 
 def main():
