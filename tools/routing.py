@@ -32,12 +32,9 @@ import utils
 import random
 from subprocess import Popen, PIPE, STDOUT
 from time import sleep
+import time
 
-num_of_nodes = 20
 num_of_bootstraps = 2
-num_of_vaults = num_of_nodes / 2 - num_of_bootstraps
-num_of_clients = num_of_nodes - num_of_vaults - num_of_bootstraps
-
 
 def SetupKeys(num):
   print("Setting up keys ... ")
@@ -97,10 +94,10 @@ def SetupBootstraps():
   return [peer_0, p_b0, p_b1]
 
 
-def AddRoutingObject(peer, idx):
-  if idx < (num_of_nodes / 2):
+def AddRoutingObject(num_nodes, peer, idx):
+  if idx < (int(num_nodes) / 2):
     p_v = Popen('./routing_node -s -i ' + str(idx) + ' -p ' + peer, shell = True, stdout=PIPE, stdin=PIPE)
-  if idx >= (num_of_nodes / 2):
+  if idx >= (int(num_nodes) / 2):
     p_v = Popen('./routing_node -s -c -i ' + str(idx) + ' -p ' + peer, shell = True, stdout=PIPE, stdin=PIPE)
 
   key_line = SearchKeyWordLine(p_v, 'Current Node joined', 3)
@@ -109,15 +106,15 @@ def AddRoutingObject(peer, idx):
   return p_v
 
 
-def SetupRoutingNodes(peer, num_vaults, num_clients):
+def SetupRoutingNodes(num_nodes, peer, num_vaults, num_clients):
   print("Setup " + str(num_vaults) + " vaults and " + str(num_clients) + " clients, please wait ....")
   p_nodes = range(num_vaults + num_clients)
   i = 0;
   while i < (num_vaults + num_clients):
     if i < num_vaults:
-      p_nodes[i] = AddRoutingObject(peer, i + num_of_bootstraps)
+      p_nodes[i] = AddRoutingObject(num_nodes, peer, i + num_of_bootstraps)
     if i >= num_vaults:
-      p_nodes[i] = AddRoutingObject(peer, (num_of_nodes / 2) + (i - num_vaults))
+      p_nodes[i] = AddRoutingObject(num_nodes, peer, (num_nodes / 2) + (i - num_vaults))
     if p_nodes[i] == -1:
       print 'Failed to add routing object ' + str(i + num_of_bootstraps) + ' !'
       #TODO cleanup the previous opened nodes
@@ -168,6 +165,18 @@ def SendGroup(p, target):
   return 0
 
 
+def TimeMsgRate(p_n, dst):
+  count = 0
+  start_time = time.time()
+  for i in range (100000):
+    p_n.stdin.write('datasize ' + str(100) + '\n')
+    p_n.stdin.write('senddirect ' + str(dst) + '\n')
+    key_line = SearchKeyWordLine(p_n, 'Response received in', 10)
+    if key_line != -1:
+      ++count
+  print("Message rate: " + str(100000/(time.time() - start_time)) + " messages per second (100bytes)")
+
+
 def SendDirectMsg(p_n, dst, datasize):
   p_n.stdin.write('datasize ' + str(datasize) + '\n')
   p_n.stdin.write('senddirect ' + str(dst) + '\n')
@@ -177,12 +186,14 @@ def SendDirectMsg(p_n, dst, datasize):
     return -1;
   duration = key_line.split()[3]
   print("\t"+ str(datasize) + " Bytes data exchanged in " + duration + " seconds")
+  print("\t Data rate: " + str(datasize / ParseSecondsFromString(duration)/1024) +  " KB/s")
+  TimeMsgRate(p_n, dst)
   return ParseSecondsFromString(duration)
 
 
-def JAV1(peer):
+def JAV1(peer, num_nodes):
   print("Running Routing Sanity Check JAV1 Test, please wait ....")
-  p_v = AddRoutingObject(peer, 2)
+  p_v = AddRoutingObject(num_nodes, peer, 2)
   if p_v == -1:
     print 'Failed to add routing object!'
     return -1
@@ -194,9 +205,9 @@ def JAV1(peer):
   return 0
 
 
-def JAV2(peer):
+def JAV2(peer, num_nodes):
   print("Running Routing Sanity Check JAV2 Test, please wait ....")
-  p_v = AddRoutingObject(peer, 8)
+  p_v = AddRoutingObject(num_nodes,peer, 8)
   if p_v == -1:
     print 'Failed to add routing object!'
     return -1
@@ -213,15 +224,15 @@ def JAV2(peer):
   return result
 
 
-def P1(p_nodes):
+def P1(p_nodes, num_nodes):
   if p_nodes == -1:
     return -1;
   print("Running Routing Sanity Check P1 Test, please wait ....")
   duration = 0
   num_iteration = 5
   for i in range(num_iteration): # vault to vault
-    source = random.randint(0, num_of_nodes / 2 - 1)
-    dest = random.randint(0, num_of_nodes / 2 - 1) # dest can be a bootstrap node
+    source = random.randint(0, num_nodes / 2 - 1)
+    dest = random.randint(0, num_nodes / 2 - 1) # dest can be a bootstrap node
     if dest != source: # send to self will be super quick, shall be excluded
       print("\tSending a 1MB msg from " + str(source) + " to " + str(dest) + ", please wait ...")
       result = SendDirectMsg(p_nodes[source], dest, 1048576)
@@ -234,8 +245,8 @@ def P1(p_nodes):
 
   duration = 0
   for i in range(num_iteration): # client to vault
-    source = random.randint(num_of_nodes / 2, num_of_nodes - 1)
-    dest = random.randint(0, num_of_nodes / 2 - 1) # dest can be a bootstrap node
+    source = random.randint(num_nodes / 2, num_nodes - 1)
+    dest = random.randint(0, num_nodes / 2 - 1) # dest can be a bootstrap node
     print("\tSending a 1MB msg from " + str(source) + " to " + str(dest) + ", please wait ...")
     result = SendDirectMsg(p_nodes[source], dest, 1048576)
     if result == -1:
@@ -245,9 +256,9 @@ def P1(p_nodes):
   return 0
 
 
-def JAC1(peer):
+def JAC1(peer, num_nodes):
   print("Running Routing Sanity Check JAC1 Test, please wait ....")
-  p_c = AddRoutingObject(peer, 12)
+  p_c = AddRoutingObject(num_nodes, peer, 12)
   result = 0
   if p_c == -1:
     print 'Failed to add routing object!'
@@ -269,7 +280,7 @@ def JAC1(peer):
   return result
 
 
-def JAC2(peer, p_nodes):
+def JAC2(peer, p_nodes, num_nodes):
   print("Running Routing Sanity Check JAC2 Test, please wait ....")
   v_drop = 3
   # drop the vault first
@@ -278,7 +289,7 @@ def JAC2(peer, p_nodes):
   if p_nodes[v_drop].poll() == None:
     print "Failed to stop a node!"
   # join the node back
-  p_nodes[v_drop] = AddRoutingObject(peer, 2)
+  p_nodes[v_drop] = AddRoutingObject(num_nodes, peer, 2)
   if p_nodes[v_drop] == -1:
     print "Failed to join the dropped node back!"
     return -1
@@ -290,23 +301,25 @@ def JAC2(peer, p_nodes):
       result = -1
   return result
 
-def  SGM1(p_nodes):
+def  SGM1(p_nodes, num_nodes):
   print("Running Routing Sanity Check SGM1 Test, please wait ....")
   num_iteration = 5
   for i in range(num_iteration):
-    rnd = random.randint(0, num_of_nodes / 2 - 1)
+    rnd = random.randint(0, num_nodes / 2 - 1)
     if SendGroup(p_nodes[rnd], -1) != 0:
       return -1
-    target = random.randint(0, num_of_nodes - 1)
+    target = random.randint(0, num_nodes - 1)
     if SendGroup(p_nodes[rnd], target) != 0:
       return -1
   return 0
 
 
-def SanityCheck():
+def SanityCheck(num_nodes):
+  num_of_vaults = num_nodes / 2 - num_of_bootstraps
+  num_of_clients = num_nodes - num_of_vaults - num_of_bootstraps
   print("Running Routing Sanity Check, please wait ....")
 
-  if not SetupKeys(num_of_nodes) == 0:
+  if not SetupKeys(num_nodes) == 0:
     return -1
   items = SetupBootstraps()
   if items == -1:
@@ -314,41 +327,41 @@ def SanityCheck():
   peer = items[0]
   p_bs = [items[1], items[2]]
 
-  if JAV1(peer) == 0:
-    print 'Routing Sanity Check  Test JAV1  : PASSED\n'
+  if JAV1(peer, num_nodes) == 0:
+    print 'Join a single vault to a network  : PASSED\n'
   else:
-    print 'Routing Sanity Check  Test JAV1  : FAILED\n'
+    print 'Join a single vault to a network  : FAILED\n'
 
-  if JAV2(peer) == 0:
-    print 'Routing Sanity Check  Test JAV2  : PASSED\n'
+  if JAV2(peer, num_nodes) == 0:
+    print 'Join a vault and send a message  : PASSED\n'
   else:
-    print 'Routing Sanity Check  Test JAV2  : FAILED\n'
+    print 'Join a vault and send a message  : FAILED\n'
 
-  p_vaults = SetupRoutingNodes(peer, num_of_vaults, 0)
-  if JAC1(peer) == 0:
-    print 'Routing Sanity Check  Test JAC1  : PASSED\n'
-  else:
-    print 'Routing Sanity Check  Test JAC1  : FAILED\n'
+#  p_vaults = SetupRoutingNodes(num_nodes, peer, num_of_vaults, 0)
+#  if JAC1(peer, num_nodes) == 0:
+#    print 'Add a client to the network and send message to self  : PASSED\n'
+#  else:
+#    print 'Add a client to the network and send message to self  : FAILED\n'
 
-  p_clients = SetupRoutingNodes(peer, 0, num_of_clients)
-  p_nodes = p_bs + p_vaults + p_clients
+#  p_clients = SetupRoutingNodes(num_nodes, peer, 0, num_of_clients)
+#  p_nodes = p_bs + p_vaults + p_clients
 
-  if SGM1(p_nodes) == 0:
-    print 'Routing Sanity Check  Test SGM1  : PASSED\n'
-  else:
-    print 'Routing Sanity Check  Test SGM1  : FAILED\n'
+#  if SGM1(p_nodes, num_nodes) == 0:
+#    print 'Stop and confirm client stops  : PASSED\n'
+#  else:
+#    print 'Stop and confirm client stops : FAILED\n'
+#
+#  if P1(p_nodes) == 0:
+#    print 'Stop and confirm vault stops : PASSED\n'
+#  else:
+#    print 'Stop and confirm vault stops  : FAILED\n'
+#
+#  if JAC2(peer, p_nodes, num_nodes) == 0:
+#    print 'Send and confirm group message  : PASSED\n'
+#  else:
+#    print 'Send and confirm group message  : FAILED\n'
 
-  if P1(p_nodes) == 0:
-    print 'Routing Sanity Check  Test P1  : PASSED\n'
-  else:
-    print 'Routing Sanity Check  Test P1  : FAILED\n'
-
-  if JAC2(peer, p_nodes) == 0:
-    print 'Routing Sanity Check  Test JAC2  : PASSED\n'
-  else:
-    print 'Routing Sanity Check  Test JAC2  : FAILED\n'
-
-  StopNodes(p_nodes)
+#  StopNodes(p_nodes)
 
 def RoutingMenu():
   option = 'a'
@@ -373,14 +386,14 @@ def RoutingMenu():
       while 12 > num:
         number = raw_input("Please input number of nodes to run (minimum 12): ")
         num = int(number)
-
+        SanityCheck(num)
+        raw_input("Press a key to continue!")
   utils.ClearScreen()
 
 
 def main():
   print("This is the suite for lifestuff Qa analysis")
   RoutingMenu()
-  #SanityCheck()
 
 if __name__ == "__main__":
   sys.exit(main())
