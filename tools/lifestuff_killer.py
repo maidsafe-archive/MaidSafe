@@ -41,7 +41,7 @@ def KillLifeStuff():
     if proc.name.find(PROC) >= 0:
       print("Killing process : " + proc.name)
       try:
-        proc.kill()
+        proc.terminate()
       except:
         print("Could not kill all instances")
 
