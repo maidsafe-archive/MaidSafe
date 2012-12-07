@@ -35,13 +35,9 @@ import time
 import logging
 import tempfile
 
-<<<<<<< HEAD
 # MaidSafe imports
 import utils
 
-
-=======
->>>>>>> test_hooks
 def timed_function(function):
   def wrapper(*arg):
     t1 = time.time()
@@ -52,7 +48,6 @@ def timed_function(function):
   return wrapper
 
 @timed_function
-<<<<<<< HEAD
 def copy_tree(tree_from, tree_to):
   shutil.copytree(tree_from, tree_to)
 
@@ -60,8 +55,6 @@ def copy_tree(tree_from, tree_to):
 def move_tree(tree_from, tree_to):
   shutil.move(tree_from, tree_to)
 
-=======
->>>>>>> test_hooks
 def download(url_string):
   file_name = url_string.split('/')[-1]
   url = urllib2.urlopen(url_string)
@@ -88,11 +81,7 @@ def download(url_string):
 def mount_drive():
   print "Mounting drive..."
   sys.stdout.flush()
-<<<<<<< HEAD
   process = subprocess.Popen(["drive_demo.exe"]).pid
-=======
-  process = subprocess.Popen(["../build/Release/drive_demo.exe"]).pid
->>>>>>> test_hooks
   time.sleep(3)
 
 @timed_function
@@ -104,16 +93,11 @@ def unzip_file(url):
     file.extractall(os.path.join(tempfile.gettempdir(), os.path.splitext(file_name)[0]))
 
 # Copy files to drive...
-<<<<<<< HEAD
-=======
-@timed_function
->>>>>>> test_hooks
 def copy_files_to_drive(url, folder):
   file_name = url.split('/')[-1]
   directory_name = os.path.splitext(file_name)[0] + folder
   print "Copying %s to drive..." % (directory_name)
   sys.stdout.flush()
-<<<<<<< HEAD
   directory = os.path.join(tempfile.gettempdir(), directory_name)
   logging.info('Copying %s to drive...', directory_name)
   copy_tree(directory, "S:/" + directory_name)
@@ -122,18 +106,6 @@ def copy_files_to_drive(url, folder):
 def copy_files_on_drive(url, folder):
   print "Copying %s on drive..." % (folder)
   sys.stdout.flush()
-=======
-  logging.info('Copying %s to drive...', directory_name)
-  directory = os.path.join(tempfile.gettempdir(), directory_name)
-  shutil.copytree(directory, "S:/" + directory_name)
-
-# Copy files on drive...
-@timed_function
-def copy_files_on_drive(url, folder):
-  print "Copying %s on drive..." % (folder)
-  sys.stdout.flush()
-  logging.info('Copying %s on drive...', folder)
->>>>>>> test_hooks
   try:
     os.makedirs("S:/" + "Copied")
   except OSError:
@@ -141,7 +113,6 @@ def copy_files_on_drive(url, folder):
   file_name = url.split('/')[-1]
   directory_name = os.path.splitext(file_name)[0] + folder
   directory = os.path.join(tempfile.gettempdir(), directory_name)
-<<<<<<< HEAD
   logging.info('Copying %s on drive...', folder)
   copy_tree("S:/" + directory_name, "S:/" + "Copied" + folder)
 
@@ -149,16 +120,6 @@ def copy_files_on_drive(url, folder):
 def move_files_on_drive(url, folder):
   print "Moving %s on drive..." % (folder)
   sys.stdout.flush()
-=======
-  shutil.copytree("S:/" + directory_name, "S:/" + "Copied" + folder)
-
-# Move files on drive...
-@timed_function
-def move_files_on_drive(url, folder):
-  print "Moving %s on drive..." % (folder)
-  sys.stdout.flush()
-  logging.info('Moving %s on drive...', folder)
->>>>>>> test_hooks
   try:
     os.makedirs("S:/" + "Moved")
   except OSError:
@@ -166,7 +127,6 @@ def move_files_on_drive(url, folder):
   file_name = url.split('/')[-1]
   directory_name = os.path.splitext(file_name)[0] + folder
   directory = os.path.join(tempfile.gettempdir(), directory_name)
-<<<<<<< HEAD
   logging.info('Moving %s on drive...', folder)
   move_tree("S:/" + directory_name, "S:/" + "Moved" + folder)
 
@@ -174,16 +134,6 @@ def move_files_on_drive(url, folder):
 def copy_files_on_disk(url, folder):
   print "Copying %s on disk..." % (folder)
   sys.stdout.flush()
-=======
-  shutil.move("S:/" + directory_name, "S:/" + "Moved" + folder)
-
-# Copy files on disk...
-@timed_function
-def copy_files_on_disk(url, folder):
-  print "Copying %s on disk..." % (folder)
-  sys.stdout.flush()
-  logging.info('Copying %s on disk...', folder)
->>>>>>> test_hooks
   try:
     os.makedirs(tempfile.gettempdir() + "/Copied")
   except OSError:
@@ -192,7 +142,6 @@ def copy_files_on_disk(url, folder):
   directory_name = '/' + os.path.splitext(file_name)[0] + folder
   print "copy directory name = %s, tempdir = %s" % (directory_name, tempfile.gettempdir())
   directory = os.path.join(tempfile.gettempdir(), directory_name)
-<<<<<<< HEAD
   logging.info('Copying %s on disk...', folder)
   copy_tree(tempfile.gettempdir() + directory_name, tempfile.gettempdir() + "/Copied" + folder)
 
@@ -200,17 +149,6 @@ def copy_files_on_disk(url, folder):
 def move_files_on_disk(url, folder):
   print "Moving %s on disk..." % (folder)
   sys.stdout.flush()
-=======
-  shutil.copytree(tempfile.gettempdir() + directory_name, tempfile.gettempdir() + "/Copied" + folder)
-    
-
-# Move files on disk...
-@timed_function
-def move_files_on_disk(url, folder):
-  print "Moving %s on disk..." % (folder)
-  sys.stdout.flush()
-  logging.info('Moving %s on disk...', folder)
->>>>>>> test_hooks
   try:
     os.makedirs(tempfile.gettempdir() + "/Moved")
   except OSError:
@@ -219,17 +157,12 @@ def move_files_on_disk(url, folder):
   directory_name = os.path.splitext(file_name)[0] + folder
   print "move directory name = %s" % (directory_name)
   directory = os.path.join(tempfile.gettempdir(), directory_name)
-<<<<<<< HEAD
   logging.info('Moving %s on disk...', folder)
   move_tree(directory, tempfile.gettempdir() + "/Moved" + folder)
-=======
-  shutil.move(directory, tempfile.gettempdir() + "/Moved" + folder)
->>>>>>> test_hooks
 
 def main():
   option = 'a'
   url = "http://dash.maidsafe.net/test_files.zip"
-<<<<<<< HEAD
   log_file = os.path.join(tempfile.gettempdir(), 'drive_timing.log')
   if os.path.exists(log_file):
     os.remove(log_file)
@@ -248,67 +181,37 @@ def main():
     print ("The following timed tests will be logged to...")
     print ("%s." % (log_file))
     print ("")
-=======
-  log_file = os.path.join(tempfile.gettempdir(), 'timing.log')
-  if os.path.exists(log_file):
-    os.remove(log_file)
-  logging.basicConfig(filename = log_file, level = logging.INFO)
-  os.system([ 'clear', 'cls' ][ os.name == 'nt' ])
-  while(option != 'm'):
-    os.system([ 'clear', 'cls' ][ os.name == 'nt' ])
-    print ("MaidSafe Quality Assurance Suite | Drive Actions")
-    print ("================================")
-    print (" 1: Download zip file from http://dash.maidsafe.net.")
-    print (" 2: Unzip downloaded file.")
-    print (" 3: Mount drive.")
->>>>>>> test_hooks
     print (" 4: Disk to Drive copy doc files.")
     print (" 5: Disk to Drive copy html files.")
     print (" 6: Disk to Drive copy pdf files.")
     print (" 7: Disk to Drive copy mp4 files.")
     print (" 8: Disk to Drive copy wmv files.")
-<<<<<<< HEAD
     print ("")
-=======
->>>>>>> test_hooks
     print (" 9: Drive to Drive copy doc files.")
     print ("10: Drive to Drive copy html files.")
     print ("11: Drive to Drive copy pdf files.")
     print ("12: Drive to Drive copy mp4 files.")
     print ("13: Drive to Drive copy wmv files.")
-<<<<<<< HEAD
     print ("")
-=======
->>>>>>> test_hooks
     print ("14: Drive to Drive move doc files.")
     print ("15: Drive to Drive move html files.")
     print ("16: Drive to Drive move pdf files.")
     print ("17: Drive to Drive move mp4 files.")
     print ("18: Drive to Drive move wmv files.")
-<<<<<<< HEAD
     print ("")
-=======
->>>>>>> test_hooks
     print ("19: Disk to Disk copy doc files.")
     print ("20: Disk to Disk copy html files.")
     print ("21: Disk to Disk copy pdf files.")
     print ("22: Disk to Disk copy mp4 files.")
     print ("23: Disk to Disk copy wmv files.")
-<<<<<<< HEAD
     print ("")
-=======
->>>>>>> test_hooks
     print ("24: Disk to Disk move doc files.")
     print ("25: Disk to Disk move html files.")
     print ("26: Disk to Disk move pdf files.")
     print ("27: Disk to Disk move mp4 files.")
     print ("28: Disk to Disk move wmv files.")
-<<<<<<< HEAD
     print ("")
     option = raw_input("Please select an option (m for main QA menu): ").lower()
-=======
-    option = input("Please select an option (m for main Qa menu): ")
->>>>>>> test_hooks
     if option == 1:
       download(url)
     elif option == 2:
@@ -367,14 +270,7 @@ def main():
       move_files_on_disk(url, "/5200 items/WMV")
     else:
       print "That's not a valid option."
-<<<<<<< HEAD
   utils.ClearScreen()
 
 if __name__ == "__main__":
   sys.exit(main())
-=======
-  os.system([ 'clear', 'cls' ][ os.name == 'nt' ])
-
-if __name__ == "__main__":
-  sys.exit(main())
->>>>>>> test_hooks
