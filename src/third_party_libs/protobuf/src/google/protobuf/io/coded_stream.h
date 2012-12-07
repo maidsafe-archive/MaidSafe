@@ -898,7 +898,7 @@ inline uint8* CodedOutputStream::GetDirectBufferForNBytesAndAdvance(int size) {
 inline uint8* CodedOutputStream::WriteVarint32ToArray(uint32 value,
                                                       uint8* target) {
   if (value < 0x80) {
-    *target = value;
+    *target = static_cast<uint8>(value);
     return target + 1;
   } else {
     return WriteVarint32FallbackToArray(value, target);
@@ -962,7 +962,7 @@ inline void CodedOutputStream::WriteTag(uint32 value) {
 inline uint8* CodedOutputStream::WriteTagToArray(
     uint32 value, uint8* target) {
   if (value < (1 << 7)) {
-    target[0] = value;
+    target[0] = static_cast<uint8>(value);
     return target + 1;
   } else if (value < (1 << 14)) {
     target[0] = static_cast<uint8>(value | 0x80);
