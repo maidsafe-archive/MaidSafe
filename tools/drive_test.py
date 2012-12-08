@@ -34,6 +34,13 @@ import shutil
 import time
 import logging
 import tempfile
+try:
+  import psutil
+except ImportError:
+  print("please install psutil 'pip install psutil'")
+  print("or 'easy_install psutil'")
+  print("Website : http://code.google.com/p/psutil/")
+  sys.exit(1)
 
 # MaidSafe imports
 import utils
@@ -83,6 +90,26 @@ def mount_drive():
   sys.stdout.flush()
   process = subprocess.Popen(["drive_demo.exe"]).pid
   time.sleep(3)
+
+def drive_exists():
+  for proc in psutil.process_iter():
+    if proc.name.find("drive_demo") >= 0:
+      print("Failed to kill process : " + proc.name)
+      return -1;
+    print("No drive processes running.")
+    return 0
+
+def unmount_drive():
+  print "Unmounting drive..."
+  sys.stdout.flush()
+  for proc in psutil.process_iter():
+    if proc.name.find("drive_demo") >= 0:
+      try:
+        proc.terminate()
+      except:
+        print("Could not kill all instances")
+  time.sleep(3)
+  return drive_exists()
 
 @timed_function
 def unzip_file(url):
@@ -182,92 +209,98 @@ def main():
     print ("%s." % (log_file))
     print ("")
     print (" 4: Disk to Drive copy doc files.")
-    print (" 5: Disk to Drive copy html files.")
+    print (" 5: Disk to Drive copy htm files.")
     print (" 6: Disk to Drive copy pdf files.")
     print (" 7: Disk to Drive copy mp4 files.")
     print (" 8: Disk to Drive copy wmv files.")
     print ("")
     print (" 9: Drive to Drive copy doc files.")
-    print ("10: Drive to Drive copy html files.")
+    print ("10: Drive to Drive copy htm files.")
     print ("11: Drive to Drive copy pdf files.")
     print ("12: Drive to Drive copy mp4 files.")
     print ("13: Drive to Drive copy wmv files.")
     print ("")
     print ("14: Drive to Drive move doc files.")
-    print ("15: Drive to Drive move html files.")
+    print ("15: Drive to Drive move htm files.")
     print ("16: Drive to Drive move pdf files.")
     print ("17: Drive to Drive move mp4 files.")
     print ("18: Drive to Drive move wmv files.")
     print ("")
     print ("19: Disk to Disk copy doc files.")
-    print ("20: Disk to Disk copy html files.")
+    print ("20: Disk to Disk copy htm files.")
     print ("21: Disk to Disk copy pdf files.")
     print ("22: Disk to Disk copy mp4 files.")
     print ("23: Disk to Disk copy wmv files.")
     print ("")
     print ("24: Disk to Disk move doc files.")
-    print ("25: Disk to Disk move html files.")
+    print ("25: Disk to Disk move htm files.")
     print ("26: Disk to Disk move pdf files.")
     print ("27: Disk to Disk move mp4 files.")
     print ("28: Disk to Disk move wmv files.")
     print ("")
+    print ("Finish.")
+    print ("")
+    print ("29: Unmount drive.")
+    print ("")
     option = raw_input("Please select an option (m for main QA menu): ").lower()
-    if option == 1:
+    if option == "1":
       download(url)
-    elif option == 2:
+    elif option == "2":
       unzip_file(url)
-    elif option == 3:
+    elif option == "3":
       mount_drive()
-    elif option == 4:
+    elif option == "4":
       copy_files_to_drive(url, "/5200 items/DOC")
-    elif option == 5:
+    elif option == "5":
       copy_files_to_drive(url, "/5200 items/HTML")
-    elif option == 6:
+    elif option == "6":
       copy_files_to_drive(url, "/5200 items/PDF")
-    elif option == 7:
+    elif option == "7":
       copy_files_to_drive(url, "/5200 items/MP4")
-    elif option == 8:
+    elif option == "8":
       copy_files_to_drive(url, "/5200 items/WMV")
-    elif option == 9:
+    elif option == "9":
       copy_files_on_drive(url, "/5200 items/DOC")
-    elif option == 10:
+    elif option == "10":
       copy_files_on_drive(url, "/5200 items/HTML")
-    elif option == 11:
+    elif option == "11":
       copy_files_on_drive(url, "/5200 items/PDF")
-    elif option == 12:
+    elif option == "12":
       copy_files_on_drive(url, "/5200 items/MP4")
-    elif option == 13:
+    elif option == "13":
       copy_files_on_drive(url, "/5200 items/WMV")
-    elif option == 14:
+    elif option == "14":
       move_files_on_drive(url, "/5200 items/DOC")
-    elif option == 15:
+    elif option == "15":
       move_files_on_drive(url, "/5200 items/HTML")
-    elif option == 16:
+    elif option == "16":
       move_files_on_drive(url, "/5200 items/PDF")
-    elif option == 17:
+    elif option == "17":
       move_files_on_drive(url, "/5200 items/MP4")
-    elif option == 18:
+    elif option == "18":
       move_files_on_drive(url, "/5200 items/WMV")
-    elif option == 19:
+    elif option == "19":
       copy_files_on_disk(url, "/5200 items/DOC")
-    elif option == 20:
+    elif option == "20":
       copy_files_on_disk(url, "/5200 items/HTML")
-    elif option == 21:
+    elif option == "21":
       copy_files_on_disk(url, "/5200 items/PDF")
-    elif option == 22:
+    elif option == "22":
       copy_files_on_disk(url, "/5200 items/MP4")
-    elif option == 23:
+    elif option == "23":
       copy_files_on_disk(url, "/5200 items/WMV")
-    elif option == 24:
+    elif option == "24":
       move_files_on_disk(url, "/5200 items/DOC")
-    elif option == 25:
+    elif option == "25":
       move_files_on_disk(url, "/5200 items/HTML")
-    elif option == 26:
+    elif option == "26":
       move_files_on_disk(url, "/5200 items/PDF")
-    elif option == 27:
+    elif option == "27":
       move_files_on_disk(url, "/5200 items/MP4")
-    elif option == 28:
+    elif option == "28":
       move_files_on_disk(url, "/5200 items/WMV")
+    elif option == "29":
+      unmount_drive()
     else:
       print "That's not a valid option."
   utils.ClearScreen()
