@@ -38,7 +38,6 @@ import tempfile
 # MaidSafe imports
 import utils
 
-
 def timed_function(function):
   def wrapper(*arg):
     t1 = time.time()
