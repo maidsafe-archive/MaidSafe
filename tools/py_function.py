@@ -25,41 +25,40 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import os
 import sys
-try:
-    import psutil
-except ImportError:
-    print("please install psutil 'pip install psutil'")
-    print("or 'easy_install psutil'")
-    print("Website : http://code.google.com/p/psutil/")
-    sys.exit(1)
+import time
+import socket
 
-PROC = "lifestuff_"
+# MaidSafe imports
+import client_environment
+import utils
 
-def KillLifeStuff():
-  for proc in psutil.process_iter():
-    if proc.name.find(PROC) >= 0:
-      print("Killing process : " + proc.name)
-      try:
-        if platform.system() == "Windows":
-          proc.terminate()
-        else
-          proc.kill()
-      except:
-        print("Could not kill all instances")
-
-def Exists():
-  for proc in psutil.process_iter():
-    if proc.name.find(PROC) >= 0:
-      print("Failed to kill process : " + proc.name)
-      return -1;
-    print("No lifestuff processes running (now)")
-    return 0
 
 def main():
-  KillLifeStuff()
-  return Exists()
+  try:
+  # Fork a child process so the parent can exit.  This returns control to
+  # the command-line or shell.  It also guarantees that the child will not
+  # be a process group leader, since the child receives a new process ID
+  # and inherits the parent's process group ID.  This step is required
+  # to insure that the next call to os.setsid is successful.
+   pid = os.fork()
+  except OSError, e:
+    raise Exception, "%s [%d]" % (e.strerror, e.errno)
+
+  if (pid == 0):  # The first child.
+   # To become the session leader of this new session and the process group
+   # leader of the new process group, we call os.setsid().  The process is
+   # also guaranteed not to have a controlling terminal.
+   os.setsid()
+   result = client_environment.ParameterBasedStartup(None, None, None, None, None, "smer")
+   print "client_environment.ParameterBasedStartup result:", result
+  else:
+    print "Wait 70 secs for network"
+    time.sleep(70)
+    print "Network should be ready"
+    os._exit(os.EX_OK)
+    # return 0
 
 if __name__ == "__main__":
   sys.exit(main())
-

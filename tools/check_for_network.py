@@ -26,40 +26,38 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import sys
-try:
-    import psutil
-except ImportError:
-    print("please install psutil 'pip install psutil'")
-    print("or 'easy_install psutil'")
-    print("Website : http://code.google.com/p/psutil/")
-    sys.exit(1)
+import socket
 
-PROC = "lifestuff_"
+# MaidSafe imports
+import utils
 
-def KillLifeStuff():
-  for proc in psutil.process_iter():
-    if proc.name.find(PROC) >= 0:
-      print("Killing process : " + proc.name)
-      try:
-        if platform.system() == "Windows":
-          proc.terminate()
-        else
-          proc.kill()
-      except:
-        print("Could not kill all instances")
-
-def Exists():
-  for proc in psutil.process_iter():
-    if proc.name.find(PROC) >= 0:
-      print("Failed to kill process : " + proc.name)
-      return -1;
-    print("No lifestuff processes running (now)")
-    return 0
+def CheckLiveUdpIsOpen():
+  s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+  host = utils.GetIp()
+  try:
+   # s.connect((host, 5483))
+   s.bind((host, 5483))
+   s.shutdown(2)
+   return -1
+  except:
+   return 0
 
 def main():
-  KillLifeStuff()
-  return Exists()
+  count = utils.CountProcs("lifestuff_vault")
+  if count < 10:
+    print "Not enough vaults:", count
+    return -1
+
+  count = utils.CountProcs("lifestuff_mgr")
+  if count != 1:
+    print "Wrong number of lifestuff_mgr running:", count
+    return -1
+
+  if CheckLiveUdpIsOpen() != 0:
+    print "UDP port on LIVE(5483) is available. Probably means no bootstrap node."
+    return -1
+
+  return 0
 
 if __name__ == "__main__":
   sys.exit(main())
-

@@ -44,11 +44,11 @@ def CheckPassedInIp(ip_address):
   try:
     socket.inet_aton(ip_address)
   except socket.error:
-    print("Not a legal IP address")
+    print "Not a legal IP address"
     return -1
 
   if len(ip_address.split('.')) != 4:
-    print("Not a fully formed IP address")
+    print "Not a fully formed IP address"
     return -1
 
   return 0
@@ -64,16 +64,16 @@ def CheckOptions(ip_address, ls_mgr_port, vault_count, config_path):
 
   if ls_mgr_port != None:
     if ls_mgr_port < 1024 and ls_mgr_port > 65535:
-      print("Port outside of 1024-65535 range: ", ls_mgr_port)
+      print "Port outside of 1024-65535 range: ", ls_mgr_port
       return {"result":-1}
 
   if vault_count != None:
     if vault_count > 50 and vault_count < 10:
-      print("Vault count for local network outside of 10-50 range: ", vault_count)
+      print "Vault count for local network outside of 10-50 range: ", vault_count
       return {"result":-1}
 
   if vault_count != None and ip_address != None:
-    print("Conflicting parameters -i and -n: Use only one or none.")
+    print "Conflicting parameters -i and -n: Use only one or none."
     return {"result":-1}
 
   return {"result":0, "start_network":start_network}
@@ -84,7 +84,7 @@ def SetupNetwork(ip_address, vault_count, user_id):
 
     bool_result = vault.SanityCheck(vault_count + 2, user_id)
     if bool_result == False:
-      print("Failed in SanityCheck")
+      print "Failed in SanityCheck"
       return -1
 
     peer = ""
@@ -94,22 +94,22 @@ def SetupNetwork(ip_address, vault_count, user_id):
       peer = utils.GetIp()
     int_result = vault.SaveKeys(peer)
     if int_result != 0:
-      print("Failed in SaveKeys")
+      print "Failed in SaveKeys"
       return -1
-  except Exception as e:
-    print("Failed starting network: ", e)
-    return -1
 
-  return 0
+    return 0
+  except Exception as e:
+    print "Failed starting network: ", e
+    return -1
 
 def CheckExecutablesExist(cwd, full_ls_mgr_exe):
   if os.path.exists(full_ls_mgr_exe) != True:
-    print("lifestuff_mgr not found in ", cwd)
+    print "lifestuff_mgr not found in ", cwd
     return -1
 
   full_ls_vault_exe = os.path.join(cwd, ls_vault_exe)
   if os.path.exists(full_ls_vault_exe) != True:
-    print("lifestuff_vault not found in ", cwd)
+    print "lifestuff_vault not found in ", cwd
     return -1
 
   return 0
@@ -150,15 +150,14 @@ def StartLifeStuffMgr(ip_address, port, config_path, logging):
 
   parameter_list = [full_ls_mgr_exe]
   PopulateLifeStuffMgrParamters(cwd, parameter_list, ip_address, port, config_path, str(logging))
-  print parameter_list
+  # print parameter_list
 
   try:
     subprocess.Popen(parameter_list, shell=False, stdout=None, stderr=None)
+    return 0
   except Exception as e:
-    print("Failed executing lifestuff_mgr: ", e)
+    print "Failed executing lifestuff_mgr: ", e
     return -1
-
-  return 0
 
 def ParameterBasedStartup(ip_address, ls_mgr_port, config_path, logging, vault_count, user_id):
   dictionary_result = CheckOptions(ip_address, ls_mgr_port, vault_count, config_path)
@@ -201,15 +200,19 @@ def main():
   user_id = ""
   if platform.system() != "Windows":
     user_id = options.user_id
+
+  print "Before ParameterBasedStartup"
   result = ParameterBasedStartup(options.ip_address,
                                  options.ls_mgr_port,
                                  options.config_path,
                                  options.logging,
                                  options.vault_count,
                                  user_id);
+  print "After ParameterBasedStartup:", result
   if result != 0:
     return result
 
+  print "About to return: ", result
   return 0
 
 if __name__ == "__main__":
