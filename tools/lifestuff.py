@@ -31,8 +31,49 @@ import sys
 
 kSuccess = 0
 
+def Chat(s1, s2, s3, s4):
+    pass
+
+def FileTransferSuccess(s1, s2, s3, s4, s5):
+    pass
+
+def FileTransferFailure(s1, s2, s3):
+    pass
+
+def NewContact(s1, s2, s3, s4):
+    pass
+
+def ContactConfirmation(s1, s2, s3):
+    pass
+
+def ContactProfilePicture(s1, s2, s3):
+    pass
+
+def ContactPresence(s1, s2, s3, contact_presense):
+    pass
+
+def ContactDeletion(s1, s2, s3, s4):
+    pass
+
+def LifestuffCardUpdate(s1, s2, s3):
+    pass
+
+def NetworkHealth(i):
+    pass
+
+def ImmediateQuitRequired():
+    pass
+
+def UpdateAvailable(s):
+    pass
+
+def OperationProgress(operation, sub_task):
+    pass
+
+call_backs = [Chat, FileTransferSuccess, FileTransferFailure, NewContact, ContactConfirmation, ContactProfilePicture, ContactPresence, ContactDeletion, LifestuffCardUpdate, NetworkHealth, ImmediateQuitRequired, UpdateAvailable, OperationProgress]
+
 def Test():
-  life_stuff = LifeStuff({}, "/tmp/ls_py_test/")
+  life_stuff = LifeStuff(call_backs, "/tmp/ls_py_test/")
   user_name = "testuser" + str(random.randint(10000, 99999))
   result = life_stuff.CreateUser(user_name, "1234", "password")
   if result != kSuccess:
