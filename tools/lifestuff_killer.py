@@ -25,7 +25,9 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import platform
 import sys
+
 try:
     import psutil
 except ImportError:
@@ -43,7 +45,7 @@ def KillLifeStuff():
       try:
         if platform.system() == "Windows":
           proc.terminate()
-        else
+        else:
           proc.kill()
       except:
         print("Could not kill all instances")
