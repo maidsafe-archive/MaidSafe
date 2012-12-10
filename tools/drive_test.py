@@ -34,6 +34,7 @@ import shutil
 import time
 import logging
 import tempfile
+import platform
 try:
   import psutil
 except ImportError:
@@ -69,7 +70,7 @@ def download(url_string):
   file = open(os.path.join(tempfile.gettempdir(), file_name), 'wb')
   meta = url.info()
   file_size = int(meta.getheaders("Content-Length")[0])
-  print "Downloading... %s size: %s B" % (file_name, file_size)
+  print "Downloading... %s, size=%sB" % (file_name, file_size)
 
   downloaded = 0
   block_sz = 65536
@@ -85,31 +86,34 @@ def download(url_string):
 
   file.close()
 
-def mount_drive():
+def mount_drive(executable_name):
   print "Mounting drive..."
   sys.stdout.flush()
-  process = subprocess.Popen(["drive_demo.exe"]).pid
+  process = subprocess.Popen([utils.GetProg(executable_name)]).pid
   time.sleep(3)
 
-def drive_exists():
+def drive_exists(executable_name):
   for proc in psutil.process_iter():
-    if proc.name.find("drive_demo") >= 0:
+    if proc.name.find(executable_name) >= 0:
       print("Failed to kill process : " + proc.name)
       return -1;
     print("No drive processes running.")
     return 0
 
-def unmount_drive():
+def unmount_drive(executable_name):
   print "Unmounting drive..."
   sys.stdout.flush()
   for proc in psutil.process_iter():
-    if proc.name.find("drive_demo") >= 0:
+    if proc.name.find(executable_name) >= 0:
       try:
-        proc.terminate()
+        if platform.system() == "Windows":
+          proc.terminate()
+        else:
+          proc.kill()
       except:
-        print("Could not kill all instances")
+        print("Could not kill all instances.")
   time.sleep(3)
-  return drive_exists()
+  return drive_exists(executable_name)
 
 @timed_function
 def unzip_file(url):
@@ -190,13 +194,14 @@ def move_files_on_disk(url, folder):
 def main():
   option = 'a'
   url = "http://dash.maidsafe.net/test_files.zip"
+  executable_name = "drive_demo"
   log_file = os.path.join(tempfile.gettempdir(), 'drive_timing.log')
   if os.path.exists(log_file):
     os.remove(log_file)
   logging.basicConfig(filename = log_file, level = logging.INFO)
   utils.ClearScreen()
   while(option != 'm'):
-    utils.ClearScreen()
+    #utils.ClearScreen()
     print ("MaidSafe Quality Assurance Suite | Drive Actions")
     print ("================================================")
     print ("Setup.")
@@ -248,7 +253,7 @@ def main():
     elif option == "2":
       unzip_file(url)
     elif option == "3":
-      mount_drive()
+      mount_drive(executable_name)
     elif option == "4":
       copy_files_to_drive(url, "/5200 items/DOC")
     elif option == "5":
@@ -300,10 +305,10 @@ def main():
     elif option == "28":
       move_files_on_disk(url, "/5200 items/WMV")
     elif option == "29":
-      unmount_drive()
+      unmount_drive(executable_name)
     else:
       print "That's not a valid option."
-  utils.ClearScreen()
+  #utils.ClearScreen()
 
 if __name__ == "__main__":
   sys.exit(main())
