@@ -42,7 +42,7 @@ def CheckLiveUdpIsOpen():
   except:
    return 0
 
-def main():
+def RunCheckNetwork():
   count = utils.CountProcs("lifestuff_vault")
   if count < 10:
     print "Not enough vaults:", count
@@ -58,6 +58,9 @@ def main():
     return -1
 
   return 0
+
+def main():
+  return RunCheckNetwork()
 
 if __name__ == "__main__":
   sys.exit(main())

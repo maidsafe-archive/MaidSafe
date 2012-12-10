@@ -25,8 +25,14 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import os
 import subprocess
 import sys
+
+#MaidSafe imports
+import check_for_network
+import lifestuff_killer
+import client_environment
 
 def main():
   # check all parameters for the test
@@ -37,6 +43,18 @@ def main():
   test_exe = sys.argv[1]
   test_filter = "--gtest_filter=" + sys.argv[2]
   catch_exceptions = "--gtest_catch_exceptions=" + sys.argv[3]
+  print "Needs network:", sys.argv[4]
+  print "Parent path: ", os.path.dirname(test_exe)
+  os.chdir(os.path.dirname(test_exe))
+
+  if sys.argv[4] == "1" and check_for_network.RunCheckNetwork() != 0:
+    result = lifestuff_killer.RunKilling()
+    if result != 0:
+      return -1
+    result = client_environment.ParameterBasedStartup(None, None, None, None, None, None)
+    if result != 0:
+      return -1
+
   # print "Percieved command: ", test_exe, test_filter, catch_exceptions
   retcode = subprocess.call([test_exe, test_filter, catch_exceptions])
   return retcode
