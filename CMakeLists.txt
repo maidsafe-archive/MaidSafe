@@ -28,7 +28,7 @@ set(SubModules
       routing
       encrypt
       passport
-      pd
+      vault
       drive
       lifestuff
       lifestuff-gui

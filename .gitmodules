@@ -19,9 +19,6 @@
 [submodule "src/passport"]
 	path = src/passport
 	url = git@github.com:maidsafe/MaidSafe-Passport
-[submodule "src/pd"]
-	path = src/pd
-	url = git@github.com:maidsafe/MaidSafe-PD
 [submodule "src/private"]
 	path = src/private
 	url = git@github.com:maidsafe/MaidSafe-Private
