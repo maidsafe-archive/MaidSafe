@@ -371,7 +371,16 @@ def PrintMenu(procs):
   print "9: Regenerate credentials (current credentials will be lost)"  # TODO - remove
   print "10: Login, logout"  # TODO - remove
 
-
+g_functions_dictionary = {"1":CreateUser,
+                          "2":TestChangePassword,
+                          "3":TestChangePin,
+                          "4":TestChangeKeyword,
+                          "5":TestCreatePublicId}
+g_options_dictionary = {"1":"Create User",
+                        "2":"Change Password",
+                        "3":"Change Pin",
+                        "4":"Change Keyword",
+                        "5":"Create Lifestuff Id"}
 def ClientMenu():
   option = "a"
   utils.ClearScreen()
@@ -382,27 +391,15 @@ def ClientMenu():
     procs = utils.CountProcs("lifestuff_vault")
     PrintMenu(procs)
     option = raw_input("Please select an option (m for main QA menu): ").lower()
-    if option == "1":
-      CreateUser(credentials)
+    if option == "1" or  option == "2" or option == "3" or option == "4" or option == "5":
+      g_options_dictionary[option](credentials)
       raw_input("Press enter to continue.")
-    elif option == "2":
-      TestChangePassword(credentials)
-      raw_input("Press enter to continue.")
-    elif option == "3":
-      TestChangePin(credentials)
-      raw_input("Press enter to continue.")
-    elif option == "4":
-      TestChangeKeyword(credentials)
-      raw_input("Press enter to continue.")
-    elif option == "5":
-      TestCreatePublicId(credentials)
-      raw_input("Press enter to continue.")
-    elif option == "6":
-      TestChangePublicId()
-      raw_input("Press enter to continue.")
-    elif option == "7":
-      TestMultipleInstances(credentials)
-      raw_input("Press enter to continue.")
+#    elif option == "6":
+#      TestChangePublicId()
+#      raw_input("Press enter to continue.")
+#    elif option == "7":
+#      TestMultipleInstances(credentials)
+#      raw_input("Press enter to continue.")
     elif option == "8":  # TODO - remove
       ShowCredentials(credentials)
       raw_input("Press enter to continue.")

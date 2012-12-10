@@ -152,15 +152,14 @@ endfunction()
 
 
 function(build_and_run SubProject RunAll)
-  # if(NOT ${SubProject} STREQUAL "Vault")
-  #   message("Temporarily skipping ${SubProject}")
+  # if(NOT ${SubProject} STREQUAL "Lifestuff")
+  #   message("Temporary skip of All${SubProject}")
   #   return()
   # endif()
   if(NOT ${SubProject}ShouldRun AND NOT RunAll)
     message("Not building or running tests in ${SubProject}")
     return()
   endif()
-
 
   message("Building ${SubProject}")
   if(NOT ${SubProject} STREQUAL "Vault")
@@ -176,9 +175,35 @@ function(build_and_run SubProject RunAll)
   ctest_read_custom_files(${CMAKE_CURRENT_BINARY_DIR})
   ctest_build(RETURN_VALUE BuildResult)
 
+  # teardown network with python script if it's Lifestuff
+  #if(${SubProject} STREQUAL "Lifestuff")
+  #  execute_process(COMMAND ${CTEST_SOURCE_DIRECTORY}/tools/lifestuff_killer.py
+  #                  WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY})
+  #endif()
+
+  # set up network with python script if it's Lifestuff
+  if(${SubProject} STREQUAL "Lifestuff")
+    #message("--------------------------------------------: python ${CTEST_SOURCE_DIRECTORY}/tools/py_function.py")
+    #execute_process(COMMAND python ${CTEST_SOURCE_DIRECTORY}/tools/py_function.py
+    #                WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY})
+    #                #RESULT_VARIABLE SetupResult)
+    #                #OUTPUT_VARIABLE SetupOutput)
+    #message("++++++++++++++++++++++++++++++++++++++++++++: ${SetupOutput}")
+    #if(SetupResult EQUAL 0)
+    #  message(FATAL_ERROR "Error running set up")
+    #endif()
+  endif()
+
   # runs only tests that have a LABELS property matching "${SubProject}"
   message("Testing ${SubProject}")
   ctest_test(INCLUDE_LABEL "${SubProject}")
+
+  # teardown network with python script if it's Lifestuff
+  if(${SubProject} STREQUAL "Lifestuff")
+    execute_process(COMMAND ${CTEST_SOURCE_DIRECTORY}/tools/lifestuff_killer.py
+                    RESULT_VARIABLE TEARDOWN_RESULT
+                    WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY})
+  endif()
 
   fix_xml_files_platform_entries_for_x64()
   write_git_update_details_to_file()
