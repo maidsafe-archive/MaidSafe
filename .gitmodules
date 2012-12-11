@@ -1,9 +1,6 @@
 [submodule "src/common"]
 	path = src/common
 	url = git@github.com:maidsafe/MaidSafe-Common
-[submodule "src/docs"]
-	path = src/docs
-	url = git@github.com:maidsafe/MaidSafe-Documents
 [submodule "src/drive"]
 	path = src/drive
 	url = git@github.com:maidsafe/MaidSafe-Drive
