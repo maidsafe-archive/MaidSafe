@@ -43,6 +43,8 @@ g_base_dir = ""
 g_build_dirname = "build"
 g_build_dir = ""
 g_levels_to_cmakelist = 1
+if platform.system() != "Windows":
+  g_levels_to_cmakelist = 2
 g_name_of_target = "lifestuff_python_api"
 
 def WindowsifyCommand(command):
@@ -154,7 +156,7 @@ def AlertResults(operations_results):
     # TODO: replace with an account to email basecamp or dev or change
     #       to send report to dashboard?
     sender = "test.results@maidsafe.net"
-    recipient = "dan.schmidt@maidsafe.net"
+    recipient = "dev@maidsafe.net"
     subject = "Lifestuff client test results " + str(datetime.datetime.now())
 
     body = "Results of the tests:<br><br>"
