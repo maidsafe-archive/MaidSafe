@@ -28,6 +28,7 @@ set(SubModules
       routing
       encrypt
       passport
+      nfs
       vault
       drive
       lifestuff
