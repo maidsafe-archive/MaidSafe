@@ -45,7 +45,7 @@ stop_churn = 'd'
 
 def SetupBootstraps(num, user_id):
   print("Setting up keys ... ")
-  prog = utils.GetProg('pd_key_helper')
+  prog = utils.GetProg('vault_key_helper')
   print prog;
   proc = subprocess.Popen([prog, '-c', '-b', '-n', str(num + 6)], shell = False, stdout=PIPE, stderr=None)
   print("Started bootstrap with PID " + str(proc.pid))
@@ -80,11 +80,11 @@ def SetupBootstraps(num, user_id):
   return True
 
 def SaveKeys(peer):
-  prog = utils.GetProg('pd_key_helper')
+  prog = utils.GetProg('vault_key_helper')
   return subprocess.call([prog, '-ls', '--peer=' + peer + ':5483'])
 
 def ExtendedTest(num):
-  prog = utils.GetProg('pd_key_helper')
+  prog = utils.GetProg('vault_key_helper')
   SaveKeys(utils.GetIp())
   subprocess.call([prog, '-lx', '--peer=' + utils.GetIp() + ':5483',\
     '--chunk_set_count=' + str(num)], shell = False, stdout=None, stderr=None)
@@ -92,7 +92,7 @@ def ExtendedTest(num):
 
 def SetUpKeys(num):
   print("Setting up keys ... ")
-  prog = utils.GetProg('pd_key_helper')
+  prog = utils.GetProg('vault_key_helper')
   CreateChunkStores(num)
   print prog;
   return subprocess.call([prog, '-c', '-n', str(num) ],\
@@ -211,7 +211,7 @@ def VaultMenu():
       if (option == "2"):
         number = raw_input("Please input number of vaults to run: ")
         ip = raw_input("Please input ip address of bootstrap machine: ")
-        prog = utils.GetProg('pd_key_helper')
+        prog = utils.GetProg('vault_key_helper')
         CreateChunkStores(number)
         subprocess.call([prog, '-c', '-n', str(int(number) + 3)])
         if SaveKeys(ip) == 0:
