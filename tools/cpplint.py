@@ -2058,7 +2058,7 @@ def CheckBraces(filename, clean_lines, linenum, error):
       break
   if (Search(r'{.*}\s*;', line) and
       line.count('{') == line.count('}') and
-      not Search(r'struct|class|enum|\s*=\s*{', line)):
+      not Search(r'struct|class|enum|\s*=\s*{|[.*]', line)):
     error(filename, linenum, 'readability/braces', 4,
           "You don't need a ; after a }")
 
@@ -2245,11 +2245,11 @@ def CheckStyle(filename, clean_lines, linenum, file_extension, class_state,
        GetPreviousNonBlankLine(clean_lines, linenum)[0].find(';') != -1) and
       # It's ok to have many commands in a switch case that fits in 1 line
       not ((cleansed_line.find('case ') != -1 or
-            cleansed_line.find('; };') != -1 or
-            cleansed_line.find(';};') != -1 or
-            cleansed_line.find('});') != -1 or
             cleansed_line.find('default:') != -1) and
-           cleansed_line.find('break;') != -1)):
+           cleansed_line.find('break;') != -1) and
+      not (cleansed_line.find('; };') != -1 and cleansed_line.find(']') != -1) and
+      not (cleansed_line.find('})') != -1 and cleansed_line.find(']') != -1)
+      ):
     error(filename, linenum, 'whitespace/newline', 4,
           'More than one command on the same line')
 
