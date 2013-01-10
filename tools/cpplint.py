@@ -1823,12 +1823,13 @@ def CheckSpacing(filename, clean_lines, linenum, error):
   if match:
     error(filename, linenum, 'whitespace/operators', 3,
           'Missing spaces around %s' % match.group(1))
-  # We allow no-spaces around << and >> when used like this: 10<<20, but
-  # not otherwise (particularly, not when used as streams)
-  match = Search(r'[^0-9\s](<<|>>)[^0-9\s]', line)
-  if match:
-    error(filename, linenum, 'whitespace/operators', 3,
-          'Missing spaces around %s' % match.group(1))
+# Commented the following because >>> is now permissible
+#  # We allow no-spaces around << and >> when used like this: 10<<20, but
+#  # not otherwise (particularly, not when used as streams)
+#  match = Search(r'[^0-9\s](<<|>>)[^0-9\s]', line)
+#  if match:
+#    error(filename, linenum, 'whitespace/operators', 3,
+#          'Missing spaces around %s' % match.group(1))
 
   # There shouldn't be space around unary operators
   match = Search(r'(!\s|~\s|[\s]--[\s;]|[\s]\+\+[\s;])', line)
