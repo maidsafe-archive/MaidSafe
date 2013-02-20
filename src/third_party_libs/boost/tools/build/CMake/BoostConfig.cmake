@@ -207,7 +207,7 @@ endif (CMAKE_EXE_LINKER_FLAGS_RELEASE)
 # Tweak the configuration and build types appropriately.
 if(CMAKE_CONFIGURATION_TYPES)
   # Limit CMAKE_CONFIGURATION_TYPES to Debug and Release
-  set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Semicolon-separate list of supported configuration types" FORCE)
+#  set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Semicolon-separate list of supported configuration types" FORCE)
 else(CMAKE_CONFIGURATION_TYPES)
   # Build in release mode by default
   if (NOT CMAKE_BUILD_TYPE)
