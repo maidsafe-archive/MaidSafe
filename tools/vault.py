@@ -77,8 +77,8 @@ def SetupBootstraps(num, user_id):
     return False
   proc.kill()
   RunNetwork(num, data[1], user_id)
-  # print("Wait 30 secs for network")
-  # time.sleep(30)
+  print("Wait 2 secs for network")
+  time.sleep(2)
   return True
 
 def SaveKeys(peer):
@@ -203,14 +203,20 @@ def PrintVaultMenu():
 def RunBootstrapAndVaultSetup():
   num = 0
   while 12 > num:
-    number = raw_input("Please input number of vaults to run (minimum 12): ")
-    num = int(number)
+    number = raw_input("Please input number of vaults to run (minimum and default 12): ")
+    if number == "":
+      num = 12
+    elif not number.isdigit():
+      continue
+    else:
+      num = int(number)
   RemoveChunkStores(num)
   SanityCheck(num + 2, None)
-  #SaveKeys(utils.GetIp())
+  # SaveKeys(utils.GetIp())
 
 def ValidOption(procs, option):
-  if option == "m":
+  if not option.isdigit():
+
     return False
   if option == "2" and procs != 0:
     return False
@@ -234,7 +240,7 @@ def StartVaultsWithGivenBootstrap():
   if SaveKeys(ip) == 0:
     RunNetwork(int(number) + 3, ip, None)
   else:
-    raw_input("Could not store keys, giving up ! (press any key)")
+    raw_input("Could not store keys, giving up! (press any key)")
 
 def VaultMenu():
   option = 'a'
