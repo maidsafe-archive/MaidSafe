@@ -25,7 +25,7 @@ add_definitions(-DAPPLICATION_VERSION_MAJOR=${APPLICATION_VERSION_MAJOR}
                 -DTARGET_PLATFORM=${TargetPlatform}
                 -DTARGET_ARCHITECTURE=${TargetArchitecture})
 
-if(MAIDSAFE_TESTING)
+if(${MAIDSAFE_TESTING} EQUAL 0)
   add_definitions(-DTESTING)
 endif()
 
