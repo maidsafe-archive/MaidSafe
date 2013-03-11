@@ -96,7 +96,7 @@ if(WIN32)
 
   # Build moc rcc uic via nmake
   message(STATUS "Building Qt")
-  set(QtNmakeCommand "nmake /S /NOLOGO sub-tools-bootstrap sub-moc sub-rcc sub-uic sub-winmain sub-corelib sub-gui")
+  set(QtNmakeCommand "nmake /S /NOLOGO sub-tools-bootstrap sub-moc sub-rcc sub-uic sub-winmain sub-corelib sub-gui sub-sql sub-network sub-xml sub-phonon sub-activeqt sub-script sub-xmlpatterns sub-tools")
   execute_process(COMMAND cmd /c "${QtSetupCommand} && ${QtNmakeCommand}"
                   WORKING_DIRECTORY ${QT_BUILD_DIR}
                   RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
