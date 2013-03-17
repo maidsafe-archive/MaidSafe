@@ -3,9 +3,9 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 project(Protobuf)
 
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
 
-include(../../../cmake_modules/maidsafe_standard_flags.cmake)
+include(../../../cmake_modules/standard_flags.cmake)
 
 if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX- /W0")

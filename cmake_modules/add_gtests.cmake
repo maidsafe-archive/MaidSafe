@@ -1,54 +1,47 @@
-#==============================================================================#
-#                                                                              #
-#  Copyright (c) 2012 MaidSafe.net limited                                     #
-#                                                                              #
-#  The following source code is property of MaidSafe.net limited and is not    #
-#  meant for external use.  The use of this code is governed by the license    #
-#  file licence.txt found in the root directory of this project and also on    #
-#  www.maidsafe.net.                                                           #
-#                                                                              #
-#  You are not free to copy, amend or otherwise use this source code without   #
-#  the explicit written permission of the board of directors of MaidSafe.net.  #
-#                                                                              #
-#==============================================================================#
-#                                                                              #
-#  For a test target named test_stuff, the module is invoked by calling        #
-#  ADD_GTESTS(test_stuff)                                                      #
-#                                                                              #
-#  This module adds individual gtests by parsing the tests files at a very     #
-#  basic level (e.g. there is no support for namespaces).  It also currently   #
-#  doesn't support all gtest options (e.g. the only value parameter generators #
-#  supported are "Range(begin, end[, step])", "Values(v1, v2, ..., vN)" and    #
-#  "Bool()").                                                                  #
-#                                                                              #
-#  There is basic support for TEST(...), TEST_F(...), TEST_P(...),             #
-#  TYPED_TEST(...) and TYPED_TEST_P(...).                                      #
-#                                                                              #
-#  There is also support for the MaidSafe macro style of                       #
-#  TEST_MS_NET(fixture_name, test_type(FUNC or BEH), general_name, test_name)  #
-#                                                                              #
-#  All test names should be of the form "BEH_..." or "FUNC_..." (with an       #
-#  optional "DISABLED_" prepended.  Tests named BEH_ will be treated as        #
-#  behavioural tests and will have a CTest timeout of BEHAVIOURAL_TEST_TIMEOUT #
-#  which can be set before invoking this module, or will default to 60s.       #
-#  Tests named FUNC_ will be treated as functional tests and will have a CTest #
-#  timeout of FUNCTIONAL_TEST_TIMEOUT which can also be set externally, or     #
-#  will default to 600s.                                                       #
-#                                                                              #
-#  The variable MAIDSAFE_TEST_TYPE can be set to control which test types will #
-#  be added; BEH for behavioural, FUNC for functional, and anything else for   #
-#  all types.                                                                  #
-#                                                                              #
-#  If the test executables have postfixes included in their names, the         #
-#  variable TEST_POSTFIX should be set appropriately.                          #
-#                                                                              #
-#  Individual tests to be excluded should have their full test name included   #
-#  in the variable EXCLUDED_TESTS.                                             #
-#                                                                              #
-#  The variable ALL_GTESTS will maintain a list of all tests added via this    #
-#  module.                                                                     #
-#                                                                              #
-#==============================================================================#
+#==================================================================================================#
+#                                                                                                  #
+#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#                                                                                                  #
+#  The following source code is property of MaidSafe.net limited and is not meant for external     #
+#  use.  The use of this code is governed by the license file licence.txt found in the root        #
+#  directory of this project and also on www.maidsafe.net.                                         #
+#                                                                                                  #
+#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
+#  permission of the board of directors of MaidSafe.net.                                           #
+#                                                                                                  #
+#==================================================================================================#
+#                                                                                                  #
+#  For a test target named test_stuff, the module is invoked by calling ADD_GTESTS(test_stuff)     #
+#                                                                                                  #
+#  This module adds individual gtests by parsing the tests files at a very basic level (e.g.       #
+#  there is no support for namespaces).  It also currently doesn't support all gtest options       #
+#  (e.g. the only value parameter generators supported are "Range(begin, end[, step])",            #
+#  "Values(v1, v2, ..., vN)" and "Bool()").                                                        #
+#                                                                                                  #
+#  There is basic support for TEST(...), TEST_F(...), TEST_P(...), TYPED_TEST(...) and             #
+#  TYPED_TEST_P(...).                                      #
+#                                                                                                  #
+#  There is also support for the MaidSafe macro style of                                           #
+#  TEST_MS_NET(fixture_name, test_type(FUNC or BEH), general_name, test_name)                      #
+#                                                                                                  #
+#  All test names should be of the form "BEH_..." or "FUNC_..." (with an optional "DISABLED_"      #
+#  prepended.  Tests named BEH_ will be treated as behavioural tests and will have a CTest         #
+#  timeout of BEHAVIOURAL_TEST_TIMEOUT which can be set before invoking this module, or will       #
+#  default to 60s.  Tests named FUNC_ will be treated as functional tests and will have a CTest    #
+#  timeout of FUNCTIONAL_TEST_TIMEOUT which can also be set externally, or will default to 600s.   #
+#                                                                                                  #
+#  The variable MAIDSAFE_TEST_TYPE can be set to control which test types will be added; BEH for   #
+#  behavioural, FUNC for functional, and anything else for all types.                              #
+#                                                                                                  #
+#  If the test executables have postfixes included in their names, the variable TEST_POSTFIX       #
+#  should be set appropriately.                                                                    #
+#                                                                                                  #
+#  Individual tests to be excluded should have their full test name included in the variable       #
+#  EXCLUDED_TESTS.                                                                                 #
+#                                                                                                  #
+#  The variable ALL_GTESTS will maintain a list of all tests added via this module.                #
+#                                                                                                  #
+#==================================================================================================#
 
 
 # Main function - the only one designed to be called from outside this module.

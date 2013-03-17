@@ -27,7 +27,7 @@
 #set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 #set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
-cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
 project(Boost)
 if(WIN32)
   add_definitions(-D_BIND_TO_CURRENT_MFC_VERSION=1 -D_BIND_TO_CURRENT_CRT_VERSION=1)

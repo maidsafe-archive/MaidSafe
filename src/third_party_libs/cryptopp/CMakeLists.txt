@@ -12,11 +12,11 @@
 #                                                                              #
 #==============================================================================#
 
-cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
 
 project(Cryptopp)
-#include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_flags.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake_modules/maidsafe_standard_setup.cmake)
+#include(${PROJECT_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_setup.cmake)
 
 
 file(GLOB cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
@@ -152,23 +152,3 @@ elseif(MSVC)
                                 COMPILE_FLAGS "/Yc\"pch.h\"")
   target_link_libraries(cryptest odbc32.lib odbccp32.lib Ws2_32.lib)
 endif()
-
-add_test(NAME CryptoppTest.BEH_FULL COMMAND $<TARGET_FILE:cryptest> v WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
-add_test(NAME CryptoppTest.BEH_AES COMMAND $<TARGET_FILE:cryptest> tv aes WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
-add_test(NAME CryptoppTest.BEH_SHA COMMAND $<TARGET_FILE:cryptest> tv sha WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
-add_test(NAME CryptoppTest.BEH_RSA_PSS COMMAND $<TARGET_FILE:cryptest> tv rsa_pss WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
-add_test(NAME CryptoppTest.BEH_RSA_OAEP COMMAND $<TARGET_FILE:cryptest> tv rsa_oaep WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
-add_test(NAME CryptoppTest.BEH_RSA_PKCS1_1_5 COMMAND $<TARGET_FILE:cryptest> tv rsa_pkcs1_1_5 WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
-
-set_property(TEST CryptoppTest.BEH_FULL PROPERTY LABELS Common Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CryptoppTest.BEH_FULL PROPERTY TIMEOUT 60)
-set_property(TEST CryptoppTest.BEH_AES PROPERTY LABELS Common Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CryptoppTest.BEH_AES PROPERTY TIMEOUT 60)
-set_property(TEST CryptoppTest.BEH_SHA PROPERTY LABELS Common Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CryptoppTest.BEH_SHA PROPERTY TIMEOUT 60)
-set_property(TEST CryptoppTest.BEH_RSA_PSS PROPERTY LABELS Common Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CryptoppTest.BEH_RSA_PSS PROPERTY TIMEOUT 60)
-set_property(TEST CryptoppTest.BEH_RSA_OAEP PROPERTY LABELS Common Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CryptoppTest.BEH_RSA_OAEP PROPERTY TIMEOUT 60)
-set_property(TEST CryptoppTest.BEH_RSA_PKCS1_1_5 PROPERTY LABELS Common Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CryptoppTest.BEH_RSA_PKCS1_1_5 PROPERTY TIMEOUT 60)

@@ -17,7 +17,7 @@
 # This must be a macro(), as inside a function string() can only
 # update variables in the function scope.
 macro(fix_default_compiler_settings_)
-  include(${maidsafe_SOURCE_DIR}/cmake_modules/maidsafe_standard_flags.cmake)
+  include(${maidsafe_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
   if (MSVC)
     string(REGEX REPLACE "/GL " "" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
 #     # For MSVC, CMake sets certain flags to defaults we want to override.
@@ -69,7 +69,7 @@ macro(config_compiler_and_linker)
     set(cxx_no_exception_flags "-D_HAS_EXCEPTIONS=0")
     set(cxx_no_rtti_flags "-GR-")
   elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(cxx_base_flags "-w -std=c++11 ${LIBC++} -fPIC")
+    set(cxx_base_flags "-w -std=c++11 ${LibCpp} -fPIC")
     set(cxx_exception_flags "-fexceptions")
     set(cxx_no_exception_flags "-fno-exceptions")
     set(cxx_no_rtti_flags "-fno-rtti -DGTEST_HAS_RTTI=0")

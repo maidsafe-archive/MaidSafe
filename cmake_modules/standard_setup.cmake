@@ -1,20 +1,19 @@
-#==============================================================================#
-#                                                                              #
-#  Copyright (c) 2012 MaidSafe.net limited                                     #
-#                                                                              #
-#  The following source code is property of MaidSafe.net limited and is not    #
-#  meant for external use.  The use of this code is governed by the license    #
-#  file licence.txt found in the root directory of this project and also on    #
-#  www.maidsafe.net.                                                           #
-#                                                                              #
-#  You are not free to copy, amend or otherwise use this source code without   #
-#  the explicit written permission of the board of directors of MaidSafe.net.  #
-#                                                                              #
-#==============================================================================#
-#                                                                              #
-#  Module used to create standard setup of each project                        #
-#                                                                              #
-#==============================================================================#
+#==================================================================================================#
+#                                                                                                  #
+#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#                                                                                                  #
+#  The following source code is property of MaidSafe.net limited and is not meant for external     #
+#  use.  The use of this code is governed by the license file licence.txt found in the root        #
+#  directory of this project and also on www.maidsafe.net.                                         #
+#                                                                                                  #
+#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
+#  permission of the board of directors of MaidSafe.net.                                           #
+#                                                                                                  #
+#==================================================================================================#
+#                                                                                                  #
+#  Module used to create standard setup of each project                                            #
+#                                                                                                  #
+#==================================================================================================#
 
 
 # Get camel case version of project name
@@ -28,13 +27,12 @@ endforeach()
 
 
 string(REGEX REPLACE . "-" UNDERSCORE ${PROJECT_NAME})
-message("${HR}\nConfiguring MaidSafe ${CamelCaseProjectName} project\n--------------------${UNDERSCORE}---------")
+if(NOT PROJECT_NAME STREQUAL Cryptopp)
+  message("${HR}\nConfiguring MaidSafe ${CamelCaseProjectName} project\n--------------------${UNDERSCORE}---------")
+endif()
 
-
-if(MSVC)
-  if(${MSVC_VERSION} LESS 1700)  # i.e for MSVC < Visual Studio 11
-    message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of Visual Studio less than 11.")
-  endif()
+if(MSVC AND ${MSVC_VERSION} LESS 1700)  # i.e for MSVC < Visual Studio 11
+  message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of Visual Studio less than 11.")
 endif()
 
 
@@ -65,7 +63,6 @@ set(CMAKE_DEBUG_POSTFIX -d)
 set(CMAKE_RELWITHDEBINFO_POSTFIX -rwdi)
 set(CMAKE_MINSIZEREL_POSTFIX -msr)
 
-# include_directories(${MaidSafeCommon_INCLUDE_DIR}/maidsafe)
 if(UNIX)
   set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ")
   set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
@@ -101,9 +98,7 @@ add_coverage_exclude(main\\\\.cc)
 add_memcheck_ignore(${CamelCaseProjectName}StyleCheck)
 
 
-###################################################################################################
-# All other libraries search                                                                      #
-###################################################################################################
+# All other libraries search                                                                       #
 if(UNIX)
   set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /usr/lib/i386-linux-gnu/ /usr/lib/x86_64-linux-gnu/ /usr/lib/)
   set(CMAKE_THREAD_PREFER_PTHREAD true)
@@ -137,4 +132,3 @@ include(CTest)
 include(add_gtests)
 
 set(CPACK_STRIP_FILES TRUE)
-
