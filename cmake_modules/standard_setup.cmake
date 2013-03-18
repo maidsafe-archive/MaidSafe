@@ -31,8 +31,10 @@ if(NOT PROJECT_NAME STREQUAL Cryptopp)
   message("${HR}\nConfiguring MaidSafe ${CamelCaseProjectName} project\n--------------------${UNDERSCORE}---------")
 endif()
 
-if(MSVC AND ${MSVC_VERSION} LESS 1700)  # i.e for MSVC < Visual Studio 11
-  message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of Visual Studio less than 11.")
+if(MSVC)
+  if(${MSVC_VERSION} LESS 1700)  # i.e for MSVC < Visual Studio 11
+    message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of Visual Studio less than 11.")
+  endif()
 endif()
 
 
