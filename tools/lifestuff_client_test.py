@@ -27,42 +27,59 @@
 
 import datetime
 import os
+import platform
 import smtplib
 import subprocess
 import sys
+from optparse import OptionParser
 
 # MaidSafe imports
-import client
 import client_environment
 import lifestuff_killer
 
 # Globals
-g_base_dir = "/home/smer/qa"
-g_build_dir = "/home/smer/qa/build"
-g_levels_to_cmakelist = 2
-g_build_type = "Debug"
+g_git_path = ""
+g_base_dir = ""
+g_build_dirname = "build"
+g_build_dir = ""
+g_levels_to_cmakelist = 1
+if platform.system() != "Windows":
+  g_levels_to_cmakelist = 2
 g_name_of_target = "lifestuff_python_api"
+
+def WindowsifyCommand(command):
+  local_command = g_git_path + " -login -c '" + command + "'"
+  print local_command
+  return local_command
 
 def PullNext():
   command = "git checkout next"
+  if platform.system() == "Windows":
+    command = WindowsifyCommand(command)
   return_code = subprocess.call(command.split(), cwd=g_base_dir)
   if return_code != 0:
     print "Failed checking out super project next"
     return -1
 
   command = "git pull"
+  if platform.system() == "Windows":
+    command = WindowsifyCommand(command)
   return_code = subprocess.call(command.split(), cwd=g_base_dir)
   if return_code != 0:
     print "Failed pulling super project next"
     return -1
 
   command = "git submodule foreach ''git checkout next''"
+  if platform.system() == "Windows":
+    command = WindowsifyCommand(command)
   return_code = subprocess.call(command.split(), cwd=g_base_dir)
   if return_code != 0:
     print "Failed checking out submodules' next"
     return -1
 
   command = "git submodule foreach ''git pull''"
+  if platform.system() == "Windows":
+    command = WindowsifyCommand(command)
   return_code = subprocess.call(command.split(), cwd=g_base_dir)
   if return_code != 0:
     print "Failed pulling submodules' next"
@@ -70,21 +87,26 @@ def PullNext():
 
   return 0
 
-def BuildTargets():
-  build_path = os.path.join(g_build_dir, g_build_type)
-
+def BuildTargets(build_type):
   command = "cmake "
   for i in range(g_levels_to_cmakelist):
     command = command + "../"
-  command = command + " -DCMAKE_BUILD_TYPE=" + g_build_type
+  if platform.system() != 'Windows':
+    command = command + " -DCMAKE_BUILD_TYPE=" + build_type
 
-  return_code = subprocess.call(command.split(), cwd=build_path)
+  return_code = subprocess.call(command.split(), cwd=g_build_dir)
   if return_code != 0:
     print "Failed running cmake"
     return -1
 
-  command = "make -j6 " + g_name_of_target
-  return_code = subprocess.call(command.split(), cwd=build_path)
+  command = "cmake --build . --target "
+  if platform.system() == 'Windows':
+    command = command + "src/lifestuff/lifestuff_python_api --config " + build_type
+  else:
+    command = command + "lifestuff_python_api"
+  print "\n\n", command, "\n\n"
+
+  return_code = subprocess.call(command.split(), cwd=g_build_dir)
   if return_code != 0:
     print "Failed compiling", g_name_of_target
     return -1
@@ -99,6 +121,15 @@ def StartEnvironment(ip_address, user_id):
   return 0
 
 def RunAllClientOptions(operations_results):
+  # This import MUST be here to allow the script to copy the new lifestuff_python_api library
+  # to the tools directory on Windows. Otherwise, the module is loaded and it cannot be
+  # overwritten.
+  try:
+    import client
+  except Exception as e:
+    print "Failed to import client:", e
+    return -1
+
   credentials = []
   client.GenerateCredentials(credentials)
 
@@ -124,13 +155,13 @@ def AlertResults(operations_results):
 
     # TODO: replace with an account to email basecamp or dev or change
     #       to send report to dashboard?
-    sender = "dan.schmidt@maidsafe.net"
-    recipient = "dan.schmidt@maidsafe.net"
+    sender = "test.results@maidsafe.net"
+    recipient = "dev@maidsafe.net"
     subject = "Lifestuff client test results " + str(datetime.datetime.now())
 
-    body = "Results of the tests:\n\n"
+    body = "Results of the tests:<br><br>"
     for option in operations_results:
-      body = body + option + ": " + operations_results[option] + "\n"
+      body = body + option + ": " + operations_results[option] + "<br>"
 
     headers = ["From: " + sender,
                "Subject: " + subject,
@@ -144,7 +175,7 @@ def AlertResults(operations_results):
     session.ehlo()
     session.starttls()
     session.ehlo
-    session.login(sender, "password")
+    session.login(sender, "t5e3swt5")
 
     session.sendmail(sender, recipient, headers + "\r\n\r\n" + body)
     session.quit()
@@ -156,12 +187,12 @@ def AlertResults(operations_results):
 def StopEnvironment():
   return lifestuff_killer.main()
 
-def RunTest():
+def RunTest(build_type):
   result = PullNext()
   if result != 0:
     return -1
 
-  result = BuildTargets()
+  result = BuildTargets(build_type)
   if result != 0:
     return -1
 
@@ -173,9 +204,9 @@ def RunTest():
   operations_results = {}
   test_result = RunAllClientOptions(operations_results)
 
-#  result = AlertResults(operations_results)
-#  if result != 0:
-#    print "Failed reporting results:", result
+  result = AlertResults(operations_results)
+  if result != 0:
+    print "Failed reporting results:", result
 #    return -1
 
   result = StopEnvironment()
@@ -183,10 +214,63 @@ def RunTest():
     print "Failed stopping environment:", result
 
   return test_result
+#  return 0
+
+def HandleOptions(options):
+  if options.build_type != "Debug" and options.build_type != "Release":
+    print "Build type options only Debug or Release"
+    return -1
+
+  if not os.path.isdir(options.base_directory):
+    print "Path given as base directory(", options.base_directory, ") is not directory."
+    return -1
+
+
+  if platform.system() == "Windows":
+    if not os.path.isdir(str(options.git_path)) or\
+       not os.path.exists(str(os.path.join(options.git_path, "bin", "sh.exe"))):
+      print "Path given as git directory does not exist or does not contain bin\sh.exe."
+      return -1
+    else:
+      global g_git_path
+      g_git_path = os.path.join(options.git_path, "bin", "sh.exe")
+
+  global g_base_dir, g_build_dir, g_build_dirname
+  g_base_dir = options.base_directory
+  g_build_dir = os.path.join(g_base_dir, g_build_dirname)
+  if platform.system() != "Windows":
+    g_build_dir = os.path.join(g_build_dir, options.build_type)
+
+  if os.path.isdir(g_build_dir):
+    if not os.path.exists(g_build_dir):
+      try:
+        os.makedirs(g_build_dir)
+      except Exception as e:
+        print "Failure creating the build directory:", e
+        return -1
+  else:
+    print "Potential build directory path(", g_build_dir, ") already exixts and is not a directory."
+    return -1
+
+  return 0
 
 def main():
   print "Script to run a lifestuff client suite test on next."
-  return RunTest()
+  parser = OptionParser()
+  parser.add_option("-b", "--base_directory", dest="base_directory", action="store", type="string",
+                    help="path to the base of the super project")
+  parser.add_option("-t", "--build_type", dest="build_type", action="store", type="string",
+                    help="Debug or Release")
+  if platform.system() == "Windows":
+    parser.add_option("-g", "--git_path", dest="git_path", action="store", type="string",
+                      help="Path to the base of the git shell, e.g. C:\Program Files (x86)\Git")
+  (options, args) = parser.parse_args()
+
+  return_code = HandleOptions(options)
+  if return_code != 0:
+    return -1
+
+  return RunTest(options.build_type)
 
 if __name__ == "__main__":
   sys.exit(main())
