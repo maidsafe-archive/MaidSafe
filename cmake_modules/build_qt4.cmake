@@ -79,6 +79,11 @@ if(WIN32)
   set(QtConfigureCommand "${QtConfigureCommand} -ltcg")
   set(QtConfigureCommand "${QtConfigureCommand} -no-qt3support")
   set(QtConfigureCommand "${QtConfigureCommand} -platform win32-msvc2012")
+  set(QtConfigureCommand "${QtConfigureCommand} -qt-zlib")
+  set(QtConfigureCommand "${QtConfigureCommand} -qt-libpng")
+  set(QtConfigureCommand "${QtConfigureCommand} -qt-libmng")
+  set(QtConfigureCommand "${QtConfigureCommand} -qt-libtiff")
+  set(QtConfigureCommand "${QtConfigureCommand} -qt-libjpeg")
   set(QtConfigureCommand "${QtConfigureCommand} -no-webkit")
   set(QtConfigureCommand "${QtConfigureCommand} -no-declarative")
   set(QtConfigureCommand "${QtConfigureCommand} -nomake demos")
@@ -96,7 +101,7 @@ if(WIN32)
 
   # Build moc rcc uic via nmake
   message(STATUS "Building Qt")
-  set(QtNmakeCommand "nmake /S /NOLOGO sub-tools-bootstrap sub-moc sub-rcc sub-uic sub-winmain sub-corelib sub-gui sub-sql sub-network sub-xml sub-phonon sub-activeqt sub-script sub-xmlpatterns sub-tools")
+  set(QtNmakeCommand "nmake /S /NOLOGO sub-tools-bootstrap sub-moc sub-rcc sub-uic sub-winmain sub-corelib sub-gui sub-sql sub-network sub-xml sub-phonon sub-activeqt sub-script sub-opengl sub-xmlpatterns sub-svg sub-plugins sub-tools")
   execute_process(COMMAND cmd /c "${QtSetupCommand} && ${QtNmakeCommand}"
                   WORKING_DIRECTORY ${QT_BUILD_DIR}
                   RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
