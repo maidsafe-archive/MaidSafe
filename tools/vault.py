@@ -164,15 +164,15 @@ signal.signal(signal.SIGINT, SignalHandler)
 
 def Churn(percent_per_minute):
   num_vaults = len(processes)
-  per_second_churn = (60 * 100) / (num_vaults * percent_per_minute)
-  print("Running churn test churn test at a rate of " + str(per_second_churn) + " per second")
+  churn_interval = (60 * 100) / (num_vaults * percent_per_minute)
+  print("Running churn test at a rate of every " + str(churn_interval) + " seconds one node drop and another join")
   print("press Ctrl-C to stop")
   stopped = []
-  for i in range(num_vaults + 1, num_vaults + 5):
+  for i in range(num_vaults + 2, num_vaults + 5):
     stopped.append(i)
   global stop_churn
   while  stop_churn != 'q':
-    time.sleep(per_second_churn)
+    time.sleep(churn_interval)
     if stop_churn != 'q':
       selected_index = random.choice(processes.keys())
       print("node with index : " + str(selected_index) + " is going to stop")
