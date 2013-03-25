@@ -83,12 +83,21 @@ def SetupBootstraps(num, user_id):
 
 def SaveKeys(peer):
   prog = utils.GetProg('vault_key_helper')
-  return subprocess.call([prog, '-ls', '--peer=' + peer + ':5483'])
+  return subprocess.call([prog, '--log_routing Info', '--log_nfs Info', '--log_vault Info' ,'-ls', '--peer=' + peer + ':5483'],
+                         shell = False, stdout = None, stderr = None)
+
 
 def ExtendedTest(num):
   prog = utils.GetProg('vault_key_helper')
   SaveKeys(utils.GetIp())
   subprocess.call([prog, '-lx', '--peer=' + utils.GetIp() + ':5483',
+                  '--chunk_set_count=' + str(num)],
+                  shell = False, stdout = None, stderr = None)
+  raw_input("Press any key to continue")
+
+def TestStore(num):
+  prog = utils.GetProg('vault_key_helper')
+  subprocess.call([prog, '-lt', '--peer=' + utils.GetIp() + ':5483',
                   '--chunk_set_count=' + str(num)],
                   shell = False, stdout = None, stderr = None)
   raw_input("Press any key to continue")
@@ -197,7 +206,8 @@ def PrintVaultMenu():
   else:
     print ("3: Run store test")
     print ("4: Kill all vaults on this machine")
-    print ("5: Random churn on this machine, rate (%% churn per minute) (not yet implemented)")
+    print ("5: Store keys to network")
+    print ("6: Random churn on this machine, rate (%% churn per minute) (not yet implemented)")
   return procs
 
 def RunBootstrapAndVaultSetup():
@@ -260,6 +270,8 @@ def VaultMenu():
     elif (option == "4"):
       lifestuff_killer.KillLifeStuff()
     elif (option == "5"):
+      SaveKeys(utils.GetIp())
+    elif (option == "6"):
       pass
       print "Not yet implemented."
 
