@@ -37,10 +37,11 @@ import re
 import psutil
 import time
 import datetime
+import random
 import shutil
 import lifestuff_killer
 
-processes = []
+processes = {}
 stop_churn = 'd'
 
 
@@ -62,8 +63,9 @@ def SetupBootstraps(num, user_id):
     if line.find('Endpoints') != -1:
       data = re.split(r':', line)
       ep = data[2].split()
-      if SetUpNextNode(data[1]+ ':' + ep[0], 2, user_id) and\
-         SetUpNextNode(data[1]+ ':' + ep[0], 3, user_id):
+      processes[2] = SetUpNextNode(data[1] + ':' + ep[0], 2, user_id)
+      processes[3] = SetUpNextNode(data[1] + ':' + ep[0], 3, user_id)
+      if processes[2] and processes[3]:
         time.sleep(2) # allow node to bootstrap
         break
       else:
@@ -83,12 +85,22 @@ def SetupBootstraps(num, user_id):
 
 def SaveKeys(peer):
   prog = utils.GetProg('vault_key_helper')
-  return subprocess.call([prog, '-ls', '--peer=' + peer + ':5483'])
+  return subprocess.call([prog, '--log_routing Info', '--log_nfs Info', '--log_vault Info',
+                          '-ls', '--peer=' + peer + ':5483'],
+                         shell = False, stdout = None, stderr = None)
+
 
 def ExtendedTest(num):
   prog = utils.GetProg('vault_key_helper')
   SaveKeys(utils.GetIp())
   subprocess.call([prog, '-lx', '--peer=' + utils.GetIp() + ':5483',
+                  '--chunk_set_count=' + str(num)],
+                  shell = False, stdout = None, stderr = None)
+  raw_input("Press any key to continue")
+
+def TestStore(num):
+  prog = utils.GetProg('vault_key_helper')
+  subprocess.call([prog, '-lt', '--peer=' + utils.GetIp() + ':5483',
                   '--chunk_set_count=' + str(num)],
                   shell = False, stdout = None, stderr = None)
   raw_input("Press any key to continue")
@@ -114,25 +126,33 @@ def RemoveChunkStores(num):
     if os.path.exists(directory):
           shutil.rmtree(directory)
 
+def preexec_function():
+    # Ignore the SIGINT signal by setting the handler to the standard
+    # signal handler SIG_IGN.
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+
 def work(number, ip_address, user_id):
   prog = utils.GetProg('lifestuff_vault')
   if user_id == None:
     return subprocess.Popen([prog, '--peer=' + ip_address.lstrip() + ':5483',
+                            '--disable_ctrl_c=true',
                             '--identity_index=' + str(number),
                             '--chunk_path=.cs' + str(number), '--start'],
+                            preexec_fn = preexec_function,
                             shell = False, stdout = None, stderr = None)
   else:
     return subprocess.Popen([prog,
                             '--peer=' + ip_address.lstrip() + ':5483',
+                            '--disable_ctrl_c=true',
                             '--identity_index=' + str(number),
                             '--chunk_path=.cs' + str(number),
-                            '--usr_id=' + user_id,
-                            '--start'],
+                            '--usr_id=' + user_id, '--start'],
+                            preexec_fn = preexec_function,
                             shell = False, stdout = None, stderr = None)
 
 def RunNetwork(number_of_vaults, ip_address, user_id):
   for vault in range(4, number_of_vaults):
-    processes.append(work(vault, ip_address, user_id))
+    processes[vault]= work(vault, ip_address, user_id)
     time.sleep(2)
 
 def SignalHandler(signal, frame):
@@ -144,35 +164,52 @@ signal.signal(signal.SIGINT, SignalHandler)
 
 def Churn(percent_per_minute):
   num_vaults = len(processes)
-  per_second_churn = (num_vaults * (100 / percent_per_minute)) / 60
-  print("Running churn test churn test at a rate of " + str(per_second_churn) + " per second")
+  churn_interval = (60 * 100) / (num_vaults * percent_per_minute)
+  print("Running churn test at a rate of every " + str(churn_interval) + " seconds one node drop and another join")
   print("press Ctrl-C to stop")
   stopped = []
+  for i in range(num_vaults + 2, num_vaults + 5):
+    stopped.append(i)
   global stop_churn
   while  stop_churn != 'q':
-    time.sleep(per_second_churn)
-#    for i in range(per_second_churn)
-#      stopped.append(random.choice(processes))
-#      if len(stopped) > 0:
-#        work(stopped.pop(random.choice(stopped)), GetIp())
+    time.sleep(churn_interval)
+    if stop_churn != 'q':
+      selected_index = random.choice(processes.keys())
+      print("node with index : " + str(selected_index) + " is going to stop")
+      KillProc(selected_index)
+    
+      if len(stopped) > 0:
+        selected_join = stopped.pop(random.randint(0, len(stopped) - 1))
+        print("node with index : " + str(selected_join) + " is going to join")
+        processes[selected_join] = work(selected_join, utils.GetIp(), None)
+
+      stopped.append(selected_index)
   stop_churn = 'g'
+
+def KillProc(selected_index):
+  selected_stop = processes.pop(selected_index)
+  selected_stop.kill()
 
 def SetUpNextNode(endpoint, index, user_id):
   prog = utils.GetProg('lifestuff_vault')
   if user_id == None:
     return subprocess.Popen([prog,
                             '--peer=' + endpoint.lstrip(),
+                            '--disable_ctrl_c=true',
                             '--identity_index=' + str(index),
                             '--chunk_path=.cs' + str(index),
                             '--start'],
+                            preexec_fn = preexec_function,
                             shell = False, stdout = None, stderr = None)
   else:
     return subprocess.Popen([prog,
                             '--peer=' + endpoint.lstrip(),
+                            '--disable_ctrl_c=true',
                             '--identity_index=' + str(index),
                             '--chunk_path=.cs' + str(index),
                             '--usr_id=' + user_id,
                             '--start'],
+                            preexec_fn = preexec_function,
                             shell = False, stdout = None, stderr = None)
 
 def SanityCheck(num, user_id):
@@ -197,7 +234,8 @@ def PrintVaultMenu():
   else:
     print ("3: Run store test")
     print ("4: Kill all vaults on this machine")
-    print ("5: Random churn on this machine, rate (%% churn per minute) (not yet implemented)")
+    print ("5: Store keys to network")
+    print ("6: Random churn on this machine")
   return procs
 
 def RunBootstrapAndVaultSetup():
@@ -259,9 +297,12 @@ def VaultMenu():
       TestStore(number)
     elif (option == "4"):
       lifestuff_killer.KillLifeStuff()
+      processes.clear()
     elif (option == "5"):
-      pass
-      print "Not yet implemented."
+      SaveKeys(utils.GetIp())
+    elif (option == "6"):
+      churn_rate = GetPositiveNumber("Please input rate (%% churn per minute): ")
+      Churn(churn_rate)
 
   utils.ClearScreen()
 

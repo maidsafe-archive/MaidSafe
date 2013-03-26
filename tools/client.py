@@ -392,7 +392,7 @@ def ClientMenu():
     PrintMenu(procs)
     option = raw_input("Please select an option (m for main QA menu): ").lower()
     if option == "1" or  option == "2" or option == "3" or option == "4" or option == "5":
-      g_options_dictionary[option](credentials)
+      g_functions_dictionary[option](credentials)
       raw_input("Press enter to continue.")
 #    elif option == "6":
 #      TestChangePublicId()

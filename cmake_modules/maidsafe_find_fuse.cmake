@@ -1,26 +1,25 @@
-#==============================================================================#
-#                                                                              #
-#  Copyright (c) 2012 MaidSafe.net limited                                     #
-#                                                                              #
-#  The following source code is property of MaidSafe.net limited and is not    #
-#  meant for external use.  The use of this code is governed by the license    #
-#  file licence.txt found in the root directory of this project and also on    #
-#  www.maidsafe.net.                                                           #
-#                                                                              #
-#  You are not free to copy, amend or otherwise use this source code without   #
-#  the explicit written permission of the board of directors of MaidSafe.net.  #
-#                                                                              #
-#==============================================================================#
-#                                                                              #
-#  Module used to locate Filesystem in Userspace (FUSE) lib and header.        #
-#                                                                              #
-#  Settable variables to aid with finding CBFS are:                            #
-#    ADD_FUSE_INCLUDE_DIR                                                      #
-#                                                                              #
-#  Variables set and cached by this module are:                                #
-#    Fuse_INCLUDE_DIR, Fuse_LIBRARY, Fuse_LIBRARY_DIR                          #
-#                                                                              #
-#==============================================================================#
+#==================================================================================================#
+#                                                                                                  #
+#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#                                                                                                  #
+#  The following source code is property of MaidSafe.net limited and is not meant for external     #
+#  use.  The use of this code is governed by the license file licence.txt found in the root        #
+#  directory of this project and also on www.maidsafe.net.                                         #
+#                                                                                                  #
+#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
+#  permission of the board of directors of MaidSafe.net.                                           #
+#                                                                                                  #
+#==================================================================================================#
+#                                                                                                  #
+#  Module used to locate Filesystem in Userspace (FUSE) lib and header.                            #
+#                                                                                                  #
+#  Settable variables to aid with finding CBFS are:                                                #
+#    ADD_FUSE_INCLUDE_DIR                                                                          #
+#                                                                                                  #
+#  Variables set and cached by this module are:                                                    #
+#    Fuse_INCLUDE_DIR, Fuse_LIBRARY, Fuse_LIBRARY_DIR                                              #
+#                                                                                                  #
+#==================================================================================================#
 
 
 unset(Fuse_INCLUDE_DIR CACHE)
