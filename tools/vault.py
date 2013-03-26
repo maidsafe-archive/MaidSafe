@@ -90,17 +90,10 @@ def SaveKeys(peer):
                          shell = False, stdout = None, stderr = None)
 
 
-def ExtendedTest(num):
+def TestStore(num, index):
   prog = utils.GetProg('vault_key_helper')
-  SaveKeys(utils.GetIp())
-  subprocess.call([prog, '-lx', '--peer=' + utils.GetIp() + ':5483',
-                  '--chunk_set_count=' + str(num)],
-                  shell = False, stdout = None, stderr = None)
-  raw_input("Press any key to continue")
-
-def TestStore(num):
-  prog = utils.GetProg('vault_key_helper')
-  subprocess.call([prog, '-lt', '--peer=' + utils.GetIp() + ':5483',
+  subprocess.call([prog, '-lt', '-k', str(index),
+                  '--peer=' + utils.GetIp() + ':5483',
                   '--chunk_set_count=' + str(num)],
                   shell = False, stdout = None, stderr = None)
   raw_input("Press any key to continue")
@@ -294,7 +287,8 @@ def VaultMenu():
       StartVaultsWithGivenBootstrap()
     elif (option == "3"):
       number = GetPositiveNumber("Please input number of chunks in test: ")
-      TestStore(number)
+      index = GetPositiveNumber("Please input the key_index to be used as client: ")
+      TestStore(number, index)
     elif (option == "4"):
       lifestuff_killer.KillLifeStuff()
       processes.clear()
