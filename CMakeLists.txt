@@ -148,13 +148,13 @@ tidy_ctest_custom()
 
 
 # create hooks
-message("Running setup for hooks")
-if(UNIX)
-  execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/hooks/linux/scripts/hooks.py)
-else()
-  execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/hooks/windows/scripts/hooks.exe)
-endif()
-message("${HR}")
+# message("Running setup for hooks")
+# if(UNIX)
+#   execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/hooks/linux/scripts/hooks.py)
+# else()
+#   execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/hooks/windows/scripts/dist/hooks.exe)
+# endif()
+# message("${HR}")
 
 cleanup_temp_dir()
 rename_outdated_built_exes()
