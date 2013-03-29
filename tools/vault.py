@@ -98,6 +98,14 @@ def TestStore(num, index):
                   shell = False, stdout = None, stderr = None)
   raw_input("Press any key to continue")
 
+def TestStoreWithDelete(num, index):
+  prog = utils.GetProg('vault_key_helper')
+  subprocess.call([prog, '-lw', '-k', str(index),
+                  '--peer=' + utils.GetIp() + ':5483',
+                  '--chunk_set_count=' + str(num)],
+                  shell = False, stdout = None, stderr = None)
+  raw_input("Press any key to continue")
+
 def SetUpKeys(num):
   print("Setting up keys ... ")
   prog = utils.GetProg('vault_key_helper')
@@ -225,10 +233,11 @@ def PrintVaultMenu():
   if procs == 0:
     print ("2: Set up vaults only (bootstrap elsewhere)")
   else:
-    print ("3: Run store test")
-    print ("4: Kill all vaults on this machine")
+    print ("3: Run simple test - store then fetch")
+    print ("4: Run simple test with delete")
     print ("5: Store keys to network")
     print ("6: Random churn on this machine")
+    print ("7: Kill all vaults on this machine")
   return procs
 
 def RunBootstrapAndVaultSetup():
@@ -290,13 +299,17 @@ def VaultMenu():
       index = GetPositiveNumber("Please input the key_index to be used as client: ")
       TestStore(number, index)
     elif (option == "4"):
-      lifestuff_killer.KillLifeStuff()
-      processes.clear()
+      number = GetPositiveNumber("Please input number of rounds in test: ")
+      index = GetPositiveNumber("Please input the key_index to be used as client: ")
+      TestStoreWithDelete(number, index)
     elif (option == "5"):
       SaveKeys(utils.GetIp())
     elif (option == "6"):
       churn_rate = GetPositiveNumber("Please input rate (%% churn per minute): ")
       Churn(churn_rate)
+    elif (option == "7"):
+      lifestuff_killer.KillLifeStuff()
+      processes.clear()
 
   utils.ClearScreen()
 
