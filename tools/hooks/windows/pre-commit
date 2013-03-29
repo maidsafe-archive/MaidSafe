@@ -1,6 +1,6 @@
 #!/bin/sh
 
-scripts_dir=../../tools/hooks/windows/scripts
+scripts_dir=../../tools/hooks/windows/scripts/dist
 
 #run style check
 $scripts_dir/run_style_check.exe `pwd`
