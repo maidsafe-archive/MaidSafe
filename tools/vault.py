@@ -89,21 +89,51 @@ def SaveKeys(peer):
                           '-ls', '--peer=' + peer + ':5483'],
                          shell = False, stdout = None, stderr = None)
 
-
-def ExtendedTest(num):
+def StoreChunk(key_index, chunk_index):
   prog = utils.GetProg('vault_key_helper')
-  SaveKeys(utils.GetIp())
-  subprocess.call([prog, '-lx', '--peer=' + utils.GetIp() + ':5483',
+  subprocess.call([prog, '-l1', '-k', str(key_index),
+                  '--peer=' + utils.GetIp() + ':5483',
+                  '--chunk_index=' + str(chunk_index)],
+                  shell = False, stdout = None, stderr = None)
+
+def FetchChunk(key_index, chunk_index):
+  prog = utils.GetProg('vault_key_helper')
+  subprocess.call([prog, '-l2', '-k', str(key_index),
+                  '--peer=' + utils.GetIp() + ':5483',
+                  '--chunk_index=' + str(chunk_index)],
+                  shell = False, stdout = None, stderr = None)
+
+def DeleteChunk(key_index, chunk_index):
+  prog = utils.GetProg('vault_key_helper')
+  subprocess.call([prog, '-l3', '-k', str(key_index),
+                  '--peer=' + utils.GetIp() + ':5483',
+                  '--chunk_index=' + str(chunk_index)],
+                  shell = False, stdout = None, stderr = None)
+
+def TestStore(num, index):
+  prog = utils.GetProg('vault_key_helper')
+  subprocess.call([prog, '-lt', '-k', str(index),
+                  '--peer=' + utils.GetIp() + ':5483',
                   '--chunk_set_count=' + str(num)],
                   shell = False, stdout = None, stderr = None)
   raw_input("Press any key to continue")
 
-def TestStore(num):
+def TestStoreWithDelete(num, index):
   prog = utils.GetProg('vault_key_helper')
-  subprocess.call([prog, '-lt', '--peer=' + utils.GetIp() + ':5483',
+  subprocess.call([prog, '-lw', '-k', str(index),
+                  '--peer=' + utils.GetIp() + ':5483',
                   '--chunk_set_count=' + str(num)],
                   shell = False, stdout = None, stderr = None)
   raw_input("Press any key to continue")
+
+def TestProlonged(key_index, chunk_index):
+  StoreChunk(key_index, chunk_index)
+  time.sleep(10)
+  FetchChunk(key_index, chunk_index)
+  time.sleep(10)
+  DeleteChunk(key_index, chunk_index)
+  time.sleep(10)
+  FetchChunk(key_index, chunk_index)
 
 def SetUpKeys(num):
   print("Setting up keys ... ")
@@ -232,10 +262,12 @@ def PrintVaultMenu():
   if procs == 0:
     print ("2: Set up vaults only (bootstrap elsewhere)")
   else:
-    print ("3: Run store test")
-    print ("4: Kill all vaults on this machine")
-    print ("5: Store keys to network")
-    print ("6: Random churn on this machine")
+    print ("3: Run simple test - store then fetch")
+    print ("4: Run simple test with delete")
+    print ("5: Run prolonged test - store fetch then delete")
+    print ("6: Store keys to network")
+    print ("7: Random churn on this machine")
+    print ("8: Kill all vaults on this machine")
   return procs
 
 def RunBootstrapAndVaultSetup():
@@ -294,15 +326,24 @@ def VaultMenu():
       StartVaultsWithGivenBootstrap()
     elif (option == "3"):
       number = GetPositiveNumber("Please input number of chunks in test: ")
-      TestStore(number)
+      index = GetPositiveNumber("Please input the key_index to be used as client: ")
+      TestStore(number, index)
     elif (option == "4"):
-      lifestuff_killer.KillLifeStuff()
-      processes.clear()
+      number = GetPositiveNumber("Please input number of rounds in test: ")
+      index = GetPositiveNumber("Please input the key_index to be used as client: ")
+      TestStoreWithDelete(number, index)
     elif (option == "5"):
-      SaveKeys(utils.GetIp())
+      key_index = GetPositiveNumber("Please input the key_index to be used as client: ")
+      chunk_index = GetPositiveNumber("Please input the chunk_index to be used as data: ")
+      TestProlonged(key_index, chunk_index)
     elif (option == "6"):
+      SaveKeys(utils.GetIp())
+    elif (option == "7"):
       churn_rate = GetPositiveNumber("Please input rate (%% churn per minute): ")
       Churn(churn_rate)
+    elif (option == "8"):
+      lifestuff_killer.KillLifeStuff()
+      processes.clear()
 
   utils.ClearScreen()
 
