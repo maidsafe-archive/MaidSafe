@@ -30,7 +30,7 @@ endif()
 
 set(QtNeedsConfigured TRUE)
 if(BUILD_QT)
-  message(FATAL_ERROR "Out of source builds are currently disabled. Please use -DBUILD_QT_IN_SOURCE=ON"
+  message(FATAL_ERROR "Out of source builds are currently disabled. Please use -DBUILD_QT_IN_SOURCE=ON")
   # Building to current project's build tree - create new directory for Qt binaries
   set(QT_BUILD_DIR ${PROJECT_BINARY_DIR}/build_qt)
   execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${QT_BUILD_DIR})
@@ -40,7 +40,7 @@ if(BUILD_QT)
   endif()
   message(STATUS "About to build Qt to ${QT_BUILD_DIR}")
   message(STATUS "To build Qt in-source instead, run cmake . -DBUILD_QT_IN_SOURCE=ON")
-endif
+endif()
 
 if(BUILD_QT_IN_SOURCE)
   # Building inside Qt source tree - run "confclean" in case the source has been built to previously
