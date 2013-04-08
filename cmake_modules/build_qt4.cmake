@@ -30,6 +30,7 @@ endif()
 
 set(QtNeedsConfigured TRUE)
 if(BUILD_QT)
+  message(FATAL_ERROR "Out of source builds are currently disabled. Please use -DBUILD_QT_IN_SOURCE=ON"
   # Building to current project's build tree - create new directory for Qt binaries
   set(QT_BUILD_DIR ${PROJECT_BINARY_DIR}/build_qt)
   execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${QT_BUILD_DIR})
@@ -39,7 +40,9 @@ if(BUILD_QT)
   endif()
   message(STATUS "About to build Qt to ${QT_BUILD_DIR}")
   message(STATUS "To build Qt in-source instead, run cmake . -DBUILD_QT_IN_SOURCE=ON")
-elseif(BUILD_QT_IN_SOURCE)
+endif
+
+if(BUILD_QT_IN_SOURCE)
   # Building inside Qt source tree - run "confclean" in case the source has been built to previously
   set(QT_BUILD_DIR ${QT_SRC_DIR})
   message(STATUS "About to build Qt in-source.")
@@ -65,6 +68,10 @@ if(WIN32)
   endif()
   file(WRITE ${QmakeConf} "${QmakeConfContents}")
 
+  # Fix for webkit compilation
+  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/win_qt_files/HashSet.h" "${QT_SRC_DIR}/src/3rdparty/webkit/Source/JavaScriptCore/wtf")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/win_qt_files/WebCore.pro" "${QT_SRC_DIR}/src/3rdparty/webkit/Source/WebCore")
+
   set(QtSetupCommand "set PATH=%PATH%;${QT_BUILD_DIR}\\bin;")
   if(CMAKE_CL_64)
     set(QtSetupCommand "${QtSetupCommand} && set TARGET_CPU=x64")
@@ -75,16 +82,15 @@ if(WIN32)
   set(QtConfigureCommand "${QtConfigureCommand} -opensource")
   set(QtConfigureCommand "${QtConfigureCommand} -confirm-license")
   set(QtConfigureCommand "${QtConfigureCommand} -shared")
-  set(QtConfigureCommand "${QtConfigureCommand} -ltcg")
   set(QtConfigureCommand "${QtConfigureCommand} -no-qt3support")
   set(QtConfigureCommand "${QtConfigureCommand} -platform win32-msvc2012")
+  set(QtConfigureCommand "${QtConfigureCommand} -ltcg")
   set(QtConfigureCommand "${QtConfigureCommand} -qt-zlib")
   set(QtConfigureCommand "${QtConfigureCommand} -qt-libpng")
   set(QtConfigureCommand "${QtConfigureCommand} -qt-libmng")
   set(QtConfigureCommand "${QtConfigureCommand} -qt-libtiff")
   set(QtConfigureCommand "${QtConfigureCommand} -qt-libjpeg")
-  set(QtConfigureCommand "${QtConfigureCommand} -no-webkit")
-  set(QtConfigureCommand "${QtConfigureCommand} -no-declarative")
+  set(QtConfigureCommand "${QtConfigureCommand} -webkit")
   set(QtConfigureCommand "${QtConfigureCommand} -nomake demos")
   set(QtConfigureCommand "${QtConfigureCommand} -nomake examples")
   set(QtConfigureCommand "${QtConfigureCommand} -mp")
@@ -100,7 +106,7 @@ if(WIN32)
 
   # Build moc rcc uic via nmake
   message(STATUS "Building Qt")
-  set(QtNmakeCommand "nmake /S /NOLOGO sub-tools-bootstrap sub-moc sub-rcc sub-uic sub-winmain sub-corelib sub-gui sub-sql sub-network sub-xml sub-phonon sub-activeqt sub-script sub-opengl sub-xmlpatterns sub-svg sub-plugins sub-tools")
+  set(QtNmakeCommand "nmake /S /NOLOGO sub-tools-bootstrap sub-moc sub-rcc sub-uic sub-winmain sub-corelib sub-testlib sub-gui sub-sql sub-network sub-xml sub-phonon sub-activeqt sub-script sub-opengl sub-xmlpatterns sub-svg sub-declarative sub-webkit sub-plugins sub-tools")
   execute_process(COMMAND cmd /c "${QtSetupCommand} && ${QtNmakeCommand}"
                   WORKING_DIRECTORY ${QT_BUILD_DIR}
                   RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
