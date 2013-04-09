@@ -145,10 +145,10 @@ void InitOnce(OnceType* once, void (*initializer)()) {
   PVOID lpContext;
   BOOL  result;
   // Execute the initialization callback function 
-  result = InitOnceExecuteOnce(once,                       // One-time initialization structure
-                               (PINIT_ONCE_FN)initializer, // Pointer to initialization callback function
-                               NULL,                       // Optional parameter to callback function (not used)
-                               &lpContext);                // Receives pointer to event object stored in g_InitOnce
+  result = InitOnceExecuteOnce(once,
+                               (PINIT_ONCE_FN)initializer,
+                               NULL,
+                               &lpContext);
 
   // InitOnceExecuteOnce function succeeded.
   if (!result) {
