@@ -13,7 +13,7 @@
 #                                                                                                  #
 #  Module used to configure and build Qt.                                                          #
 #                                                                                                  #
-#  Module will be invoked only if BUILD_QT or BUILD_QT_IN_SOURCE are set ON.                       #                    
+#  Module will be invoked only if BUILD_QT or BUILD_QT_IN_SOURCE are set ON.                       #
 #                                                                                                  #
 #==================================================================================================#
 
