@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" 
+	  href="../../../../../doc/src/boostbook.css"/>
+    <link rel="stylesheet" type="text/css" href="../style/my.css"/>
+
+    <title>Boost.BloomFilter</title>  
+  </head>
+
+  <body>
+    <div class="header">
+      <img src="../../../../../boost.png" width="277" height="86" 
+	   alt="Boost C++ Libraries"/>
+      <p>
+	<a href="../../../../../index.html">Home</a>
+	<a href="../../../../../libs/libraries.htm">Libraries</a> 
+	<a href="http://www.boost.org/users/people.html">People</a> 
+	<a href="http://www.boost.org/users/faq.html">FAQ</a> 
+	<a href="../../../../../more/index.htm">More</a> 
+      </p>
+    </div>
+
+    <hr/>
+
+    <div class="spirit-nav">
+      <a accesskey="p" href="hash/murmurhash3.html">
+	<img src="../../../../../doc/src/images/prev.png" alt="Prev"/>
+      </a>
+      <a accesskey="u" href="../reference.html">
+	<img src="../../../../../doc/src/images/up.png" alt="Up"/>
+      </a>
+      <a accesskey="h" href="../index.html">
+	<img src="../../../../../doc/src/images/home.png" alt="Home"/>
+      </a>
+      <a accesskey="n" href="functions.html">
+	<img src="../../../../../doc/src/images/next.png" alt="Next"/>
+      </a>
+    </div>
+
+    <h1>Extenders</h1>
+    <div class="listing">
+
+      <code class="c_comment">// returns the value squared</code>
+      <code class="c_keyword">struct</code> <code class="c_type">square</code> {
+        <code class="c_type">size_t</code> <code class="c_func">operator()</code>(<code class="c_keyword">const</code> <code class="c_type">size_t</code>);
+      };
+      
+      <code class="c_comment">// returns the value cubed</code>
+      <code class="c_keyword">struct</code> <code class="c_type">cube</code> {
+        <code class="c_type">size_t</code> <code class="c_func">operator()</code>(<code class="c_keyword">const</code> <code class="c_type">size_t</code>);
+      };
+      
+      <code class="c_comment">// returns the value raised to the fourth power</code>
+      <code class="c_keyword">struct</code> <code class="c_type">fourth</code> {
+        <code class="c_type">size_t</code> <code class="c_func">operator()</code>(<code class="c_keyword">const</code> <code class="c_type">size_t</code>);
+      };
+      
+      <code class="c_comment">// ignores the value, returns zero</code>
+      <code class="c_keyword">struct</code> <code class="c_type">zero</code> {
+        <code class="c_type">size_t</code> <code class="c_func">operator()</code>(<code class="c_keyword">const</code> <code class="c_type">size_t</code>);
+      };
+      
+    </div>
+    <p>
+      Extenders are used with Bloom filters implemented using the
+      two-hashing technique. Extenders allow for extended double hashing
+      schemes to be supported. An object conforming to the extender
+      requirements must:
+    </p>
+    <ul>
+      <li>Must be a callable (overload operator())</li>
+      <li>Return an integral value</li>
+      <li>Take an integral value</li>
+    </ul>
+    <hr/>
+
+    <div class="spirit-nav">
+      <a accesskey="p" href="hash/murmurhash3.html">
+	<img src="../../../../../doc/src/images/prev.png" alt="Prev"/>
+      </a>
+      <a accesskey="u" href="../reference.html">
+	<img src="../../../../../doc/src/images/up.png" alt="Up"/>
+      </a>
+      <a accesskey="h" href="../index.html">
+	<img src="../../../../../doc/src/images/home.png" alt="Home"/>
+      </a>
+      <a accesskey="n" href="functions.html">
+	<img src="../../../../../doc/src/images/next.png" alt="Next"/>
+      </a>
+    </div>
+
+    <div>
+      <p class="copyright">
+	Copyright &#169; 2011 
+	<a href="mailto:cpp.cabrera@gmail.com">Alejandro Cabrera</a>
+      </p>
+      
+      <p class="copyright">
+	Distributed under the Boost Software License, Version 1.0. (See
+	accompanying file 
+	<a href="../../../../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or
+	copy at 
+	<a href="http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+    </div>
+
+  </body>
+</html>

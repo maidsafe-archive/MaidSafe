@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" 
+	  href="../../../../../doc/src/boostbook.css"/>
+    <link rel="stylesheet" type="text/css" href="../style/my.css"/>
+
+    <title>Boost.BloomFilter</title>  
+  </head>
+
+  <body>
+    <div class="header">
+      <img src="../../../../../boost.png" width="277" height="86" 
+	   alt="Boost C++ Libraries"/>
+      <p>
+	<a href="../../../../../index.html">Home</a>
+	<a href="../../../../../libs/libraries.htm">Libraries</a> 
+	<a href="http://www.boost.org/users/people.html">People</a> 
+	<a href="http://www.boost.org/users/faq.html">FAQ</a> 
+	<a href="../../../../../more/index.htm">More</a> 
+      </p>
+    </div>
+
+    <hr/>
+
+    <div class="spirit-nav">
+      <a accesskey="p" href="extenders.html">
+	<img src="../../../../../doc/src/images/prev.png" alt="Prev"/>
+      </a>
+      <a accesskey="u" href="../reference.html">
+	<img src="../../../../../doc/src/images/up.png" alt="Up"/>
+      </a>
+      <a accesskey="h" href="../index.html">
+	<img src="../../../../../doc/src/images/home.png" alt="Home"/>
+      </a>
+      <a accesskey="n" href="../testing.html">
+	<img src="../../../../../doc/src/images/next.png" alt="Next"/>
+      </a>
+    </div>
+
+    <h1>Function Reference</h1>
+
+    <div class="toc">
+      <ul>
+	<li><a href="#default_constructor">Default Constructor</a></li>
+	<li><a href="#capacity_constructor">Capacity Constructor</a></li>
+	<li><a href="#ilist_constructor">Initializer List Constructor</a></li>
+	<li><a href="#range_constructor">Range Constructor</a></li>
+	<li><a href="#bit_capacity">bit_capacity()</a></li>
+	<li><a href="#num_hash_functions">num_hash_functions()</a></li>
+	<li><a href="#num_bins">num_bins()</a></li>
+	<li><a href="#bits_per_bin">bits_per_bin()</a></li>
+	<li><a href="#bins_per_slot">bins_per_slot()</a></li>
+	<li><a href="#mask">mask()</a></li>
+	<li><a href="#false_positive_rate">false_positive_rate()</a></li>
+	<li><a href="#count">count()</a></li>
+	<li><a href="#empty">empty()</a></li>
+	<li><a href="#data">data()</a></li>
+	<li><a href="#insert">Insert</a></li>
+	<li><a href="#range_insert">Range Insert</a></li>
+	<li><a href="#remove">Remove</a></li>
+	<li><a href="#range_remove">Range Remove</a></li>
+	<li><a href="#probably_contains">probably_contains()</a></li>
+	<li><a href="#clear">clear()</a></li>
+	<li><a href="#resize">resize()</a></li>
+	<li><a href="#member_swap">Member Swap</a></li>
+	<li><a href="#union_assign">Operator: Union Assign</a></li>
+	<li><a href="#intersect_assign">Operator: Intersect Assign</a></li>
+	<li><a href="#op_equality">Operator: Equality</a></li>
+	<li><a href="#op_inequality">Operator: Inequality</a></li>
+	<li><a href="#union">Operator: Union</a></li>
+	<li><a href="#intersect">Operator: Intersect</a></li>
+	<li><a href="#global_swap">Global Swap</a></li>
+      </ul>
+    </div>
+
+    <br/>
+
+    <p>
+      When describing complexity, the variables m, n, and k will be used as follows:
+    </p>
+    <ul>
+      <li>m - the number of bits (basic) or bins (counting) in the Bloom filter.</li>
+      <li>n - the number of elements to be inserted/removed for a range operation.</li>
+      <li>k - the number of hash functions a Bloom filter executes.</li>
+    </ul>
+    
+    <a name="default_constructor"></a>
+    <div class="func_ref">
+      <div class="ref_listing">
+        <code class="c_func">*_bloom_filter</code>();
+      </div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Constructs a Bloom filter object with all bits set to 0.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(m)</span>.</dd>
+      </dl>
+    </div>
+
+    <a name="capacity_constructor"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_func">*dynamic*_bloom_filter</code>(<code class="c_keyword">const</code> <code class="c_type">size_t</code> <code class="c_id">capacity</code>);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Constructs a Bloom filter with all bits set to 0 and bit_capacity set to capacity.</dd>
+	<dt>Appearing In</dt>
+	<dd>Dynamic Bloom filter classes.</dd>
+	<dt>Complexity</dt>
+	<dd>Depends on the underlying storage used - 
+	expect <span class="complexity">O(m)</span>.</dd>
+      </dl>
+    </div>
+
+    <a name="range_constructor"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_func">*_bloom_filter</code>(<code class="c_keyword">const</code> <code class="c_type">InputIterator</code> <code class="c_id">start</code>, <code class="c_keyword">const</code> <code class="c_type">InputIterator</code> <code class="c_id">end</code>);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Constructs a Bloom filter by inserting all the elements in the 
+	range (start, end). The number of bits/bins allocated for this Bloom filter
+	will be 4 times the size of the range.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(n)</span>, such that n=distance(start, end).</dd>
+      </dl>
+    </div>
+
+    <a name="ilist_constructor"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_func">*_bloom_filter</code>(<code class="c_keyword">const</code> <code class="c_namespace">std::initializer</code>&lt;<code class="c_type">T</code>&gt;&amp;);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Constructs a Bloom filter by inserting all elements in the 
+	initializer list. Not available for dynamic Bloom filters.</dd>
+	<dt>Warning</dt>
+	<dd>Only available in C++11-supporting compilers.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(n)</span>, such that n=size(init_list).</dd>
+      </dl>
+    </div>
+
+    <a name="num_bins"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">size_t</code> <code class="c_func">num_bins</code>() <code class="c_keyword">const</code>;</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Returns the number of bins allocated for this Bloom filter.</dd>
+	<dt>Returns</dt>
+	<dd>Value of template parameter NumBins.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(1)</span>.</dd>
+      </dl>
+    </div>
+
+    <a name="bits_per_bin"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">size_t</code> <code class="c_func">bits_per_bin</code>() <code class="c_keyword">const</code>;</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Returns the number of bits used per bin.</dd>
+	<dt>Returns</dt>
+	<dd>Value of template parameter BitsPerBin.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(1)</span>.</dd>
+      </dl>
+    </div>
+    
+    <a name="bins_per_slot"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">size_t</code> <code class="c_func">bins_per_slot</code>() <code class="c_keyword">const</code>;</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Returns the number of bins that fit in a single slot of the 
+	data structure's internal storage.</dd>
+	<dt>Returns</dt>
+	<dd><code>sizeof(Block) * 8 / BitsPerBin</code></dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(1)</span>.</dd>
+      </dl>
+    </div>
+    
+    <a name="mask"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">size_t</code> <code class="c_func">mask</code>() <code class="c_keyword">const</code>;</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Returns the mask used internally to extract a bin from a slot.</dd>
+	<dt>Returns</dt>
+	<dd><code>static_cast&lt;Block&gt;(0 - 1) &gt;&gt; (sizeof(Block)*8 - BitsPerBin)</code></dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(1)</span>.</dd>
+      </dl>
+    </div>
+
+    <a name="bit_capacity"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">size_t</code> <code class="c_func">bit_capacity</code>() <code class="c_keyword">const</code>;</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Returns the number of bits used internally by the 
+	Bloom filter. For stack-allocated Bloom filters,
+	this will return a template parameter (static constexpr). 
+	For heap allocated Bloom filters, this will return a value
+	determined by the underlying storage structure.
+	For basic Bloom filters, the bit capacity is determined
+	by the Size parameter. For counting Bloom filters,
+	the the bit capacity is determined by the number
+	of bins multiplied by the bits per bin.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(1)</span>.</dd>
+      </dl>
+    </div>
+
+    <a name="num_hash_functions"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">size_t</code><code class="c_func"> num_hash_functions</code>()<code class="c_keyword"> const</code>;</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Returns the number of hash functions used by 
+	the Bloom filter. For two-hash Bloom filters, this
+	returns the template parameter HashValues. For the
+	others, it returns the size of the mpl::vector 
+	HashFunctions.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(1)</span>.</dd>
+      </dl>
+    </div>
+
+    <a name="false_positive_rate"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">double </code><code class="c_func">false_positive_rate</code>() <code class="c_keyword">const</code>;</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Returns the current false positive rate based upon the number of hash functions used (k), 
+	the number of bits available (m), and the number of bits set (n).</dd>
+	<dt>Returns</dt>
+	<dd>A double precision value calculated as (1 - e^(k*n/m))^k.</dd>
+	<dt>Complexity</dt>
+	<dd>Determined by the <a href="#count">count</a>() operation.</dd>
+      </dl>
+    </div>
+
+    <a name="empty"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">bool</code> <code class="c_func">empty</code>() <code class="c_keyword">const</code>;</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Returns true if no elements have been inserted into the Bloom filter.</dd>
+	<dt>Returns</dt>
+	<dd><a href="#count">count</a>() == 0</dd>
+	<dt>Complexity</dt>
+	<dd>Dependent on the implementation of <a href="#count">count</a>().</dd>
+      </dl>
+    </div>
+
+    <a name="count"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">size_t</code> <code class="c_func">count</code>() <code class="c_keyword">const</code>;</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Returns the number of elements inserted into the Bloom filter.
+	For basic Bloom filters, this is the number of bits set. For 
+	counting Bloom filters, this is the number of bins with at least
+	one bit set.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(m)</span></dd>
+      </dl>
+    </div>
+
+    <a name="data"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_keyword">const</code> <code class="c_type">bitset_type</code>&amp; <code class="c_func">data</code>() <code class="c_keyword">const</code>;</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Grants access to Bloom filter storage.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(1)</span></dd>
+      </dl>
+    </div>
+
+    <a name="insert"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">void</code> <code class="c_func">insert</code>(<code class="c_keyword">const</code> <code class="c_type">T&amp;</code>);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Inserts an element into the Bloom filter.</dd>
+	<dt>Post-condition (basic Bloom filters)</dt>
+	<dd>At least 1 bit and at most k
+	bits of the Bloom filter will have been set.</dd>
+	<dt>Post-condition (counting Bloom filters)</dt>
+	<dd>At least 1 bin and at most k bins
+	will have been incremented.</dd>
+	<dt>Throws (counting Bloom filters)</dt>
+	<dd>Will throw bin_overflow exception if an insertion makes the value of 
+	a bin reach 0.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(k)</span></dd>
+      </dl>
+    </div>
+
+    <a name="range_insert"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">void</code> <code class="c_func">insert</code>(<code class="c_keyword">const</code> <code class="c_type">InputIterator</code> <code class="c_id">start</code>, <code class="c_keyword">const</code> <code class="c_type">InputIterator</code> <code class="c_id">end</code>);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Inserts all elements in range (start, end).</dd>
+	<dt>Post-condition (basic Bloom filters)</dt>
+	<dd>At least n bits and at most n * k
+	bits of the Bloom filter will have been set.</dd>
+	<dt>Post-condition (counting Bloom filters)</dt>
+	<dd>At least n bins and at most n * k bins
+	will have been incremented.</dd>
+	<dt>Throws (counting Bloom filters)</dt>
+	<dd>Will throw bin_overflow exception if an insertion makes the value of 
+	a bin 0.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(n*k)</span></dd>
+      </dl>
+    </div>
+
+    <a name="remove"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">void</code> <code class="c_func">remove</code>(<code class="c_keyword">const</code> <code class="c_type">T&amp;</code>);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Removes an element from the Bloom filter.</dd>
+	<dt>Post-condition (basic Bloom filters)</dt>
+	<dd>At least 1 bit and at most k
+	bits of the Bloom filter will have been unset.</dd>
+	<dt>Post-condition (counting Bloom filters)</dt>
+	<dd>At least 1 bin and at most k bins
+	will have been decremented.</dd>
+	<dt>Throws</dt>
+	<dd>Will throw bin_underflow exception if a removal makes the value of 
+	a bin less than 0.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(k)</span>.</dd>
+      </dl>
+    </div>
+
+    <a name="range_remove"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">void</code> <code class="c_func">remove</code>(<code class="c_keyword">const</code> <code class="c_type">InputIterator</code> <code class="c_id">start</code>, <code class="c_keyword">const</code> <code class="c_type">InputIterator</code> <code class="c_id">end</code>);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Removes all elements in range (start, end).</dd>
+	<dt>Post-condition (basic Bloom filters)</dt>
+	<dd>At least n bits and at most n * k
+	bits of the Bloom filter will have been unset.</dd>
+	<dt>Post-condition (counting Bloom filters)</dt>
+	<dd>At least n bins and at most n * k bins
+	will have been decremented.</dd>
+	<dt>Throws</dt>
+	<dd>May throw bin_underflow exception if a removal makes the value of 
+	a bin less than 0.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(n*k)</span>.</dd>
+      </dl>
+    </div>
+
+    <a name="probably_contains"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">bool</code> <code class="c_func">probably_contains</code>(<code class="c_keyword">const</code> <code class="c_type">T&amp;</code>) <code class="c_keyword">const</code>;</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Queries an element in the Bloom filter, checking each hash function value against the set bits.</dd>
+	<dt>Returns</dt>
+	<dd>True if all hash functions agree with the bitset; false otherwise.</dd>
+	<dt>Warning</dt>
+	<dd>It may return a false positive if there are hash collisions - this 
+	means that depending on the Size of the Bloom filter and the hash 
+	functions used, there is a probability that the Bloom filter will 
+	return true even though the element was never inserted.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(k)</span>.</dd>
+      </dl>
+    </div>
+
+    <a name="clear"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">void</code> <code class="c_func">clear</code>();</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Sets all bits in the Bloom filter to 0, effectively canceling 
+	all insertions.</dd>
+	<dt>Post-condition</dt>
+	<dd>this-><a href="#count">count</a>() == 0</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(m)</span></dd>
+      </dl>
+    </div>
+
+    <a name="resize"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">void</code> <code class="c_func">resize</code>();</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Available only for heap-allocated Bloom filters.
+	Resizes the data structure, changing either the number of
+	bits or the number of bins.</dd>
+	<dt>Warning</dt>
+	<dd>A clear must be performed in the process. 
+	All insertions will be lost.</dd>
+	<dt>Post-condition</dt>
+	<dd>this-><a href="#count">count</a>() == 0</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(m)</span></dd>
+      </dl>
+    </div>
+
+    <a name="member_swap"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">void</code> <code class="c_func">swap</code>(<code class="c_type">basic_bloom_filter</code>&amp;);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Swaps the state of this Bloom filter with the argument Bloom filter.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(1)</span></dd>
+      </dl>
+    </div>
+
+    <a name="union_assign"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">*_bloom_filter&amp;</code> <code class="c_func">operator|=</code>(<code class="c_keyword">const</code> <code class="c_type">*_bloom_filter&amp;</code>);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Performs a union as follows: this = union(this, other).</dd>
+	<dt>Pre-condition (dynamic Bloom filters)</dt>
+	<dd>The bit capacity of the two Bloom filters must match.</dd>
+	<dt>Post-condition</dt>
+	<dd>The number of bits set in <code class="c_keyword">this</code> 
+	will be greater than or equal to the number of bits set before the operation.</dd>
+	<dt>Throws (dynamic Bloom filters)</dt>
+	<dd>incompatible_size exception if the argument Bloom filters 
+	have a different bit_capacity or num_bins.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(m)</span></dd>
+      </dl>
+    </div>
+
+    <a name="intersect_assign"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">*_bloom_filter&amp;</code> <code class="c_func">operator&amp;=</code>(<code class="c_keyword">const</code> <code class="c_type">*_bloom_filter&amp;</code>);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Performs an intersection as follows: this = intersect(this, other).</dd>
+	<dt>Pre-condition (dynamic Bloom filters)</dt>
+	<dd>The bit capacity of the two Bloom filters must match.</dd>
+	<dt>Post-condition</dt>
+	<dd>The number of bits set in <code class="c_keyword">this</code> 
+	will be less than or equal to the number of bits set before the operation.</dd>
+	<dt>Throws (dynamic Bloom filters)</dt>
+	<dd>incompatible_size exception if the argument Bloom filters 
+	have a different bit_capacity or num_bins.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(m)</span></dd>
+      </dl>
+    </div>
+
+    <a name="union"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">*_bloom_filter</code> <code class="c_func">operator|</code>(<code class="c_keyword">const</code> <code class="c_type">*_bloom_filter&amp;</code>, <code class="c_keyword">const</code> <code class="c_type">*_bloom_filter&amp;</code>);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Performs a union as follows: result = union(lhs, rhs).</dd>
+	<dt>Pre-condition (dynamic Bloom filters)</dt>
+	<dd>The bit capacity of the two Bloom filters must match.</dd>
+	<dt>Post-condition</dt>
+	<dd>The number of bits set in <code class="c_keyword">this</code> 
+	will be greater than or equal to the number of bits set before the operation.</dd>
+	<dt>Throws (dynamic Bloom filters)</dt>
+	<dd>incompatible_size exception if the argument Bloom filters 
+	have a different bit_capacity or num_bins.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(m)</span></dd>
+      </dl>
+    </div>
+
+    <a name="intersect"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">*_bloom_filter&amp;</code> <code class="c_func">operator&amp;</code>(<code class="c_keyword">const</code> <code class="c_type">*_bloom_filter&amp;</code>, <code class="c_keyword">const</code> <code class="c_type">*_bloom_filter&amp;</code>);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Performs an intersection as follows: result = intersect(lhs, rhs).</dd>
+	<dt>Pre-condition (dynamic Bloom filters)</dt>
+	<dd>The bit capacity of the two Bloom filters must match.</dd>
+	<dt>Post-condition</dt>
+	<dd>The number of bits set in <code class="c_keyword">this</code> 
+	will be less than or equal to the number of bits set before the operation.</dd>
+	<dt>Throws (dynamic Bloom filters)</dt>
+	<dd>incompatible_size exception if the argument Bloom filters 
+	have a different bit_capacity or num_bins.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(m)</span></dd>
+      </dl>
+    </div>
+
+    <a name="op_equality"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">bool</code> <code class="c_func">operator==</code>(<code class="c_keyword">const</code> <code class="c_type">basic_bloom_filter&amp;</code> <code class="c_id">lhs</code>, <code class="c_keyword">const</code> <code class="c_type">basic_bloom_filter&amp;</code> <code class="c_id">rhs</code>);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Compares the bits of the argument Bloom filters for equality.</dd>
+	<dt>Returns</dt>
+	<dd>True if the bits match, false otherwise.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(m)</span></dd>
+      </dl>
+    </div>
+
+    <a name="op_inequality"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">bool</code> <code class="c_func">operator!=</code>(<code class="c_keyword">const</code> <code class="c_type">basic_bloom_filter&amp;</code> <code class="c_id">lhs</code>, <code class="c_keyword">const</code> <code class="c_type">basic_bloom_filter&amp;</code> <code class="c_id">rhs</code>);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Compares the bits of the argument Bloom filters for equality.</dd>
+	<dt>Returns</dt>
+	<dd>True if the bits don't match, false otherwise.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(m)</span></dd>
+      </dl>
+    </div>
+
+    <a name="global_swap"></a>
+    <div class="func_ref">
+      <div class="ref_listing"><code class="c_type">void</code> <code class="c_func">swap</code>(<code class="c_type">basic_bloom_filter</code>&amp;, <code class="c_type">basic_bloom_filter</code>&amp;);</div>
+      <dl>
+	<dt>Description</dt>
+	<dd>Swaps the state between the argument Bloom filters.</dd>
+	<dt>Complexity</dt>
+	<dd><span class="complexity">O(1)</span>.</dd>
+      </dl>
+    </div>
+
+    <div class="spirit-nav">
+      <a accesskey="p" href="extenders.html">
+	<img src="../../../../../doc/src/images/prev.png" alt="Prev"/>
+      </a>
+      <a accesskey="u" href="../reference.html">
+	<img src="../../../../../doc/src/images/up.png" alt="Up"/>
+      </a>
+      <a accesskey="h" href="../index.html">
+	<img src="../../../../../doc/src/images/home.png" alt="Home"/>
+      </a>
+      <a accesskey="n" href="../testing.html">
+	<img src="../../../../../doc/src/images/next.png" alt="Next"/>
+      </a>
+    </div>
+
+    <div>
+      <p class="copyright">
+	Copyright &#169; 2011 
+	<a href="mailto:cpp.cabrera@gmail.com">Alejandro Cabrera</a>
+      </p>
+      
+      <p class="copyright">
+	Distributed under the Boost Software License, Version 1.0. (See
+	accompanying file 
+	<a href="../../../../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or
+	copy at 
+	<a href="http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+    </div>
+
+  </body>
+</html>

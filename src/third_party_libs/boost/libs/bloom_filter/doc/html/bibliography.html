@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" 
+	  href="../../../../doc/src/boostbook.css"/>
+    <link rel="stylesheet" type="text/css" href="style/my.css"/>
+
+    <title>Boost.BloomFilter</title>  
+  </head>
+
+  <body>
+    <div class="header">
+      <img src="../../../../boost.png" width="277" height="86" 
+	   alt="Boost C++ Libraries"/>
+      <p>
+	<a href="../../../../index.html">Home</a>
+	<a href="../../../../libs/libraries.htm">Libraries</a> 
+	<a href="http://www.boost.org/users/people.html">People</a> 
+	<a href="http://www.boost.org/users/faq.html">FAQ</a> 
+	<a href="../../../../more/index.htm">More</a> 
+      </p>
+    </div>
+
+    <hr/>
+    <div class="spirit-nav">
+      <a accesskey="p" href="testing.html">
+	<img src="../../../../doc/src/images/prev.png" alt="Prev"/>
+      </a>
+      <a accesskey="h" href="index.html">
+	<img src="../../../../doc/src/images/home.png" alt="Home"/>
+      </a>
+      <a accesskey="n" href="history.html">
+	<img src="../../../../doc/src/images/next.png" alt="Next"/>
+      </a>
+    </div>
+
+    <h2 class="title">Bibliography</h2>
+
+    <h3>General Sources</h3>
+
+    <ol>
+      <li>
+	Wikipedia.com. (2011, June). <em>Bloom Filter</em>. 
+	Retrieved June 8, 2011, from 
+	<a href="http://en.wikipedia.org/wiki/Bloom_filter">
+	http://en.wikipedia.org/wiki/Bloom_filter</a>
+      </li>
+      <li>
+	www.strchr.com. (2010, November). 
+	<em>Hash Functions: An Empirical Comparison.</em>
+	Retrieved June 8, 2011 from
+	<a href="http://www.strchr.com/hash_functions">
+	http://www.strchr.com/hash_functions</a>
+      </li>
+      <li>
+	[Geelnard 2006] Marcus, G.. 
+	<em>Basic Compression Library: Manual</em>. Chp. 4, pp. 12-15.
+	<a href="http://bcl.comli.eu/index.php?media=manual">
+	http://bcl.comli.eu/index.php?media=manual</a>
+      </li>
+      <li>
+	[P. Bose et al., 2008]
+	<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.147.9455&amp;rep=rep1&amp;type=pdf">
+	<em>On the False-Positive Rate of Bloom Filters</em></a>.
+	In <em>Information Processing Letters</em> 2008.
+	Vol. 108, issue 4, pp. 210-213.
+      </li>
+      <li>
+	[D. Guo et al., 2010]
+	<a href="http://repository.ust.hk/dspace/bitstream/1783.1/6538/1/FalseNegative.pdf">
+	<em>False Negative Problem of Counting Bloom Filters</em></a>.
+	In <em>IEEE Transactions on Knowledge and Data 
+	Engineering</em> 2010. vol. 22, issue 5, pp. 651-664.
+      </li>
+    </ol>
+
+    <h3>Bloom Filter Variants</h3>
+
+    <div class="citations">
+      <ol>
+	<li>
+	  [Kirsch et al., 2008] 
+	  A. Kirsch, M. Mitzenmacher. 
+	  <a href="http://www.eecs.harvard.edu/~kirsch/pubs/bbbf/esa06.pdf">
+	    <em>Less Hashing, Same Performance: Building a Better Bloom Filter</em>.
+	  </a>
+	  In <em>Random Structures and Algorithms</em>, pages 187-219.
+	</li>
+	<li>
+	  [Pagh et al., 2005]
+	  <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.88.4131&amp;rep=rep1&amp;type=pdf">
+	  <em>An Optimal Bloom Filter Replacement</em></a>.
+	  In <em>Symposium on Discrete Algorithms</em>, 2005.
+	</li>
+	<li>
+	  [M. Mitzenmacher, 2002]
+	  <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.119.6895&amp;rep=rep1&amp;type=pdf">
+	  <em>Compressed Bloom Filters</em></a>.
+	  In <em>IEEE/ACM Transactions on Networking</em>, 
+	  vol. 10, issue 5, 2002.
+	</li>
+	<li>
+	  [F. Bonomi et al., 2006]
+	  <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.91.6328&amp;rep=rep1&amp;type=pdf">
+	  <em>An Improved Construction for Counting Bloom Filters</em></a>.
+	  In <em>Lecture Notes in Computer Science</em>, vol. 4168, 
+	  pp. 684-695.
+	</li>
+	<li>
+	  [J. Bruck et al., 2006]
+	  <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.152.8571&amp;rep=rep1&amp;type=pdf">
+	    <em>Weighted Bloom Filter</em></a>.
+	    In <em>IEEE International Symposium on Information Theory</em>, 
+	    pp. 2304-2308.
+	</li>
+	<li>
+	  [P. S. Almeida et al., 2006]
+	  <a href="http://gsd.di.uminho.pt/members/cbm/ps/dbloom.pdf">
+	  <em>Scalable Bloom Filters</em></a>.
+	  In <em>Information Processing Letters</em>, 
+	  vol. 101, issue 6, pp. 255-261.
+	</li>
+	<li>
+	  [S. Cohen et al., 2003]
+	  <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.84.5769&amp;rep=rep1&amp;type=pdf">
+	  <em>Spectral Bloom Filters</em></a>.
+	  In <em>SIGMOD</em> 2003. 
+	</li>
+	<li>
+	  [B. Chazelle et al., 2004]
+	  <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.86.4154&amp;rep=rep1&amp;type=pdf">
+	  <em>The Bloomier Filter: an Efficient Data Structure for 
+	  Static Support Lookup Tables</em></a>.
+	  In <em>Symposium on Discrete Algorithms</em> 2004. 
+	</li>
+      <li>
+	[C. E. Rothenberg et al., 2010]
+	<a href="http://arxiv.org/pdf/1005.0352">
+	<em>The Deletable Bloom Filter: a New Member of the Bloom Filter Family</em></a>.
+	In <em>IEEE Communications Letters</em> 2010.
+	vol. 14, issue 6, pp. 557-559.
+      </li>
+      <li>
+	[M. Ahmadi et al., 2008]
+	<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.148.9754&amp;rep=rep1&amp;type=pdf">
+	<em>A Memory-Optimized Bloom Filter Using an 
+	Additional Hashing Function</em></a>.
+	In <em>Global Telecommunications Conference</em> 2008.
+      </li>
+      </ol>
+    </div>
+
+    <h3>Applications</h3>
+    <ol>
+      <li>
+	[M. S&#228;rel&#228; et al., 2008]
+	<a href="http://wwwse.inf.tu-dresden.de/zib/publ/doc/jerzak2008bloom.pdf">
+	<em>Bloom Filter Based Routing for Content-Based Publish/Subscribe</em></a>.
+	In <em>Distributed Event-Based Systems</em> 2008.
+      </li>
+      <li>
+	[J. Taylor, 2009]
+	<a href="http://soar.wichita.edu/dspace/bitstream/10057/2312/1/GRASP5_25.pdf">
+	<em>Data Caching in Ad-Hoc Networks Using Bloom Filters</em></a>.
+	In <em>Symposium on Graduate Research and Scholarly Projects</em> 2009.
+      </li>
+      <li>
+	[A. Broder et al., 2004]
+	<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.127.9672&amp;rep=rep1&amp;type=pdf">
+	<em>Network Applications of Bloom Filters: a Survey</em></a>.
+	In <em>Internet Mathematics</em>, vol. 1, issue 4, pp. 485-509.
+      </li>
+      <li>
+	Computer Science Department of University of North
+	Carolina. (2005, Spring). <em>An Examination of Bloom Filters
+	and Their Applications</em>. 
+	Retrieved July 24, 2011, from 
+	<a href="http://cs.unc.edu/~fabian/courses/CS600.624/slides/bloomslides.pdf">
+	http://cs.unc.edu/~fabian/courses/CS600.624/slides/bloomslides.pdf</a>
+      </li>
+    </ol>
+
+    <hr/>
+    <div class="spirit-nav">
+      <a accesskey="p" href="testing.html">
+	<img src="../../../../doc/src/images/prev.png" alt="Prev"/>
+      </a>
+      <a accesskey="h" href="index.html">
+	<img src="../../../../doc/src/images/home.png" alt="Home"/>
+      </a>
+      <a accesskey="n" href="history.html">
+	<img src="../../../../doc/src/images/next.png" alt="Next"/>
+      </a>
+    </div>
+
+    <div>
+      <p class="copyright">
+	Copyright &#169; 2011 
+	<a href="mailto:cpp.cabrera@gmail.com">Alejandro Cabrera</a>
+      </p>
+      
+      <p class="copyright">
+	Distributed under the Boost Software License, Version 1.0. (See
+	accompanying file 
+	<a href="../../../../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or
+	copy at 
+	<a href="http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+    </div>
+
+  </body>
+</html>

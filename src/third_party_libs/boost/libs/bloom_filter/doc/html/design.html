@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" 
+	  href="../../../../doc/src/boostbook.css"/>
+    <link rel="stylesheet" type="text/css" href="style/my.css"/>
+
+    <title>Boost.BloomFilter</title>  
+  </head>
+
+  <body>
+    <div class="header">
+      <img src="../../../../boost.png" width="277" height="86" 
+	   alt="Boost C++ Libraries"/>
+      <p>
+	<a href="../../../../index.html">Home</a>
+	<a href="../../../../libs/libraries.htm">Libraries</a> 
+	<a href="http://www.boost.org/users/people.html">People</a> 
+	<a href="http://www.boost.org/users/faq.html">FAQ</a> 
+	<a href="../../../../more/index.htm">More</a> 
+      </p>
+    </div>
+
+    <hr/>
+    <div class="spirit-nav">
+      <a accesskey="p" href="history.html">
+	<img src="../../../../doc/src/images/prev.png" alt="Prev"/>
+      </a>
+      <a accesskey="h" href="index.html">
+	<img src="../../../../doc/src/images/home.png" alt="Home"/>
+      </a>
+      <a accesskey="n" href="acknowledgements.html">
+	<img src="../../../../doc/src/images/next.png" alt="Next"/>
+      </a>
+    </div>
+
+    <h2 class="title">Design</h2>
+    
+    <div class="toc">
+      <ul>
+	<li><a href="#basic_bloom">Basic Bloom Filters</a></li>
+	<li><a href="#cbf">Counting Bloom Filters</a></li>
+	<li><a href="#default_hash">Default Hash Functions</a></li>
+	<li><a href="#c++0x">C++0x Considerations</a></li>
+	<li><a href="#future">Future Directions</a></li>
+      </ul>
+    </div>
+
+    <h3>Overview</h3>
+    <p>
+      This project was initiated with a few design goals in mind. In particular,
+      these data structures should be easy to use, easy to customize, efficient,
+      and as portable as possible without damaging the usability for most users.
+    </p>
+    <p>
+      These Bloom filters should be very easy to experiment with, as well. 
+      This project acknowedlges that no solution is ideal for every problem.
+      With these Bloom filters, part of the design focused on how to 
+      maximize the configurability without sacrificing the safety of the
+      data structure. Upfront templating is used to a great extent
+      in order to make these goals a reality.
+    </p>
+    <p>
+      For each Bloom filter variant, a fully static version and a partially
+      dynamic version is provided. The static version is meant to be used
+      when the stack is not a limiting factor - for smaller data sets. It 
+      is meant to be slightly faster than the dynamic variant. The dynamic
+      variants requests its storage from the heap, and as a result,
+      can be as large as main memory and not incur any performance
+      penalty.
+    </p>
+
+    <a name="basic_bloom"></a>
+    <h3>Basic Bloom Filters</h3>
+    <p>
+      The basic Bloom filter implementation is designed to allow compile-time
+      determination of storage space(in bits), insertion/query type, and 
+      hash functions. The design goals were:
+    </p>
+    <ul>
+      <li>Easy to use correctly</li>
+      <li>Easy to use multiple, different hash functions</li>
+      <li>Fast</li>
+      <li>Compact - the amount of space used by the Bloom filter is capped by the size of the underlying std::bitset</li>
+      <li>Type-safe - its impossible to insert an element of the wrong type into the Bloom filter.</li>
+      <li>Type-safe - its impossible to perform a union or intersect operation between incompatible Bloom filters.</li>
+    </ul>
+    <p>
+      To meet these goals, the implementation performs as much work as possible
+      at compile-time. For the static variant, most of the operations can be
+      optimized away at compile time using c++0x mode in GCC. In all cases,
+      all core operations are broken down into 2 steps, performed 
+      for each hasher:
+    </p>
+    <ol>
+      <li>Generate a hash value - this is the index.</li>
+      <li>Perform the core operation at that index.</li>
+    </ol>
+
+    <a name="cbf"></a>
+    <h3>Counting Bloom Filters</h3>
+    <p>
+      The counting Bloom filter implementation is designed to allow compile-time
+      determination of number of bins, bits per bin, insertion/removal/query element type, 
+      bit operation genularity, and hash functions. The design goals were:
+    </p>
+    <ul>
+      <li>Easy to use correctly</li>
+      <li>Easy to customize the storage: bits per bin and number of bins.</li>
+      <li>Easy to use multiple, different hash functions</li>
+      <li>Fast</li>
+      <li>Compact - the amount of space used by the counting Bloom filter is at most 
+      a few bytes greater than the number of bins multiplied by the number of bits per bin.</li>
+      <li>Type-safe - its impossible to insert/remove an element of the wrong type into the Bloom filter.</li>
+      <li>Type-safe - its impossible to perform a union or intersect operation between 
+      incompatible Bloom filters.</li>
+    </ul>
+    <p>
+      To meet these goals, the static variant allows customization of many details
+      at compile-time. The dynamic variant allows customization of all parameters
+      except number of bins at compile-time. Furthermore, if a bin underflow or 
+      overflow would occur, an exception is thrown. Exceptions are used since
+      they interfere the least with the common case path, protecting performance.
+      This protects the user from introducing false negatives into the operation
+      of their Bloom filter.
+    </p>
+
+    <a name="default_hash"></a>
+    <h3>Default Hash Functions</h3>
+    <p>
+      To make the Bloom filter easier to use, the HashFunctions template parameter 
+      has a default value. This way, if the user wishes to use a Bloom filter for 
+      a quick, non-critical task, the user has the ability to just declare and use.
+    </p>
+    <div class="warning">
+      Be aware: it is not wise to use multiple hash functions of the same type
+      as the elements of your HashFunctions vector. This introduces a problem
+      where the hashes calculated are not independent, therefore reducing
+      the effectiveness of the Bloom filter, e.g., as the number of hash
+      functions increases, so does the false positive rate. 
+    </div>
+
+    <a name="c++0x"></a>
+    <h3>C++0x Considerations</h3>
+    <p>
+      Currently, this implementation uses boost::mpl::vector, boost::mpl::size, and boost::mpl::at_c for managing the hash function set. When C++0x is widely implemented, it may be beneficial to implement hash function set management in terms of std::tuple, std::tuple_size, and std::tuple_element. This will have to be investigated.
+    </p>
+    <p>
+      Alternatively, it may be possible to use a custom, minimal data structure for storing hash functions based on variadic template expansion. This may yield faster compile times. However, this may be entirely unnecessary since, to the best of my knowledge, std::tuple in (at least) GCC is implemented using variadic templates.
+    </p>
+    <p>
+      C++0x also introduces lambdas. It may be possible to define hash function objects in terms of lambdas for small, localized uses of the Bloom filter class. Testing needs to be done to verify that lambdas can be safely used.
+    </p>
+
+    <a name="future"></a>
+    <h3>Future Directions</h3>
+    <p>
+      There are a few planned features that have not yet made it to the Bloom filter package:
+    </p>
+    <ul>
+      <li>[De]Compression policy support via template policy class:
+      <ul>
+	<li><a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.119.6895&amp;rep=rep1&amp;type=pdf">
+	  Compressed Bloom Filters.</a> M. Mitzenmacher. IEEE/ACM TON. 2002.
+	</li>
+	<li><a href="http://bcl.comli.eu/index.php?media=manual">
+	Basic Compression Library Manual. </a> Chp. 4, pp. 12-15.
+	</li>
+      </ul>
+      </li>
+      <li>Bloom filter variations implemented as separate classes:
+      <ul>
+	<li><del>Counting Bloom filter (deletion support): <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.96.6789&amp;rep=rep1&amp;type=pdf">
+	Summary Cache. Fan et al. ACM SIGCOMM. 1998.</a></del></li>
+	<li>Scaling Bloom filter (constant false positive rate): <a href="http://www.google.com/url?sa=t&amp;source=web&amp;cd=1&amp;ved=0CBsQFjAA&amp;url=http%3A%2F%2Fgsd.di.uminho.pt%2Fmembers%2Fcbm%2Fps%2Fdbloom.pdf&amp;ei=ZH_2TbboIeeu0AH5o4XtDA&amp;usg=AFQjCNFGN0RS1-bUCxZJwUmD0C8cTnllQg&amp;sig2=__OvO8j0bdnj5gDH0xt4mw">
+	Scalable Bloom Filter. </a>Almeida et al. Elsevier. 2007.
+	</li>
+	<li>Two hash function Bloom filter (uses two hash functions to generate k hash values):
+	<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.72.2442&amp;rep=rep1&amp;type=pdf">
+	  Less Hashing, Same Performance: Building a Better Bloom Filter. Kirsch et al. Springer. 2006.
+	</a>
+	</li>
+	<li>Bloomier filters: <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.86.4154&amp;rep=rep1&amp;type=pdf">
+	The Bloomier Filter. </a>Chazelle et al. ACM SODA. 2004.
+	</li>
+      </ul>
+      </li>
+      <li>Parallel execution of hashing, especially useful for large (>1MB, >32 hash functions) Bloom filters. Such a feature should have a smart, defaulting mechanism that enables parallelism once Size/HashFunction parameters exceed a certain threshold, if parallelism is available on the given platform.</li>
+    </ul>
+    <p>
+      The design space for Bloom filter-like data structures is immense. Given feedback in the future, this section is likely to grow. Please send suggestions to <a href="mailto:cpp.cabrera@gmail.com">Alejandro Cabrera</a>.
+    </p>
+    <hr/>
+    <div class="spirit-nav">
+      <a accesskey="p" href="history.html">
+	<img src="../../../../doc/src/images/prev.png" alt="Prev"/>
+      </a>
+      <a accesskey="h" href="index.html">
+	<img src="../../../../doc/src/images/home.png" alt="Home"/>
+      </a>
+      <a accesskey="n" href="acknowledgements.html">
+	<img src="../../../../doc/src/images/next.png" alt="Next"/>
+      </a>
+    </div>
+
+    <div>
+      <p class="copyright">
+	Copyright &#169; 2011 
+	<a href="mailto:cpp.cabrera@gmail.com">Alejandro Cabrera</a>
+      </p>
+      
+      <p class="copyright">
+	Distributed under the Boost Software License, Version 1.0. (See
+	accompanying file 
+	<a href="../../../../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or
+	copy at 
+	<a href="http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+    </div>
+
+  </body>
+</html>

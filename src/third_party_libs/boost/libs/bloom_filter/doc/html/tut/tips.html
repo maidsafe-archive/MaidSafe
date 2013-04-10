@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" 
+	  href="../../../../../doc/src/boostbook.css"/>
+    <link rel="stylesheet" type="text/css" href="../style/my.css"/>
+
+    <title>Boost.BloomFilter</title>  
+  </head>
+
+  <body>
+    <div class="header">
+      <img src="../../../../../boost.png" width="277" height="86" 
+	   alt="Boost C++ Libraries"/>
+      <p>
+	<a href="../../../../../index.html">Home</a>
+	<a href="../../../../../libs/libraries.htm">Libraries</a> 
+	<a href="http://www.boost.org/users/people.html">People</a> 
+	<a href="http://www.boost.org/users/faq.html">FAQ</a> 
+	<a href="../../../../../more/index.htm">More</a> 
+      </p>
+    </div>
+
+    <hr/>
+    <div class="spirit-nav">
+      <a accesskey="p" href="joining.html">
+	<img src="../../../../../doc/src/images/prev.png" alt="Prev"/>
+      </a>
+      <a accesskey="u" href="../tutorial.html">
+	<img src="../../../../../doc/src/images/up.png" alt="Up"/>
+      </a>
+      <a accesskey="h" href="../index.html">
+	<img src="../../../../../doc/src/images/home.png" alt="Home"/>
+      </a>
+      <a accesskey="n" href="../reference.html">
+	<img src="../../../../../doc/src/images/next.png" alt="Next"/>
+      </a>
+    </div>
+
+    <h1 class="title">Warnings and Best Practices</h1>
+
+    <h3>Managing the False Positive Rate</h3>
+    <p>
+      The best possible case for managing your false positive rate is
+      a situation where you can reliably predict the number
+      of elements that your Bloom filter will be responsible for
+      representing. In this case, all you have to do is select a reasonable
+      number of hash functions and an adeqaute bit capacity. 
+    </p>
+    <p>
+      If you cannot predict the number of elements reliably or the
+      bit capacity requirement is greater than the size of the 
+      <a href="#stack_overflow">stack</a>, then you should prefer
+      to use the <a href="#resize">dynamic</a> Bloom filter variants.
+    </p>
+
+    <a name="stack_overflow"></a>
+    <h3>Stack Overflow</h3>    
+    <p>
+      <span class="warning">WARNING</span>: all Bloom filters that allow
+      you to set the bit capacity as a compile-time parameter are susceptible
+      to stack overflows. The stack size depends on the operating system and
+      compiler used. If your Bloom filter requires more than 1MB in
+      bit capacity or you are getting mysterious segmentation faults,
+      switch over to a <a href="#resize">dynamic</a> variant.
+    </p>
+
+    <a name="resize"></a>
+    <h3>Resizing Wisely</h3>    
+    <p>
+      If it is possible to reliably predict the bit capacity requirement,
+      then it is best to avoid resize operations entirely. A resize operation
+      clears a Bloom filter of all history - it is akin to flushing the cache.
+      However, if you resizing is in the best interest of your application,
+      then do so when the false positive rate becomes unacceptable.
+    </p>
+    <p>
+      As an aside, there exist theoretical Bloom filter variants that can maintain
+      a specific false positive rate as the number of elements increases. These
+      "scalable" Bloom filters do not suffer from the resize problem stated above.
+      Refer to the <a href="../bibliography.html">bibliography</a> for more details.
+    </p>
+
+    <h3>Hasher Set Trade-Offs</h3>    
+    <p>
+      A fast Bloom filter will prefer to use fewer and faster hashers. If your
+      application is mostly CPU bound or memory bound, then your Bloom filter
+      should probably prefer this approach.
+    </p>
+    <p>
+      If your application is mostly disk bound, you can afford to use more 
+      hashers to limit your false positive rate. You may see significant
+      performance improvements by increasing the number of hashers.
+    </p>
+    <p>
+      If your application has requirements on being able to limit the number
+      of collisions regardless of input characteristics, prefer cryptographic
+      hashers. 
+    </p>
+    <p>
+      If ever in doubt, benchmark. This family of Bloom filters was designed to
+      be easy to experiment with.
+    </p>
+
+    <hr/>
+    <div class="spirit-nav">
+      <a accesskey="p" href="joining.html">
+	<img src="../../../../../doc/src/images/prev.png" alt="Prev"/>
+      </a>
+      <a accesskey="u" href="../tutorial.html">
+	<img src="../../../../../doc/src/images/up.png" alt="Up"/>
+      </a>
+      <a accesskey="h" href="../index.html">
+	<img src="../../../../../doc/src/images/home.png" alt="Home"/>
+      </a>
+      <a accesskey="n" href="../reference.html">
+	<img src="../../../../../doc/src/images/next.png" alt="Next"/>
+      </a>
+    </div>
+
+    <div>
+      <p class="copyright">
+	Copyright &#169; 2011 
+	<a href="mailto:cpp.cabrera@gmail.com">Alejandro Cabrera</a>
+      </p>
+      
+      <p class="copyright">
+	Distributed under the Boost Software License, Version 1.0. (See
+	accompanying file 
+	<a href="../../../../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or
+	copy at 
+	<a href="http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+    </div>
+
+  </body>
+</html>

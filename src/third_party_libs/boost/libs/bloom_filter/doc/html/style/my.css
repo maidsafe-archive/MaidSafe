@@ -1,0 +1,192 @@
+/*******************************************************************************
+ *
+ * (C) Copyright Alejandro Cabrera 2011.
+ * Distributed under the Boost
+ * Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or
+ * copy at http://www.boost.org/LICENSE_1_0.txt)
+ *
+ * See http://www.boost.org/libs/bloom_filter for documentation.
+ *
+ ******************************************************************************/
+
+.toc
+{
+    margin: 0 4% 0 4%;
+    padding: 0 1pc 0.5pc 1pc;
+    font-size: 80%;
+    line-height: 1.15;
+}
+
+.toc ul, .toc li {padding: 0; list-style:none;}
+.toc ul {margin: 0 0 0 0;}
+.toc p {font-weight: bold;}
+.copyright {font-style: italic;}
+
+.math {
+    font-family:"Unicode Symbols";
+    margin: 1% 2%;
+}
+
+.complexity {
+    font-family: "Unicode Symbols";
+}
+
+.header {
+    height: 94px;
+    position: relative;
+    font-family: sans;
+}
+
+.warning {
+    color: red;
+}
+
+.header img {
+    float: left;
+    position: absolute; top: 4px; left: 4px;
+}
+
+.header p {
+    float: right;
+    text-align: right;
+    width: 75em;
+}
+
+
+.header p a {
+    font-size: 1.1em;
+    margin-right: 7%;
+}
+
+p {
+    margin: 1% 1%;
+}
+
+.listing {
+    white-space: pre;
+    background: #d0d0d0;
+    font-family: monospace;
+    display: block;
+    margin: 0 5%;
+}
+
+.example {
+    white-space: pre;
+    background: #d0d0d0;
+    border: 1px solid;
+    font-family: monospace;
+    display: block;
+    margin: 0 5%;
+}
+
+.template_ref {
+    display: block;
+    background: #e0e0e0;
+    border: 1px solid;
+    margin: 1% 1%;
+}
+
+.template_ref dl {
+    margin: 1% 1%;
+}
+
+.template_ref dl dt {
+    font-weight: bold;
+}
+
+.template_ref dl dd {
+    margin-left: 12px;
+    margin-bottom: 8px;
+}
+
+.func_ref {
+    background-color: #f0f0f0;
+    display: block;
+    margin-bottom: 1%;
+    margin-left: 1%;
+    margin-right: 1%;
+    border: solid 1px;
+}
+
+.func_ref dl dt {
+    margin: 0 1%;
+    font-weight: bold;
+}
+
+.func_ref dl dd {
+    margin-left: 24px;
+    margin-bottom: 8px;
+}
+
+.ref_listing {
+    font-family: monospace;
+    font-size: 1.2em;
+    margin: 0 1%;
+}
+
+.example_output {
+    white-space: pre;
+    font-family: monospace;
+    display: block;
+    margin: 0 5%;
+    background-color: black;
+    color: silver;
+}
+
+.c_comment {
+    color: maroon;
+}
+
+.c_comment a {
+    color: maroon;
+    text-decoration: underline;
+}
+
+.c_include {
+    color: purple;
+}
+
+.c_keyword {
+    color: #800080;
+}
+
+.c_namespace {
+    color: teal;
+}
+
+.c_type {
+    color: green;
+}
+
+.c_id {
+    color: #ff7700;
+}
+
+.c_func {
+    color: blue;
+}
+
+.c_str {
+    color: purple;
+}
+
+/**
+ * Duplicate of Spirit Navigation
+ **/
+
+.spirit-nav
+{
+    text-align: right;
+}
+
+.spirit-nav a
+{
+    color: white;
+    padding-left: 0.5em;
+}
+
+.spirit-nav img
+{
+    border-width: 0;
+}

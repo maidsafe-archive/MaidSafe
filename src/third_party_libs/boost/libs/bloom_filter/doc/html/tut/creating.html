@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" 
+	  href="../../../../../doc/src/boostbook.css"/>
+    <link rel="stylesheet" type="text/css" href="../style/my.css"/>
+
+    <title>Boost.BloomFilter</title>  
+  </head>
+
+  <body>
+    <div class="header">
+      <img src="../../../../../boost.png" width="277" height="86" 
+	   alt="Boost C++ Libraries"/>
+      <p>
+	<a href="../../../../../index.html">Home</a>
+	<a href="../../../../../libs/libraries.htm">Libraries</a> 
+	<a href="http://www.boost.org/users/people.html">People</a> 
+	<a href="http://www.boost.org/users/faq.html">FAQ</a> 
+	<a href="../../../../../more/index.htm">More</a> 
+      </p>
+    </div>
+
+    <hr/>
+    <div class="spirit-nav">
+      <a accesskey="p" href="hashers.html">
+	<img src="../../../../../doc/src/images/prev.png" alt="Prev"/>
+      </a>
+      <a accesskey="u" href="../tutorial.html">
+	<img src="../../../../../doc/src/images/up.png" alt="Up"/>
+      </a>
+      <a accesskey="h" href="../index.html">
+	<img src="../../../../../doc/src/images/home.png" alt="Home"/>
+      </a>
+      <a accesskey="n" href="inserting.html">
+	<img src="../../../../../doc/src/images/next.png" alt="Next"/>
+      </a>
+    </div>
+
+    <h1 class="title">Instantiating Bloom Filters</h1>
+
+    <p>
+      To instantiate any of the Bloom filters, you must understand the template 
+      parameters associated with each class. Reasonable defaults are provided
+      for most template parameters. In most cases, all that will be required is
+      to specify the Bloom filter element type and the bit capacity of the 
+      Bloom filter.
+    </p>
+
+
+    <h2>Basic Bloom Filter</h2>
+
+    <div class="listing">
+      <code class="c_keyword">template</code> &lt;<code class="c_keyword">typename</code> <code class="c_type">T</code>,
+                <code class="c_type">size_t</code> <code class="c_type">Size</code>,
+                <code class="c_keyword">class</code> <code class="c_type">HashFunctions</code> = <code class="c_namespace">mpl::</code><code class="c_type">vector</code>&lt;<code class="c_type">boost_hash</code>&lt;<code class="c_type">T</code>, 3&gt; &gt; &gt;
+      <code class="c_keyword">class</code> <code class="c_type">basic_bloom_filter</code>;
+    </div>
+
+    <p>
+      The Basic Bloom filter was designed to be easy to use. For most use cases, 
+      it is enough to specify only the element type T and the Size (bit capacity)
+      of the Bloom filter. If the performance of the Bloom filter is not sufficient
+      with the default Hasher set, only then should you attempt to find a better
+      set of Hashers. Below are a few examples of valid instantiations:
+    </p>
+
+    <div class="example">
+      <code class="c_type">basic_bloom_filter</code>&lt;<code class="c_type">int</code>, 1000&gt; <code class="c_id">bloom</code>;
+      <code class="c_type">basic_bloom_filter</code>&lt;<code class="c_type">int</code>, 10000&gt; <code class="c_id">bloom2</code>;
+      <code class="c_type">basic_bloom_filter</code>&lt;<code class="c_type">int</code>, 1000, <code class="c_namespace">boost::mpl::</code><code class="c_type">vector</code>&lt;<code class="c_type">boost_hash</code>&lt;<code class="c_type">int</code>, 3&gt;,
+                                                       <code class="c_type">boost_hash</code>&lt;<code class="c_type">int</code>, 7&gt;,
+					               <code class="c_type">boost_hash</code>&lt;<code class="c_type">int</code>, 11&gt; &gt; <code class="c_id">bloom3</code>;
+    </div>
+
+    <h2>Basic Dynamic Bloom Filter</h2>
+
+    <div class="listing">
+      <code class="c_keyword">template</code> &lt;<code class="c_keyword">typename</code> <code class="c_type">T</code>,
+                <code class="c_keyword">class</code> <code class="c_type">HashFunctions</code> = <code class="c_namespace">mpl::</code><code class="c_type">vector</code>&lt;<code class="c_type">boost_hash</code>&lt;<code class="c_type">T</code>, 3&gt; &gt;,
+		<code class="c_keyword">typename</code> <code class="c_type">Block</code> = <code class="c_type">size_t</code>,
+		<code class="c_keyword">typename</code> <code class="c_type">Allocator</code> = <code class="c_namespace">std::</code><code class="c_type">allocator</code>&lt;<code class="c_type">Block</code>&gt; &gt;
+      <code class="c_keyword">class</code> <code class="c_type">dynamic_bloom_filter</code>;
+    </div>
+
+    <p>
+      The Basic dynamic Bloom filter is very similar to the basic Bloom filter. 
+      The primary difference is that the bit storage is allocated on the heap
+      rather than the stack, and that the bit capacity is specified in the
+      constructor rather than as a template. Since the Bloom filter is 
+      allocated on the heap, there is support for using a custom memory
+      allocator. Simply specify the Allocator parameter. The Block parameter
+      controls the granularity of bit operations for the underlying
+      <a href="http://www.boost.org/doc/libs/release/libs/dynamic_bitset/dynamic_bitset.html">
+	bitset</a>. See below for examples:
+    </p>
+
+    <div class="example">
+      <code class="c_type">dynamic_bloom_filter</code>&lt;<code class="c_type">int</code>&gt; <code class="c_id">bloom</code>(1000);
+      <code class="c_type">dynamic_bloom_filter</code>&lt;<code class="c_type">int</code>&gt; <code class="c_id">bloom2</code>(10000);
+      <code class="c_type">dynamic_bloom_filter</code>&lt;<code class="c_type">int</code>, <code class="c_namespace">boost::mpl::</code><code class="c_type">vector</code>&lt;<code class="c_type">boost_hash</code>&lt;<code class="c_type">int</code>, 3&gt;,
+                                                   <code class="c_type">boost_hash</code>&lt;<code class="c_type">int</code>, 7&gt;,
+					           <code class="c_type">boost_hash</code>&lt;<code class="c_type">int</code>, 11&gt; &gt; <code class="c_id">bloom3</code>(1000);
+      <code class="c_type">dynamic_bloom_filter</code>&lt;<code class="c_type">int</code>, 
+                           <code class="c_namespace">boost::mpl::</code><code class="c_type">vector</code>&lt;<code class="c_type">boost_hash</code>&lt;<code class="c_type">int</code>,3&gt; &gt;, 
+                           <code class="c_type">size_t</code>, <code class="c_type">my_allocator</code>&gt; <code class="c_id">bloom4</code>(1000);
+    </div>
+
+    <h2>Counting Bloom Filter</h2>
+    <div class="listing">
+      <code class="c_keyword">template</code> &lt;<code class="c_keyword">typename</code> <code class="c_type">T</code>,
+                <code class="c_type">size_t</code> <code class="c_type">NumBins</code>,
+                <code class="c_type">size_t</code> <code class="c_type">BitsPerBin</code> = 4,
+                <code class="c_keyword">class</code> <code class="c_type">HashFunctions</code> = <code class="c_namespace">mpl::</code><code class="c_type">vector</code>&lt;<code class="c_type">boost_hash</code>&lt;<code class="c_type">T</code>, 3&gt; &gt;,
+		<code class="c_keyword">typename</code> <code class="c_type">Block</code> = <code class="c_type">size_t</code>&gt;
+      <code class="c_keyword">class</code> <code class="c_type">counting_bloom_filter</code>;
+    </div>
+    
+    <p>
+      Instantiating a counting Bloom filter is slightly different than a basic 
+      Bloom filter. In particular, rather than specifying a bit capacity, you 
+      must specify a number of bins. The combination of the parameters NumBins
+      and BitsPerBin determines the total bit capacity of the Bloom filter.
+    </p>
+    <p>
+      At a minimum, you must specify the element type and the number of bins.
+      The BitsPerBin parameter is set to a reasonable default that allows
+      16 insertions before a bin overflow occurs. The HashFunctions and
+      Block parameter behave as with the dynamic Bloom filter. See the
+      example below for more details:
+    </p>
+
+    <div class="example">
+      <code class="c_type">counting_bloom_filter</code>&lt;<code class="c_type">int</code>, 1000&gt; <code class="c_id">bloom</code>;
+      <code class="c_type">counting_bloom_filter</code>&lt;<code class="c_type">int</code>, 1000, 8&gt; <code class="c_id">bloom2</code>;
+    </div>
+
+    <hr/>
+    <div class="spirit-nav">
+      <a accesskey="p" href="hashers.html">
+	<img src="../../../../../doc/src/images/prev.png" alt="Prev"/>
+      </a>
+      <a accesskey="u" href="../tutorial.html">
+	<img src="../../../../../doc/src/images/up.png" alt="Up"/>
+      </a>
+      <a accesskey="h" href="../index.html">
+	<img src="../../../../../doc/src/images/home.png" alt="Home"/>
+      </a>
+      <a accesskey="n" href="inserting.html">
+	<img src="../../../../../doc/src/images/next.png" alt="Next"/>
+      </a>
+    </div>
+
+    <div>
+      <p class="copyright">
+	Copyright &#169; 2011 
+	<a href="mailto:cpp.cabrera@gmail.com">Alejandro Cabrera</a>
+      </p>
+      
+      <p class="copyright">
+	Distributed under the Boost Software License, Version 1.0. (See
+	accompanying file 
+	<a href="../../../../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or
+	copy at 
+	<a href="http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+    </div>
+
+  </body>
+</html>
