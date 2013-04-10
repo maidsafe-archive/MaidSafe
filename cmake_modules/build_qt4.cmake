@@ -18,9 +18,9 @@
 #==================================================================================================#
 
 
-if(UNIX AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  message(FATAL_ERROR "Don't build Qt from source, follow the instructions at\n   https://sites.google.com/a/maidsafe.net/staff/developers/build-instructions\n\n")
-endif()
+#if(UNIX AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+#  message(FATAL_ERROR "Don't build Qt from source, follow the instructions at\n   https://sites.google.com/a/maidsafe.net/staff/developers/build-instructions\n\n")
+#endif()
 
 unset(QtConfigureExe CACHE)
 find_program(QtConfigureExe NAMES configure PATHS ${QT_SRC_DIR} NO_DEFAULT_PATH)
@@ -124,8 +124,9 @@ else()
     set(QtConfigurePlatformValue "unsupported/linux-clang")
   endif()
 
-  message(STATUS "Configuring Qt for a Release build.")
+  message(STATUS "Configuring Qt for a build.")
   execute_process(COMMAND ${QtConfigureExe} -prefix ${QT_BUILD_DIR}
+                                            -debug-and-release
                                             -opensource
                                             -confirm-license
                                             -shared
@@ -137,31 +138,25 @@ else()
                                             -qt-libtiff
                                             -qt-libjpeg
                                             -webkit
-                                            -no-multimedia
-                                            -no-phonon
-                                            -no-phonon-backend
-                                            -no-openvg
-                                            -no-openssl
-                                            -no-dbus
+                                            -nomake demos
+                                            -nomake examples
                                             -optimized-qmake
-                                            -no-gtkstyle
-                                            -no-xinerama
                                             -make libs
                                             ${QtConfigurePlatform} ${QtConfigurePlatformValue}
                   WORKING_DIRECTORY ${QT_BUILD_DIR}
                   RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
   if(NOT ResultVar EQUAL 0)
     message("\n${HR}\n${ErrorVar}\n\n\n${HR}\n${OutputVar}\n\n\n${HR}\n")
-    message(FATAL_ERROR "\nConfiguring Qt for Release failed. --- ${ResultVar}")
+    message(FATAL_ERROR "\nConfiguring Qt for failed. --- ${ResultVar}")
   endif()
 
-  message(STATUS "Building Release Qt.  Go get a cup of coffee.")
+  message(STATUS "Building Qt.")
   execute_process(COMMAND make "-j7"
                   WORKING_DIRECTORY ${QT_BUILD_DIR}
                   RESULT_VARIABLE ResultVar OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
   if(NOT ResultVar EQUAL 0)
     message("\n${HR}\n${ErrorVar}\n\n\n${HR}\n${OutputVar}\n\n\n${HR}\n")
-    message(FATAL_ERROR "\nBuilding Release Qt failed.  Command was:\nmake -j7 --- ${ResultVar}")
+    message(FATAL_ERROR "\nBuilding Qt failed.  Command was:\nmake -j7 --- ${ResultVar}")
   endif()
 
 endif()
