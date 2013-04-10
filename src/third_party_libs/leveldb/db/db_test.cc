@@ -14,8 +14,8 @@
 #include "util/hash.h"
 #include "util/logging.h"
 #include "util/mutexlock.h"
-#include "util/tests/testharness.h"
-#include "util/tests/testutil.h"
+#include "util/testharness.h"
+#include "util/testutil.h"
 
 namespace leveldb {
 

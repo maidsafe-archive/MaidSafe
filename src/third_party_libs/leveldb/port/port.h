@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011 The LevelDB Authors. All rights reserved.
+// Copyright (c) 2011 The LevelDB Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file. See the AUTHORS file for names of contributors.
 
@@ -14,8 +14,8 @@
 #  include "port/port_posix.h"
 #elif defined(LEVELDB_PLATFORM_CHROMIUM)
 #  include "port/port_chromium.h"
-#elif defined(LEVELDB_PLATFORM_WINDOWS)
-#  include "port/port_win.h"
+#elif defined(WIN32)
+#  include "win32/port_win32.h"
 #endif
 
 #endif  // STORAGE_LEVELDB_PORT_PORT_H_

@@ -17,8 +17,8 @@
 #include "db/log_format.h"
 #include "db/version_set.h"
 #include "util/logging.h"
-#include "util/tests/testharness.h"
-#include "util/tests/testutil.h"
+#include "util/testharness.h"
+#include "util/testutil.h"
 
 namespace leveldb {
 

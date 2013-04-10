@@ -8,7 +8,7 @@
 #include "db/write_batch_internal.h"
 #include "leveldb/env.h"
 #include "util/logging.h"
-#include "util/tests/testharness.h"
+#include "util/testharness.h"
 
 namespace leveldb {
 

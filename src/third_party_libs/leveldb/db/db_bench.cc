@@ -16,7 +16,7 @@
 #include "util/histogram.h"
 #include "util/mutexlock.h"
 #include "util/random.h"
-#include "util/tests/testutil.h"
+#include "util/testutil.h"
 
 // Comma-separated list of operations to run in the specified order
 //   Actual benchmarks:
