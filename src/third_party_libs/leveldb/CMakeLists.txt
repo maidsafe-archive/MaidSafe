@@ -1,11 +1,10 @@
-﻿set(CMAKE_LEGACY_CYGWIN_WIN32 0)
-cmake_minimum_required(VERSION 2.8)
-PROJECT(leveldb)
+cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
+project(leveldb)
 
 include(CheckIncludeFile)
 include(FindBoost) # for Windows...
 
-# version 
+# version
 
 ENABLE_TESTING()
 
@@ -43,7 +42,7 @@ endif()
 
 # FIXME: check cstdatomic here..
 
-set(SRCS 
+set(SRCS
     db/builder.cc
     db/db_impl.cc
     db/db_iter.cc
@@ -67,10 +66,12 @@ set(SRCS
     table/two_level_iterator.cc
     util/env.cc
     util/arena.cc
+    util/bloom.cc
     util/cache.cc
     util/coding.cc
     util/comparator.cc
     util/crc32c.cc
+    util/filter_policy.cc
     util/hash.cc
     util/histogram.cc
     util/logging.cc
@@ -102,16 +103,19 @@ macro(leveldb_tests)
     foreach(t ${ARGN})
         get_filename_component(_tname ${t} NAME_WE)
         add_executable(${_tname} ${t})
-        target_link_libraries(${_tname}
-            leveldb-testharness
-            leveldb
-            )
+        target_link_libraries(${_tname} leveldb-testharness leveldb)
+        if(WIN32)
+            target_link_libraries(${_tname} boost)
+        else()
+            target_link_libraries(${_tname} pthread)
+        endif()
     endforeach()
 endmacro()
 
 leveldb_tests(
     db/db_bench.cc
     util/arena_test.cc
+    util/bloom_test.cc
     db/c_test.c
     util/cache_test.cc
     util/coding_test.cc
