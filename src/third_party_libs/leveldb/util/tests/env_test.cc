@@ -5,7 +5,7 @@
 #include "leveldb/env.h"
 
 #include "port/port.h"
-#include "util/testharness.h"
+#include "util/tests/testharness.h"
 
 namespace leveldb {
 

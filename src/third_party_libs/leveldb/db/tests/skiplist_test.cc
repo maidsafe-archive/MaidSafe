@@ -8,7 +8,7 @@
 #include "util/arena.h"
 #include "util/hash.h"
 #include "util/random.h"
-#include "util/testharness.h"
+#include "util/tests/testharness.h"
 
 namespace leveldb {
 

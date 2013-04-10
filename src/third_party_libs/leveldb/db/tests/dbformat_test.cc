@@ -4,7 +4,7 @@
 
 #include "db/dbformat.h"
 #include "util/logging.h"
-#include "util/testharness.h"
+#include "util/tests/testharness.h"
 
 namespace leveldb {
 

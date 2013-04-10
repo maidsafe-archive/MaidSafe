@@ -12,10 +12,9 @@ include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
 ENABLE_TESTING()
 
 file(GLOB leveldb_SOURCES  "${CMAKE_CURRENT_SOURCE_DIR}/db/*.cc"
-                           "${CMAKE_CURRENT_SOURCE_DIR}/table/*.cc "
+                           "${CMAKE_CURRENT_SOURCE_DIR}/table/*.cc"
                            "${CMAKE_CURRENT_SOURCE_DIR}/util/*.cc"
                            "${CMAKE_CURRENT_SOURCE_DIR}/port/*.cc")
-
 file(GLOB leveldb_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
                           "${CMAKE_CURRENT_SOURCE_DIR}/db/*.h"
                           "${CMAKE_CURRENT_SOURCE_DIR}/table/*.h"
@@ -47,6 +46,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     # link pthread
     set(PORT_SRCS port/port_posix.cc util/env_posix.cc)
     set(CIF_SRCS db/c.cc)
+    list(REMOVE_ITEM leveldb_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/util/win_logger.cc
+                                     ${CMAKE_CURRENT_SOURCE_DIR}/port/port_win.cc)
+    list(REMOVE_ITEM leveldb_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/util/win_logger.h
+                                     ${CMAKE_CURRENT_SOURCE_DIR}/port/port_win.h)
+
 elseif(CYGWIN)
     add_definitions(-DLEVELDB_PLATFORM_POSIX -DOS_LINUX)
     set(PORT_SRCS port/port_posix.cc util/env_posix.cc)

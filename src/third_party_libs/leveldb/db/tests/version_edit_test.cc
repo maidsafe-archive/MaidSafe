@@ -3,7 +3,7 @@
 // found in the LICENSE file. See the AUTHORS file for names of contributors.
 
 #include "db/version_edit.h"
-#include "util/testharness.h"
+#include "util/tests/testharness.h"
 
 namespace leveldb {
 
