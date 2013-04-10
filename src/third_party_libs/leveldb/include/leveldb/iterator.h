@@ -22,8 +22,8 @@ namespace leveldb {
 
 class Iterator {
  public:
-  Iterator();
-  virtual ~Iterator();
+  Iterator() {}
+  virtual ~Iterator() {}
 
   // An iterator is either positioned at a key/value pair, or
   // not valid.  This method returns true iff the iterator is valid.

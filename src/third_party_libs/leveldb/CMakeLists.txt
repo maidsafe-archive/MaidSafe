@@ -5,19 +5,22 @@ include(CheckIncludeFile)
 include(FindBoost) # for Windows...
 
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_setup.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
 
 # version
 
 ENABLE_TESTING()
 
-file(GLOB leveldb_SOURCES  "${CMAKE_CURRENT_SOURCE_DIR}/db/*.cpp"
-                           "${CMAKE_CURRENT_SOURCE_DIR}/table/*.cpp"
-                           "${CMAKE_CURRENT_SOURCE_DIR}/util/*.cpp")
+file(GLOB leveldb_SOURCES  "${CMAKE_CURRENT_SOURCE_DIR}/db/*.cc"
+                           "${CMAKE_CURRENT_SOURCE_DIR}/table/*.cc "
+                           "${CMAKE_CURRENT_SOURCE_DIR}/util/*.cc"
+                           "${CMAKE_CURRENT_SOURCE_DIR}/port/*.cc")
 
 file(GLOB leveldb_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
                           "${CMAKE_CURRENT_SOURCE_DIR}/db/*.h"
                           "${CMAKE_CURRENT_SOURCE_DIR}/table/*.h"
-                          "${CMAKE_CURRENT_SOURCE_DIR}/util/*.h")
+                          "${CMAKE_CURRENT_SOURCE_DIR}/util/*.h"
+                          "${CMAKE_CURRENT_SOURCE_DIR}/port/*.h")
 
 #file(GLOB TESTleveldb_DIR "${CMAKE_CURRENT_SOURCE_DIR}/db/tests/*.cc")
 #                          "${CMAKE_CURRENT_SOURCE_DIR}/table/tests/*.cc"
@@ -30,8 +33,10 @@ if(WIN32)
     add_definitions(-DLEVELDB_PLATFORM_WINDOWS -DOS_WIN -DWIN32_LEAN_AND_MEAN)
     if(MSVC)
         add_definitions(-DCOMPILER_MSVC)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX-")
     endif()
-    set(PORT_SRCS port/port_win.cc util/env_boost.cc)
+    list(REMOVE_ITEM leveldb_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/port/port_posix.cc ${CMAKE_CURRENT_SOURCE_DIR}/util/env_posix.cc)
+    list(REMOVE_ITEM leveldb_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/port/port_posix.h)
     set(CIF_SRCS)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
     add_definitions(-DLEVELDB_PLATFORM_POSIX -DOS_FREEBSD)
@@ -94,8 +99,6 @@ endif()
 #    ${CIF_SRCS}
 #    )
 
-set(leveldb_SOURCES ${PORT_SRCS} ${CIF_SRCS})
-
 set(TESTHARNESS_SRCS
     util/tests/testutil.cc
     util/tests/testharness.cc)
@@ -104,15 +107,17 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # CHECK_INCLUDE_FILE(stdint.h HAVE_STDINT_H)
 
-
-add_library(leveldb STATIC ${leveldb_SOURCES}  ${leveldb_HEADERS})
-
+add_library(leveldb STATIC ${PORT_SRCS} ${CIF_SRCS} ${leveldb_SOURCES}  ${leveldb_HEADERS})
+target_link_libraries(leveldb ${BoostDateTimeLibs} ${BoostFilesystemLibs} ${BoostThreadLibs})
 set_target_properties(leveldb PROPERTIES FOLDER "Third Party/LevelDB")
+if(JustThread_FOUND)
+  target_link_libraries(leveldb optimized ${JustThread_LIBRARY} debug ${JustThread_LIBRARY_DEBUG})
+endif()
+
 # TESTS
-
 add_library(leveldb-testharness STATIC ${TESTHARNESS_SRCS})
+target_link_libraries(leveldb-testharness leveldb)
 set_target_properties(leveldb-testharness PROPERTIES FOLDER "Third Party/LevelDB/Tests")
-
 
 macro(leveldb_test ${nam})
 endmacro()
@@ -124,9 +129,9 @@ macro(leveldb_tests)
       add_test(NAME ${_tname} COMMAND ${_tname})
       target_link_libraries(${_tname} leveldb-testharness leveldb)
       if(WIN32)
-        target_link_libraries(${_tname} boost)
+        target_link_libraries(${_tname} leveldb-testharness)
       else()
-        target_link_libraries(${_tname} pthread)
+        target_link_libraries(${_tname} leveldb-testharness pthread)
       endif()
     set_target_properties(${_tname} PROPERTIES FOLDER "Third Party/LevelDB/Tests")
   endforeach()
