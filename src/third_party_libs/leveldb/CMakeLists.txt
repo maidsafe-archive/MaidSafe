@@ -59,6 +59,7 @@ set(SRCS
     table/block.cc
     table/block_builder.cc
     table/format.cc
+    table/filter_block.cc
     table/iterator.cc
     table/merger.cc
     table/table.cc
