@@ -104,19 +104,19 @@ if(WIN32)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX-")
     endif()
     list(APPEND HEADER_FILES_LEVELDB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/win32/env_win32.h
-	                                     ${CMAKE_CURRENT_SOURCE_DIR}/win32/leveldb.h
-	                                     ${CMAKE_CURRENT_SOURCE_DIR}/win32/port_win32.h
-	                                     ${CMAKE_CURRENT_SOURCE_DIR}/win32/stdint.h
-	                                     ${CMAKE_CURRENT_SOURCE_DIR}/win32/unistd.h
-                                         ${CMAKE_CURRENT_SOURCE_DIR}/win32/win32exports.h
-                                         ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy.h
-                                         ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-internal.h
-                                         ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-public.h
-	                                     ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-sinksource.h
-                                         ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-internal.h)                                     
-	list(APPEND SOURCE_FILES_LEVELDB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/win32/env_win32.cc
-	                                     ${CMAKE_CURRENT_SOURCE_DIR}/win32/port_win32.cc
-										 ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy.cc
+                                             ${CMAKE_CURRENT_SOURCE_DIR}/win32/leveldb.h
+                                             ${CMAKE_CURRENT_SOURCE_DIR}/win32/port_win32.h
+                                             ${CMAKE_CURRENT_SOURCE_DIR}/win32/stdint.h
+                                             ${CMAKE_CURRENT_SOURCE_DIR}/win32/unistd.h
+                                             ${CMAKE_CURRENT_SOURCE_DIR}/win32/win32exports.h
+                                             ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy.h
+                                             ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-internal.h
+                                             ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-public.h
+                                             ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-sinksource.h
+                                             ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-internal.h)
+    list(APPEND SOURCE_FILES_LEVELDB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/win32/env_win32.cc
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/win32/port_win32.cc
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy.cc
                                          ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-sinksource.cc
                                          ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-internal.cc)
 
@@ -129,10 +129,25 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     # link pthread
     set(PORT_SRCS port/port_posix.cc util/env_posix.cc)
     set(CIF_SRCS db/c.cc)
-    list(REMOVE_ITEM leveldb_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/util/win_logger.cc
-                                     ${CMAKE_CURRENT_SOURCE_DIR}/port/port_win.cc)
-    list(REMOVE_ITEM leveldb_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/util/win_logger.h
-                                     ${CMAKE_CURRENT_SOURCE_DIR}/port/port_win.h)
+#    list(REMOVE_ITEM leveldb_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/util/win_logger.cc
+#                                     ${CMAKE_CURRENT_SOURCE_DIR}/port/port_win.cc)
+#    list(REMOVE_ITEM leveldb_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/util/win_logger.h
+#                                     ${CMAKE_CURRENT_SOURCE_DIR}/port/port_win.h)
+
+    list(APPEND HEADER_FILES_LEVELDB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/port/port_posix.h
+	                                 ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy.h
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-internal.h
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-public.h
+	                                 ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-sinksource.h
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-internal.h
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/c.h)
+
+    list(APPEND SOURCE_FILES_LEVELDB_DIR ${CMAKE_CURRENT_SOURCE_DIR}//port/port_posix.cc
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/util/env_posix.cc
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy.cc
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-sinksource.cc
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-internal.cc
+                                         ${CMAKE_CURRENT_SOURCE_DIR}/db/c.cc)
 
 elseif(CYGWIN)
     add_definitions(-DLEVELDB_PLATFORM_POSIX -DOS_LINUX)

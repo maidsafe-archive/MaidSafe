@@ -261,7 +261,7 @@ enum SaverState {
   kNotFound,
   kFound,
   kDeleted,
-  kCorrupt,
+  kCorrupt
 };
 struct Saver {
   SaverState state;
