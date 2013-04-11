@@ -5,7 +5,6 @@ include(CheckIncludeFile)
 include(FindBoost) # for Windows...
 
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_setup.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
 
 ENABLE_TESTING()
 
@@ -101,7 +100,6 @@ if(WIN32)
     add_definitions(-DLEVELDB_PLATFORM_WINDOWS -DOS_WIN -DWIN32_LEAN_AND_MEAN)
     if(MSVC)
         add_definitions(-DCOMPILER_MSVC)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX-")
     endif()
     list(APPEND HEADER_FILES_LEVELDB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/win32/env_win32.h
                                              ${CMAKE_CURRENT_SOURCE_DIR}/win32/leveldb.h
@@ -159,13 +157,6 @@ elseif(APPLE)
     set(CIF_SRCS db/c.cc)
 endif()
 
-  
-#LEVELDB_SOURCE_PROPERTIES(LevelDB "${HEADER_FILES_LEVELDB_DIR}" "$ {SOURCE_FILES_LEVELDB_DIR}") 
-
-#MACRO(LEVELDB_SOURCE_PROPERTIES NAME HEADERS SOURCES)
-#  source_group(${CMAKE_CURRENT_SOURCE_DIR}\\${NAME} FILES ${HEADERS} ${SOURCES})
-#ENDMACRO (LEVELDB_SOURCE_PROPERTIES NAME HEADERS SOURCES)
-
 
 # FIXME: check cstdatomic here..
 
@@ -192,20 +183,18 @@ add_library(leveldb-testharness STATIC ${TESTHARNESS_SRCS})
 target_link_libraries(leveldb-testharness leveldb)
 set_target_properties(leveldb-testharness PROPERTIES FOLDER "Third Party/LevelDB/Tests")
 
-macro(leveldb_tests ${name})
-endmacro()
-
 macro(leveldb_tests)
   foreach(value ${ARGN})
-    get_filename_component(name ${value} NAME)
-      add_executable(${name} ${value})
-      add_test(NAME ${name} COMMAND ${name})
-      if(WIN32)
-        target_link_libraries(${name} leveldb-testharness leveldb)
-      else()
-        target_link_libraries(${name} leveldb-testharness pthread)
-      endif()
-    set_target_properties(${name} PROPERTIES FOLDER "Third Party/LevelDB/Tests")
+    get_filename_component(exe_name ${value} NAME_WE)
+    add_executable(${exe_name} ${value})
+	set(AllExesForCurrentProject ${AllExesForCurrentProject} ${exe_name})
+    add_test(NAME ${exe_name} COMMAND ${exe_name})
+    if(WIN32)
+	  target_link_libraries(${exe_name} leveldb-testharness)
+    else()
+	  target_link_libraries(${exe_name} leveldb-testharness pthread)
+    endif()
+    set_target_properties(${exe_name} PROPERTIES FOLDER "Third Party/LevelDB/Tests")
   endforeach()
 endmacro()
 
@@ -227,3 +216,9 @@ leveldb_tests(db/db_bench.cc
               util/crc32c_test.cc
               util/env_test.cc
              )
+
+include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX-")
+endif()
+
