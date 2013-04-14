@@ -83,7 +83,7 @@ include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/boost")
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/protobuf/src")
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/googlemock/gtest/include")
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/googlemock/include")
-
+include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/leveldb/include")
 
 include(utils)
 include(run_protoc)
