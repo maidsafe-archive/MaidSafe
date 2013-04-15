@@ -2,10 +2,9 @@ cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
 project(leveldb)
 
 include(CheckIncludeFile)
-include(FindBoost) # for Windows...
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_setup.cmake)
 
-ENABLE_TESTING()
+enable_testing()
 
 #==================================================================================================#
 # Files                                                                                            #
@@ -246,5 +245,6 @@ leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/db_bench.cc
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
 if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX-")
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error")
 endif()
-
