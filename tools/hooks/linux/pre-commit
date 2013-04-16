@@ -1,14 +1,14 @@
 #!/usr/bin/python
-import os
-import subprocess
-import sys
-
-script_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "scripts")
-
-#run style check
-test = os.path.join(script_dir, "run_style_check.py")
-style_return_code = subprocess.call(test)
-
-if style_return_code != 0 :
-  sys.exit(1)
+#import os
+#import subprocess
+#import sys
+#
+#script_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "scripts")
+#
+##run style check
+#test = os.path.join(script_dir, "run_style_check.py")
+#style_return_code = subprocess.call(test)
+#
+#if style_return_code != 0 :
+#  sys.exit(1)
 
