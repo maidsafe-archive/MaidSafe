@@ -31,7 +31,7 @@ set(SubModules
       vault
       drive
       lifestuff
-      lifestuff-gui
+      #lifestuff-gui
       )
 
 # Check the submodules are initialised

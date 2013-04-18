@@ -59,7 +59,7 @@ endif()
 
 file(GLOB_RECURSE PbFiles *.pb.cc)
 if(MSVC)
-  add_definitions(-D__MSVC__ -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=0x501)
+  add_definitions(-D__MSVC__ -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=0x600)
   add_definitions(-D_CONSOLE -D_UNICODE -DUNICODE -D_BIND_TO_CURRENT_VCLIBS_VERSION=1)
 
   # VC11 contains std::tuple with variadic templates emulation macro.
