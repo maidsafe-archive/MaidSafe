@@ -1,3 +1,16 @@
+#==================================================================================================#
+#                                                                                                  #
+#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#                                                                                                  #
+#  The following source code is property of MaidSafe.net limited and is not meant for external     #
+#  use.  The use of this code is governed by the license file licence.txt found in the root        #
+#  directory of this project and also on www.maidsafe.net.                                         #
+#                                                                                                  #
+#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
+#  permission of the board of directors of MaidSafe.net.                                           #
+#                                                                                                  #
+#==================================================================================================#
+
 cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
 project(leveldb)
 
@@ -15,7 +28,7 @@ set(HEADER_FILES_LEVELDB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb
                                      ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/comparator.h
                                      ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/db.h
                                      ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/env.h
-                                     ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/filter_policy.h
+									                   ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/filter_policy.h
                                      ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/iterator.h
                                      ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/options.h
                                      ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/slice.h
@@ -57,13 +70,13 @@ set(SOURCE_FILES_LEVELDB_DB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/db/builder.cc
 set(HEADER_FILES_LEVELDB_PORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/port/atomic_pointer.h
                                   ${CMAKE_CURRENT_SOURCE_DIR}/port/port.h
                                   ${CMAKE_CURRENT_SOURCE_DIR}/port/port_example.h
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/port/thread_annotations.h)
+								                  ${CMAKE_CURRENT_SOURCE_DIR}/port/thread_annotations.h)
 
 set(HEADER_FILES_LEVELDB_SNAPPY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy.h
                                     ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-internal.h
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-public.h
                                     ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-sinksource.h
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-internal.h)
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-internal.h
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-public.h)
 
 set(SOURCE_FILES_LEVELDB_SNAPPY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy.cc
                                     ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-sinksource.cc
@@ -71,7 +84,7 @@ set(SOURCE_FILES_LEVELDB_SNAPPY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy.cc
 
 set(HEADER_FILES_LEVELDB_TABLE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/table/block.h
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/block_builder.h
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/table/filter_block.h
+								                   ${CMAKE_CURRENT_SOURCE_DIR}/table/filter_block.h
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/format.h
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/iterator_wrapper.h
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/merger.h
@@ -79,7 +92,7 @@ set(HEADER_FILES_LEVELDB_TABLE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/table/block.h
 
 set(SOURCE_FILES_LEVELDB_TABLE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/table/block.cc
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/block_builder.cc
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/table/filter_block.cc
+								                   ${CMAKE_CURRENT_SOURCE_DIR}/table/filter_block.cc
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/format.cc
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/iterator.cc
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/merger.cc
@@ -103,7 +116,7 @@ set(SOURCE_FILES_LEVELDB_UTIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/util/arena.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/comparator.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/crc32c.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/env.cc
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/util/filter_policy.cc
+								                  ${CMAKE_CURRENT_SOURCE_DIR}/util/filter_policy.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/hash.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/histogram.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/logging.cc
@@ -115,15 +128,9 @@ if(WIN32)
   if(MSVC)
     add_definitions(-DCOMPILER_MSVC)
   endif()
-  set(HEADER_FILES_LEVELDB_WIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/win32/env_win32.h
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/win32/leveldb.h
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/win32/port_win32.h
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/win32/stdint.h
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/win32/unistd.h
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/win32/win32exports.h)
-
-  set(SOURCE_FILES_LEVELDB_WIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/win32/env_win32.cc
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/win32/port_win32.cc)
+  list(APPEND HEADER_FILES_LEVELDB_PORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/port/port_win.h)
+  set(SOURCE_FILES_LEVELDB_PORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/port/port_win.cc)
+  list(APPEND SOURCE_FILES_LEVELDB_UTIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/util/env_win.cc)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
   add_definitions(-DLEVELDB_PLATFORM_POSIX -DOS_FREEBSD)
   set(PORT_SRCS port/port_posix.cc util/env_posix.cc)
@@ -153,6 +160,7 @@ source_group("Include\\leveldb" FILES ${HEADER_FILES_LEVELDB_INCLUDE_DIR})
 source_group("DB\\Header Files" FILES ${HEADER_FILES_LEVELDB_DB_DIR})
 source_group("DB\\Source Files" FILES ${SOURCE_FILES_LEVELDB_DB_DIR})
 source_group("Port\\Header Files" FILES ${HEADER_FILES_LEVELDB_PORT_DIR})
+source_group("Port\\Source Files" FILES ${SOURCE_FILES_LEVELDB_PORT_DIR})
 source_group("Snappy\\Header Files" FILES ${HEADER_FILES_LEVELDB_SNAPPY_DIR})
 source_group("Snappy\\Source Files" FILES ${SOURCE_FILES_LEVELDB_SNAPPY_DIR})
 source_group("Table\\Header Files" FILES ${HEADER_FILES_LEVELDB_TABLE_DIR})
@@ -160,35 +168,17 @@ source_group("Table\\Source Files" FILES ${SOURCE_FILES_LEVELDB_TABLE_DIR})
 source_group("Util\\Header Files" FILES ${HEADER_FILES_LEVELDB_UTIL_DIR})
 source_group("Util\\Source Files" FILES ${SOURCE_FILES_LEVELDB_UTIL_DIR})
 
-if(WIN32)
-  source_group("Win\\Header Files" FILES ${HEADER_FILES_LEVELDB_WIN_DIR})
-  source_group("Win\\Source Files" FILES ${SOURCE_FILES_LEVELDB_WIN_DIR})
-  set(ALL_FILES_LEVELDB_DIR ${HEADER_FILES_LEVELDB_INCLUDE_DIR}
-                            ${HEADER_FILES_LEVELDB_DB_DIR}
-                            ${SOURCE_FILES_LEVELDB_DB_DIR}
-                            ${HEADER_FILES_LEVELDB_PORT_DIR}
-                            ${HEADER_FILES_LEVELDB_SNAPPY_DIR}
-                            ${SOURCE_FILES_LEVELDB_SNAPPY_DIR}
-                            ${HEADER_FILES_LEVELDB_TABLE_DIR}
-                            ${SOURCE_FILES_LEVELDB_TABLE_DIR}
-                            ${HEADER_FILES_LEVELDB_UTIL_DIR}
-                            ${SOURCE_FILES_LEVELDB_UTIL_DIR}
-                            ${HEADER_FILES_LEVELDB_WIN_DIR}
-                            ${SOURCE_FILES_LEVELDB_WIN_DIR})
-else()
-  source_group("Port\\Source Files" FILES ${SOURCE_FILES_LEVELDB_PORT_DIR})
-  set(ALL_FILES_LEVELDB_DIR ${HEADER_FILES_LEVELDB_INCLUDE_DIR}
-                            ${HEADER_FILES_LEVELDB_DB_DIR}
-                            ${SOURCE_FILES_LEVELDB_DB_DIR}
-                            ${HEADER_FILES_LEVELDB_PORT_DIR}
-                            ${SOURCE_FILES_LEVELDB_PORT_DIR}
-                            ${HEADER_FILES_LEVELDB_SNAPPY_DIR}
-                            ${SOURCE_FILES_LEVELDB_SNAPPY_DIR}
-                            ${HEADER_FILES_LEVELDB_TABLE_DIR}
-                            ${SOURCE_FILES_LEVELDB_TABLE_DIR}
-                            ${HEADER_FILES_LEVELDB_UTIL_DIR}
-                            ${SOURCE_FILES_LEVELDB_UTIL_DIR})
-endif()
+set(ALL_FILES_LEVELDB_DIR ${HEADER_FILES_LEVELDB_INCLUDE_DIR}
+                          ${HEADER_FILES_LEVELDB_DB_DIR}
+                          ${SOURCE_FILES_LEVELDB_DB_DIR}
+                          ${HEADER_FILES_LEVELDB_PORT_DIR}
+                          ${SOURCE_FILES_LEVELDB_PORT_DIR}
+                          ${HEADER_FILES_LEVELDB_SNAPPY_DIR}
+                          ${SOURCE_FILES_LEVELDB_SNAPPY_DIR}
+                          ${HEADER_FILES_LEVELDB_TABLE_DIR}
+                          ${SOURCE_FILES_LEVELDB_TABLE_DIR}
+                          ${HEADER_FILES_LEVELDB_UTIL_DIR}
+                          ${SOURCE_FILES_LEVELDB_UTIL_DIR})
 
 #==================================================================================================#
 # Library                                                                                          #
@@ -236,7 +226,6 @@ leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/db_bench.cc
               ${CMAKE_CURRENT_SOURCE_DIR}/db/write_batch_test.cc
               ${CMAKE_CURRENT_SOURCE_DIR}/table/table_test.cc
               ${CMAKE_CURRENT_SOURCE_DIR}/util/arena_test.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/util/bloom_test.cc
               ${CMAKE_CURRENT_SOURCE_DIR}/util/cache_test.cc
               ${CMAKE_CURRENT_SOURCE_DIR}/util/coding_test.cc
               ${CMAKE_CURRENT_SOURCE_DIR}/util/crc32c_test.cc

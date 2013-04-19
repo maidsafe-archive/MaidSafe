@@ -42,23 +42,19 @@ DEFINE_bool(run_microbenchmarks, true,
 
 namespace snappy {
 
-string ReadTestDataFile(const string& base, size_t size_limit) {
+string ReadTestDataFile(const string& base) {
   string contents;
   const char* srcdir = getenv("srcdir");  // This is set by Automake.
-  string prefix;
   if (srcdir) {
-    prefix = string(srcdir) + "/";
-  }
-  file::GetContents(prefix + "testdata/" + base, &contents, file::Defaults()
-      ).CheckSuccess();
-  if (size_limit > 0) {
-    contents = contents.substr(0, size_limit);
+    file::ReadFileToString(string(srcdir) + "/testdata/" + base,
+                           &contents,
+                           file::Defaults()).CheckSuccess();
+  } else {
+    file::ReadFileToString("testdata/" + base,
+                           &contents,
+                           file::Defaults()).CheckSuccess();
   }
   return contents;
-}
-
-string ReadTestDataFile(const string& base) {
-  return ReadTestDataFile(base, 0);
 }
 
 string StringPrintf(const char* format, ...) {

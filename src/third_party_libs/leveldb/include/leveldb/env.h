@@ -267,6 +267,9 @@ extern Status WriteStringToFile(Env* env, const Slice& data,
 extern Status ReadFileToString(Env* env, const std::string& fname,
                                std::string* data);
 
+extern Status WriteStringToFileSync(Env* env, const Slice& data,
+                                    const std::string& fname);
+
 // An implementation of Env that forwards all calls to another Env.
 // May be useful to clients who wish to override just part of the
 // functionality of another Env.

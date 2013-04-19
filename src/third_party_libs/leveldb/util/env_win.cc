@@ -1,33 +1,231 @@
+// This file contains source that originates from:
+// http://code.google.com/p/leveldbwin/source/browse/trunk/win32_impl_src/env_win32.h
+// http://code.google.com/p/leveldbwin/source/browse/trunk/win32_impl_src/port_win32.cc
+// Those files dont' have any explict license headers but the 
+// project (http://code.google.com/p/leveldbwin/) lists the 'New BSD License'
+// as the license.
+#if defined(LEVELDB_PLATFORM_WINDOWS)
 
+#include "leveldb/env.h"
 
 #include "port/port.h"
 #include "leveldb/slice.h"
 #include "util/logging.h"
-#include "env_win32.h"
 
-#include <Shlwapi.h>
+#include <windows.h>
+#include <Shlwapi.h> // <shlwapi.h>
 #include <process.h>
 #include <cstring>
 #include <stdio.h>
 #include <errno.h>
 #include <io.h>
-#include <DbgHelp.h>
 #include <algorithm>
-#pragma comment(lib,"DbgHelp.lib")
-
+#include <map>
 
 #ifdef max
 #undef max
 #endif
 
-//Implementations
+#ifndef va_copy
+#define va_copy(d,s) ((d) = (s))
+#endif
+
+#if defined DeleteFile
+#undef DeleteFile
+#endif
+
+//Declarations
 namespace leveldb
 {
 
-    Win32Env g_Env;
-
 namespace Win32
 {
+
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+  TypeName(const TypeName&);               \
+  void operator=(const TypeName&)
+
+std::string GetCurrentDir();
+std::wstring GetCurrentDirW();
+
+static const std::string CurrentDir = GetCurrentDir();
+static const std::wstring CurrentDirW = GetCurrentDirW();
+
+std::string& ModifyPath(std::string& path);
+std::wstring& ModifyPath(std::wstring& path);
+
+std::string GetLastErrSz();
+std::wstring GetLastErrSzW();
+
+size_t GetPageSize();
+
+typedef void (*ScheduleProc)(void*) ;
+
+struct WorkItemWrapper
+{
+    WorkItemWrapper(ScheduleProc proc_,void* content_);
+    ScheduleProc proc;
+    void* pContent;
+};
+
+DWORD WINAPI WorkItemWrapperProc(LPVOID pContent);
+
+class Win32SequentialFile : public SequentialFile
+{
+public:
+    friend class Win32Env;
+    virtual ~Win32SequentialFile();
+    virtual Status Read(size_t n, Slice* result, char* scratch);
+    virtual Status Skip(uint64_t n);
+    BOOL isEnable();
+private:
+    BOOL _Init();
+    void _CleanUp();
+    Win32SequentialFile(const std::string& fname);
+    std::string _filename;
+    ::HANDLE _hFile;
+    DISALLOW_COPY_AND_ASSIGN(Win32SequentialFile);
+};
+
+class Win32RandomAccessFile : public RandomAccessFile
+{
+public:
+    friend class Win32Env;
+    virtual ~Win32RandomAccessFile();
+    virtual Status Read(uint64_t offset, size_t n, Slice* result,char* scratch) const;
+    BOOL isEnable();
+private:
+    BOOL _Init(LPCWSTR path);
+    void _CleanUp();
+    Win32RandomAccessFile(const std::string& fname);
+    HANDLE _hFile;
+    const std::string _filename;
+    DISALLOW_COPY_AND_ASSIGN(Win32RandomAccessFile);
+};
+
+class Win32MapFile : public WritableFile
+{
+public:
+    Win32MapFile(const std::string& fname);
+
+    ~Win32MapFile();
+    virtual Status Append(const Slice& data);
+    virtual Status Close();
+    virtual Status Flush();
+    virtual Status Sync();
+    BOOL isEnable();
+private:
+    std::string _filename;
+    HANDLE _hFile;
+    size_t _page_size;
+    size_t _map_size;       // How much extra memory to map at a time
+    char* _base;            // The mapped region
+    HANDLE _base_handle;	
+    char* _limit;           // Limit of the mapped region
+    char* _dst;             // Where to write next  (in range [base_,limit_])
+    char* _last_sync;       // Where have we synced up to
+    uint64_t _file_offset;  // Offset of base_ in file
+    //LARGE_INTEGER file_offset_;
+    // Have we done an munmap of unsynced data?
+    bool _pending_sync;
+
+    // Roundup x to a multiple of y
+    static size_t _Roundup(size_t x, size_t y);
+    size_t _TruncateToPageBoundary(size_t s);
+    bool _UnmapCurrentRegion();
+    bool _MapNewRegion();
+    DISALLOW_COPY_AND_ASSIGN(Win32MapFile);
+    BOOL _Init(LPCWSTR Path);
+};
+
+class Win32FileLock : public FileLock
+{
+public:
+    friend class Win32Env;
+    virtual ~Win32FileLock();
+    BOOL isEnable();
+private:
+    BOOL _Init(LPCWSTR path);
+    void _CleanUp();
+    Win32FileLock(const std::string& fname);
+    HANDLE _hFile;
+    std::string _filename;
+    DISALLOW_COPY_AND_ASSIGN(Win32FileLock);
+};
+
+class Win32Logger : public Logger
+{
+public: 
+    friend class Win32Env;
+    virtual ~Win32Logger();
+    virtual void Logv(const char* format, va_list ap);
+private:
+    explicit Win32Logger(WritableFile* pFile);
+    WritableFile* _pFileProxy;
+    DISALLOW_COPY_AND_ASSIGN(Win32Logger);
+};
+
+class Win32Env : public Env
+{
+public:
+    Win32Env();
+    virtual ~Win32Env();
+    virtual Status NewSequentialFile(const std::string& fname,
+        SequentialFile** result);
+
+    virtual Status NewRandomAccessFile(const std::string& fname,
+        RandomAccessFile** result);
+    virtual Status NewWritableFile(const std::string& fname,
+        WritableFile** result);
+
+    virtual bool FileExists(const std::string& fname);
+
+    virtual Status GetChildren(const std::string& dir,
+        std::vector<std::string>* result);
+
+    virtual Status DeleteFile(const std::string& fname);
+
+    virtual Status CreateDir(const std::string& dirname);
+
+    virtual Status DeleteDir(const std::string& dirname);
+
+    virtual Status GetFileSize(const std::string& fname, uint64_t* file_size);
+
+    virtual Status RenameFile(const std::string& src,
+        const std::string& target);
+
+    virtual Status LockFile(const std::string& fname, FileLock** lock);
+
+    virtual Status UnlockFile(FileLock* lock);
+
+    virtual void Schedule(
+        void (*function)(void* arg),
+        void* arg);
+
+    virtual void StartThread(void (*function)(void* arg), void* arg);
+
+    virtual Status GetTestDirectory(std::string* path);
+
+    //virtual void Logv(WritableFile* log, const char* format, va_list ap);
+
+    virtual Status NewLogger(const std::string& fname, Logger** result);
+
+    virtual uint64_t NowMicros();
+
+    virtual void SleepForMicroseconds(int micros);
+};
+
+void ToWidePath(const std::string& value, std::wstring& target) {
+	wchar_t buffer[MAX_PATH];
+	MultiByteToWideChar(CP_ACP, 0, value.c_str(), -1, buffer, MAX_PATH);
+	target = buffer;
+}
+
+void ToNarrowPath(const std::wstring& value, std::string& target) {
+	char buffer[MAX_PATH];
+	WideCharToMultiByte(CP_ACP, 0, value.c_str(), -1, buffer, MAX_PATH, NULL, NULL);
+	target = buffer;
+}
 
 std::string GetCurrentDir()
 {
@@ -66,7 +264,7 @@ std::wstring& ModifyPath(std::wstring& path)
 
 std::string GetLastErrSz()
 {
-    LPVOID lpMsgBuf;
+    LPWSTR lpMsgBuf;
     FormatMessageW( 
         FORMAT_MESSAGE_ALLOCATE_BUFFER | 
         FORMAT_MESSAGE_FROM_SYSTEM | 
@@ -78,7 +276,8 @@ std::string GetLastErrSz()
         0,
         NULL 
         );
-    std::string Err = WCharToMultiByte((LPCWSTR)lpMsgBuf); 
+    std::string Err;
+	ToNarrowPath(lpMsgBuf, Err); 
     LocalFree( lpMsgBuf );
     return Err;
 }
@@ -128,15 +327,6 @@ size_t GetPageSize()
 const size_t g_PageSize = GetPageSize();
 
 
-}
-
-
-
-Env* Env::Default() 
-{
-    return &g_Env;
-}
-
 Win32SequentialFile::Win32SequentialFile( const std::string& fname ) :
     _filename(fname),_hFile(NULL)
 {
@@ -178,7 +368,9 @@ BOOL Win32SequentialFile::isEnable()
 
 BOOL Win32SequentialFile::_Init()
 {
-    _hFile = CreateFileW(Win32::MultiByteToWChar(_filename.c_str() ),
+	std::wstring path;
+	ToWidePath(_filename, path);
+	_hFile = CreateFileW(path.c_str(),
                          GENERIC_READ,
                          FILE_SHARE_READ,
                          NULL,
@@ -199,7 +391,9 @@ void Win32SequentialFile::_CleanUp()
 Win32RandomAccessFile::Win32RandomAccessFile( const std::string& fname ) :
     _filename(fname),_hFile(NULL)
 {
-    _Init(Win32::MultiByteToWChar(fname.c_str() ) );
+	std::wstring path;
+	ToWidePath(fname, path);
+    _Init( path.c_str() );
 }
 
 Win32RandomAccessFile::~Win32RandomAccessFile()
@@ -332,7 +526,9 @@ Win32MapFile::Win32MapFile( const std::string& fname) :
     _file_offset(0),
     _pending_sync(false)
 {
-    _Init(Win32::MultiByteToWChar(fname.c_str() ) );
+	std::wstring path;
+	ToWidePath(fname, path);
+    _Init(path.c_str());
     assert((Win32::g_PageSize & (Win32::g_PageSize - 1)) == 0);
 }
 
@@ -447,7 +643,9 @@ BOOL Win32MapFile::isEnable()
 Win32FileLock::Win32FileLock( const std::string& fname ) :
     _hFile(NULL),_filename(fname)
 {
-    _Init(Win32::MultiByteToWChar(fname.c_str() ) );
+	std::wstring path;
+	ToWidePath(fname, path);
+	_Init(path.c_str());
 }
 
 Win32FileLock::~Win32FileLock()
@@ -546,7 +744,7 @@ void Win32Logger::Logv( const char* format, va_list ap )
         }
 
         assert(p <= limit);
-//        DWORD hasWritten = 0;
+        DWORD hasWritten = 0;
         if(_pFileProxy){
             _pFileProxy->Append(Slice(base, p - base));
             _pFileProxy->Flush();
@@ -560,9 +758,10 @@ void Win32Logger::Logv( const char* format, va_list ap )
 
 bool Win32Env::FileExists(const std::string& fname)
 {
-    std::string path = fname;
-    Win32::ModifyPath(path);
-    return ::PathFileExistsW(Win32::MultiByteToWChar(path.c_str() ) ) ? true : false;
+	std::string path = fname;
+    std::wstring wpath;
+	ToWidePath(ModifyPath(path), wpath);
+    return ::PathFileExistsW(wpath.c_str()) ? true : false;
 }
 
 Status Win32Env::GetChildren(const std::string& dir, std::vector<std::string>* result)
@@ -570,15 +769,17 @@ Status Win32Env::GetChildren(const std::string& dir, std::vector<std::string>* r
     Status sRet;
     ::WIN32_FIND_DATAW wfd;
     std::string path = dir;
-    Win32::ModifyPath(path);
+    ModifyPath(path);
     path += "\\*.*";
-    ::HANDLE hFind = ::FindFirstFileW(
-        Win32::MultiByteToWChar(path.c_str() ) ,&wfd);
+	std::wstring wpath;
+	ToWidePath(path, wpath);
+
+	::HANDLE hFind = ::FindFirstFileW(wpath.c_str() ,&wfd);
     if(hFind && hFind != INVALID_HANDLE_VALUE){
         BOOL hasNext = TRUE;
         std::string child;
         while(hasNext){
-            child = Win32::WCharToMultiByte(wfd.cFileName); 
+            ToNarrowPath(wfd.cFileName, child); 
             if(child != ".." && child != ".")  {
                 result->push_back(child);
             }
@@ -596,12 +797,15 @@ void Win32Env::SleepForMicroseconds( int micros )
     ::Sleep((micros + 999) /1000);
 }
 
+
 Status Win32Env::DeleteFile( const std::string& fname )
 {
     Status sRet;
     std::string path = fname;
-    Win32::ModifyPath(path);
-    if(!::DeleteFileW(Win32::MultiByteToWChar(path.c_str() ) ) ){
+    std::wstring wpath;
+	ToWidePath(ModifyPath(path), wpath);
+
+    if(!::DeleteFileW(wpath.c_str())) {
         sRet = Status::IOError(path, "Could not delete file.");
     }
     return sRet;
@@ -611,8 +815,10 @@ Status Win32Env::GetFileSize( const std::string& fname, uint64_t* file_size )
 {
     Status sRet;
     std::string path = fname;
-    Win32::ModifyPath(path);
-    HANDLE file = ::CreateFileW(Win32::MultiByteToWChar(path.c_str()),
+    std::wstring wpath;
+	ToWidePath(ModifyPath(path), wpath);
+
+    HANDLE file = ::CreateFileW(wpath.c_str(),
         GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
     LARGE_INTEGER li;
     if(::GetFileSizeEx(file,&li)){
@@ -626,17 +832,20 @@ Status Win32Env::GetFileSize( const std::string& fname, uint64_t* file_size )
 Status Win32Env::RenameFile( const std::string& src, const std::string& target )
 {
     Status sRet;
-    std::wstring src_path = Win32::MultiByteToWChar(src.c_str() );
-    std::wstring target_path = Win32::MultiByteToWChar(target.c_str() );
+    std::string src_path = src;
+    std::wstring wsrc_path;
+	ToWidePath(ModifyPath(src_path), wsrc_path);
+	std::string target_path = target;
+    std::wstring wtarget_path;
+	ToWidePath(ModifyPath(target_path), wtarget_path);
 
-    if(!MoveFile(Win32::ModifyPath(src_path).c_str(),
-                 Win32::ModifyPath(target_path).c_str() ) ){
+    if(!MoveFileW(wsrc_path.c_str(), wtarget_path.c_str() ) ){
         DWORD err = GetLastError();
         if(err == 0x000000b7){
-            if(!::DeleteFileW(target_path.c_str() ) )
+            if(!::DeleteFileW(wtarget_path.c_str() ) )
                 sRet = Status::IOError(src, "Could not rename file.");
-            else if(!::MoveFileW(Win32::ModifyPath(src_path).c_str(),
-                                 Win32::ModifyPath(target_path).c_str() ) )
+			else if(!::MoveFileW(wsrc_path.c_str(),
+                                 wtarget_path.c_str() ) )
                 sRet = Status::IOError(src, "Could not rename file.");    
         }
     }
@@ -647,7 +856,7 @@ Status Win32Env::LockFile( const std::string& fname, FileLock** lock )
 {
     Status sRet;
     std::string path = fname;
-    Win32::ModifyPath(path);
+    ModifyPath(path);
     Win32FileLock* _lock = new Win32FileLock(path);
     if(!_lock->isEnable()){
         delete _lock;
@@ -683,9 +892,9 @@ Status Win32Env::GetTestDirectory( std::string* path )
     Status sRet;
     WCHAR TempPath[MAX_PATH];
     ::GetTempPathW(MAX_PATH,TempPath);
-    *path = Win32::WCharToMultiByte(TempPath);
+	ToNarrowPath(TempPath, *path);
     path->append("leveldb\\test\\");
-    Win32::ModifyPath(*path);
+    ModifyPath(*path);
     return sRet;
 }
 
@@ -697,25 +906,44 @@ uint64_t Win32Env::NowMicros()
     return (uint64_t)(GetTickCount64()*1000);
 }
 
+static Status CreateDirInner( const std::string& dirname )
+{
+  Status sRet;
+  std::wstring path;
+	ToWidePath(dirname, path);
+  DWORD attr = ::GetFileAttributes(path.c_str());
+  if (attr == INVALID_FILE_ATTRIBUTES) { // doesn't exist:
+    std::size_t slash = dirname.find_last_of("\\");
+    if (slash != std::string::npos) {
+	    sRet = CreateDirInner(dirname.substr(0, slash));
+	    if (!sRet.ok()) return sRet;
+    }
+    BOOL result = ::CreateDirectory(path.c_str(), NULL);
+    if (result == FALSE) {
+	    sRet = Status::IOError(dirname, "Could not create directory.");
+	    return sRet;
+    }
+  }
+  return sRet;
+}
+
 Status Win32Env::CreateDir( const std::string& dirname )
 {
-    Status sRet;
-    std::string path = Win32::MultiByteToAnsi(dirname.c_str() );
+    std::string path = dirname;
     if(path[path.length() - 1] != '\\'){
         path += '\\';
     }
-    Win32::ModifyPath(path);
-    if(!::MakeSureDirectoryPathExists( path.c_str() ) ){
-        sRet = Status::IOError(dirname, "Could not create directory.");
-    }
-    return sRet;
+    ModifyPath(path);
+
+    return CreateDirInner(path);
 }
 
 Status Win32Env::DeleteDir( const std::string& dirname )
 {
     Status sRet;
-    std::wstring path = Win32::MultiByteToWChar(dirname.c_str() ) ;
-    Win32::ModifyPath(path);
+    std::wstring path;
+	ToWidePath(dirname, path);
+    ModifyPath(path);
     if(!::RemoveDirectoryW( path.c_str() ) ){
         sRet = Status::IOError(dirname, "Could not delete directory.");
     }
@@ -726,7 +954,7 @@ Status Win32Env::NewSequentialFile( const std::string& fname, SequentialFile** r
 {
     Status sRet;
     std::string path = fname;
-    Win32::ModifyPath(path);
+    ModifyPath(path);
     Win32SequentialFile* pFile = new Win32SequentialFile(path);
     if(pFile->isEnable()){
         *result = pFile;
@@ -741,7 +969,7 @@ Status Win32Env::NewRandomAccessFile( const std::string& fname, RandomAccessFile
 {
     Status sRet;
     std::string path = fname;
-    Win32RandomAccessFile* pFile = new Win32RandomAccessFile(Win32::ModifyPath(path));
+    Win32RandomAccessFile* pFile = new Win32RandomAccessFile(ModifyPath(path));
     if(!pFile->isEnable()){
         delete pFile;
         *result = NULL;
@@ -755,7 +983,7 @@ Status Win32Env::NewLogger( const std::string& fname, Logger** result )
 {
     Status sRet;
     std::string path = fname;
-    Win32MapFile* pMapFile = new Win32MapFile(Win32::ModifyPath(path));
+    Win32MapFile* pMapFile = new Win32MapFile(ModifyPath(path));
     if(!pMapFile->isEnable()){
         delete pMapFile;
         *result = NULL;
@@ -769,7 +997,7 @@ Status Win32Env::NewWritableFile( const std::string& fname, WritableFile** resul
 {
     Status sRet;
     std::string path = fname;
-    Win32MapFile* pFile = new Win32MapFile(Win32::ModifyPath(path));
+    Win32MapFile* pFile = new Win32MapFile(ModifyPath(path));
     if(!pFile->isEnable()){
         *result = NULL;
         sRet = Status::IOError(fname,Win32::GetLastErrSz());
@@ -789,5 +1017,17 @@ Win32Env::~Win32Env()
 }
 
 
+}  // Win32 namespace
 
+static port::OnceType once = LEVELDB_ONCE_INIT;
+static Env* default_env;
+static void InitDefaultEnv() { default_env = new Win32::Win32Env(); }
+
+Env* Env::Default() {
+  port::InitOnce(&once, InitDefaultEnv);
+  return default_env;
 }
+
+}  // namespace leveldb
+
+#endif // defined(LEVELDB_PLATFORM_WINDOWS)

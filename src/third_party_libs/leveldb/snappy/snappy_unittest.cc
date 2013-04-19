@@ -611,8 +611,7 @@ TYPED_TEST(CorruptedTest, VerifyCorrupted) {
 
   // try reading stuff in from a bad file.
   for (int i = 1; i <= 3; ++i) {
-    string data = ReadTestDataFile(StringPrintf("baddata%d.snappy", i).c_str(),
-                                   0);
+    string data = ReadTestDataFile(StringPrintf("baddata%d.snappy", i).c_str());
     string uncmp;
     // check that we don't return a crazy length
     size_t ulen;
@@ -769,8 +768,7 @@ TEST(Snappy, FourByteOffset) {
 
   string uncompressed;
   CHECK(snappy::IsValidCompressedBuffer(compressed.data(), compressed.size()));
-  CHECK(snappy::Uncompress(compressed.data(), compressed.size(),
-                           &uncompressed));
+  CHECK(snappy::Uncompress(compressed.data(), compressed.size(), &uncompressed));
   CHECK_EQ(uncompressed, src);
 }
 
@@ -973,18 +971,19 @@ TEST(Snappy, FindMatchLengthRandom) {
 
 static void CompressFile(const char* fname) {
   string fullinput;
-  file::GetContents(fname, &fullinput, file::Defaults()).CheckSuccess();
+  file::ReadFileToString(fname, &fullinput, file::Defaults()).CheckSuccess();
 
   string compressed;
   Compress(fullinput.data(), fullinput.size(), SNAPPY, &compressed, false);
 
-  file::SetContents(string(fname).append(".comp"), compressed, file::Defaults())
-      .CheckSuccess();
+  file::WriteStringToFile(
+      string(fname).append(".comp").c_str(), compressed,
+      file::Defaults()).CheckSuccess();
 }
 
 static void UncompressFile(const char* fname) {
   string fullinput;
-  file::GetContents(fname, &fullinput, file::Defaults()).CheckSuccess();
+  file::ReadFileToString(fname, &fullinput, file::Defaults()).CheckSuccess();
 
   size_t uncompLength;
   CHECK(CheckUncompressedLength(fullinput, &uncompLength));
@@ -993,13 +992,14 @@ static void UncompressFile(const char* fname) {
   uncompressed.resize(uncompLength);
   CHECK(snappy::Uncompress(fullinput.data(), fullinput.size(), &uncompressed));
 
-  file::SetContents(string(fname).append(".uncomp"), uncompressed,
-                    file::Defaults()).CheckSuccess();
+  file::WriteStringToFile(
+      string(fname).append(".uncomp").c_str(), uncompressed,
+      file::Defaults()).CheckSuccess();
 }
 
 static void MeasureFile(const char* fname) {
   string fullinput;
-  file::GetContents(fname, &fullinput, file::Defaults()).CheckSuccess();
+  file::ReadFileToString(fname, &fullinput, file::Defaults()).CheckSuccess();
   printf("%-40s :\n", fname);
 
   int start_len = (FLAGS_start_len < 0) ? fullinput.size() : FLAGS_start_len;
@@ -1032,29 +1032,25 @@ static void MeasureFile(const char* fname) {
 static struct {
   const char* label;
   const char* filename;
-  size_t size_limit;
 } files[] = {
-  { "html", "html", 0 },
-  { "urls", "urls.10K", 0 },
-  { "jpg", "house.jpg", 0 },
-  { "jpg_200", "house.jpg", 200 },
-  { "pdf", "mapreduce-osdi-1.pdf", 0 },
-  { "html4", "html_x_4", 0 },
-  { "cp", "cp.html", 0 },
-  { "c", "fields.c", 0 },
-  { "lsp", "grammar.lsp", 0 },
-  { "xls", "kennedy.xls", 0 },
-  { "xls_200", "kennedy.xls", 200 },
-  { "txt1", "alice29.txt", 0 },
-  { "txt2", "asyoulik.txt", 0 },
-  { "txt3", "lcet10.txt", 0 },
-  { "txt4", "plrabn12.txt", 0 },
-  { "bin", "ptt5", 0 },
-  { "bin_200", "ptt5", 200 },
-  { "sum", "sum", 0 },
-  { "man", "xargs.1", 0 },
-  { "pb", "geo.protodata", 0 },
-  { "gaviota", "kppkn.gtb", 0 },
+  { "html", "html" },
+  { "urls", "urls.10K" },
+  { "jpg", "house.jpg" },
+  { "pdf", "mapreduce-osdi-1.pdf" },
+  { "html4", "html_x_4" },
+  { "cp", "cp.html" },
+  { "c", "fields.c" },
+  { "lsp", "grammar.lsp" },
+  { "xls", "kennedy.xls" },
+  { "txt1", "alice29.txt" },
+  { "txt2", "asyoulik.txt" },
+  { "txt3", "lcet10.txt" },
+  { "txt4", "plrabn12.txt" },
+  { "bin", "ptt5" },
+  { "sum", "sum" },
+  { "man", "xargs.1" },
+  { "pb", "geo.protodata" },
+  { "gaviota", "kppkn.gtb" },
 };
 
 static void BM_UFlat(int iters, int arg) {
@@ -1063,8 +1059,7 @@ static void BM_UFlat(int iters, int arg) {
   // Pick file to process based on "arg"
   CHECK_GE(arg, 0);
   CHECK_LT(arg, ARRAYSIZE(files));
-  string contents = ReadTestDataFile(files[arg].filename,
-                                     files[arg].size_limit);
+  string contents = ReadTestDataFile(files[arg].filename);
 
   string zcontents;
   snappy::Compress(contents.data(), contents.size(), &zcontents);
@@ -1081,7 +1076,7 @@ static void BM_UFlat(int iters, int arg) {
 
   delete[] dst;
 }
-BENCHMARK(BM_UFlat)->DenseRange(0, ARRAYSIZE(files) - 1);
+BENCHMARK(BM_UFlat)->DenseRange(0, 17);
 
 static void BM_UValidate(int iters, int arg) {
   StopBenchmarkTiming();
@@ -1089,8 +1084,7 @@ static void BM_UValidate(int iters, int arg) {
   // Pick file to process based on "arg"
   CHECK_GE(arg, 0);
   CHECK_LT(arg, ARRAYSIZE(files));
-  string contents = ReadTestDataFile(files[arg].filename,
-                                     files[arg].size_limit);
+  string contents = ReadTestDataFile(files[arg].filename);
 
   string zcontents;
   snappy::Compress(contents.data(), contents.size(), &zcontents);
@@ -1113,8 +1107,7 @@ static void BM_ZFlat(int iters, int arg) {
   // Pick file to process based on "arg"
   CHECK_GE(arg, 0);
   CHECK_LT(arg, ARRAYSIZE(files));
-  string contents = ReadTestDataFile(files[arg].filename,
-                                     files[arg].size_limit);
+  string contents = ReadTestDataFile(files[arg].filename);
 
   char* dst = new char[snappy::MaxCompressedLength(contents.size())];
 
@@ -1135,7 +1128,7 @@ static void BM_ZFlat(int iters, int arg) {
                           files[arg].label, contents.size(), zsize);
   delete[] dst;
 }
-BENCHMARK(BM_ZFlat)->DenseRange(0, ARRAYSIZE(files) - 1);
+BENCHMARK(BM_ZFlat)->DenseRange(0, 17);
 
 
 }  // namespace snappy
