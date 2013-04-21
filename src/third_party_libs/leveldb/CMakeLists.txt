@@ -72,16 +72,6 @@ set(HEADER_FILES_LEVELDB_PORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/port/atomic_pointe
                                   ${CMAKE_CURRENT_SOURCE_DIR}/port/port_example.h
 								                  ${CMAKE_CURRENT_SOURCE_DIR}/port/thread_annotations.h)
 
-set(HEADER_FILES_LEVELDB_SNAPPY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy.h
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-internal.h
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-sinksource.h
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-internal.h
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-public.h)
-
-set(SOURCE_FILES_LEVELDB_SNAPPY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy.cc
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-sinksource.cc
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/snappy/snappy-stubs-internal.cc)
-
 set(HEADER_FILES_LEVELDB_TABLE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/table/block.h
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/block_builder.h
 								                   ${CMAKE_CURRENT_SOURCE_DIR}/table/filter_block.h
@@ -124,7 +114,7 @@ set(SOURCE_FILES_LEVELDB_UTIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/util/arena.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/status.cc)
 
 if(WIN32)
-  add_definitions(-DLEVELDB_PLATFORM_WINDOWS -DOS_WIN -DWIN32_LEAN_AND_MEAN)
+  add_definitions(-DLEVELDB_PLATFORM_WINDOWS -DOS_WIN -DWIN32_LEAN_AND_MEAN -DSNAPPY)
   if(MSVC)
     add_definitions(-DCOMPILER_MSVC)
   endif()
@@ -161,8 +151,6 @@ source_group("DB\\Header Files" FILES ${HEADER_FILES_LEVELDB_DB_DIR})
 source_group("DB\\Source Files" FILES ${SOURCE_FILES_LEVELDB_DB_DIR})
 source_group("Port\\Header Files" FILES ${HEADER_FILES_LEVELDB_PORT_DIR})
 source_group("Port\\Source Files" FILES ${SOURCE_FILES_LEVELDB_PORT_DIR})
-source_group("Snappy\\Header Files" FILES ${HEADER_FILES_LEVELDB_SNAPPY_DIR})
-source_group("Snappy\\Source Files" FILES ${SOURCE_FILES_LEVELDB_SNAPPY_DIR})
 source_group("Table\\Header Files" FILES ${HEADER_FILES_LEVELDB_TABLE_DIR})
 source_group("Table\\Source Files" FILES ${SOURCE_FILES_LEVELDB_TABLE_DIR})
 source_group("Util\\Header Files" FILES ${HEADER_FILES_LEVELDB_UTIL_DIR})
@@ -173,8 +161,6 @@ set(ALL_FILES_LEVELDB_DIR ${HEADER_FILES_LEVELDB_INCLUDE_DIR}
                           ${SOURCE_FILES_LEVELDB_DB_DIR}
                           ${HEADER_FILES_LEVELDB_PORT_DIR}
                           ${SOURCE_FILES_LEVELDB_PORT_DIR}
-                          ${HEADER_FILES_LEVELDB_SNAPPY_DIR}
-                          ${SOURCE_FILES_LEVELDB_SNAPPY_DIR}
                           ${HEADER_FILES_LEVELDB_TABLE_DIR}
                           ${SOURCE_FILES_LEVELDB_TABLE_DIR}
                           ${HEADER_FILES_LEVELDB_UTIL_DIR}
@@ -185,7 +171,7 @@ set(ALL_FILES_LEVELDB_DIR ${HEADER_FILES_LEVELDB_INCLUDE_DIR}
 #==================================================================================================#
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_library(leveldb STATIC ${ALL_FILES_LEVELDB_DIR})
-target_link_libraries(leveldb ${BoostChronoLibs} ${BoostDateTimeLibs} ${BoostFilesystemLibs} ${BoostSystemLibs} ${BoostThreadLibs})
+target_link_libraries(leveldb snappy ${BoostChronoLibs} ${BoostDateTimeLibs} ${BoostFilesystemLibs} ${BoostSystemLibs} ${BoostThreadLibs})
 set_target_properties(leveldb PROPERTIES FOLDER "Third Party/LevelDB")
 if(JustThread_FOUND)
   target_link_libraries(leveldb optimized ${JustThread_LIBRARY} debug ${JustThread_LIBRARY_DEBUG})

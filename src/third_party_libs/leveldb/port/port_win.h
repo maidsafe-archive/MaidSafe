@@ -40,7 +40,7 @@
 #include <string>
 #include <stdint.h>
 #ifdef SNAPPY
-#include <snappy.h>
+#include "snappy/snappy.h"
 #endif
 
 namespace leveldb {
