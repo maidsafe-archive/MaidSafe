@@ -12,8 +12,7 @@
 #include "leveldb/slice.h"
 #include "util/logging.h"
 
-#include <windows.h>
-#include <Shlwapi.h> // <shlwapi.h>
+#include <Windows.h>
 #include <process.h>
 #include <cstring>
 #include <stdio.h>
@@ -21,6 +20,8 @@
 #include <io.h>
 #include <algorithm>
 #include <map>
+
+#include "boost/filesystem/operations.hpp"
 
 #ifdef max
 #undef max
@@ -621,7 +622,7 @@ Win32MapFile::~Win32MapFile()
 
 BOOL Win32MapFile::_Init( LPCWSTR Path )
 {
-    DWORD Flag = PathFileExistsW(Path) ? OPEN_EXISTING : CREATE_ALWAYS;
+    DWORD Flag = boost::filesystem::exists(Path) ? OPEN_EXISTING : CREATE_ALWAYS;
     _hFile = CreateFileW(Path,
                          GENERIC_READ | GENERIC_WRITE,
                          FILE_SHARE_READ|FILE_SHARE_DELETE|FILE_SHARE_WRITE,
@@ -758,10 +759,7 @@ void Win32Logger::Logv( const char* format, va_list ap )
 
 bool Win32Env::FileExists(const std::string& fname)
 {
-	std::string path = fname;
-    std::wstring wpath;
-	ToWidePath(ModifyPath(path), wpath);
-    return ::PathFileExistsW(wpath.c_str()) ? true : false;
+  return boost::filesystem::exists(fname);
 }
 
 Status Win32Env::GetChildren(const std::string& dir, std::vector<std::string>* result)
