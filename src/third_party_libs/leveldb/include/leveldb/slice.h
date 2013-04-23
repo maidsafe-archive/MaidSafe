@@ -15,6 +15,11 @@
 #ifndef STORAGE_LEVELDB_INCLUDE_SLICE_H_
 #define STORAGE_LEVELDB_INCLUDE_SLICE_H_
 
+#ifdef _MSC_VER
+#  pragma warning(push)
+#  pragma warning(disable: 4267)
+#endif
+
 #include <assert.h>
 #include <stddef.h>
 #include <string.h>
@@ -105,5 +110,8 @@ inline int Slice::compare(const Slice& b) const {
 
 }  // namespace leveldb
 
+#ifdef _MSC_VER
+#  pragma warning(pop)
+#endif
 
 #endif  // STORAGE_LEVELDB_INCLUDE_SLICE_H_
