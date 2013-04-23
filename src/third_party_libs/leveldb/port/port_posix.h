@@ -43,7 +43,7 @@
 
 #include <pthread.h>
 #ifdef SNAPPY
-#include <snappy.h>
+#include <snappy/snappy.h>
 #endif
 #include <stdint.h>
 #include <string>
