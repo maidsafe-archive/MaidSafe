@@ -38,8 +38,6 @@ if(MSVC)
 endif()
 
 
-get_filename_component(MAIDSAFE_SOURCE_DIR ${PROJECT_SOURCE_DIR} PATH)
-get_filename_component(MAIDSAFE_SOURCE_DIR ${MAIDSAFE_SOURCE_DIR} PATH)
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 
 

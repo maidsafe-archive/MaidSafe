@@ -42,11 +42,17 @@ if(NOT ProtoFiles)
 endif()
 
 # Generate CC and header files derived from proto files into temp dir
+if(MSVC)
+  set(ErrorFormat msvs)
+else()
+  set(ErrorFormat gcc)
+endif()
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/temp_proto_files)
 foreach(ProtoFile ${ProtoFiles})
   execute_process(COMMAND ${ProtocExe}
                     --proto_path=${ProtoSrcDir}
                     --cpp_out=${CMAKE_BINARY_DIR}/temp_proto_files
+                    --error_format=${ErrorFormat}
                     ${ProtoSrcDir}/${ProtoFile}
                     RESULT_VARIABLE ProtocResult
                     ERROR_VARIABLE ProtocError)
