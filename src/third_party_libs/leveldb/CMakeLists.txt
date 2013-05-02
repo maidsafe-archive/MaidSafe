@@ -114,7 +114,7 @@ set(SOURCE_FILES_LEVELDB_UTIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/util/arena.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/status.cc)
 
 if(WIN32)
-  add_definitions(-DLEVELDB_PLATFORM_WINDOWS -DOS_WIN -DWIN32_LEAN_AND_MEAN -DSNAPPY)
+  add_definitions(-DLEVELDB_PLATFORM_WINDOWS -DOS_WIN -DWIN32_LEAN_AND_MEAN) # -DSNAPPY)
   if(MSVC)
     add_definitions(-DCOMPILER_MSVC)
   endif()
