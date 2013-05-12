@@ -56,17 +56,26 @@ foreach(ProtoFile ${ProtoFiles})
                     ${ProtoSrcDir}/${ProtoFile}
                     RESULT_VARIABLE ProtocResult
                     ERROR_VARIABLE ProtocError)
-  if(NOT ProtocResult)
-    get_filename_component(ProtoFileName ${ProtoFile} NAME)
-    message(STATUS "Generated files from ${ProtoFileName}")
+  if(ProtocResult EQUAL 0)
+    # Copy newly-generated files to source tree if different from existing ones
+    get_filename_component(ProtoFileNameWe ${ProtoFile} NAME_WE)
+    get_filename_component(ProtoFileRelPath ${ProtoFile} PATH)
+    set(TempCC ${CMAKE_BINARY_DIR}/temp_proto_files/${ProtoFileRelPath}/${ProtoFileNameWe}.pb.cc)
+    set(TempH ${CMAKE_BINARY_DIR}/temp_proto_files/${ProtoFileRelPath}/${ProtoFileNameWe}.pb.h)
+    set(SourceCC ${ProtoSrcDir}/${ProtoFileRelPath}/${ProtoFileNameWe}.pb.cc)
+    set(SourceH ${ProtoSrcDir}/${ProtoFileRelPath}/${ProtoFileNameWe}.pb.h)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files ${TempCC} ${SourceCC}
+                    RESULT_VARIABLE ComparisonResultCC ERROR_VARIABLE ComparisonErrors)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files ${TempCC} ${SourceCC}
+                    RESULT_VARIABLE ComparisonResultH ERROR_VARIABLE ComparisonErrors)
+    if(NOT ComparisonResultCC EQUAL 0 OR NOT ComparisonResultH EQUAL 0)
+      execute_process(COMMAND ${CMAKE_COMMAND} -E copy ${TempCC} ${SourceCC})
+      execute_process(COMMAND ${CMAKE_COMMAND} -E copy ${TempH} ${SourceH})
+      message(STATUS "Generated files from ${ProtoFileNameWe}.proto")
+    else()
+      message(STATUS "Checked files from ${ProtoFileNameWe}.proto -- up to date")
+    endif()
   else()
     message(FATAL_ERROR "Failed trying to generate files from ${ProtoFile}\n${ProtocError}")
   endif()
 endforeach()
-
-# Copy newly-generated files to source tree if different from existing ones
-set(CMAKE_DISABLE_SOURCE_CHANGES OFF)
-foreach(GeneratedFile ${GeneratedFiles})
-  configure_file(${CMAKE_BINARY_DIR}/temp_proto_files/${GeneratedFile} ${ProtoSrcDir}/${GeneratedFile} COPYONLY)
-endforeach()
-set(CMAKE_DISABLE_SOURCE_CHANGES ON)

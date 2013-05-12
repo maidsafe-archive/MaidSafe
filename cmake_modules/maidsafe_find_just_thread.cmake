@@ -45,9 +45,9 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(NO_JUST_THREADS = 1)
-message(STATUS "Won't use just::thread in conjunction with Clang compiler.")
-return()
+  set(NO_JUST_THREADS 1)
+  message(STATUS "Won't use just::thread in conjunction with Clang compiler.")
+  return()
 endif()
 
 
