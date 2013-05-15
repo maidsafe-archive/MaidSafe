@@ -180,3 +180,18 @@ include(CTest)
 setup_ci_scripts()
 
 unset(QA_BUILD CACHE)
+
+if(MSVC)
+  set(RootFiles ${CMAKE_SOURCE_DIR}/CI.cmake.in
+                ${CMAKE_SOURCE_DIR}/CMakeLists.txt
+                ${CMAKE_SOURCE_DIR}/CTestConfig.cmake
+                ${CMAKE_SOURCE_DIR}/Project.xml)
+  source_group("root" FILES ${RootFiles})
+
+  source_group("root\\src\\third_party_libs" FILES ${CMAKE_SOURCE_DIR}/src/third_party_libs/CMakeLists.txt)
+
+  file(GLOB ModuleFiles ${CMAKE_SOURCE_DIR}/cmake_modules/*)
+  source_group("root\\cmake_modules" FILES ${ModuleFiles})
+
+  add_custom_target(CMakeFiles SOURCES ${RootFiles} src/third_party_libs/CMakeLists.txt ${ModuleFiles})
+endif()
