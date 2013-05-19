@@ -15,7 +15,7 @@
 cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
 
 project(Cryptopp)
-#include(${PROJECT_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
+
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_setup.cmake)
 
 
@@ -25,15 +25,18 @@ file(GLOB TESTcryptopp_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cc")
 
 
 if(CMAKE_CL_64)
-  set(cryptopp_SOURCES ${cryptopp_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm ${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm)
+  enable_language(ASM_MASM)
+  if(NOT CMAKE_ASM_MASM_COMPILER_WORKS)
+    message(FATAL_ERROR "No assembler found.")
+  endif()
+  set(cryptopp_SOURCES ${cryptopp_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm ${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm $(IntDir)x64dll.obj $(IntDir)x64masm.obj)
+  set_source_files_properties($(IntDir)x64dll.obj $(IntDir)x64masm.obj PROPERTIES GENERATED TRUE)
   add_custom_command(OUTPUT $(IntDir)x64dll.obj
-                     COMMAND ml64.exe /c /nologo /Fo$(IntDir)x64dll.obj /Zi "${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm"
-                     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm
-                     VERBATIM)
+                     COMMAND ${CMAKE_ASM_MASM_COMPILER} /c /nologo /Fo$(IntDir)x64dll.obj "${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm"
+                     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm)
   add_custom_command(OUTPUT $(IntDir)x64masm.obj
-                     COMMAND ml64.exe /c /nologo /Fo$(IntDir)x64masm.obj /Zi "${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm"
-                     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm
-                     VERBATIM)
+                     COMMAND ${CMAKE_ASM_MASM_COMPILER} /c /nologo /Fo$(IntDir)x64masm.obj "${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm"
+                     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm)
 endif()
 
 # Not used
