@@ -171,7 +171,7 @@ set(ALL_FILES_LEVELDB_DIR ${HEADER_FILES_LEVELDB_INCLUDE_DIR}
 #==================================================================================================#
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_library(leveldb STATIC ${ALL_FILES_LEVELDB_DIR})
-target_link_libraries(leveldb snappy ${BoostChronoLibs} ${BoostDateTimeLibs} ${BoostFilesystemLibs} ${BoostSystemLibs} ${BoostThreadLibs})
+target_link_libraries(leveldb ${BoostChronoLibs} ${BoostDateTimeLibs} ${BoostFilesystemLibs} ${BoostSystemLibs} ${BoostThreadLibs})
 set_target_properties(leveldb PROPERTIES FOLDER "Third Party/LevelDB")
 if(JustThread_FOUND)
   target_link_libraries(leveldb optimized ${JustThread_LIBRARY} debug ${JustThread_LIBRARY_DEBUG})
