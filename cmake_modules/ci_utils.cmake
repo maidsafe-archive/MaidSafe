@@ -143,7 +143,7 @@ function(handle_failed_build)
   message("${SubProject} failed during build, exiting script")
   if(WIN32)
     # TODO(Viv) Check OS Version
-    execute_process(COMMAND cmd /c "ci_build_reporter.py win7 ${MachineBuildType} fail ${SubProject} ${${SubProject}NewCommitLogAuthor}"
+    execute_process(COMMAND cmd /c "ci_build_reporter.py win8 ${MachineBuildType} fail ${SubProject} ${${SubProject}NewCommitLogAuthor}"
                     WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
                     RESULT_VARIABLE ResultVar
                     OUTPUT_VARIABLE OutputVar)
@@ -164,11 +164,7 @@ function(build_and_run SubProject RunAll)
   endif()
 
   message("Building ${SubProject}")
-  if(NOT ${SubProject} STREQUAL "Vault")
-    set(CTEST_BUILD_TARGET "All${SubProject}")
-  else()
-    set(CTEST_BUILD_TARGET "AllPd")
-  endif()
+  set(CTEST_BUILD_TARGET "All${SubProject}")
   # add coverage flags
   if(DashboardModel STREQUAL "Experimental")
     set(ExtraConfigureArgs "${ExtraConfigureArgs};-DCOVERAGE=ON")
@@ -230,7 +226,7 @@ function(build_and_run SubProject RunAll)
   elseif(${SubProject} STREQUAL "LifestuffGui")
     if(WIN32)
       # TODO(Viv) Check OS Version
-      execute_process(COMMAND cmd /c "ci_build_reporter.py win7 ${MachineBuildType} ok ${SubProject} ${${SubProject}NewCommitLogAuthor}"
+      execute_process(COMMAND cmd /c "ci_build_reporter.py win8 ${MachineBuildType} ok ${SubProject} ${${SubProject}NewCommitLogAuthor}"
                       WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
                       RESULT_VARIABLE ResultVar
                       OUTPUT_VARIABLE OutputVar)

@@ -56,10 +56,7 @@ message("=======================================================================
 # Set sub-projects' source and binary directories                                                  #
 #==================================================================================================#
 foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
-  if(${SubProject} STREQUAL "Vault")
-    set(${SubProject}SourceDirectory ${CTEST_SOURCE_DIRECTORY}/src/pd)
-    set(${SubProject}BinaryDirectory ${CMAKE_CURRENT_BINARY_DIR}/src/pd)
-  elseif(${SubProject} STREQUAL "LifestuffGui")
+  if(${SubProject} STREQUAL "LifestuffGui")
     set(${SubProject}SourceDirectory ${CTEST_SOURCE_DIRECTORY}/src/lifestuff-gui)
     set(${SubProject}BinaryDirectory ${CMAKE_CURRENT_BINARY_DIR}/src/lifestuff-gui)
   else()
