@@ -30,9 +30,10 @@ set(SubModules
       nfs
       vault
       drive
-      lifestuff
-      lifestuff-gui
-      )
+      lifestuff)
+if(EXISTS ${CMAKE_SOURCE_DIR}/src/lifestuff-gui)
+  list(APPEND SubModules lifestuff-gui)
+endif()
 
 # Check the submodules are initialised
 foreach(SubModule ${SubModules})
