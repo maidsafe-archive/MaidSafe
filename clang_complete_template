@@ -24,6 +24,6 @@
 -Isrc/rudp/include
 -Isrc/routing/include
 -Isrc/lifestuff/include
--Isrc/lifestuff-gui/include
+-Isrc/lifestuff-qt-ui/include
 -Ibuild4.7Debug/src/lifestuff
 -I/usr/include/python2.7

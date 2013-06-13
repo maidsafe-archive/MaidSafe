@@ -30,6 +30,7 @@
 *.zip
 *.pyc
 src/sandbox
+src/lifestuff-ui-qt
 
 # Logs and databases #
 ######################

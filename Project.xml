@@ -12,6 +12,12 @@
     <Dependency name="Private"/>
     <Dependency name="Common"/>
   </SubProject>
+  <SubProject name="Nfs">
+    <Dependency name="Common"/>
+    <Dependency name="Private"/>
+    <Dependency name="Rudp"/>
+    <Dependency name="Routing"/>
+  </SubProject>
   <SubProject name="Passport">
     <Dependency name="Common"/>
     <Dependency name="Private"/>
@@ -30,22 +36,25 @@
     <Dependency name="Private"/>
     <Dependency name="Rudp"/>
     <Dependency name="Routing"/>
+    <Dependency name="Nfs"/>
   </SubProject>
   <SubProject name="Lifestuff">
     <Dependency name="Common"/>
     <Dependency name="Private"/>
     <Dependency name="Rudp"/>
     <Dependency name="Routing"/>
+    <Dependency name="Nfs"/>
     <Dependency name="Passport"/>
     <Dependency name="Encrypt"/>
     <Dependency name="Drive"/>
     <Dependency name="Vault"/>
   </SubProject>
-  <SubProject name="LifestuffGui">
+  <SubProject name="LifestuffUiQt">
     <Dependency name="Common"/>
     <Dependency name="Private"/>
     <Dependency name="Rudp"/>
     <Dependency name="Routing"/>
+    <Dependency name="Nfs"/>
     <Dependency name="Passport"/>
     <Dependency name="Encrypt"/>
     <Dependency name="Drive"/>

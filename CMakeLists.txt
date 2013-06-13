@@ -31,8 +31,8 @@ set(SubModules
       vault
       drive
       lifestuff)
-if(EXISTS ${CMAKE_SOURCE_DIR}/src/lifestuff-gui)
-  list(APPEND SubModules lifestuff-gui)
+if(EXISTS ${CMAKE_SOURCE_DIR}/src/lifestuff-ui-qt)
+  list(APPEND SubModules lifestuff-ui-qt)
 endif()
 
 # Check the submodules are initialised

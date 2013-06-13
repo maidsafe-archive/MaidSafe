@@ -12,10 +12,11 @@ set(CTEST_PROJECT_SUBPROJECTS
     Rudp
     Private
     Routing
+    Nfs
     Passport
     Encrypt
     Drive
     Vault
     Lifestuff
-    LifestuffGui
+    LifestuffUiQt
     )

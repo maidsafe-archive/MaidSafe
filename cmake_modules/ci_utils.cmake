@@ -223,7 +223,7 @@ function(build_and_run SubProject RunAll)
     handle_failed_build()
     set(BuildFailed TRUE PARENT_SCOPE)
     break()
-  elseif(${SubProject} STREQUAL "LifestuffGui")
+  elseif(${SubProject} STREQUAL "LifestuffUiQt")
     if(WIN32)
       # TODO(Viv) Check OS Version
       execute_process(COMMAND cmd /c "ci_build_reporter.py win8 ${MachineBuildType} ok ${SubProject} ${${SubProject}NewCommitLogAuthor}"
