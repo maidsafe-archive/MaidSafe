@@ -31,6 +31,12 @@ set(SubModules
       vault
       drive
       lifestuff)
+# Set all submodules' source dir before calling add_subdirectory to avoid
+# having to run CMake twice in a clean build tree.
+foreach(SubModule ${SubModules})
+  set(${SubModule}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/${SubModule})
+endforeach()
+
 if(EXISTS ${CMAKE_SOURCE_DIR}/src/lifestuff-ui-qt)
   list(APPEND SubModules lifestuff-ui-qt)
 endif()
