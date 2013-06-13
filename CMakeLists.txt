@@ -1,19 +1,18 @@
-#==============================================================================#
-#                                                                              #
-#  Copyright (c) 2012 MaidSafe.net limited                                     #
-#                                                                              #
-#  The following source code is property of MaidSafe.net limited and is not    #
-#  meant for external use.  The use of this code is governed by the license    #
-#  file licence.txt found in the root directory of this project and also on    #
-#  www.maidsafe.net.                                                           #
-#                                                                              #
-#  You are not free to copy, amend or otherwise use this source code without   #
-#  the explicit written permission of the board of directors of MaidSafe.net.  #
-#                                                                              #
-#==============================================================================#
+#==================================================================================================#
+#                                                                                                  #
+#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#                                                                                                  #
+#  The following source code is property of MaidSafe.net limited and is not meant for external     #
+#  use.  The use of this code is governed by the license file licence.txt found in the root        #
+#  directory of this project and also on www.maidsafe.net.                                         #
+#                                                                                                  #
+#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
+#  permission of the board of directors of MaidSafe.net.                                           #
+#                                                                                                  #
+#==================================================================================================#
 
 
-cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
 project(maidsafe)
 
 enable_testing()
@@ -28,11 +27,13 @@ set(SubModules
       routing
       encrypt
       passport
-      pd
+      nfs
+      vault
       drive
-      lifestuff
-      lifestuff-gui
-      )
+      lifestuff)
+if(EXISTS ${CMAKE_SOURCE_DIR}/src/lifestuff-gui)
+  list(APPEND SubModules lifestuff-gui)
+endif()
 
 # Check the submodules are initialised
 foreach(SubModule ${SubModules})
@@ -44,18 +45,16 @@ foreach(SubModule ${SubModules})
   endif()
 endforeach()
 
-set(APPLICATION_VERSION_MAJOR 0)
-set(APPLICATION_VERSION_MINOR 1)
-set(APPLICATION_VERSION_PATCH 002)
+set(ApplicationVersionMajor 0)
+set(ApplicationVersionMinor 1)
+set(ApplicationVersionPatch 002)
 
-# Testing environment if APPLICATION_VERSION_MINOR is odd
-math(EXPR MAIDSAFE_TESTING ${APPLICATION_VERSION_MINOR}%2)
+# Testing environment if ApplicationVersionMinor is odd
+math(EXPR MaidsafeTesting ${ApplicationVersionMinor}%2)
 
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
-# set(MAIDSAFE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/${COMPILER}/installed" )
-# set(MAIDSAFE_INCLUDE_DIR "${MAIDSAFE_INSTALL_PREFIX}/include")
 
 if(APPLE)
   if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -78,16 +77,9 @@ include(cmake_modules/maidsafe_find_just_thread.cmake)
 
 # Coverage:When this target is built, it removes all .gcda files from the build directory and its subdirectories
 if(UNIX)
-  find_file(CLEAN_COVERAGE clean_coverage.cmake cmake_modules/)
-  if(CLEAN_COVERAGE)
-    add_custom_target(CleanCoverage COMMAND ${CMAKE_COMMAND} -DSEARCH_DIR=${CMAKE_BINARY_DIR} -P ${CLEAN_COVERAGE})
-  endif()
-  if (COVERAGE MATCHES "ON")
-    # message("coveragesation")
-    set(MAIDSAFE_COVERAGE "ON")
-  else()
-    set(MAIDSAFE_COVERAGE "OFF")
-  endif()
+  find_file(CleanCoverageFile clean_coverage.cmake cmake_modules)
+  add_custom_target(CleanCoverage COMMAND ${CMAKE_COMMAND} -DSearchDir=${CMAKE_BINARY_DIR} -P ${CleanCoverageFile})
+  set(MaidsafeCoverage ${COVERAGE})
 endif()
 
 # Python interpreter and library search
@@ -103,8 +95,8 @@ if(WIN32)
   get_filename_component(PythonPath ${PYTHON_EXECUTABLE} PATH)
   get_filename_component(PythonLibName ${PythonPath} NAME)
   string(TOLOWER "${PythonLibName}" PythonLibName)
-  find_library(PYTHON_LIBRARY NAMES ${PythonLibName} PATHS ${PythonPath}/libs NO_DEFAULT_PATH)
-  find_path(PYTHON_INCLUDE_DIR NAMES Python.h PATHS ${PythonPath}/include NO_DEFAULT_PATH)
+  find_library(PythonLibrary NAMES ${PythonLibName} PATHS ${PythonPath}/libs NO_DEFAULT_PATH)
+  find_path(PythonIncludeDir NAMES Python.h PATHS ${PythonPath}/include NO_DEFAULT_PATH)
 endif()
 find_package(PythonLibs REQUIRED)
 
@@ -145,6 +137,21 @@ foreach(SubModule ${SubModules})
   add_subdirectory(src/${SubModule})
 endforeach()
 
+if(EXISTS ${CMAKE_SOURCE_DIR}/src/sandbox)
+  message("${HR}\nConfiguring Sandbox projects\n----------------------------")
+  file(GLOB AllSandboxDirs "${maidsafe_SOURCE_DIR}/src/sandbox/*")
+  list(REMOVE_ITEM AllSandboxDirs "${maidsafe_SOURCE_DIR}/src/sandbox/default"
+                                  "${maidsafe_SOURCE_DIR}/src/sandbox/.git"
+                                  "${maidsafe_SOURCE_DIR}/src/sandbox/.gitignore"
+                                  "${maidsafe_SOURCE_DIR}/src/sandbox/README"
+                                  "${maidsafe_SOURCE_DIR}/src/sandbox/standard_sandbox_setup.cmake")
+  foreach(SandboxDir ${AllSandboxDirs})
+    get_filename_component(DirName ${SandboxDir} NAME)
+    message(STATUS "${DirName}")
+    add_subdirectory(${SandboxDir})
+  endforeach()
+endif()
+
 message("${HR}")
 
 message(STATUS "To include all tests,                    cmake . -DMAIDSAFE_TEST_TYPE=ALL")
@@ -153,14 +160,17 @@ message(STATUS "To include functional tests,             cmake . -DMAIDSAFE_TEST
 message("${HR}")
 
 
+tidy_ctest_custom()
+
+
 # create hooks
-message("Running setup for hooks")
-if(UNIX)
-  execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/hooks/linux/scripts/hooks.py)
-else()
-  execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/hooks/windows/scripts/hooks.exe)
-endif()
-message("${HR}")
+# message("Running setup for hooks")
+# if(UNIX)
+#   execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/hooks/linux/scripts/hooks.py)
+# else()
+#   execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/hooks/windows/scripts/dist/hooks.exe)
+# endif()
+# message("${HR}")
 
 cleanup_temp_dir()
 rename_outdated_built_exes()
@@ -171,3 +181,18 @@ include(CTest)
 setup_ci_scripts()
 
 unset(QA_BUILD CACHE)
+
+if(MSVC)
+  set(RootFiles ${CMAKE_SOURCE_DIR}/CI.cmake.in
+                ${CMAKE_SOURCE_DIR}/CMakeLists.txt
+                ${CMAKE_SOURCE_DIR}/CTestConfig.cmake
+                ${CMAKE_SOURCE_DIR}/Project.xml)
+  source_group("root" FILES ${RootFiles})
+
+  source_group("root\\src\\third_party_libs" FILES ${CMAKE_SOURCE_DIR}/src/third_party_libs/CMakeLists.txt)
+
+  file(GLOB ModuleFiles ${CMAKE_SOURCE_DIR}/cmake_modules/*)
+  source_group("root\\cmake_modules" FILES ${ModuleFiles})
+
+  add_custom_target(CMakeFiles SOURCES ${RootFiles} src/third_party_libs/CMakeLists.txt ${ModuleFiles})
+endif()

@@ -246,7 +246,7 @@ _CPP_HEADERS = frozenset([
     'atomic', 'type_traits', 'chrono', 'initializer_list', 'tuple',
     'scoped_allocator', 'array', 'forward_list', 'unordered_set', 'unordered_map',
     'ratio', 'cfenv', 'codecvt', 'regex', 'thread', 'mutex', 'future', 'condition_variable',
-    'cstdint', 'system_error',
+    'cstdint', 'system_error', 'random'
     ])
 
 
@@ -1364,7 +1364,7 @@ def CheckForNonStandardConstructs(filename, clean_lines, linenum,
   if Search(r'\b(const|volatile|void|char|short|int|long'
             r'|float|double|signed|unsigned'
             r'|schar|u?int8|u?int16|u?int32|u?int64)'
-            r'\s+(auto|register|static|extern|typedef)\b',
+            r'\s+(register|static|extern|typedef)\b',
             line):
     error(filename, linenum, 'build/storage_class', 5,
           'Storage class (static, extern, typedef, etc) should be first.')
@@ -1823,12 +1823,13 @@ def CheckSpacing(filename, clean_lines, linenum, error):
   if match:
     error(filename, linenum, 'whitespace/operators', 3,
           'Missing spaces around %s' % match.group(1))
-  # We allow no-spaces around << and >> when used like this: 10<<20, but
-  # not otherwise (particularly, not when used as streams)
-  match = Search(r'[^0-9\s](<<|>>)[^0-9\s]', line)
-  if match:
-    error(filename, linenum, 'whitespace/operators', 3,
-          'Missing spaces around %s' % match.group(1))
+# Commented the following because >>> is now permissible
+#  # We allow no-spaces around << and >> when used like this: 10<<20, but
+#  # not otherwise (particularly, not when used as streams)
+#  match = Search(r'[^0-9\s](<<|>>)[^0-9\s]', line)
+#  if match:
+#    error(filename, linenum, 'whitespace/operators', 3,
+#          'Missing spaces around %s' % match.group(1))
 
   # There shouldn't be space around unary operators
   match = Search(r'(!\s|~\s|[\s]--[\s;]|[\s]\+\+[\s;])', line)
@@ -2058,7 +2059,7 @@ def CheckBraces(filename, clean_lines, linenum, error):
       break
   if (Search(r'{.*}\s*;', line) and
       line.count('{') == line.count('}') and
-      not Search(r'struct|class|enum|\s*=\s*{', line)):
+      not Search(r'struct|class|enum|\s*=\s*{|[.*]', line)):
     error(filename, linenum, 'readability/braces', 4,
           "You don't need a ; after a }")
 
@@ -2245,11 +2246,11 @@ def CheckStyle(filename, clean_lines, linenum, file_extension, class_state,
        GetPreviousNonBlankLine(clean_lines, linenum)[0].find(';') != -1) and
       # It's ok to have many commands in a switch case that fits in 1 line
       not ((cleansed_line.find('case ') != -1 or
-            cleansed_line.find('; };') != -1 or
-            cleansed_line.find(';};') != -1 or
-            cleansed_line.find('});') != -1 or
             cleansed_line.find('default:') != -1) and
-           cleansed_line.find('break;') != -1)):
+           cleansed_line.find('break;') != -1) and
+      not (cleansed_line.find('; };') != -1 and cleansed_line.find(']') != -1) and
+      not (cleansed_line.find('})') != -1 and cleansed_line.find(']') != -1)
+      ):
     error(filename, linenum, 'whitespace/newline', 4,
           'More than one command on the same line')
 
@@ -2898,8 +2899,7 @@ _HEADERS_CONTAINING_TEMPLATES = (
 _RE_PATTERN_STRING = re.compile(r'\bstring\b')
 
 _re_pattern_algorithm_header = []
-for _template in ('copy', 'max', 'min', 'min_element', 'sort', 'swap',
-                  'transform'):
+for _template in ('copy', 'max', 'min', 'min_element', 'sort', 'transform'):
   # Match max<type>(..., ...), max(..., ...), but not foo->max, foo.max or
   # type::max().
   _re_pattern_algorithm_header.append(

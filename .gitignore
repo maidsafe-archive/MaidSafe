@@ -29,6 +29,8 @@
 *.tar
 *.zip
 *.pyc
+src/sandbox
+
 # Logs and databases #
 ######################
 *.log

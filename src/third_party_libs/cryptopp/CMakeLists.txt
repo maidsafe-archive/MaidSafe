@@ -12,11 +12,11 @@
 #                                                                              #
 #==============================================================================#
 
-cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
 
 project(Cryptopp)
-#include(${PROJECT_SOURCE_DIR}/cmake_modules/maidsafe_standard_flags.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake_modules/maidsafe_standard_setup.cmake)
+
+include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_setup.cmake)
 
 
 file(GLOB cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
@@ -25,15 +25,18 @@ file(GLOB TESTcryptopp_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cc")
 
 
 if(CMAKE_CL_64)
-  set(cryptopp_SOURCES ${cryptopp_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm ${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm)
+  enable_language(ASM_MASM)
+  if(NOT CMAKE_ASM_MASM_COMPILER_WORKS)
+    message(FATAL_ERROR "No assembler found.")
+  endif()
+  set(cryptopp_SOURCES ${cryptopp_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm ${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm $(IntDir)x64dll.obj $(IntDir)x64masm.obj)
+  set_source_files_properties($(IntDir)x64dll.obj $(IntDir)x64masm.obj PROPERTIES GENERATED TRUE)
   add_custom_command(OUTPUT $(IntDir)x64dll.obj
-                     COMMAND ml64.exe /c /nologo /Fo$(IntDir)x64dll.obj /Zi "${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm"
-                     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm
-                     VERBATIM)
+                     COMMAND ${CMAKE_ASM_MASM_COMPILER} /c /nologo /Fo$(IntDir)x64dll.obj "${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm"
+                     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm)
   add_custom_command(OUTPUT $(IntDir)x64masm.obj
-                     COMMAND ml64.exe /c /nologo /Fo$(IntDir)x64masm.obj /Zi "${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm"
-                     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm
-                     VERBATIM)
+                     COMMAND ${CMAKE_ASM_MASM_COMPILER} /c /nologo /Fo$(IntDir)x64masm.obj "${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm"
+                     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm)
 endif()
 
 # Not used
@@ -124,21 +127,22 @@ if(UNIX)
   endif()
   if(JUST_THREAD_DEADLOCK_CHECK)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_JUST_THREAD_DEADLOCK_CHECK")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -D_JUST_THREAD_DEADLOCK_CHECK")
   endif()
 elseif(MSVC)
   set_target_properties(cryptopp PROPERTIES
-                          COMPILE_FLAGS "/D_WINDOWS /DUSE_PRECOMPILED_HEADERS /DWIN32 /D_VC80_UPGRADE=0x0710 /EHsc /W3")
+                          COMPILE_FLAGS "/D_WINDOWS /DUSE_PRECOMPILED_HEADERS /DWIN32 /D_VC80_UPGRADE=0x0710 /EHsc /W3 /wd4068"
+                          STATIC_LIBRARY_FLAGS_RELEASE "/LTCG"
+                          STATIC_LIBRARY_FLAGS_RELWITHDEBINFO "/LTCG")
   set_target_properties(cryptest PROPERTIES
                           COMPILE_FLAGS "/D_CONSOLE /DWIN32 /D_VC80_UPGRADE=0x0710 /D_MBCS /EHsc /W3"
                           LINK_FLAGS_RELEASE "/OPT:REF /OPT:ICF /LTCG"
-                          LINK_FLAGS_RELWITHDEBINFO "/LTCG"
+                          LINK_FLAGS_RELWITHDEBINFO "/OPT:REF /OPT:ICF /LTCG /DEBUG"
                           LINK_FLAGS_MINSIZEREL "/LTCG")
-  set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2 /Oi /Oy /GL /DNDEBUG /GF /MD /Gy /Zi")
+  set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2 /Oi /Oy /GL /DNDEBUG /GF /MD /Gy")
   set(CMAKE_CXX_FLAGS_DEBUG "/Od /Oi /D_DEBUG /MDd /Zi")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
   if(JUST_THREAD_DEADLOCK_CHECK)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D \"_JUST_THREAD_DEADLOCK_CHECK\"")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /D \"_JUST_THREAD_DEADLOCK_CHECK\"")
   endif()
   # Reduce compiler's heap allocation from 1000% of default to 500% to avoid errors when compiling precompiled headers
   string(REPLACE "Zm1000" "Zm500" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
@@ -151,23 +155,3 @@ elseif(MSVC)
                                 COMPILE_FLAGS "/Yc\"pch.h\"")
   target_link_libraries(cryptest odbc32.lib odbccp32.lib Ws2_32.lib)
 endif()
-
-add_test(NAME CryptoppTest.BEH_FULL COMMAND $<TARGET_FILE:cryptest> v WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
-add_test(NAME CryptoppTest.BEH_AES COMMAND $<TARGET_FILE:cryptest> tv aes WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
-add_test(NAME CryptoppTest.BEH_SHA COMMAND $<TARGET_FILE:cryptest> tv sha WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
-add_test(NAME CryptoppTest.BEH_RSA_PSS COMMAND $<TARGET_FILE:cryptest> tv rsa_pss WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
-add_test(NAME CryptoppTest.BEH_RSA_OAEP COMMAND $<TARGET_FILE:cryptest> tv rsa_oaep WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
-add_test(NAME CryptoppTest.BEH_RSA_PKCS1_1_5 COMMAND $<TARGET_FILE:cryptest> tv rsa_pkcs1_1_5 WORKING_DIRECTORY $<TARGET_FILE_DIR:cryptest>)
-
-set_property(TEST CryptoppTest.BEH_FULL PROPERTY LABELS Common Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CryptoppTest.BEH_FULL PROPERTY TIMEOUT 60)
-set_property(TEST CryptoppTest.BEH_AES PROPERTY LABELS Common Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CryptoppTest.BEH_AES PROPERTY TIMEOUT 60)
-set_property(TEST CryptoppTest.BEH_SHA PROPERTY LABELS Common Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CryptoppTest.BEH_SHA PROPERTY TIMEOUT 60)
-set_property(TEST CryptoppTest.BEH_RSA_PSS PROPERTY LABELS Common Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CryptoppTest.BEH_RSA_PSS PROPERTY TIMEOUT 60)
-set_property(TEST CryptoppTest.BEH_RSA_OAEP PROPERTY LABELS Common Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CryptoppTest.BEH_RSA_OAEP PROPERTY TIMEOUT 60)
-set_property(TEST CryptoppTest.BEH_RSA_PKCS1_1_5 PROPERTY LABELS Common Behavioural CryptoPP ${CMAKE_BUILD_TYPE})
-set_property(TEST CryptoppTest.BEH_RSA_PKCS1_1_5 PROPERTY TIMEOUT 60)

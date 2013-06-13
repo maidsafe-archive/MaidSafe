@@ -103,15 +103,15 @@ if (NOT BOOST_TOOLSET)
 endif (NOT BOOST_TOOLSET)
  # enable libc++ if available
  if(APPLE OR HAVE_LIBC++)
-   set(LIBC++ "-stdlib=libc++")
+   set(LibCpp "-stdlib=libc++")
  endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   if(HAVE_LIBCXXRT)
-    set(LIBC++ "-stdlib=libc++")
+    set(LibCpp "-stdlib=libc++")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lcxxrt -ldl")
   endif()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${LIBC++} -fPIC")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${LibCpp} -fPIC")
 endif()
 boost_report_pretty("Boost compiler" BOOST_COMPILER)
 boost_report_pretty("Boost toolset"  BOOST_TOOLSET)
@@ -207,7 +207,7 @@ endif (CMAKE_EXE_LINKER_FLAGS_RELEASE)
 # Tweak the configuration and build types appropriately.
 if(CMAKE_CONFIGURATION_TYPES)
   # Limit CMAKE_CONFIGURATION_TYPES to Debug and Release
-  set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Semicolon-separate list of supported configuration types" FORCE)
+#  set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Semicolon-separate list of supported configuration types" FORCE)
 else(CMAKE_CONFIGURATION_TYPES)
   # Build in release mode by default
   if (NOT CMAKE_BUILD_TYPE)

@@ -3,9 +3,9 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 project(Protobuf)
 
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
 
-include(../../../cmake_modules/maidsafe_standard_flags.cmake)
+include(../../../cmake_modules/standard_flags.cmake)
 
 if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX- /W0")
@@ -35,6 +35,16 @@ LIST(REMOVE_ITEM PROTOBUF_DIR ${PROTOC_DIR} ${TESTS})
 add_library(protobuf ${PROTOBUF_DIR})
 add_executable(protoc ${PROTOC_DIR})
 set_target_properties(protobuf protoc PROPERTIES FOLDER "Third Party/Google Protocol Buffers")
+
+if(MSVC)
+  set_target_properties(protobuf PROPERTIES
+                        STATIC_LIBRARY_FLAGS_RELEASE "/LTCG"
+                        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO "/LTCG")
+  set_target_properties(protoc PROPERTIES
+                        LINK_FLAGS_RELEASE "/OPT:REF /OPT:ICF /LTCG"
+                        LINK_FLAGS_RELWITHDEBINFO "/OPT:REF /OPT:ICF /LTCG /DEBUG"
+                        LINK_FLAGS_MINSIZEREL "/LTCG")
+endif()
 
 
 if(UNIX)

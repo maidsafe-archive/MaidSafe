@@ -3,8 +3,6 @@
 -DAPPLICATION_VERSION_MAJOR=0
 -DAPPLICATION_VERSION_MINOR=1
 -DAPPLICATION_VERSION_PATCH=002
-#-DTARGET_PLATFORM=Linux
-#-DTARGET_ARCHITECTURE=x86_64
 -DTESTING -DBOOST_FILESYSTEM_NO_DEPRECATED
 -DBOOST_FILESYSTEM_VERSION=3
 -DBOOST_PYTHON_STATIC_LIB
@@ -13,11 +11,11 @@
 -DHAVE_PTHREAD
 -Isrc/lifestuff/include
 -Isrc/lifestuff/src
--isystem src/third_party_libs
--isystem src/third_party_libs/boost
--isystem src/third_party_libs/protobuf/src
--isystem src/third_party_libs/googlemock/gtest/include
--isystem src/third_party_libs/googlemock/include
+-Isrc/third_party_libs
+-Isrc/third_party_libs/boost
+-Isrc/third_party_libs/protobuf/src
+-Isrc/third_party_libs/googlemock/gtest/include
+-Isrc/third_party_libs/googlemock/include
 -Isrc/common/include
 -Isrc/private/include
 -Isrc/encrypt/include
@@ -28,5 +26,4 @@
 -Isrc/lifestuff/include
 -Isrc/lifestuff-gui/include
 -Ibuild4.7Debug/src/lifestuff
-#-isystem /usr/include/justthread
 -I/usr/include/python2.7

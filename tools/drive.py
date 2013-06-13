@@ -61,14 +61,18 @@ def CheckTestFile(path, expected_content):
     f.close()
   return result
 
+def ReportedProgress(action, status):
+  print "reporting progress : action " % action % " is in status of " % status
+
+
 def Test():
-  life_stuff = LifeStuff({}, "")
+  life_stuff = LifeStuff({})
 
   user_name = "testuser" + str(random.randint(10000, 99999))
 
   print "Creating user %s..." % user_name
 
-  result = life_stuff.CreateUser(user_name, "1234", "password")
+  result = life_stuff.CreateUser(user_name, ReportedProgress)
   if result != kSuccess:
     print "Failed to create user '%s': %s" % (user_name, result)
     return result

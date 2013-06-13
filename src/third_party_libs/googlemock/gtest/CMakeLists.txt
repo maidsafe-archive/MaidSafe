@@ -71,7 +71,12 @@ link_directories(${gtest_BINARY_DIR}/src)
 # are used for other targets, to ensure that gtest can be compiled by a user
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
-set_target_properties(gtest PROPERTIES FOLDER "Third Party/GoogleTest")
+if(MSVC)
+  set_target_properties(gtest PROPERTIES
+                        STATIC_LIBRARY_FLAGS_RELEASE "/LTCG"
+                        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO "/LTCG"
+                        FOLDER "Third Party/GoogleTest")
+endif()
 
 # cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
 # target_link_libraries(gtest_main gtest)

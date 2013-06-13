@@ -1,86 +1,92 @@
-#==============================================================================#
-#                                                                              #
-#  Copyright (c) 2012 MaidSafe.net limited                                     #
-#                                                                              #
-#  The following source code is property of MaidSafe.net limited and is not    #
-#  meant for external use.  The use of this code is governed by the license    #
-#  file licence.txt found in the root directory of this project and also on    #
-#  www.maidsafe.net.                                                           #
-#                                                                              #
-#  You are not free to copy, amend or otherwise use this source code without   #
-#  the explicit written permission of the board of directors of MaidSafe.net.  #
-#                                                                              #
-#==============================================================================#
-#                                                                              #
-#  Utility functions.                                                          #
-#                                                                              #
-#==============================================================================#
+#==================================================================================================#
+#                                                                                                  #
+#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#                                                                                                  #
+#  The following source code is property of MaidSafe.net limited and is not meant for external     #
+#  use.  The use of this code is governed by the license file licence.txt found in the root        #
+#  directory of this project and also on www.maidsafe.net.                                         #
+#                                                                                                  #
+#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
+#  permission of the board of directors of MaidSafe.net.                                           #
+#                                                                                                  #
+#==================================================================================================#
+#                                                                                                  #
+#  Utility functions.                                                                              #
+#                                                                                                  #
+#==================================================================================================#
+
+
+# Creates variables as a result of globbing the given directory and corresponding "includes" dir.
+# Example usage:
+# > glob_dir(DataHolder ${PROJECT_SOURCE_DIR}/src/maidsafe/vault/data_holder "Data Holder\\\\")
+# Available variables are ${DataHolderApi}, ${DataHolderSources}, ${DataHolderHeaders},
+# ${DataHolderProtos} and ${DataHolderAllFiles}.  ${DataHolderProtos} contains the contents of
+# ${DataHolderProtoSources}, ${DataHolderProtoHeaders} and all .proto files.
+macro(glob_dir BaseName Dir SourceGroupName)
+  string(REPLACE "src/maidsafe" "include/maidsafe" ApiDir ${Dir})
+  file(GLOB ${BaseName}Api ${ApiDir}/*.h)
+  file(GLOB ${BaseName}Protos ${Dir}/*.proto)
+  file(GLOB ${BaseName}ProtoSources ${Dir}/*.pb.cc)
+  file(GLOB ${BaseName}ProtoHeaders ${Dir}/*.pb.h)
+  set(${BaseName}Protos ${${BaseName}Protos} ${${BaseName}ProtoSources} ${${BaseName}ProtoHeaders})
+  file(GLOB ${BaseName}Sources ${Dir}/*.cc)
+  file(GLOB ${BaseName}Headers ${Dir}/*.h)
+  if(${BaseName}ProtoSources)
+    list(REMOVE_ITEM ${BaseName}Sources ${${BaseName}ProtoSources})
+  endif()
+  if(${BaseName}ProtoHeaders)
+    list(REMOVE_ITEM ${BaseName}Headers ${${BaseName}ProtoHeaders})
+  endif()
+  set(${BaseName}AllFiles ${${BaseName}Api} ${${BaseName}Sources} ${${BaseName}Headers} ${${BaseName}Protos})
+  set(${BaseName}SourceGroupName "${SourceGroupName} ")
+  string(REPLACE "\\ " "\\" ${BaseName}SourceGroupName "${${BaseName}SourceGroupName}")
+  source_group("${${BaseName}SourceGroupName}API Files" FILES ${${BaseName}Api})
+  source_group("${${BaseName}SourceGroupName}Source Files" FILES ${${BaseName}Sources})
+  source_group("${${BaseName}SourceGroupName}Header Files" FILES ${${BaseName}Headers})
+  source_group("${${BaseName}SourceGroupName}Proto Files" FILES ${${BaseName}Protos})
+endmacro()
 
 
 # Adds a static library with CMake Target name of "maidsafe_${LIB_OUTPUT_NAME}".
 function(ms_add_static_library LIB_OUTPUT_NAME)
-  set(FILES ${ARGV})
-  list(REMOVE_AT FILES 0)
   string(TOLOWER ${LIB_OUTPUT_NAME} LIB)
   set(ALL_LIBRARIES ${ALL_LIBRARIES} maidsafe_${LIB} PARENT_SCOPE)
-  add_library(maidsafe_${LIB} STATIC ${FILES})
-  if(${CamelCaseProjectName} STREQUAL "Pd")
-    set(LabelName Vault)
-  else()
-    set(LabelName ${CamelCaseProjectName})
-  endif()
-  set_target_properties(maidsafe_${LIB} PROPERTIES LABELS ${LabelName} FOLDER "MaidSafe/Libraries")
+  add_library(maidsafe_${LIB} STATIC ${ARGN})
+  set_target_properties(maidsafe_${LIB} PROPERTIES LABELS ${CamelCaseProjectName} FOLDER "MaidSafe/Libraries")
 endfunction()
 
 
-# Adds an executable with CMake Target name of "${EXE}".
-# "${FOLDER_NAME}" defines the folder in which the executable appears if the
+# Adds an executable with CMake Target name of "${Exe}".
+# "${FolderName}" defines the folder in which the executable appears if the
 # chosen IDE supports folders for projects.
-function(ms_add_executable EXE FOLDER_NAME)
-  set(FILES ${ARGV})
-  list(REMOVE_AT FILES 0 1)
-  set(AllExesForCurrentProject ${AllExesForCurrentProject} ${EXE} PARENT_SCOPE)
-  add_executable(${EXE} ${FILES})
-  if(${CamelCaseProjectName} STREQUAL "Pd")
-    set(LabelName Vault)
-  else()
-    set(LabelName ${CamelCaseProjectName})
-  endif()
-  set_target_properties(${EXE} PROPERTIES LABELS ${LabelName} FOLDER "MaidSafe/Executables/${FOLDER_NAME}")
-  string(REPLACE "Tests/" "" TEST_FOLDER_NAME ${FOLDER_NAME})
-  if(NOT ${TEST_FOLDER_NAME} STREQUAL ${FOLDER_NAME})
+function(ms_add_executable Exe FolderName)
+  set(AllExesForCurrentProject ${AllExesForCurrentProject} ${Exe} PARENT_SCOPE)
+  add_executable(${Exe} ${ARGN})
+  set_target_properties(${Exe} PROPERTIES LABELS ${CamelCaseProjectName} FOLDER "MaidSafe/Executables/${FolderName}")
+  string(REPLACE "Tests/" "" TEST_FOLDER_NAME ${FolderName})
+  if(NOT ${TEST_FOLDER_NAME} STREQUAL ${FolderName})
     SET(TEST_FOLDER_NAME ${TEST_FOLDER_NAME} PARENT_SCOPE)
   endif()
 endfunction()
 
 
-function(ms_disable_warnings FILE_LIST)
-  if(MSVC)
-    set_source_files_properties(${ARGV} PROPERTIES COMPILE_FLAGS "/W0")
-  elseif(UNIX)
-    set_source_files_properties(${ARGV} PROPERTIES COMPILE_FLAGS "-w")
-  endif()
-endfunction()
-
-
 function(add_style_test)
-  set(ThisTestName ${CamelCaseProjectName}StyleCheck)
-  if(PYTHONINTERP_FOUND)
-    set(FILES ${ARGV})
-    list(REMOVE_AT FILES 0)
-    if(UNIX)
-      add_test(${ThisTestName} python ${maidsafe_SOURCE_DIR}/tools/cpplint.py ${FILES})
-    else()
-      string(REPLACE "/" "\\\\" STYLE_CHECK_SOURCE ${PROJECT_SOURCE_DIR})
-      add_test(${ThisTestName} ${maidsafe_SOURCE_DIR}/tools/Windows/run_cpplint.bat ${STYLE_CHECK_SOURCE} ${maidsafe_SOURCE_DIR}/tools/cpplint.py)
-    endif()
-    if(${CamelCaseProjectName} STREQUAL "Pd")
-      set(LabelName Vault)
-    else()
-      set(LabelName ${CamelCaseProjectName})
-    endif()
-    set_property(TEST ${ThisTestName} PROPERTY LABELS ${LabelName} CodingStyle)
+  if(NOT MaidsafeTesting)
+    return()
   endif()
+  set(ExcludeRegexes *.pb.* *qt_push_headers.h *qt_pop_headers.h)
+  file(GLOB_RECURSE AllSources *.cc)
+  file(GLOB_RECURSE AllHeaders *.h)
+  set(AllFiles ${AllSources} ${AllHeaders})
+  foreach(ExcludeRegex ${ExcludeRegexes})
+    file(GLOB_RECURSE ExcludeFiles ${ExcludeRegex})
+    if(ExcludeFiles)
+      list(REMOVE_ITEM AllFiles ${ExcludeFiles})
+    endif()
+  endforeach()
+  set(ThisTestName ${CamelCaseProjectName}StyleCheck)
+  add_test(${ThisTestName} python ${maidsafe_SOURCE_DIR}/tools/cpplint.py ${AllFiles})
+  set_property(TEST ${ThisTestName} PROPERTY LABELS ${CamelCaseProjectName} CodingStyle)
 endfunction()
 
 
@@ -100,18 +106,28 @@ endfunction()
 
 
 function(test_summary_output)
-  list(LENGTH ALL_GTESTS GTEST_COUNT)
-  message(STATUS "${MAIDSAFE_TEST_TYPE_MESSAGE}.   ${GTEST_COUNT} Google test(s) enabled.")
+  list(LENGTH ALL_GTESTS GtestCount)
+  message(STATUS "${MAIDSAFE_TEST_TYPE_MESSAGE}.   ${GtestCount} Google test(s) enabled.")
 endfunction()
 
 
-function(add_coverage_exclude REGEX)
-  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_COVERAGE_EXCLUDE \${CTEST_CUSTOM_COVERAGE_EXCLUDE} \"${REGEX}\")\n")
+function(add_coverage_exclude Regex)
+  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_COVERAGE_EXCLUDE \${CTEST_CUSTOM_COVERAGE_EXCLUDE} \"${Regex}\")\n")
 endfunction()
 
 
-function(add_memcheck_ignore TEST_NAME)
-  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_MEMCHECK_IGNORE \${CTEST_CUSTOM_MEMCHECK_IGNORE} \"${TEST_NAME}\")\n")
+function(add_memcheck_ignore TestName)
+  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_MEMCHECK_IGNORE \${CTEST_CUSTOM_MEMCHECK_IGNORE} \"${TestName}\")\n")
+endfunction()
+
+
+# Tidy CTestCustom.cmake
+function(tidy_ctest_custom)
+  file(STRINGS ${CMAKE_BINARY_DIR}/CTestCustom.cmake CTestCustomContents)
+  list(REMOVE_DUPLICATES CTestCustomContents)
+  list(SORT CTestCustomContents)
+  string(REPLACE ";" "\n" CTestCustomContents "${CTestCustomContents}")
+  file(WRITE ${CMAKE_BINARY_DIR}/CTestCustom.cmake "${CTestCustomContents}\n")
 endfunction()
 
 
@@ -130,7 +146,7 @@ macro(rename_outdated_built_exes)
   if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
     set(AllExesForAllProjects ${AllExesForAllProjects}
         cryptest protoc CompilerIdC CompilerIdCXX
-        LifeStuff_${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}.${APPLICATION_VERSION_PATCH}_${TargetPlatform}_${TargetArchitecture})
+        LifeStuff_${ApplicationVersionMajor}.${ApplicationVersionMinor}.${ApplicationVersionPatch}_${TargetPlatform}_${TargetArchitecture})
     if(MSVC)
       file(GLOB_RECURSE BuiltExes RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/*.exe")
     else()
@@ -161,25 +177,6 @@ function(ms_copy_to_package_folder maidsafe_target)
                          ${CMAKE_BINARY_DIR}/package/bin/$<CONFIGURATION>/$<TARGET_FILE_NAME:${maidsafe_target}>)
 endfunction()
 
-# Searches for and removes old generated .pb.cc and .pb.h files in the source tree
-function(remove_old_proto_files)
-  file(GLOB_RECURSE PB_FILES RELATIVE ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/src/*.pb.*)
-  list(LENGTH PB_FILES PB_FILES_COUNT)
-  if(NOT ${PB_FILES_COUNT} EQUAL 0)
-    foreach(PB_FILE ${PB_FILES})
-      get_filename_component(PB_FILE_PATH ${PB_FILE} PATH)
-      get_filename_component(PB_FILE_WE ${PB_FILE} NAME_WE)
-      list(FIND PROTO_FILES "${PB_FILE_PATH}/${PB_FILE_WE}.proto" FOUND)
-      if (FOUND EQUAL -1)
-        file(REMOVE ${PROJECT_SOURCE_DIR}/src/${PB_FILE})
-        string(REGEX REPLACE "[\\/.:]" "_" PROTO_CACHE_NAME "${PB_FILE_PATH}/${PB_FILE_WE}.proto")
-        unset(${PROTO_CACHE_NAME} CACHE)
-        message(STATUS "Removed ${PB_FILE}")
-      endif()
-    endforeach()
-  endif()
-endfunction()
-
 
 # Searches for and removes old test directories that may have been left in %temp%
 function(cleanup_temp_dir)
@@ -193,7 +190,7 @@ function(cleanup_temp_dir)
     file(GLOB sigmoid_temp_dirs ${temp_path}/Sigmoid_Test*)
     set(temp_dirs ${maidsafe_temp_dirs} ${sigmoid_temp_dirs})
     list(LENGTH temp_dirs temp_dir_count)
-    if(NOT ${temp_dir_count} EQUAL 0)
+    if(temp_dir_count)
       if(CLEAN_TEMP MATCHES ONCE OR CLEAN_TEMP MATCHES ALWAYS)
         message(STATUS "Cleaning up temporary test folders.")
         foreach(temp_dir ${temp_dirs})

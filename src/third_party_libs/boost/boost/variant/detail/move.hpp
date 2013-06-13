@@ -145,6 +145,15 @@ inline void swap(T& lhs, T& rhs)
     rhs = boost::detail::variant::move(tmp);
 }
 
+// Rationale for the following fix can be found at https://svn.boost.org/trac/boost/ticket/2839.
+template <typename T, typename U>
+inline void swap(T& lhs, U& rhs)
+{
+    T tmp( boost::detail::variant::move(lhs) );
+    lhs = boost::detail::variant::move(rhs);
+    rhs = boost::detail::variant::move(tmp);
+}
+
 }} // namespace detail::move_swap
 
 template <typename T>

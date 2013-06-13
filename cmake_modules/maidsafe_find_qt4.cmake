@@ -1,36 +1,33 @@
-#==============================================================================#
-#                                                                              #
-#  Copyright (c) 2012 MaidSafe.net limited                                     #
-#                                                                              #
-#  The following source code is property of MaidSafe.net limited and is not    #
-#  meant for external use.  The use of this code is governed by the license    #
-#  file licence.txt found in the root directory of this project and also on    #
-#  www.maidsafe.net.                                                           #
-#                                                                              #
-#  You are not free to copy, amend or otherwise use this source code without   #
-#  the explicit written permission of the board of directors of MaidSafe.net.  #
-#                                                                              #
-#==============================================================================#
-#                                                                              #
-#  Uses built in CMake module FindQt4 to locate QT libs and headers.  This     #
-#  FindQt4 module requires that the Qt4 qmake executable is available via the  #
-#  system path.  If this is the case, then the module sets the variable        #
-#  QT_USE_FILE which is the path to a CMake file that is included in order to  #
-#  compile Qt 4 applications and libraries. It sets up the compilation         #
-#  environment for include directories, preprocessor defines and populates a   #
-#  QT_LIBRARIES variable.                                                      #
-#                                                                              #
-#  If Qt needs to be built first, set BUILD_QT=ON                              #
-#                                                                              #
-#  Settable variable to aid with finding Qt is QT_SRC_DIR                      #
-#                                                                              #
-#  Since this module uses the option to include(${QT_USE_FILE}), the           #
-#  compilation environment is automatically set up with include directories    #
-#  and preprocessor definitions.  The requested Qt libs are set up as targets, #
-#  e.g. QT_QTCORE_LIBRARY.  All libs are added to the variable QT_LIBRARIES.   #
-#  See documentation of FindQt4 for further info.                              #
-#                                                                              #
-#==============================================================================#
+#==================================================================================================#
+#                                                                                                  #
+#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#                                                                                                  #
+#  The following source code is property of MaidSafe.net limited and is not meant for external     #
+#  use.  The use of this code is governed by the license file licence.txt found in the root        #
+#  directory of this project and also on www.maidsafe.net.                                         #
+#                                                                                                  #
+#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
+#  permission of the board of directors of MaidSafe.net.                                           #
+#                                                                                                  #
+#==================================================================================================#
+#                                                                                                  #
+#  Uses built-in CMake module FindQt4 to locate QT libs and headers.  This FindQt4 module          #
+#  requires that the Qt4 qmake executable is available via the system path.  If this is the        #
+#  case, then the module sets the variable QT_USE_FILE which is the path to a CMake file that is   #
+#  included in order to compile Qt 4 applications and libraries. It sets up the compilation        #
+#  environment for include directories, preprocessor defines and populates a QT_LIBRARIES          #
+#  variable.                                                                                       #
+#                                                                                                  #
+#  If Qt needs to be built first, set BUILD_QT=ON                                                  #
+#                                                                                                  #
+#  Settable variable to aid with finding Qt is QT_SRC_DIR                                          #
+#                                                                                                  #
+#  Since this module uses the option to include(${QT_USE_FILE}), the compilation environment is    #
+#  automatically set up with include directories and preprocessor definitions.  The requested Qt   #
+#  libs are set up as targets, e.g. QT_QTCORE_LIBRARY.  All libs are added to the variable         #
+#  QT_LIBRARIES.  See documentation of FindQt4 for further info.                                   #
+#                                                                                                  #
+#==================================================================================================#
 
 
 unset(QT_QMAKE_EXECUTABLE CACHE)
@@ -40,9 +37,8 @@ unset(QT_MOC_EXECUTABLE CACHE)
 unset(QT_INCLUDE_DIR CACHE)
 unset(QT_INCLUDES CACHE)
 
-
 set(QT_USE_IMPORTED_TARGETS FALSE)
-if(BUILD_QT OR BUILD_QT_IN_SOURCE OR BUILT_QT_INPUT_DIR)
+if(BUILD_QT OR BUILD_QT_IN_SOURCE)
   # Clean out old Qt dlls from binary directory
   file(GLOB QtReleaseDlls "${CMAKE_BINARY_DIR}/Release/q*.dll")
   file(GLOB QtDebugDlls "${CMAKE_BINARY_DIR}/Debug/q*.dll")
@@ -52,7 +48,6 @@ if(BUILD_QT OR BUILD_QT_IN_SOURCE OR BUILT_QT_INPUT_DIR)
   include(${CMAKE_SOURCE_DIR}/cmake_modules/build_qt4.cmake)
   unset(BUILD_QT CACHE)
   unset(BUILD_QT_IN_SOURCE CACHE)
-  unset(BUILT_QT_INPUT_DIR CACHE)
 elseif(QT_SRC_DIR)
   set(QT_ROOT_DIR ${QT_SRC_DIR} CACHE PATH "Path to Qt source and built libraries' root directory" FORCE)
   unset(QT_SRC_DIR CACHE)
@@ -62,6 +57,11 @@ endif()
 set(ENV{QTDIR} ${QT_ROOT_DIR})
 find_program(QT_QMAKE_EXECUTABLE NAMES qmake qmake4 qmake-qt4 PATHS ${QT_ROOT_DIR}/bin NO_DEFAULT_PATH)
 find_program(QT_QMAKE_EXECUTABLE NAMES qmake qmake4 qmake-qt4 PATHS ${QT_ROOT_DIR}/bin)
+if(NOT QT_QMAKE_EXECUTABLE AND WIN32)
+  set(QT_ROOT_DIR ${PROJECT_BINARY_DIR}/build_qt CACHE PATH "Path to Qt source and built libraries' root directory" FORCE)
+  find_program(QT_QMAKE_EXECUTABLE NAMES qmake qmake4 qmake-qt4 PATHS ${QT_ROOT_DIR}/bin NO_DEFAULT_PATH)
+endif()
+
 if(NOT QT_QMAKE_EXECUTABLE)
   set(ERROR_MESSAGE "\nCould not find Qt.  NO QMAKE EXECUTABLE.")
   if(WIN32)
@@ -73,12 +73,12 @@ if(NOT QT_QMAKE_EXECUTABLE)
 endif()
 
 
-set(MS_QT_REQUIRED_LIBRARIES QtCore QtGui QtXmlPatterns QtNetwork QtWebKit)
+set(MS_QT_REQUIRED_LIBRARIES QtCore QtGui QtNetwork QtWebKit)
 if(WIN32)
   set(MS_QT_REQUIRED_LIBRARIES ${MS_QT_REQUIRED_LIBRARIES} QtMain)
-  find_package(Qt4 4.8.2 COMPONENTS ${MS_QT_REQUIRED_LIBRARIES} REQUIRED)
+  find_package(Qt4 4.8.4 COMPONENTS ${MS_QT_REQUIRED_LIBRARIES} REQUIRED)
 else()
-  find_package(Qt4 4.8.1 COMPONENTS ${MS_QT_REQUIRED_LIBRARIES} REQUIRED)
+  find_package(Qt4 4.8.4 COMPONENTS ${MS_QT_REQUIRED_LIBRARIES} REQUIRED)
 endif()
 include(${QT_USE_FILE})
 

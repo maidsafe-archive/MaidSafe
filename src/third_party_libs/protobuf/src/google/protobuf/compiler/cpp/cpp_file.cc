@@ -99,6 +99,11 @@ void FileGenerator::GenerateHeader(io::Printer* printer) {
     "#ifndef PROTOBUF_$filename_identifier$__INCLUDED\n"
     "#define PROTOBUF_$filename_identifier$__INCLUDED\n"
     "\n"
+    "#ifdef _MSC_VER\n"
+    "#  pragma warning(push)\n"
+    "#  pragma warning(disable: 4127 4244 4267)\n"
+    "#endif\n"
+    "\n"
     "#include <string>\n"
     "\n",
     "filename", file_->name(),
@@ -275,6 +280,10 @@ void FileGenerator::GenerateHeader(io::Printer* printer) {
     "\n");
 
   printer->Print(
+    "#ifdef _MSC_VER\n"
+    "#  pragma warning(pop)\n"
+    "#endif\n"
+    "\n"
     "#endif  // PROTOBUF_$filename_identifier$__INCLUDED\n",
     "filename_identifier", filename_identifier);
 }

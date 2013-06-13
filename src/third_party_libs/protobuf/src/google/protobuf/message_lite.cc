@@ -226,7 +226,7 @@ uint8* MessageLite::SerializeWithCachedSizesToArray(uint8* target) const {
 }
 
 bool MessageLite::SerializeToCodedStream(io::CodedOutputStream* output) const {
-  GOOGLE_DCHECK(IsInitialized()) << InitializationErrorMessage("serialize", *this);
+  GOOGLE_CHECK(IsInitialized()) << InitializationErrorMessage("serialize", *this);
   return SerializePartialToCodedStream(output);
 }
 
@@ -270,7 +270,7 @@ bool MessageLite::SerializePartialToZeroCopyStream(
 }
 
 bool MessageLite::AppendToString(string* output) const {
-  GOOGLE_DCHECK(IsInitialized()) << InitializationErrorMessage("serialize", *this);
+  GOOGLE_CHECK(IsInitialized()) << InitializationErrorMessage("serialize", *this);
   return AppendPartialToString(output);
 }
 
@@ -297,7 +297,7 @@ bool MessageLite::SerializePartialToString(string* output) const {
 }
 
 bool MessageLite::SerializeToArray(void* data, int size) const {
-  GOOGLE_DCHECK(IsInitialized()) << InitializationErrorMessage("serialize", *this);
+  GOOGLE_CHECK(IsInitialized()) << InitializationErrorMessage("serialize", *this);
   return SerializePartialToArray(data, size);
 }
 

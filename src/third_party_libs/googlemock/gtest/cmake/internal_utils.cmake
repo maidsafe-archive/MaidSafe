@@ -17,7 +17,7 @@
 # This must be a macro(), as inside a function string() can only
 # update variables in the function scope.
 macro(fix_default_compiler_settings_)
-  include(${maidsafe_SOURCE_DIR}/cmake_modules/maidsafe_standard_flags.cmake)
+  include(${maidsafe_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
   if (MSVC)
     string(REGEX REPLACE "/GL " "" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
 #     # For MSVC, CMake sets certain flags to defaults we want to override.
@@ -59,7 +59,7 @@ macro(config_compiler_and_linker)
   if (MSVC)
     # Newlines inside flags variables break CMake's NMake generator.
     # TODO(vladl@google.com): Add -RTCs and -RTCu to debug builds.
-    set(cxx_base_flags "-GS -W4 -WX -wd4127 -wd4251 -wd4275 -nologo -J -Zi")
+    set(cxx_base_flags "-GS -W4 -WX -wd4127 -wd4251 -wd4275 -nologo -Zi") # -J
     set(cxx_base_flags "${cxx_base_flags} -D_UNICODE -DUNICODE -DWIN32 -D_WIN32")
     set(cxx_base_flags "${cxx_base_flags} -DSTRICT -DWIN32_LEAN_AND_MEAN")
     # VC11 contains std::tuple with variadic templates emulation macro.
@@ -69,7 +69,7 @@ macro(config_compiler_and_linker)
     set(cxx_no_exception_flags "-D_HAS_EXCEPTIONS=0")
     set(cxx_no_rtti_flags "-GR-")
   elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(cxx_base_flags "-w -std=c++11 ${LIBC++} -fPIC")
+    set(cxx_base_flags "-w -std=c++11 ${LibCpp} -fPIC")
     set(cxx_exception_flags "-fexceptions")
     set(cxx_no_exception_flags "-fno-exceptions")
     set(cxx_no_rtti_flags "-fno-rtti -DGTEST_HAS_RTTI=0")

@@ -1240,7 +1240,10 @@ macro(boost_add_library SHORT_LIBNAME)
   # A top-level target that refers to all of the variants of the
   # library, collectively.
   add_custom_target(${LIBNAME})
-  set_target_properties(${LIBNAME} PROPERTIES FOLDER "Third Party/Boost")
+  set_target_properties(${LIBNAME} PROPERTIES
+                          STATIC_LIBRARY_FLAGS_RELEASE "/LTCG"
+                          STATIC_LIBRARY_FLAGS_RELWITHDEBINFO "/LTCG"
+                          FOLDER "Third Party/Boost")
 
   if (THIS_LIB_EXTRA_VARIANTS)
     # Build the set of variants that we will generate for this library
