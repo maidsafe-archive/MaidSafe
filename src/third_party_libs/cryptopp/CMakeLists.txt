@@ -100,11 +100,8 @@ add_custom_command(TARGET cryptest
                      POST_BUILD
                      COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestVectors ${CMAKE_BINARY_DIR}/TestVectors)
 
-target_link_libraries(cryptest cryptopp)
-#target_link_libraries(TESTcryptopp cryptopp gtest)
-if(JustThread_FOUND)
-  target_link_libraries(cryptest optimized ${JustThread_LIBRARY} debug ${JustThread_LIBRARY_DEBUG})
-endif()
+target_link_libraries(cryptest cryptopp ${JustThread_LIBRARIES})
+#target_link_libraries(TESTcryptopp cryptopp gtest ${JustThread_LIBRARIES})
 
 if(UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")

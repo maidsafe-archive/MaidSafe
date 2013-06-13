@@ -46,13 +46,8 @@ if(MSVC)
                         LINK_FLAGS_MINSIZEREL "/LTCG")
 endif()
 
-
+target_link_libraries(protobuf ${JustThread_LIBRARIES})
+target_link_libraries(protoc protobuf)
 if(UNIX)
   target_link_libraries(protoc -lpthread)
-endif()
-
-target_link_libraries(protoc protobuf)
-
-if(JustThread_FOUND)
-  target_link_libraries(protobuf optimized ${JustThread_LIBRARY} debug ${JustThread_LIBRARY_DEBUG})
 endif()

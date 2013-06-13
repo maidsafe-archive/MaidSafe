@@ -78,7 +78,6 @@ get_target_platform()
 get_target_architecture()
 
 # Find just::thread
-message("${HR}")
 include(cmake_modules/maidsafe_find_just_thread.cmake)
 
 # Coverage:When this target is built, it removes all .gcda files from the build directory and its subdirectories

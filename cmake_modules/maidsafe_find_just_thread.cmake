@@ -18,7 +18,7 @@
 #                                                                                                  #
 #  Variables set and cached by this module are:                                                    #
 #    JustThread_INCLUDE_DIR, JustThread_LIBRARY_DIR, JustThread_LIBRARY,                           #
-#    JustThread_LIBRARY_DEBUG, and JustThread_FOUND.                                               #
+#    JustThread_LIBRARY_DEBUG, JustThread_LIBRARIES, and JustThread_FOUND.                         #
 #                                                                                                  #
 #==================================================================================================#
 
@@ -27,11 +27,14 @@ unset(JustThread_INCLUDE_DIR CACHE)
 unset(JustThread_LIBRARY_DIR CACHE)
 unset(JustThread_LIBRARY CACHE)
 unset(JustThread_LIBRARY_DEBUG CACHE)
+unset(JustThread_LIBRARIES CACHE)
 unset(JustThread_FOUND CACHE)
 
-if(NO_JUST_THREADS)
+if(NOT USE_JUST_THREADS AND NOT JUST_THREAD_ROOT_DIR)
+  unset(JustThread_LIBRARIES)
   return()
 endif()
+message("${HR}")
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -39,13 +42,13 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     message ("gcc ${GCC_VERSION} is supported, using just threads.")
   else()
     message(STATUS "Won't use just::thread in conjunction with this compiler: gcc ${GCC_VERSION}")
-    set(NO_JUST_THREADS = 1)
+    set(USE_JUST_THREADS FALSE)
     return()
   endif()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  set(NO_JUST_THREADS 1)
+  set(USE_JUST_THREADS FALSE)
   message(STATUS "Won't use just::thread in conjunction with Clang compiler.")
   return()
 endif()
@@ -129,7 +132,9 @@ else()
   set(INCLUDE_DIRS ${INCLUDE_DIRS} ${JustThread_INCLUDE_DIR})
 endif()
 
+set(JustThread_LIBRARIES optimized ${JustThread_LIBRARY} debug ${JustThread_LIBRARY_DEBUG})
 if(UNIX AND NOT APPLE)
+  set(JustThread_LIBRARIES ${JustThread_LIBRARIES} rt pthread)
   set(JustThread_LIBRARY ${JustThread_LIBRARY} rt pthread)
   set(JustThread_LIBRARY_DEBUG ${JustThread_LIBRARY_DEBUG} rt pthread)
 endif()
