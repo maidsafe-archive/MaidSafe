@@ -37,8 +37,8 @@ foreach(SubModule ${SubModules})
   set(${SubModule}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/${SubModule})
 endforeach()
 
-if(EXISTS ${CMAKE_SOURCE_DIR}/src/lifestuff-ui-qt)
-  list(APPEND SubModules lifestuff-ui-qt)
+if(EXISTS ${CMAKE_SOURCE_DIR}/src/lifestuff_ui_qt)
+  list(APPEND SubModules lifestuff_ui_qt)
 endif()
 
 # Check the submodules are initialised

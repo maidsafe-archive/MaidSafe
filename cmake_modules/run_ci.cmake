@@ -57,8 +57,8 @@ message("=======================================================================
 #==================================================================================================#
 foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
   if(${SubProject} STREQUAL "LifestuffUiQt")
-    set(${SubProject}SourceDirectory ${CTEST_SOURCE_DIRECTORY}/src/lifestuff-qt-ui)
-    set(${SubProject}BinaryDirectory ${CMAKE_CURRENT_BINARY_DIR}/src/lifestuff-qt-ui)
+    set(${SubProject}SourceDirectory ${CTEST_SOURCE_DIRECTORY}/src/lifestuff_ui_qt)
+    set(${SubProject}BinaryDirectory ${CMAKE_CURRENT_BINARY_DIR}/src/lifestuff_ui_qt)
   else()
     string(TOLOWER ${SubProject} subproject)
     set(${SubProject}SourceDirectory ${CTEST_SOURCE_DIRECTORY}/src/${subproject})
