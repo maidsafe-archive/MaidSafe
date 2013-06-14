@@ -62,18 +62,9 @@ math(EXPR MaidsafeTesting ${ApplicationVersionMinor}%2)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
-if(APPLE)
-  if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    set(ErrorMsg "\nThe Default Compiler is not setup as Clang.  ")
-    set(ErrorMsg "${ErrorMsg}Please run\n    ")
-    set(ErrorMsg "${ErrorMsg}export CC=/usr/bin/clang\n    export CXX=/usr/bin/clang++")
-    message(FATAL_ERROR ${ErrorMsg})
-  endif()
-endif()
-
-
-# Get target platform details
+# Include helper functions, check compiler version, and get target platform details
 include(cmake_modules/utils.cmake)
+check_compiler()
 get_target_platform()
 get_target_architecture()
 
@@ -114,7 +105,7 @@ set(ProtocBuildDir ${CMAKE_BINARY_DIR}/build_protoc)
 find_program(ProtocExe NAMES protoc PATHS ${ProtocBuildDir} PATH_SUFFIXES Release NO_DEFAULT_PATH)
 if(NOT ProtocExe)
   message("${HR}")
-  message(STATUS "Building protoc...")
+  message(STATUS "Building protoc.  Will take a minute or so...")
   execute_process(COMMAND
                     ${CMAKE_COMMAND} -E make_directory ${ProtocBuildDir}
                     OUTPUT_VARIABLE OutVar

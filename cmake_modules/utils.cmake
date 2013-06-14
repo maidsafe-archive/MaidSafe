@@ -16,6 +16,22 @@
 #==================================================================================================#
 
 
+function(check_compiler)
+  if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "17")  # i.e for MSVC < Visual Studio 11
+      message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of Visual Studio less than 11.")
+    endif()
+  elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.3")
+      message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of Clang less than 3.3")
+    endif()
+  elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.7")
+      message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of GCC less than 4.7")
+    endif()
+  endif()
+endfunction()
+
 # Creates variables as a result of globbing the given directory and corresponding "includes" dir.
 # Example usage:
 # > glob_dir(DataHolder ${PROJECT_SOURCE_DIR}/src/maidsafe/vault/data_holder "Data Holder\\\\")

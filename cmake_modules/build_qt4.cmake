@@ -18,7 +18,7 @@
 #==================================================================================================#
 
 
-#if(UNIX AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+#if(UNIX AND NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 #  message(FATAL_ERROR "Don't build Qt from source, follow the instructions at\n   https://sites.google.com/a/maidsafe.net/staff/developers/build-instructions\n\n")
 #endif()
 
@@ -119,7 +119,7 @@ else()
   if(APPLE)
     set(QtConfigurePlatform "-platform")
     set(QtConfigurePlatformValue "unsupported/macx-clang")
-  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     set(QtConfigurePlatform "-platform")
     set(QtConfigurePlatformValue "unsupported/linux-clang")
   endif()
