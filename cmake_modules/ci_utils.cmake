@@ -166,7 +166,7 @@ function(build_and_run SubProject RunAll)
   message("Building ${SubProject}")
   set(CTEST_BUILD_TARGET "All${SubProject}")
   # add coverage flags
-  if(DashboardModel STREQUAL "Experimental")
+  if(DashboardModel STREQUAL "Experimental" AND NOT WIN32)
     set(ExtraConfigureArgs "${ExtraConfigureArgs};-DCOVERAGE=ON")
   endif()
   ctest_configure(OPTIONS "${ExtraConfigureArgs}")

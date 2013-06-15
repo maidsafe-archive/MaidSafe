@@ -18,7 +18,7 @@
 #==================================================================================================#
 
 
-set(ScriptVersion 6)
+set(ScriptVersion 7)
 include(${CTEST_SOURCE_DIRECTORY}/CTestConfig.cmake)
 include(${CTEST_SOURCE_DIRECTORY}/cmake_modules/ci_utils.cmake)
 
@@ -88,7 +88,6 @@ elseif(DashboardModel STREQUAL "Weekly")
   message("Checking out super project to 'next'")
   checkout_to_branch(${CTEST_SOURCE_DIRECTORY} next)
 endif()
-message("================================================================================")
 
 
 #==================================================================================================#

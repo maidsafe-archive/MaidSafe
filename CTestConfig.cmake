@@ -9,11 +9,11 @@ if(CMAKE_CL_64)
 endif()
 set(CTEST_PROJECT_SUBPROJECTS
     Common
-    Rudp
     Private
+    Passport
+    Rudp
     Routing
     Nfs
-    Passport
     Encrypt
     Drive
     Vault
