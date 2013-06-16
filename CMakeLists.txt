@@ -96,7 +96,7 @@ if(WIN32)
 endif()
 find_package(PythonLibs REQUIRED)
 
-
+set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 add_subdirectory(src/third_party_libs)
 
 

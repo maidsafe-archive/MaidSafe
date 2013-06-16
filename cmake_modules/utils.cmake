@@ -137,6 +137,18 @@ function(add_memcheck_ignore TestName)
 endfunction()
 
 
+function(underscores_to_camel_case VarIn VarOut)
+  string(REPLACE "_" ";" Pieces ${VarIn})
+  foreach(Part ${Pieces})
+    string(SUBSTRING ${Part} 0 1 Initial)
+    string(SUBSTRING ${Part} 1 -1 Part)
+    string(TOUPPER ${Initial} Initial)
+    set(CamelCase ${CamelCase}${Initial}${Part})
+  endforeach()
+  set(${VarOut} ${CamelCase} PARENT_SCOPE)
+endfunction()
+
+
 # Tidy CTestCustom.cmake
 function(tidy_ctest_custom)
   file(STRINGS ${CMAKE_BINARY_DIR}/CTestCustom.cmake CTestCustomContents)
@@ -173,7 +185,8 @@ macro(rename_outdated_built_exes)
       list(FIND AllExesForAllProjects ${BuiltExeName} CurrentExe)
       if(${CurrentExe} STRLESS 0)
         string(REGEX MATCH "build_qt" InQtBuildDir ${BuiltExe})
-        if(NOT InQtBuildDir)
+        string(REGEX MATCH "boost/src" InBoostBuildDir ${BuiltExe})
+        if(NOT InQtBuildDir AND NOT InBoostBuildDir)
           file(RENAME ${CMAKE_BINARY_DIR}/${BuiltExe} ${CMAKE_BINARY_DIR}/${BuiltExe}.old)
           message(STATUS "Renaming outdated executable \"${BuiltExe}\" to \"${BuiltExe}.old\"")
         endif()
