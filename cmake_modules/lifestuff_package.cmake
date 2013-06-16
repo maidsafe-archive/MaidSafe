@@ -56,8 +56,8 @@ set(CPACK_PACKAGE_VENDOR "MaidSafe")
 set(CPACK_PACKAGE_CONTACT "support@maidsafe.net")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY " LifeStuff")
 if(NOT APPLE)
-  # set(CPACK_RESOURCE_FILE_README "${lifestuff_qt_ui_SOURCE_DIR}/installer/text/lifestuff/readme.txt")
-  set(CPACK_RESOURCE_FILE_LICENSE "${lifestuff_qt_ui_SOURCE_DIR}/installer/text/lifestuff/eula.txt")
+  # set(CPACK_RESOURCE_FILE_README "${lifestuff_ui_qt_SOURCE_DIR}/installer/text/lifestuff/readme.txt")
+  set(CPACK_RESOURCE_FILE_LICENSE "${lifestuff_ui_qt_SOURCE_DIR}/installer/text/lifestuff/eula.txt")
 endif()
 #set(CPACK_PACKAGE_EXECUTABLES "lifestuff" "LifeStuff")
 #set(CPACK_STRIP_FILES "true")
@@ -71,7 +71,7 @@ if(UNIX AND NOT APPLE)
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/lifestuff DESTINATION /usr/bin)
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/lifestuff-vault DESTINATION /usr/bin)
   install(PROGRAMS ${PACKAGE_BINARY_DIR}/lifestuff-mgr DESTINATION /usr/bin)
-  install(FILES ${lifestuff_qt_ui_SOURCE_DIR}/installer/linux/scripts/lifestuff_client.desktop RENAME lifestuff.desktop DESTINATION /usr/share/applications/)
+  install(FILES ${lifestuff_ui_qt_SOURCE_DIR}/installer/linux/scripts/lifestuff_client.desktop RENAME lifestuff.desktop DESTINATION /usr/share/applications/)
   execute_process(
     COMMAND /usr/bin/dpkg --print-architecture
     OUTPUT_VARIABLE CPACK_DEBIAN_PACKAGE_ARCHITECTURE
@@ -82,32 +82,32 @@ if(UNIX AND NOT APPLE)
     message(STATUS "Unable to determine current dpkg architecture: ${EXECUTE_RESULT} - will try RPM")
 #    set(CPACK_RPM_PACKAGE_REQUIRES("libqtcore4 >= 4:4.7.2-0, libqtgui4 >= 4:4.7.2-0, libfuse2 >= 2.8.4-1")
     install(PROGRAMS ${private_SOURCE_DIR}/installer/linux/scripts/fedora/lifestuff-mgr.service RENAME lifestuff-mgr.service DESTINATION /etc/systemd/user/)
-    install(FILES ${lifestuff_qt_ui_SOURCE_DIR}/src/maidsafe/lifestuff/qt_ui/resources/icons/app_icon_linux.png RENAME lifestuff.png DESTINATION /usr/share/maidsafe/lifestuff/resources/icons/)
-    install(FILES ${lifestuff_qt_ui_SOURCE_DIR}/src/maidsafe/lifestuff/qt_ui/resources/sounds/launch_lifestuff_gui.wav DESTINATION /usr/share/maidsafe/lifestuff/resources/sounds/)
-    install(FILES ${lifestuff_qt_ui_SOURCE_DIR}/src/maidsafe/lifestuff/qt_ui/resources/sounds/notification_alert.wav DESTINATION /usr/share/maidsafe/lifestuff/resources/sounds/)
+    install(FILES ${lifestuff_ui_qt_SOURCE_DIR}/src/maidsafe/lifestuff/qt_ui/resources/icons/app_icon_linux.png RENAME lifestuff.png DESTINATION /usr/share/maidsafe/lifestuff/resources/icons/)
+    install(FILES ${lifestuff_ui_qt_SOURCE_DIR}/src/maidsafe/lifestuff/qt_ui/resources/sounds/launch_lifestuff_gui.wav DESTINATION /usr/share/maidsafe/lifestuff/resources/sounds/)
+    install(FILES ${lifestuff_ui_qt_SOURCE_DIR}/src/maidsafe/lifestuff/qt_ui/resources/sounds/notification_alert.wav DESTINATION /usr/share/maidsafe/lifestuff/resources/sounds/)
     install(FILES ${CPACK_RESOURCE_FILE_README} DESTINATION /usr/share/doc/lifestuff/)
     install(FILES ${CPACK_RESOURCE_FILE_LICENSE} DESTINATION /usr/share/doc/lifestuff/)
-    set(CPACK_RPM_POST_INSTALL_SCRIPT_FILE ${lifestuff_qt_ui_SOURCE_DIR}/installer/linux/scripts/fedora/postinst)
-    set(CPACK_RPM_PRE_UNINSTALL_SCRIPT_FILE ${lifestuff_qt_ui_SOURCE_DIR}/installer/linux/scripts/fedora/prerm)
+    set(CPACK_RPM_POST_INSTALL_SCRIPT_FILE ${lifestuff_ui_qt_SOURCE_DIR}/installer/linux/scripts/fedora/postinst)
+    set(CPACK_RPM_PRE_UNINSTALL_SCRIPT_FILE ${lifestuff_ui_qt_SOURCE_DIR}/installer/linux/scripts/fedora/prerm)
     set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
     set(CPACK_GENERATOR RPM)
   else()
     message("Debian package architecture: ${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
 #    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqtcore4 (>= 4:4.7.2-0), libqtgui4 (>= 4:4.7.2-0), libfuse2 (>= 2.8.4-1)")
     install(PROGRAMS ${private_SOURCE_DIR}/installer/linux/scripts/ubuntu/daemoniser RENAME lifestuff-mgr DESTINATION /etc/init.d/)
-    install(FILES ${lifestuff_qt_ui_SOURCE_DIR}/src/maidsafe/lifestuff/qt_ui/resources/icons/app_icon_linux.png RENAME lifestuff.png DESTINATION /usr/share/maidsafe/lifestuff/resources/icons/)
-    install(FILES ${lifestuff_qt_ui_SOURCE_DIR}/src/maidsafe/lifestuff/qt_ui/resources/sounds/launch_lifestuff_gui.wav DESTINATION /usr/share/maidsafe/lifestuff/resources/sounds/)
-    install(FILES ${lifestuff_qt_ui_SOURCE_DIR}/src/maidsafe/lifestuff/qt_ui/resources/sounds/notification_alert.wav DESTINATION /usr/share/maidsafe/lifestuff/resources/sounds/)
+    install(FILES ${lifestuff_ui_qt_SOURCE_DIR}/src/maidsafe/lifestuff/qt_ui/resources/icons/app_icon_linux.png RENAME lifestuff.png DESTINATION /usr/share/maidsafe/lifestuff/resources/icons/)
+    install(FILES ${lifestuff_ui_qt_SOURCE_DIR}/src/maidsafe/lifestuff/qt_ui/resources/sounds/launch_lifestuff_gui.wav DESTINATION /usr/share/maidsafe/lifestuff/resources/sounds/)
+    install(FILES ${lifestuff_ui_qt_SOURCE_DIR}/src/maidsafe/lifestuff/qt_ui/resources/sounds/notification_alert.wav DESTINATION /usr/share/maidsafe/lifestuff/resources/sounds/)
     install(FILES ${CPACK_RESOURCE_FILE_README} DESTINATION /usr/share/doc/lifestuff/)
     install(FILES ${CPACK_RESOURCE_FILE_LICENSE} DESTINATION /usr/share/doc/lifestuff/)
-    set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${lifestuff_qt_ui_SOURCE_DIR}/installer/linux/scripts/ubuntu/postinst;${lifestuff_qt_ui_SOURCE_DIR}/installer/linux/scripts/ubuntu/prerm") # postinstall and before remove
+    set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${lifestuff_ui_qt_SOURCE_DIR}/installer/linux/scripts/ubuntu/postinst;${lifestuff_ui_qt_SOURCE_DIR}/installer/linux/scripts/ubuntu/prerm") # postinstall and before remove
     set(CPACK_DEBIAN_PACKAGE_SECTION "Network")
     set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
     set(CPACK_GENERATOR DEB)
   endif()
   #message(STATUS "Package install directory is set to \"${CPACK_PACKAGE_INSTALL_DIRECTORY}\"")
 elseif(APPLE)#TODO
-  #install(TARGETS lifestuff_qt_ui_local EXPORT lifestuff_qt_ui_local
+  #install(TARGETS lifestuff_ui_qt_local EXPORT lifestuff_ui_qt_local
   #          BUNDLE DESTINATION /Applications/ COMPONENT Runtime
   #          RUNTIME DESTINATION /Applications/
   #          CONFIGURATIONS Release)
@@ -127,27 +127,27 @@ elseif(WIN32)
   else()
     install(FILES ${drive_SOURCE_DIR}/drivers/windows/cbfs/32bit/cbfsinst.dll DESTINATION driver)
   endif()
-  install(FILES ${lifestuff_qt_ui_SOURCE_DIR}/installer/text/lifestuff/eula.txt DESTINATION .)
+  install(FILES ${lifestuff_ui_qt_SOURCE_DIR}/installer/text/lifestuff/eula.txt DESTINATION .)
   install(FILES ${OpenMP_DLL} DESTINATION .)
   install(FILES ${MSVCP110} DESTINATION .)
   install(FILES ${MSVCR110} DESTINATION .)
   install(FILES ${VCCORLIB110} DESTINATION .)
   install(FILES ${QtLibsRelease} DESTINATION .)
   install(FILES ${QtImageFormatsPluginsRelease} DESTINATION plugins/imageformats)
-  install(FILES ${CMAKE_BINARY_DIR}/Release/resources/lifestuff_tour.rcc DESTINATION resources)
-  install(FILES ${CMAKE_BINARY_DIR}/Release/sounds/launch_lifestuff_gui.wav DESTINATION sounds)
-  install(FILES ${CMAKE_BINARY_DIR}/Release/sounds/notification_alert.wav DESTINATION sounds)
+  # install(FILES ${CMAKE_BINARY_DIR}/Release/resources/lifestuff_tour.rcc DESTINATION resources)
+  # install(FILES ${CMAKE_BINARY_DIR}/Release/sounds/launch_lifestuff_gui.wav DESTINATION sounds)
+  # install(FILES ${CMAKE_BINARY_DIR}/Release/sounds/notification_alert.wav DESTINATION sounds)
 
   set(CPACK_PACKAGE_INSTALL_DIRECTORY "maidsafe\\\\lifestuff")
   set(CPACK_GENERATOR NSIS)
   set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "LifeStuff")
-  set(CPACK_NSIS_MUI_ICON "${lifestuff_qt_ui_SOURCE_DIR}/installer/common/icons/WinLinux/install_icon.ico")
-  set(CPACK_NSIS_MUI_UNIICON "${lifestuff_qt_ui_SOURCE_DIR}/installer/common/icons/WinLinux/uninstall_icon.ico")
+  set(CPACK_NSIS_MUI_ICON "${lifestuff_ui_qt_SOURCE_DIR}/installer/common/icons/WinLinux/install_icon.ico")
+  set(CPACK_NSIS_MUI_UNIICON "${lifestuff_ui_qt_SOURCE_DIR}/installer/common/icons/WinLinux/uninstall_icon.ico")
   set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
-    !define MUI_HEADERIMAGE_BITMAP \\\"${lifestuff_qt_ui_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\top_left_image.bmp\\\"
-    !define MUI_HEADERIMAGE_UNBITMAP \\\"${lifestuff_qt_ui_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\top_left_image.bmp\\\"
-    !define MUI_WELCOMEFINISHPAGE_BITMAP \\\"${lifestuff_qt_ui_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\Installer-Image-Beta.bmp\\\"
-    !define MUI_UNWELCOMEFINISHPAGE_BITMAP \\\"${lifestuff_qt_ui_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\Installer-Image-Beta.bmp\\\"
+    !define MUI_HEADERIMAGE_BITMAP \\\"${lifestuff_ui_qt_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\top_left_image.bmp\\\"
+    !define MUI_HEADERIMAGE_UNBITMAP \\\"${lifestuff_ui_qt_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\top_left_image.bmp\\\"
+    !define MUI_WELCOMEFINISHPAGE_BITMAP \\\"${lifestuff_ui_qt_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\Installer-Image-Beta.bmp\\\"
+    !define MUI_UNWELCOMEFINISHPAGE_BITMAP \\\"${lifestuff_ui_qt_SOURCE_DIR}\\\\installer\\\\common\\\\images\\\\Installer-Image-Beta.bmp\\\"
   ")
   set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "")
   set(CPACK_NSIS_MODIFY_PATH ON)

@@ -28,7 +28,7 @@ set(HEADER_FILES_LEVELDB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb
                                      ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/comparator.h
                                      ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/db.h
                                      ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/env.h
-									                   ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/filter_policy.h
+                                     ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/filter_policy.h
                                      ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/iterator.h
                                      ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/options.h
                                      ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/slice.h
@@ -70,11 +70,11 @@ set(SOURCE_FILES_LEVELDB_DB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/db/builder.cc
 set(HEADER_FILES_LEVELDB_PORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/port/atomic_pointer.h
                                   ${CMAKE_CURRENT_SOURCE_DIR}/port/port.h
                                   ${CMAKE_CURRENT_SOURCE_DIR}/port/port_example.h
-								                  ${CMAKE_CURRENT_SOURCE_DIR}/port/thread_annotations.h)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/port/thread_annotations.h)
 
 set(HEADER_FILES_LEVELDB_TABLE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/table/block.h
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/block_builder.h
-								                   ${CMAKE_CURRENT_SOURCE_DIR}/table/filter_block.h
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/table/filter_block.h
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/format.h
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/iterator_wrapper.h
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/merger.h
@@ -82,7 +82,7 @@ set(HEADER_FILES_LEVELDB_TABLE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/table/block.h
 
 set(SOURCE_FILES_LEVELDB_TABLE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/table/block.cc
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/block_builder.cc
-								                   ${CMAKE_CURRENT_SOURCE_DIR}/table/filter_block.cc
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/table/filter_block.cc
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/format.cc
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/iterator.cc
                                    ${CMAKE_CURRENT_SOURCE_DIR}/table/merger.cc
@@ -106,7 +106,7 @@ set(SOURCE_FILES_LEVELDB_UTIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/util/arena.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/comparator.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/crc32c.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/env.cc
-								                  ${CMAKE_CURRENT_SOURCE_DIR}/util/filter_policy.cc
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/util/filter_policy.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/hash.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/histogram.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/logging.cc
@@ -198,7 +198,7 @@ macro(leveldb_tests)
 endmacro()
 
 leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/db_bench.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/db/c_test.c
+              # ${CMAKE_CURRENT_SOURCE_DIR}/db/c_test.c
               ${CMAKE_CURRENT_SOURCE_DIR}/db/corruption_test.cc
               ${CMAKE_CURRENT_SOURCE_DIR}/db/db_test.cc
               ${CMAKE_CURRENT_SOURCE_DIR}/db/dbformat_test.cc
