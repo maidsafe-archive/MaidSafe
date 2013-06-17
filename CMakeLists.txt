@@ -152,6 +152,14 @@ endif()
 
 message("${HR}")
 
+if(UNIX)
+  if(MaidsafeCoverage)
+    message(STATUS "Coverage ON")
+  else()
+    message(STATUS "Coverage OFF.  To enable, re-run CMake with -DCOVERAGE=ON")
+  endif()
+endif()
+
 message(STATUS "To include all tests,                    cmake . -DMAIDSAFE_TEST_TYPE=ALL")
 message(STATUS "To include behavioural tests,            cmake . -DMAIDSAFE_TEST_TYPE=BEH")
 message(STATUS "To include functional tests,             cmake . -DMAIDSAFE_TEST_TYPE=FUNC")
