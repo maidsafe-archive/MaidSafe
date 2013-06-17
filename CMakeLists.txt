@@ -79,7 +79,7 @@ if(UNIX)
 endif()
 
 # Python interpreter and library search
-if(NOT PYTHON_EXECUTABLE OR NOT PYTHONLIBS_FOUND)
+if(NOT PYTHON_EXECUTABLE OR NOT PYTHON_LIBRARY)
   message("${HR}")
 endif()
 set(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
@@ -96,7 +96,9 @@ if(WIN32)
 endif()
 find_package(PythonLibs REQUIRED)
 
+
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
+include(maidsafe_find_git)
 add_subdirectory(src/third_party_libs)
 
 

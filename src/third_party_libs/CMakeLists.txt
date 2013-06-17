@@ -15,22 +15,6 @@
 message("${HR}\nConfiguring third party projects\n--------------------------------")
 
 
-# if(WIN32)
-#   if (CMAKE_CL_64)
-#     add_definitions(-DWIN32 -D_WIN32 -D__WINDOWS__ -D__WIN32__ -DMAIDSAFE_WIN32 -DMAIDSAFE_WIN64)
-#   else()
-#     add_definitions(-DWIN32 -D_WIN32 -D__WINDOWS__ -D__WIN32__ -DMAIDSAFE_WIN32)
-#   endif()
-# elseif(UNIX)
-#   add_definitions(-D_FILE_OFFSET_BITS=64)
-#   if(APPLE)
-#     add_definitions(-DMAIDSAFE_APPLE -DHAVE_PTHREAD)
-#   else()
-#     add_definitions(-DMAIDSAFE_LINUX -DHAVE_PTHREAD)
-#   endif()
-# endif()
-
-
 include(add_boost)
 add_subdirectory(cryptopp)
 add_subdirectory(googlemock)

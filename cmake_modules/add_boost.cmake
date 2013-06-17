@@ -93,6 +93,9 @@ ExternalProject_Add(
     URL http://sourceforge.net/projects/boost/files/boost/${BoostVersion}/${BoostFolderName}.tar.bz2/download
     URL_HASH SHA1=${BoostSHA1}
     TIMEOUT 600
+    PATCH_COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_SOURCE_DIR}/src/third_party_libs/${BoostFolderName}/boost_variant_detail_move_patched.hpp
+        <SOURCE_DIR>/boost/variant/detail/move.hpp
     CONFIGURE_COMMAND ${CMAKE_COMMAND} -E make_directory <SOURCE_DIR>/Build
     BUILD_COMMAND "${b2Args}"
     BUILD_IN_SOURCE ON
