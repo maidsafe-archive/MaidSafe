@@ -99,6 +99,7 @@ find_package(PythonLibs REQUIRED)
 
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 include(maidsafe_find_git)
+include(maidsafe_find_openmp)
 add_subdirectory(src/third_party_libs)
 
 

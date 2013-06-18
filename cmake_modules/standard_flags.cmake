@@ -165,3 +165,9 @@ elseif(UNIX)
   unset(COVERAGE CACHE)
   set_source_files_properties(${PbFiles} PROPERTIES COMPILE_FLAGS "-w")
 endif()
+
+# Enable OpenMP if available
+if(OPENMP_FOUND)
+  add_definitions(-DMAIDSAFE_OMP_ENABLED)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
