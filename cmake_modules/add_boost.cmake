@@ -49,6 +49,7 @@ set(b2Args <SOURCE_DIR>/b2
            --layout=tagged
            --build-dir=Build
            stage
+           -d+2
            )
 foreach(BoostComponent ${BoostComponents})
   list(APPEND b2Args --with-${BoostComponent})
@@ -66,18 +67,17 @@ if(MSVC)
     list(APPEND b2Args address-model=64)
   endif()
 elseif(UNIX)
-  list(APPEND b2Args variant=release -sNO_BZIP2=1) # --layout=system)
+  list(APPEND b2Args variant=release cxxflags=-std=c++11 -sNO_BZIP2=1) # --layout=system)
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+    list(APPEND b2Args toolset=clang)
     if(HAVE_LIBC++)
-      list(APPEND b2Args toolset=clang "cxxflags=\\\"-std=c++11 -stdlib=libc++\\\"")
-    else()
-      list(APPEND b2Args toolset=clang cxxflags=\\\"-std=c++11\\\")
+      list(APPEND b2Args cxxflags=-stdlib=libc++ linkflags=-stdlib=libc++)
     endif()
   elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GCC")
-    list(APPEND b2Args toolset=gcc cxxflags=\\\"-std=c++11\\\")
+    list(APPEND b2Args toolset=gcc)
   endif()
 elseif(APPLE)
-  list(APPEND b2Args toolset=clang cxxflags=\\\"-std=c++11\\\" architecture=combined address-model=32_64)
+  list(APPEND b2Args toolset=clang cxxflags=-std=c++11 architecture=combined address-model=32_64)
 endif()
 
 # Create build folder name derived from version
