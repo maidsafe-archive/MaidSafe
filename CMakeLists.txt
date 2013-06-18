@@ -79,7 +79,7 @@ if(UNIX)
 endif()
 
 # Python interpreter and library search
-if(NOT PYTHON_EXECUTABLE OR NOT PYTHONLIBS_FOUND)
+if(NOT PYTHON_EXECUTABLE OR NOT PYTHON_LIBRARY)
   message("${HR}")
 endif()
 set(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
@@ -97,6 +97,9 @@ endif()
 find_package(PythonLibs REQUIRED)
 
 
+set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
+include(maidsafe_find_git)
+include(maidsafe_find_openmp)
 add_subdirectory(src/third_party_libs)
 
 
@@ -149,6 +152,14 @@ if(EXISTS ${CMAKE_SOURCE_DIR}/src/sandbox)
 endif()
 
 message("${HR}")
+
+if(UNIX)
+  if(MaidsafeCoverage)
+    message(STATUS "Coverage ON")
+  else()
+    message(STATUS "Coverage OFF.  To enable, re-run CMake with -DCOVERAGE=ON")
+  endif()
+endif()
 
 message(STATUS "To include all tests,                    cmake . -DMAIDSAFE_TEST_TYPE=ALL")
 message(STATUS "To include behavioural tests,            cmake . -DMAIDSAFE_TEST_TYPE=BEH")

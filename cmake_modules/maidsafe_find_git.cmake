@@ -22,7 +22,14 @@
 #==================================================================================================#
 
 
-unset(Git_EXECUTABLE CACHE)
+if(Git_EXECUTABLE)
+  # Check the exe path is still correct
+  execute_process(COMMAND ${Git_EXECUTABLE} --version RESULT_VARIABLE ResultVar OUTPUT_QUIET ERROR_QUIET)
+  if(ResultVar EQUAL 0)
+    return()
+  endif()
+endif()
+
 
 if(GIT_ROOT_DIR)
   set(GIT_ROOT_DIR ${GIT_ROOT_DIR} CACHE PATH "Path to Git directory" FORCE)
@@ -40,10 +47,8 @@ endif()
 set(GIT_PATH_SUFFIXES cmd bin)
 
 set(GIT_NAMES git)
-if(WIN32)
-  if(NOT CMAKE_GENERATOR MATCHES "MSYS")
-    set(GIT_NAMES git.cmd git)
-  endif()
+if(WIN32 AND NOT CMAKE_GENERATOR MATCHES "MSYS")
+  set(GIT_NAMES git.cmd git)
 endif()
 
 find_program(Git_EXECUTABLE NAMES ${GIT_NAMES} PATHS ${GIT_ROOT_DIR} PATH_SUFFIXES ${GIT_PATH_SUFFIXES})

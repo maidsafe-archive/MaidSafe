@@ -17,19 +17,10 @@
 
 
 check_compiler()
-
-# Get camel case version of project name
-string(REPLACE "_" ";" ThisProject ${PROJECT_NAME})
-foreach(Part ${ThisProject})
-  string(SUBSTRING ${Part} 0 1 Initial)
-  string(SUBSTRING ${Part} 1 -1 Part)
-  string(TOUPPER ${Initial} Initial)
-  set(CamelCaseProjectName ${CamelCaseProjectName}${Initial}${Part})
-endforeach()
-
+underscores_to_camel_case(${PROJECT_NAME} CamelCaseProjectName)
 
 string(REGEX REPLACE . "-" UNDERSCORE ${PROJECT_NAME})
-if(NOT PROJECT_NAME STREQUAL Cryptopp)
+if(NOT PROJECT_NAME STREQUAL Cryptopp AND NOT PROJECT_NAME STREQUAL leveldb)
   message("${HR}\nConfiguring MaidSafe ${CamelCaseProjectName} project\n--------------------${UNDERSCORE}---------")
 endif()
 
@@ -72,7 +63,7 @@ endif()
 include_directories("${PROJECT_SOURCE_DIR}/include")
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs")  # for cryptopp
-include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/boost")
+include_directories(SYSTEM "${BoostSourceDir}")
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/protobuf/src")
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/googlemock/gtest/include")
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/googlemock/include")

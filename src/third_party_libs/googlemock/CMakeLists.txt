@@ -85,6 +85,8 @@ include_directories("${gmock_SOURCE_DIR}/include"
 # are used for other targets, to ensure that Google Mock can be compiled by
 # a user aggressive about warnings.
 cxx_library(gmock "${cxx_strict}" src/gmock-all.cc)
+add_dependencies(gmock boost)
+add_dependencies(gtest boost)
 target_link_libraries(gmock gtest)
 if(MSVC)
   set_target_properties(gmock PROPERTIES

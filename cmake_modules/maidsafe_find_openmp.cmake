@@ -19,6 +19,11 @@
 #                                                                                                  #
 #==================================================================================================#
 
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+  # OMP is currently unavailable with Clang - avoid generating a mountain of
+  # output with every CMake run when this will fail every time.
+  return()
+endif()
 
 include(FindOpenMP)
 
