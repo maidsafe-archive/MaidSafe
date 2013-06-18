@@ -170,32 +170,29 @@ endfunction()
 # Appends ".old" to executable files found (recursively) within the build tree
 # which don't match current target filenames.  This avoids accidentally running
 # outdated executables in the case of renaming a CMake Target.
-macro(rename_outdated_built_exes)
+function(rename_outdated_built_exes)
   if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
-    set(AllExesForAllProjects ${AllExesForAllProjects}
-        cryptest protoc CompilerIdC CompilerIdCXX
-        LifeStuff_${ApplicationVersionMajor}.${ApplicationVersionMinor}.${ApplicationVersionPatch}_${TargetPlatform}_${TargetArchitecture})
-    if(MSVC)
-      file(GLOB_RECURSE BuiltExes RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/*.exe")
-    else()
-      # TODO - Run bash script to generate list of executables and read in to CMake
-    endif()
-    foreach(BuiltExe ${BuiltExes})
-      get_filename_component(BuiltExeName ${BuiltExe} NAME_WE)
-      list(FIND AllExesForAllProjects ${BuiltExeName} CurrentExe)
-      if(${CurrentExe} STRLESS 0)
-        string(REGEX MATCH "build_qt" InQtBuildDir ${BuiltExe})
-        string(REGEX MATCH "src/boost" InBoostBuildDir ${BuiltExe})
-        if(NOT InQtBuildDir AND NOT InBoostBuildDir)
-          file(RENAME ${CMAKE_BINARY_DIR}/${BuiltExe} ${CMAKE_BINARY_DIR}/${BuiltExe}.old)
-          message(STATUS "Renaming outdated executable \"${BuiltExe}\" to \"${BuiltExe}.old\"")
-        endif()
-      endif()
-    endforeach()
-  else()
-    set(AllExesForAllProjects ${AllExesForAllProjects} ${AllExesForCurrentProject} PARENT_SCOPE)
+    return()
   endif()
-endmacro()
+
+  if(MSVC)
+    file(GLOB_RECURSE BuiltExes RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/*.exe")
+  else()
+    # TODO - Run bash script to generate list of executables and read in to CMake
+  endif()
+
+  foreach(BuiltExe ${BuiltExes})
+    get_filename_component(BuiltExeName ${BuiltExe} NAME_WE)
+    if(NOT TARGET ${BuiltExeName} AND NOT ${BuiltExeName} MATCHES "CompilerIdC[X]?[X]?$")
+      string(REGEX MATCH "build_qt" InQtBuildDir ${BuiltExe})
+      string(REGEX MATCH "src/boost" InBoostBuildDir ${BuiltExe})
+      if(NOT InQtBuildDir AND NOT InBoostBuildDir)
+        file(RENAME ${CMAKE_BINARY_DIR}/${BuiltExe} ${CMAKE_BINARY_DIR}/${BuiltExe}.old)
+        message(STATUS "Renaming outdated executable \"${BuiltExe}\" to \"${BuiltExe}.old\"")
+      endif()
+    endif()
+  endforeach()
+endfunction()
 
 
 # Copies executable to <current build dir>/package/bin/<config type>/ for use by the package tool
