@@ -186,7 +186,9 @@ function(rename_outdated_built_exes)
     execute_process(COMMAND find . -maxdepth 1 -perm +111 -type f
                     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                     OUTPUT_VARIABLE FindResult)
-    string(REPLACE "\n" ";" BuiltExes ${FindResult})
+    if(FindResult)
+      string(REPLACE "\n" ";" BuiltExes ${FindResult})
+    endif()
   endif()
 
   foreach(BuiltExe ${BuiltExes})
