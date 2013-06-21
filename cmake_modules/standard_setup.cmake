@@ -79,7 +79,7 @@ add_coverage_exclude(main\\\\.cc)
 add_memcheck_ignore(${CamelCaseProjectName}StyleCheck)
 
 
-# All other libraries search                                                                       #
+# All other libraries search
 if(UNIX)
   set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /usr/lib/i386-linux-gnu/ /usr/lib/x86_64-linux-gnu/ /usr/lib/)
   set(CMAKE_THREAD_PREFER_PTHREAD true)

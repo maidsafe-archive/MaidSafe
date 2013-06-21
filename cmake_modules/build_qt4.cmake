@@ -19,7 +19,7 @@
 
 
 #if(UNIX AND NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-#  message(FATAL_ERROR "Don't build Qt from source, follow the instructions at\n   https://sites.google.com/a/maidsafe.net/staff/developers/build-instructions\n\n")
+#  message(FATAL_ERROR "Don't build Qt from source, follow the instructions at\n   https://github.com/maidsafe/MaidSafe/wiki/Installing-Prerequisites-and-Optional-Components#building-qt-484\n\n")
 #endif()
 
 unset(QtConfigureExe CACHE)
