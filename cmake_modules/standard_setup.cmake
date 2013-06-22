@@ -15,7 +15,6 @@
 #                                                                                                  #
 #==================================================================================================#
 
-
 check_compiler()
 underscores_to_camel_case(${PROJECT_NAME} CamelCaseProjectName)
 
@@ -56,10 +55,6 @@ endif()
 
 
 set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
-# The following is a workaround for an error in <system_error>
-if(APPLE)
-  include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/common/include/clang31_workaround")
-endif()
 include_directories("${PROJECT_SOURCE_DIR}/include")
 include_directories("${PROJECT_SOURCE_DIR}/src")
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs")  # for cryptopp
@@ -84,7 +79,7 @@ add_coverage_exclude(main\\\\.cc)
 add_memcheck_ignore(${CamelCaseProjectName}StyleCheck)
 
 
-# All other libraries search                                                                       #
+# All other libraries search
 if(UNIX)
   set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /usr/lib/i386-linux-gnu/ /usr/lib/x86_64-linux-gnu/ /usr/lib/)
   set(CMAKE_THREAD_PREFER_PTHREAD true)

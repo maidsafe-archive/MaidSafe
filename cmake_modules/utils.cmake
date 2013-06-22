@@ -167,35 +167,51 @@ function(label_as_critical_tests)
 endfunction()
 
 
-# Appends ".old" to executable files found (recursively) within the build tree
-# which don't match current target filenames.  This avoids accidentally running
-# outdated executables in the case of renaming a CMake Target.
-macro(rename_outdated_built_exes)
-  if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
-    set(AllExesForAllProjects ${AllExesForAllProjects}
-        cryptest protoc CompilerIdC CompilerIdCXX
-        LifeStuff_${ApplicationVersionMajor}.${ApplicationVersionMinor}.${ApplicationVersionPatch}_${TargetPlatform}_${TargetArchitecture})
-    if(MSVC)
-      file(GLOB_RECURSE BuiltExes RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/*.exe")
-    else()
-      # TODO - Run bash script to generate list of executables and read in to CMake
-    endif()
-    foreach(BuiltExe ${BuiltExes})
-      get_filename_component(BuiltExeName ${BuiltExe} NAME_WE)
-      list(FIND AllExesForAllProjects ${BuiltExeName} CurrentExe)
-      if(${CurrentExe} STRLESS 0)
-        string(REGEX MATCH "build_qt" InQtBuildDir ${BuiltExe})
-        string(REGEX MATCH "src/boost" InBoostBuildDir ${BuiltExe})
-        if(NOT InQtBuildDir AND NOT InBoostBuildDir)
-          file(RENAME ${CMAKE_BINARY_DIR}/${BuiltExe} ${CMAKE_BINARY_DIR}/${BuiltExe}.old)
-          message(STATUS "Renaming outdated executable \"${BuiltExe}\" to \"${BuiltExe}.old\"")
-        endif()
-      endif()
-    endforeach()
-  else()
-    set(AllExesForAllProjects ${AllExesForAllProjects} ${AllExesForCurrentProject} PARENT_SCOPE)
+# Moves executable files found within the build tree which don't match current target filenames to
+# a directory named 'old' in the build tree root.  This avoids accidentally running outdated
+# executables in the case of renaming a CMake Target.
+function(rename_outdated_built_exes)
+  if(NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+    return()
   endif()
-endmacro()
+
+  if(MSVC)
+#    file(GLOB_RECURSE BuiltExes RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/*.exe")
+    file(GLOB_RECURSE BuiltExesDebug RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/Debug/*.exe")
+    file(GLOB_RECURSE BuiltExesMinSizeRel RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/MinSizeRel/*.exe")
+    file(GLOB_RECURSE BuiltExesRelease RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/Release/*.exe")
+    file(GLOB_RECURSE BuiltExesRelWithDebInfo RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/RelWithDebInfo/*.exe")
+    set(BuiltExes ${BuiltExesDebug} ${BuiltExesBuiltExesMinSizeRel} ${BuiltExesRelease} ${BuiltExesRelWithDebInfo})
+  else()
+    execute_process(COMMAND find . -maxdepth 1 -perm +111 -type f
+                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                    OUTPUT_VARIABLE FindResult)
+    string(REPLACE "\n" ";" BuiltExes "${FindResult}")
+  endif()
+
+  foreach(BuiltExe ${BuiltExes})
+    get_filename_component(BuiltExeNameWe ${BuiltExe} NAME_WE)
+    if(NOT TARGET ${BuiltExeNameWe} AND NOT ${BuiltExeNameWe} MATCHES "CompilerIdC[X]?[X]?$")
+      string(REGEX MATCH "build_qt" InQtBuildDir ${BuiltExe})
+      string(REGEX MATCH "src/boost" InBoostBuildDir ${BuiltExe})
+      string(REGEX MATCH "old/" AlreadyArchived ${BuiltExe})
+      if(NOT InQtBuildDir AND NOT InBoostBuildDir AND NOT AlreadyArchived)
+        get_filename_component(BuiltExePath ${BuiltExe} PATH)
+        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/old/${BuiltExePath})
+        file(RENAME ${CMAKE_BINARY_DIR}/${BuiltExe} ${CMAKE_BINARY_DIR}/old/${BuiltExe})
+        if(${BuiltExePath} STREQUAL ".")
+          set(OldName ${BuiltExe})
+          get_filename_component(BuiltExeName ${BuiltExe} NAME)
+          set(NewName "./old/${BuiltExeName}")
+        else()
+          set(OldName "./${BuiltExe}")
+          set(NewName "./old/${BuiltExe}")
+        endif()
+        message(STATUS "Moved outdated executable \"${OldName}\" to \"${NewName}\"")
+      endif()
+    endif()
+  endforeach()
+endfunction()
 
 
 # Copies executable to <current build dir>/package/bin/<config type>/ for use by the package tool

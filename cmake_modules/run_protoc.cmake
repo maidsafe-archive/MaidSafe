@@ -66,7 +66,7 @@ foreach(ProtoFile ${ProtoFiles})
     set(SourceH ${ProtoSrcDir}/${ProtoFileRelPath}/${ProtoFileNameWe}.pb.h)
     execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files ${TempCC} ${SourceCC}
                     RESULT_VARIABLE ComparisonResultCC ERROR_VARIABLE ComparisonErrors)
-    execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files ${TempCC} ${SourceCC}
+    execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files ${TempH} ${SourceH}
                     RESULT_VARIABLE ComparisonResultH ERROR_VARIABLE ComparisonErrors)
     if(NOT ComparisonResultCC EQUAL 0 OR NOT ComparisonResultH EQUAL 0)
       execute_process(COMMAND ${CMAKE_COMMAND} -E copy ${TempCC} ${SourceCC})

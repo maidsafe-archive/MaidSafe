@@ -105,7 +105,7 @@ target_link_libraries(cryptest cryptopp ${JustThread_LIBRARIES})
 
 if(UNIX)
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-    if(APPLE OR HAVE_LIBC++)
+    if(HAVE_LIBC++)
       set(LibCXX "-stdlib=libc++")
       set_target_properties(cryptest PROPERTIES LINK_FLAGS "${LibCXX} -ldl")
     endif()
