@@ -461,3 +461,53 @@ function(get_target_architecture)
 
   set(TargetArchitecture "${ARCH}" PARENT_SCOPE)
 endfunction()
+
+
+# Gets all dependencies for the given Target
+function(get_dependencies Target OptimizedDeps DebugDeps)
+  # Recursively get all dependencies
+  macro(detail_recursive_get_dependencies Target Var)
+    if(TARGET ${Target} AND NOT GotDependsFor${Target})
+      set(GotDependsFor${Target} TRUE)
+      get_target_property(Depends ${Target} LINK_LIBRARIES)
+      list(APPEND ${Var} ${Depends})
+      foreach(Depend ${Depends})
+        detail_recursive_get_dependencies(${Depend} ${Var})
+      endforeach()
+    endif()
+  endmacro()
+
+  detail_recursive_get_dependencies(${Target} Deps)
+  # Remove duplicates
+  list(LENGTH Deps DepsLength)
+  if(${DepsLength})
+    list(REMOVE_DUPLICATES Deps)
+  endif()
+
+  # Sort into Release and Debug
+  foreach(Dep ${Deps})
+    if(TARGET ${Dep})
+      get_target_property(ReleaseLocation ${Dep} LOCATION_RELEASE)
+      get_target_property(DebugLocation ${Dep} LOCATION_DEBUG)
+      list(APPEND AllReleases "\"${ReleaseLocation}\"")
+      list(APPEND AllDebugs "\"${DebugLocation}\"")
+    elseif(Dep)
+      string(REGEX REPLACE "\\$<\\$<NOT:\\$<CONFIG:DEBUG>>:([^>]+)>" "\\1" ReleaseDep ${Dep})
+      if(NOT "${ReleaseDep}" STREQUAL "${Dep}")
+        list(APPEND AllReleases "\"${ReleaseDep}\"")
+      else()
+        string(REGEX REPLACE "\\$<\\$<CONFIG:DEBUG>:([^>]+)>" "\\1" DebugDep ${Dep})
+        if("${DebugDep}" STREQUAL "${Dep}")
+          set(ErrorMessage "\n\nExpected to find Release or Debug configuration:\nDep -        ${Dep}")
+          set(ErrorMessage "${ErrorMessage}\nReleaseDep - ${ReleaseDep}\nDebugDep -   ${DebugDep}\n")
+          message(FATAL_ERROR "${ErrorMessage}")
+        endif()
+        list(APPEND AllDebugs "\"${DebugDep}\"")
+      endif()
+    endif()
+  endforeach()
+
+  # Copy into parent scope
+  set(${OptimizedDeps} ${AllReleases} PARENT_SCOPE)
+  set(${DebugDeps} ${AllDebugs} PARENT_SCOPE)
+endfunction()
