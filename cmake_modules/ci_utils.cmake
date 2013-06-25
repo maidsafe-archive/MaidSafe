@@ -139,17 +139,17 @@ function(write_git_update_details_to_file)
 endfunction()
 
 
-function(handle_failed_build)
-  message("${SubProject} failed during build, exiting script")
-  if(WIN32)
-    # TODO(Viv) Check OS Version
-    execute_process(COMMAND cmd /c "ci_build_reporter.py win8 ${MachineBuildType} fail ${SubProject} ${${SubProject}NewCommitLogAuthor}"
-                    WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
-                    RESULT_VARIABLE ResultVar
-                    OUTPUT_VARIABLE OutputVar)
+function(report_build_result)
+  if(${BuildResult} EQUAL 0)
+    set(Result ok)
   else()
-    # Need Linux Execute Script Command with argument detections
+    message("${SubProject} failed during build, exiting script")
+    set(Result fail)
   endif()
+  execute_process(COMMAND ${CTEST_PYTHON_EXECUTABLE} "ci_build_reporter.py ${TargetPlatform} ${MachineBuildType} ${Result} ${SubProject} ${${SubProject}NewCommitLogAuthor}"
+                  WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
+                  RESULT_VARIABLE ResultVar
+                  OUTPUT_VARIABLE OutputVar)
 endfunction()
 
 
@@ -220,18 +220,10 @@ function(build_and_run SubProject RunAll)
   endif()
 
   if(NOT ${BuildResult} EQUAL 0)
-    handle_failed_build()
+    report_build_result()
     set(BuildFailed TRUE PARENT_SCOPE)
     break()
   elseif(${SubProject} STREQUAL "LifestuffUiQt")
-    if(WIN32)
-      # TODO(Viv) Check OS Version
-      execute_process(COMMAND cmd /c "ci_build_reporter.py win8 ${MachineBuildType} ok ${SubProject} ${${SubProject}NewCommitLogAuthor}"
-                      WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
-                      RESULT_VARIABLE ResultVar
-                      OUTPUT_VARIABLE OutputVar)
-    else()
-      # Need Linux Execute Script Command with argument detections
-    endif()
+    report_build_result()
   endif()
 endfunction()
