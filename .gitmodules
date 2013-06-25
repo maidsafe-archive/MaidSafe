@@ -28,3 +28,6 @@
 [submodule "src/vault"]
 	path = src/vault
 	url = git@github.com:maidsafe/MaidSafe-Vault
+[submodule "doc"]
+	path = doc
+	url = git@github.com:maidsafe/MaidSafe.wiki
