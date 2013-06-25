@@ -1,0 +1,2489 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass IEEEtran
+\use_default_options false
+\maintain_unincluded_children false
+\language british
+\language_package default
+\inputencoding default
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "'Peer to Peer' Public Key Infrastructure"
+\pdf_author "David Irvine"
+\pdf_subject "Validation"
+\pdf_keywords "security, freedom, privacy, DHT, encryption"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder true
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_amsmath 0
+\use_esint 0
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic true
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 2
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+"Peer to Peer" Public Key Infrastructure
+\end_layout
+
+\begin_layout Author
+David Irvine, email: david.irvine@maidsafe.net (LifeStuff: David).
+ Reviewers: Alison Shaw, email: alison.shaw@maidsafe.net (LifeStuff: Alison);
+ Dan Schmidt Valle, email: dan.schmidt@maidsafe.net (LifeStuff: Dan)
+\end_layout
+
+\begin_layout Right Address
+maidsafe.net limited (registered in Scotland Sc 297540)
+\end_layout
+
+\begin_layout Date
+September, 2010 (Revised August 2011)
+\end_layout
+
+\begin_layout Abstract
+We present a system of validation that utilises asymmetric encryption to
+ create a Public Key Infrastructure (PKI) which requires no servers or centralis
+ed control.
+ This system provides a mathematically secure method of validation that
+ can be employed in any modern network, especially distributed networks
+ and overlay networks such as Distributed Hash Tables (DHTs).
+ We also consider the system's ability to accommodate user-selected names.
+\end_layout
+
+\begin_layout Keywords
+security, freedom, privacy, DHT, encryption
+\end_layout
+
+\begin_layout Page headings
+maidsafe.net limited company confidential Version 0.2
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}{
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Don't panic the section numbering may look different in
+\end_layout
+
+\begin_layout Plain Layout
+LyX but LaTeX uses the correct Roman numerals and
+\end_layout
+
+\begin_layout Plain Layout
+Alpha for section counters.
+\end_layout
+
+\begin_layout Plain Layout
+It's just that LyX doesn't handle counters other than arabic
+\end_layout
+
+\begin_layout Plain Layout
+numerals.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+PARstart{V}{alidation}
+\end_layout
+
+\end_inset
+
+ of identity is essential for any communicating parties that wish to have
+ confidence in the identity of the other party and the information that
+ they communicate: the absence of an effective identity verification system
+ may allow other entities to intercept and alter communications, or masquerade
+ as one of the parties, without either party being aware of the problem.
+\end_layout
+
+\begin_layout Standard
+Public key infrastructures (PKIs) aim to facilitate authentication of the
+ source and integrity of a piece of information.
+ Checking the integrity of a message uses public key cryptography and digital
+ signing, of which section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Asymmetric-encryption"
+
+\end_inset
+
+ provides a brief reminder.
+ Hence a crucial responsibility of a PKI is to provide a means of verification
+ of an identity and its association with the key-pair used for public key
+ cryptography.
+\end_layout
+
+\begin_layout Standard
+There are two main methods of identity validation provided by the PKIs of
+ today.
+ The first method relies on the trustworthiness and security of a central
+ authority to provide certification of identities, so any compromise of
+ this central authority impacts our ability to verify identities and the
+ information they communicate.
+ The second method, referred to as a web of trust, provides validation of
+ identity based on how trustworthy an entity's peers perceive it to be.
+ A web of trust is vulnerable to attacks where many untrustworthy entities
+ rate each other highly then surround a good identity and intercept or hide
+ information.
+ Thus both of these systems are open to considerable abuse and neither is
+ able to provide a secure system allowing the free creation of identifiable
+ nodes.
+ 
+\end_layout
+
+\begin_layout Standard
+The system presented in the paper relies on neither a central authority
+ nor a web of trust, instead enabling entities to validate identities only
+ with the use of mathematical operations.
+ The vital distinguishing features of the system that allow it to operate
+ in this way are as follows:
+\end_layout
+
+\begin_layout Itemize
+An entity is equipped with two key-pairs, the first pair allocated to the
+ usual digital signing of messages and the second pair designated to identity
+ verification procedures.
+\end_layout
+
+\begin_layout Itemize
+An entity's identity is derived directly from these key-pairs.
+ 
+\end_layout
+
+\begin_layout Standard
+Such a system, which avoids the pitfalls of the usual central authentication
+ or web of trust, has been the subject of many a wish list[1] for some time
+ now.
+\end_layout
+
+\begin_layout Standard
+In general, our system works in conjunction with a key addressable storage
+ system, which sections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:ID-linked-to-keys"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:identity-revocation"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Use-with-storage"
+
+\end_inset
+
+ explain.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Use-with-message-passing"
+
+\end_inset
+
+ illustrates the system's potential for use in the absence of such storage,
+ and section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:DHT"
+
+\end_inset
+
+ explores the system's potential in the context of DHTs.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Selectable-identities"
+
+\end_inset
+
+ builds on the case where we have storage, exploring the system's ability
+ to cater for user-chosen names.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Adaptations"
+
+\end_inset
+
+ explores some ways of altering and extending the system to provide further
+ functionality.
+\end_layout
+
+\begin_layout Section
+Background concepts and notation
+\end_layout
+
+\begin_layout Standard
+We provide a brief overview of some core concepts used in this paper.
+ Throughout this paper we will use the following notation, which is explained
+ in more detail in this section:
+\end_layout
+
+\begin_layout Itemize
+In the context of asymmetric encryption, we will use 
+\begin_inset Formula $\mathsf{Kpub}$
+\end_inset
+
+ to denote a public key and 
+\begin_inset Formula $\mathsf{Kpriv}$
+\end_inset
+
+ to denote the corresponding private key.
+ See section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Asymmetric-encryption"
+
+\end_inset
+
+ for more information.
+\end_layout
+
+\begin_layout Itemize
+We will repeatedly make use of a hash function; we will denote the hash
+ of a piece of data 
+\begin_inset Formula $\mathsf{M}$
+\end_inset
+
+ by 
+\begin_inset Formula $\mathsf{Hash(M)}$
+\end_inset
+
+.
+ See section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Hash-functions"
+
+\end_inset
+
+ for more information.
+\end_layout
+
+\begin_layout Itemize
+The digital signature of a piece of data 
+\begin_inset Formula $\mathsf{M}$
+\end_inset
+
+ using a private key 
+\begin_inset Formula $\mathsf{Kpriv}$
+\end_inset
+
+ will be denoted by 
+\begin_inset Formula $\mathsf{Sig_{Kpriv}(M)}$
+\end_inset
+
+.
+ See section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Digital-signatures"
+
+\end_inset
+
+ for more information.
+\end_layout
+
+\begin_layout Subsection
+Asymmetric public key encryption
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Asymmetric-encryption"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This paper makes use of public key cryptography, a system of encryption
+ which does not require passwords or keys to be distributed but instead
+ allows the publication of a 
+\shape italic
+public key
+\shape default
+, denoted by 
+\begin_inset Formula $\mathsf{Kpub}$
+\end_inset
+
+.
+ This key can be thought of as the encryption key, where any data encrypted
+ by this key can only
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Here we assume the algorithm and its implementation are perfect, which is
+ unlikely to be the case in reality.
+\end_layout
+
+\end_inset
+
+ be decrypted by the holder of the corresponding 
+\shape italic
+private key
+\shape default
+, denoted by 
+\begin_inset Formula $\mathsf{Kpriv}$
+\end_inset
+
+.
+ This private key can hence be considered as the key for `unlocking' the
+ data.
+ The reverse procedure is also valid: data can be decrypted using the private
+ key then encrypted using the public key to recover the original data.
+ Since everyone has access to the public key this may seem strange and useless,
+ but we will see in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Digital-signatures"
+
+\end_inset
+
+ that such key-pairs can be used to excellent effect.
+\end_layout
+
+\begin_layout Subsection
+Hash functions
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Hash-functions"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can give a 
+\shape italic
+hash function
+\shape default
+ a piece of data and it returns a binary string of fixed length, which we
+ will call the 
+\shape italic
+hash
+\shape default
+ of the data.
+ The hash of a piece of data can be thought of as a digital fingerprint
+ for several reasons.
+ Firstly, just as a person's fingerprints do not change of their own accord,
+ the hash of a piece of data will never change.
+ Secondly, just as a fingerprint of a person is almost certainly unique,
+ the hash of a piece of data is also almost certainly unique.
+ Thirdly, just as we cannot reconstruct or reveal a person from their fingerprin
+t, we cannot reconstruct or reveal a piece of data from its hash.
+ With both fingerprints and hashes there is the possibility of non-uniquness:
+ if two distinct pieces of data have matching hashes we say they have 
+\shape italic
+collided
+\shape default
+ and that we have a 
+\shape italic
+hash collision
+\shape default
+.
+ The strength of a hash function depends on how low the chance of collisions
+ is and how difficult it is to find pieces of data whose hashes collide.
+ The way in which a hash function works should attempt to produce very different
+ hashes for seemingly similar pieces of data; the binary strings it produces
+ should also be long enough to provide a sufficiently low chance of collisions.
+ 
+\end_layout
+
+\begin_layout Standard
+Early hash algorithms such as MD4, MD5 and even early SHA allow too many
+ collisions to occur and are thus regarded as broken.
+ Efficient hash functions that produce longer hashes are desirable in cases
+ where a high probability of uniqueness is required.
+ Henceforth we will assume that the hash function we use is strong enough
+ to assign each piece of a data a unique hash
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+In practice, producing unique hashes of data is impossible because the only
+ way to avoid collisions is to make the fixed length of the hashes longer
+ than any known piece of data.
+ 
+\end_layout
+
+\end_inset
+
+.
+ We refer the reader to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "6"
+
+\end_inset
+
+ Ch1.
+ p.33 for more information about hash functions.
+\end_layout
+
+\begin_layout Subsection
+Digital signatures
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Digital-signatures"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using the ideas of asymmetric encryption (see 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Asymmetric-encryption"
+
+\end_inset
+
+) and hashing (see 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Hash-functions"
+
+\end_inset
+
+), we now outline the process of 
+\shape italic
+digital signing
+\shape default
+:
+\end_layout
+
+\begin_layout Standard
+Suppose person A wishes to send a message M to person B.
+ We equip person A with a key-pair consisting of a private key 
+\begin_inset Formula $\mathsf{Kpriv}$
+\end_inset
+
+ and a public key 
+\begin_inset Formula $\mathsf{Kpub}$
+\end_inset
+
+, the latter of which is publicly available for person B to use.
+ It is in the interests of both parties for person B to be able to ensure
+ that the message M was definitely sent by person A and to detect if it
+ has been changed during its transmission.
+ To facilitate this, person A can hash the message M and then decrypt it
+ using their private key; the result of these operations is called the 
+\shape italic
+digital signature
+\shape default
+ of the message M.
+ Person A then sends both M and its digital signature to person B.
+ To check that the message M has arrived intact and unchanged, person B
+ does three things: firstly, he encrypts the digital signature using person
+ A's public key to recover the hash of message M; secondly, person B hashes
+ the message he received.
+ Finally, person B compares these two hashes - if they differ, either the
+ message M or its signature has been altered.
+ If the hashes are the same, the message received by person B is cryptographical
+ly guaranteed to be the piece of data to which the signature refers, and
+ therefore it is the message M which person A sent.
+ Note that we rely on the hash function to have a very low probability of
+ collisions, otherwise our guarantee is weakened.
+\end_layout
+
+\begin_layout Standard
+Throughout, the signature of a piece of data M using private key 
+\begin_inset Formula $\mathsf{Kpriv}$
+\end_inset
+
+ will be denoted by 
+\begin_inset Formula $\mathsf{Sig_{Kpriv}(M)}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Implementation
+\end_layout
+
+\begin_layout Standard
+This validation system requires manipulation of key-pairs, as do all of
+ today's cryptographically secure validation systems.
+ One of the fundamental tenets of this paper is that these key-pairs are
+ themselves used to generate the identity rather than being later tied to
+ an identity (see section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:ID-linked-to-keys"
+
+\end_inset
+
+).
+ We present two versions of the system: one that provides identity validation
+ by using a key addressable storage system
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+A key addressable storage system allows data values to be stored in a location
+ labelled by a key.
+ This key can be looked up to see what its associated value is.
+\end_layout
+
+\end_inset
+
+ (see section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Use-with-storage"
+
+\end_inset
+
+) and one that works without storage and instead lets identities be validated
+ by message-passing (see section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Use-with-message-passing"
+
+\end_inset
+
+).
+ In both versions, from a security perspective it is most thorough to verify
+ the sender's identity for every message, but this may be too slow for some
+ implementations, so it might instead be preferable to check the validity
+ of identities at random, sacrificing some thoroughness for speed.
+\end_layout
+
+\begin_layout Standard
+The system described in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Use-with-storage"
+
+\end_inset
+
+ will operate equally well with any kind of key addressable storage system,
+ for example databases or distributed hash tables (DHTs).
+ Although there may be other kinds of storage that our system could be used
+ in conjunction with, the kind of storage used could influence its effectiveness.
+ 
+\end_layout
+
+\begin_layout Subsection
+Linking identity to key-pairs
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:ID-linked-to-keys"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We wish to create an identity that is inherently connected to the key-pair
+ we will use for communication, rather than artificially `tying' an otherwise
+ unrelated identity to our key-pair.
+ A relatively simple way to achieve this uses one key-pair (consisting of
+ 
+\begin_inset Formula $\mathsf{Kpriv}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathsf{Kpub}$
+\end_inset
+
+) and defines the identity by 
+\begin_inset Formula $\mathsf{Identity=Hash(Kpub)}$
+\end_inset
+
+.
+ This ensures the identity is mathematically linked to a key-pair rather
+ than being later tied to one.
+ 
+\end_layout
+
+\begin_layout Standard
+Given the possibility that an identity can be compromised, we have an incentive
+ to introduce a structure that enables us to prove our identity to others
+ (and to prevent other entities from being able to steal or abuse our identity).
+ This is achieved by using key-pairs as follows: the first key-pair (
+\shape italic
+key-pair 1
+\shape default
+, consisting of 
+\begin_inset Formula $\mathsf{Kpriv_{1}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathsf{Kpub{}_{1}}$
+\end_inset
+
+) will be used for our usual communication purposes, and we introduce a
+ second key-pair (
+\shape italic
+key-pair 2
+\shape default
+, consisting of 
+\begin_inset Formula $\mathsf{Kpriv_{2}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathsf{Kpub{}_{2}}$
+\end_inset
+
+) whose purpose will be to validate our identity.
+ Throughout, it is understood that the private key 
+\begin_inset Formula $\mathsf{Kpriv_{2}}$
+\end_inset
+
+ is never placed in a position where it can be obtained by other parties,
+ so the owner of 
+\begin_inset Formula $\mathsf{Kpriv_{2}}$
+\end_inset
+
+ corresponds correctly to the identity.
+ To connect our key-pairs with our identity, we define the identity as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathsf{Identity=Hash(Kpub_{1}+Sig_{Kpriv_{2}}(Kpub_{1}))}\label{eq:def-Identity}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that we have not explicitly defined how `
+\begin_inset Formula $\mathsf{+}$
+\end_inset
+
+' works, although its use should be specified and consistent in practice.
+ There are various options for its definition, for example it could represent
+ concatenating the two values involved.
+ Since hashing the value 
+\begin_inset Formula $\mathsf{Kpub_{1}+Sig_{Kpriv_{2}}(Kpub_{1})}$
+\end_inset
+
+ produces the identity, we will henceforth refer to this value 
+\begin_inset Formula $\mathsf{Kpub_{1}+Sig_{Kpriv_{2}}(Kpub_{1})}$
+\end_inset
+
+ as the 
+\shape italic
+identity precursor
+\shape default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+We will demonstrate in sections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Use-with-storage"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Use-with-message-passing"
+
+\end_inset
+
+ how this definition of the identity allows it to be validated.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Use-with-storage"
+
+\end_inset
+
+ considers the scenario where we have a key addressable storage system on
+ which we can store information, and section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Use-with-message-passing"
+
+\end_inset
+
+ considers the case when we do not have such a storage facility at our disposal.
+\end_layout
+
+\begin_layout Standard
+A drawback of defining the identity as in equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:def-Identity"
+
+\end_inset
+
+) is that the identity may be cumbersome to use in practice, because strong
+ hash functions produce very long hashes.
+ However, in several cases, the system would be a good enough method, for
+ example, in applications such as telephone numbers or bar-codes on products.
+ We will discuss the possibilities for a more user-friendly identity in
+ section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Selectable-identities"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Addition of an identity revocation method
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:identity-revocation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For identity revocation to operate, we require a key addressable storage
+ system.
+ This storage system should retain all information as immutable unless the
+ signer of the data requests amendment or deletion, the reasons for which
+ we will discuss shortly.
+ The creator of the identity stores the following information on the key
+ addressable storage system:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Key:
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Value:
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Identity}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Kpub_{1}+Sig_{Kpriv_{2}}(Kpub_{1})}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This key and value pair will henceforth be referred to as the 
+\shape italic
+identity packet
+\shape default
+, or simply the
+\shape italic
+ packet
+\shape default
+.
+ Observe that the value stored is the identity precursor 
+\begin_inset Formula $\mathsf{Kpub_{1}+Sig_{Kpriv_{2}}(Kpub_{1})}$
+\end_inset
+
+, so hashing this value produces the identity.
+ The validity of an identity is checked by looking the identity up in the
+ key addressable storage system and checking that the hash of the stored
+ value is equal to the identity.
+ A person wishing to revoke their identity could delete its associated packet
+ on the key addressable storage system, but this means that we can't distinguish
+ between non-existent and revoked identities, so it is preferable to replace
+ the public key in the stored value with a false key (for example, consisting
+ of all 0s) so that the hash of the stored value does not equal the identity
+ and the identity can be recognised as being invalid.
+\end_layout
+
+\begin_layout Standard
+It is necessary that only the holder of 
+\begin_inset Formula $\mathsf{Kpriv_{2}}$
+\end_inset
+
+ is able to alter the identity packet, otherwise other parties could invalidate
+ or remove this identity without the holder of 
+\begin_inset Formula $\mathsf{Kpriv_{2}}$
+\end_inset
+
+'s permission.
+ Far worse, suppose an attacker somehow compromised the identity and it
+ was revoked.
+ If the attacker knew the identity's associated identity precursor, they
+ could edit the identity packet and restore it its previous state, incorrectly
+ presenting the identity as valid.
+\end_layout
+
+\begin_layout Subsection
+Using and validating an identity using a key addressable storage system
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Use-with-storage"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+An identity is defined as in equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:def-Identity"
+
+\end_inset
+
+).
+ As in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:identity-revocation"
+
+\end_inset
+
+, the creator of the identity stores an identity packet in a key addressable
+ storage system, with key equal to the identity and value equal to the identity
+ precursor, so the hash of the value equals the key.
+ Consider a message, allegedly from this identity, formatted as shown:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row interlinespace="1sp">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Identity}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row interlinespace="1sp">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Payload}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Sig_{Kpriv_{1}}(Payload)}$
+\end_inset
+
+ (optional)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align left
+To validate the identity of the sender, we look up the identity in the key
+ addressable storage system as described in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:identity-revocation"
+
+\end_inset
+
+ and check that the hash of the stored value equals the identity.
+\end_layout
+
+\begin_layout Standard
+\align left
+Additionally, if the optional signature 
+\begin_inset Formula $\mathsf{Sig_{Kpriv_{1}}(Payload)}$
+\end_inset
+
+ of the payload is included then digital signing, as described in section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Digital-signatures"
+
+\end_inset
+
+, enables us to verify that they payload has not been altered in transmission.
+\end_layout
+
+\begin_layout Subsection
+Using and validating an identity using message passing
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Use-with-message-passing"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this case we do not use a key addressable storage system and will instead
+ validate the identity of a message sender by passing messages.
+ An identity is defined as in equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:def-Identity"
+
+\end_inset
+
+).
+ Consider a message, allegedly from this identity, formatted as shown:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row interlinespace="1sp">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Identity}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row interlinespace="1sp">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Kpub_{1}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Sig_{Kpriv_{2}}(Kpub_{1})}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row interlinespace="1sp">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Kpub_{2}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Sig_{Kpriv_{2}}(Kpub_{2})}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row interlinespace="1sp">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Payload}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Sig_{Kpriv_{1}}(Payload)}$
+\end_inset
+
+ (optional)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Upon receiving this message there are several things we can and should check.
+ Is the identity equal to 
+\begin_inset Formula $\mathsf{\mathsf{Hash(Kpub_{1}+Sig_{Kpriv_{2}}(Kpub_{1}))}}$
+\end_inset
+
+? We have 
+\begin_inset Formula $\mathsf{Kpub_{2}}$
+\end_inset
+
+, so are the signatures of 
+\begin_inset Formula $\mathsf{Kpub_{1}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathsf{Kpub_{2}}$
+\end_inset
+
+ correct? If any of these checks fail then we have cause for concern: perhaps
+ information has merely been communicated incorrectly, but maybe the entity
+ we are communicating with is not trustworthy.
+ In the former case we may not be able to communicate correctly with the
+ sender, e.g.
+ if one of the keys is wrong.
+ In the latter case we do not wish for communication to continue.
+ Either way, correspondence should halt.
+\end_layout
+
+\begin_layout Standard
+If the above checks all pass then, in particular, we know that 
+\begin_inset Formula $\mathsf{Kpub_{2}}$
+\end_inset
+
+ is correct and we can use it to encrypt a challenge for the sender and,
+ as they should be the holder of 
+\begin_inset Formula $\mathsf{Kpriv_{2}}$
+\end_inset
+
+, they should be able to decrypt our challenge and respond correctly to
+ it.
+ Alternatively we could send them a piece of information and request that
+ they sign it using 
+\begin_inset Formula $\mathsf{Kpriv_{2}}$
+\end_inset
+
+, then verify their response using 
+\begin_inset Formula $\mathsf{Kpub_{2}}$
+\end_inset
+
+.
+ A correct response from either of these options verifies that the sender
+ has 
+\begin_inset Formula $\mathsf{Kpriv_{2}}$
+\end_inset
+
+ and is therefore trustworthy.
+\end_layout
+
+\begin_layout Standard
+If the optional signature of the payload is included, we also have the ability
+ to verify that the payload has been transmitted correctly.
+\end_layout
+
+\begin_layout Section
+Combined with DHT
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:DHT"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+All distributed hash table (DHT) networks have a particular requirement
+ in common: to create a network address that is unique.
+ There are various techniques for achieving this, for example Chord
+\begin_inset CommandInset citation
+LatexCommand cite
+key "2"
+
+\end_inset
+
+ uses the hash of the IP/PORT combination and Kademlia
+\begin_inset CommandInset citation
+LatexCommand cite
+key "3"
+
+\end_inset
+
+ uses a random hash.
+ 
+\end_layout
+
+\begin_layout Standard
+Using the method outlined in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Use-with-storage"
+
+\end_inset
+
+ and storing the identity packet on the network ensures uniqueness of identity
+ and provides a storage mechanism for finding a node's public key.
+ To implement this, we firstly look up 
+\begin_inset Formula $\mathsf{Hash(Kpub_{1}+Sig_{Kpriv_{2}}(Kpub_{1}))}$
+\end_inset
+
+ in the DHT to check for entries with the same key.
+ If there are no such entries, we store the identity precursor value 
+\begin_inset Formula $\mathsf{Kpub_{1}+Sig_{Kpriv_{2}}(Kpub_{1})}$
+\end_inset
+
+ at the key 
+\begin_inset Formula $\mathsf{Hash(Kpub_{1}+Sig_{Kpriv_{2}}(Kpub_{1}))}$
+\end_inset
+
+.
+ For completeness, the hash size chosen should be of the same length as
+ the keys used in the network addressing scheme.
+ The system described can be used to send encrypted information to that
+ node or to validate a signature from that node.
+ 
+\end_layout
+
+\begin_layout Standard
+If such a system were implemented in a DHT or similar publicly connected
+ system (as web servers are), then the security of the private key 
+\begin_inset Formula $\mathsf{Kpriv_{1}}$
+\end_inset
+
+ is paramount.
+ In today’s networks this is achieved via brute force techniques such as
+ firewalls, secured hard drives, private key passwords (which make automatic
+ reboots of a server require human intervention) and other custom approaches.
+ In the system presented there is no obvious improvement in the security
+ of 
+\begin_inset Formula $\mathsf{Kpriv_{1}}$
+\end_inset
+
+, however, the system is unique in offering the ability to reduce the effectiven
+ess or scope of the private key 
+\begin_inset Formula $\mathsf{Kpriv_{1}}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section
+Selectable identities
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Selectable-identities"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The method described in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Use-with-storage"
+
+\end_inset
+
+ is extremely secure and resilient to a cryptographic attack, but does suffer
+ form one major deficiency: in this system the identity is a long binary
+ string because it is defined as 
+\begin_inset Formula $\mathsf{Hash(Kpub_{1}+Sig_{Kpriv_{2}}(Kpub_{1}))}$
+\end_inset
+
+.
+ Such strings are not easily readable for a human and are certainly too
+ long to be communicated comfortably on paper or verbally.
+ We would like to enable users to choose a desired and more manageable `chosen
+ name', then secure it to their usual identity (provided the chosen name
+ is not already in use by someone else).
+\end_layout
+
+\begin_layout Standard
+The functionality and security of the existing system revolve around the
+ storage of the identity packet defined in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Use-with-storage"
+
+\end_inset
+
+ in a key addressable storage system, so any way of associating a chosen
+ name with the identity should not alter this characteristic.
+\end_layout
+
+\begin_layout Standard
+A way of securing a chosen name to an identity is to store the following
+ key/value pairs on the key addressable storage system:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Key:
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Value:
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Hash(Chosen\, name)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Kpub_{1}+Sig_{Kpriv_{2}}(Kpub_{1})}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Identity}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Kpub_{1}+Sig_{Kpriv_{2}}(Kpub_{1})}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The first row of the table could optionally be stored elsewhere, provided
+ it is immutable to everyone except its creator.
+\end_layout
+
+\begin_layout Standard
+We would communicate using our chosen name rather than using our identity.
+ To revoke our identity we would change the identity packet as described
+ in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:identity-revocation"
+
+\end_inset
+
+.
+ To validate a chosen name and its associated identity we would look up
+ 
+\begin_inset Formula $\mathsf{Hash(Chosen\, name)}$
+\end_inset
+
+ then use the identity precursor to find the identity packet and validate
+ the identity as usual - if the identity is not valid then neither is its
+ associated chosen name.
+\end_layout
+
+\begin_layout Standard
+If a person's identity is compromised, they can revoke it then create a
+ new identity and put the new identity packet on the key addressable storage
+ system.
+ They can then alter the value addressed by the key 
+\begin_inset Formula $\mathsf{Hash(Chosen\, name)}$
+\end_inset
+
+ to correspond to this new identity, so they are able to continue communication
+ using their chosen name.
+\end_layout
+
+\begin_layout Section
+Adaptations
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Adaptations"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This section presents some ways in which the system described could be adapted
+ to offer greater functionality.
+ Both ideas rely on a more complex key addressable storage system than previousl
+y required, hence these options are not necessarily attainable with more
+ basic forms of the system.
+\end_layout
+
+\begin_layout Subsection
+Sharing chosen names
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Sharing-chosen-names"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Selectable-identities"
+
+\end_inset
+
+ presents an extention of the current system that enables an entity to communica
+te using a more manageable `chosen name'.
+ However, this requires an entity's chosen name to be unique to them, potentiall
+y making it difficult to choose a name that is simultaneously short, easy
+ to remember and unique.
+ This section provides a way for multiple entities to share a chosen name
+ and be distinguished by additional information, e.g.
+ geographical location or date of birth.
+ For the sake of example we will suppose that entities with the same chosen
+ name will use their geographical location to distinguish themselves; in
+ practice it may be desirable to use several types of information (e.g.
+ use both location and date of birth) or allow entities to supplement their
+ chosen name with information of an unrestricted nature.
+\end_layout
+
+\begin_layout Standard
+Given an entity 
+\begin_inset Formula $\mathsf{x}$
+\end_inset
+
+, we denote the keys of their first key-pair by 
+\begin_inset Formula $\mathsf{Kpub_{(x,1)}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathsf{Kpriv_{(x,1)}}$
+\end_inset
+
+, and analagously 
+\begin_inset Formula $\mathsf{Kpub_{(x,2)}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathsf{Kpriv_{(x,2)}}$
+\end_inset
+
+ denote the keys of their second key-pair.
+ For brevity, the identity associated with 
+\begin_inset Formula $\mathsf{x}$
+\end_inset
+
+ is written as 
+\begin_inset Formula $\mathsf{ID_{x}}$
+\end_inset
+
+ and is defined by 
+\begin_inset Formula $\mathsf{ID_{x}=Hash(Kpub_{(x,1)}+Sig_{Kpriv_{(x,2)}}(Kpub_{(x,1)})).}$
+\end_inset
+
+ This is the same as in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:ID-linked-to-keys"
+
+\end_inset
+
+, except the notation that allows us to distinguish between entities.
+ The location of the entity 
+\begin_inset Formula $\mathsf{x}$
+\end_inset
+
+ will be denoted by 
+\begin_inset Formula $\mathsf{location_{x}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+To allow entities 
+\begin_inset Formula $\mathsf{a}$
+\end_inset
+
+, 
+\begin_inset Formula $\mathsf{b}$
+\end_inset
+
+, 
+\begin_inset Formula $\mathsf{c}$
+\end_inset
+
+, etc.
+ to share the name 
+\begin_inset Formula $\mathsf{Chosen\, name}$
+\end_inset
+
+, they each store their signed identity plus location on the key addressable
+ storage system as follows:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Key:
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Hash(Chosen\, name)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Values:
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{ID_{a}+location_{a}+Sig_{Kpriv_{(a,1)}}(ID_{a}+location_{a})}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{ID_{b}+location_{b}+Sig_{Kpriv_{(b,1)}}(ID_{b}+location_{b})}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{ID_{c}+location_{c}+Sig_{Kpriv_{(c,1)}}(ID_{c}+location_{c})}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hspace{1em}\hspace{1em}\hspace{1em}\hspace{1em}\hspace{1em}\hspace{1em}\hspace{1em}\hspace{1em}\hspace{1em}\hspace{1em}$
+\end_inset
+
+etc.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Each entity also stores their usual identity packet, for example entity
+ 
+\begin_inset Formula $\mathsf{a}$
+\end_inset
+
+ would store the following:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Key:
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Value:
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{ID_{a}}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Kpub_{(a,1)}+Sig_{Kpriv_{(a,2)}}(Kpub_{(a,1)})}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Suppose we want to find and verify 
+\begin_inset Formula $\mathsf{a}$
+\end_inset
+
+'s identity.
+ We ask for their chosen name and location, then look 
+\begin_inset Formula $\mathsf{Hash(Chosen\, name)}$
+\end_inset
+
+ up in the key addressable storage system.
+ We have demanded that different entities sharing a chosen name cannot have
+ the same location, so we can use 
+\begin_inset Formula $\mathsf{location_{a}}$
+\end_inset
+
+ to find 
+\begin_inset Formula $\mathsf{ID_{a}}$
+\end_inset
+
+.
+ We use 
+\begin_inset Formula $\mathsf{ID_{a}}$
+\end_inset
+
+ to find their identity packet, which we check the validity of as usual.
+ The packet contains 
+\begin_inset Formula $\mathsf{Kpub_{(a,1)}}$
+\end_inset
+
+ which we can use to verify the signature of the value stored at 
+\begin_inset Formula $\mathsf{Hash(Chosen\, name)}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The reliability of this system depends on the following property of the
+ key addressable storage system: only the entity who signed a value can
+ change or remove it.
+ The key addressable storage systems discussed previously have not had multiple
+ entities storing values under the same key and would not necessarily cater
+ for the ideas presented in this section.
+\end_layout
+
+\begin_layout Subsection
+Validity provision
+\end_layout
+
+\begin_layout Standard
+In this section we consider a way of allowing other parties to associate
+ information with an entity - for example, if a person has paid for six
+ months' membership to a website, it would be useful for the website administrat
+ors to be able to associate confirmation of this membership with the person,
+ and after six months revoke the information.
+\end_layout
+
+\begin_layout Standard
+For brevity we will write 
+\begin_inset Formula $\mathsf{ID}$
+\end_inset
+
+ to denote the identity.
+ For a party 
+\begin_inset Formula $\mathsf{X}$
+\end_inset
+
+ with private key 
+\begin_inset Formula $\mathsf{Kpriv_{X}}$
+\end_inset
+
+ and public key 
+\begin_inset Formula $\mathsf{Kpub{}_{X}}$
+\end_inset
+
+ we will write 
+\begin_inset Formula $\mathsf{info_{X}}$
+\end_inset
+
+ to denote the information that they want to associate with an entity.
+\end_layout
+
+\begin_layout Standard
+We store the identity packed as usual:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Key:
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Value(s):
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{ID}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Kpub_{1}+Sig_{Kpriv_{2}}(Kpub_{1})}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To add functionality we associate the identity with a `chosen name' and
+ allow parties 
+\begin_inset Formula $\mathsf{A}$
+\end_inset
+
+, 
+\begin_inset Formula $\mathsf{B}$
+\end_inset
+
+, 
+\begin_inset Formula $\mathsf{C}$
+\end_inset
+
+ etc.
+ to add values under the key 
+\begin_inset Formula $\mathsf{Hash(Chosen\, name)}$
+\end_inset
+
+ as follows:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="1">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Key:
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Hash(Chosen\, name)}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Values:
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{Kpub_{1}+Sig_{Kpriv_{2}}(Kpub_{1})}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{ID+info_{A}+Sig_{Kpriv_{A}}(ID+info_{A})}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{ID+info_{B}+Sig_{Kpriv_{B}}(ID+info_{B})}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\mathsf{ID+info_{C}+Sig_{Kpriv_{C}}(ID+info_{C})}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\hspace{1em}\hspace{1em}\hspace{1em}\hspace{1em}\hspace{1em}\hspace{1em}\hspace{1em}$
+\end_inset
+
+etc.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The chosen name and identity are related as in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Selectable-identities"
+
+\end_inset
+
+.
+ To check the validity of, for example, 
+\begin_inset Formula $\mathsf{info_{A}}$
+\end_inset
+
+, we use 
+\begin_inset Formula $\mathsf{Kpub{}_{A}}$
+\end_inset
+
+ to check that it has been signed correctly.
+ The inclusion of the identity in the stored values ensures that the information
+ from party 
+\begin_inset Formula $\mathsf{A}$
+\end_inset
+
+ is tied to this entity and cannot be copied or abused by other entities.
+ However, it may be in the interests of party 
+\begin_inset Formula $\mathsf{A}$
+\end_inset
+
+ to include an expirey date in 
+\begin_inset Formula $\mathsf{info_{A}}$
+\end_inset
+
+ so that the identity can't replicate the value and abuse it.
+\end_layout
+
+\begin_layout Standard
+The ideas in this section again rely on a key addressable storage system
+ where stored values can only be changed or removed by the entity that has
+ signed them.
+ A necessary disadvantage of this scenario is that the key 
+\begin_inset Formula $\mathsf{Hash(Chosen\, name)}$
+\end_inset
+
+ could accumulate values that the identity cannot change or remove.
+\end_layout
+
+\begin_layout Section
+Conclusions
+\end_layout
+
+\begin_layout Standard
+The system presented in this paper is ground-breaking in its ability to
+ enable the creation of secure PKI networks that don't rely on a central
+ authority or web of trust, instead allowing entities to validate identities
+ autonomously.
+ 
+\end_layout
+
+\begin_layout Standard
+Sections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:ID-linked-to-keys"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:identity-revocation"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Use-with-storage"
+
+\end_inset
+
+ have together constituted the system in the presence of key addressable
+ storage.
+ Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Selectable-identities"
+
+\end_inset
+
+ has extended this system to allow the basic use of user-chosen names, and
+ adaptations of this extension may have further benefits to offer, as section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Adaptations"
+
+\end_inset
+
+ has illustrated.
+ 
+\end_layout
+
+\begin_layout Standard
+Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:DHT"
+
+\end_inset
+
+ has considered some additional possibilities for this form of the system
+ in the context of a DHT; we refer the reader to the MaidSafe paper on distribut
+ed hash tables for a more thorough consideration of our system in this situation.
+ It has not been within the scope of this paper to explore the system's
+ abilities when used in conjunction with other specific types of key addressable
+ system.
+ 
+\end_layout
+
+\begin_layout Standard
+Sections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:ID-linked-to-keys"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Use-with-message-passing"
+
+\end_inset
+
+ have together demonstrated the system's basic abilities in the absence
+ of a key addressable storage system, although this case may also have potential
+ for additional functionality.
+\end_layout
+
+\begin_layout Standard
+Practical examples of possible utilisations of the system include:
+\end_layout
+
+\begin_layout Itemize
+Identification of credit card data linking the identity to a known name
+ in another secure location.
+ People could have a card and a revocation card or, perhaps preferably,
+ directly use key-pairs as described in this paper.
+\end_layout
+
+\begin_layout Itemize
+Single continuous validation systems where a known identity can be used
+ across multiple web sites or on-line systems that require history to operate
+ effectively.
+\end_layout
+
+\begin_layout Standard
+We refer the reader to the MaidSafe Self Authentication paper for further
+ practical applications of the theory presented in this paper.
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring References
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "1"
+key "1"
+
+\end_inset
+
+As described by Van Jacobson in this link below, August 30, 2006 http://video.Goo
+gle.com/videoplay?docid=-6972678839686672840
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring References
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "2"
+key "2"
+
+\end_inset
+
+Stoica, Robert Morris, David Karger, M.
+ Frans Kaashoek, and Hari Balakrishnan,Chord: A Scalable Peer-to-peer Lookup
+ Service for Internet Applications
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring References
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "3"
+key "3"
+
+\end_inset
+
+Petar Maymounkov and David Mazirese Kademlia: A Peer-to-peer Information
+ System Based on the XOR Metric {petar,dm}@cs.nyu.edu http://Kademlia.scs.cs.nyu.edu
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring References
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "4"
+key "4"
+
+\end_inset
+
+David Irvine, maidsafe: A new networking paradigm, david.irvine@maidsafe.net
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring References
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "5"
+key "5"
+
+\end_inset
+
+David Irvine, MaidSafe Distributed File System, david.irvine@maidsafe.net
+\end_layout
+
+\begin_layout Bibliography
+\labelwidthstring References
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "6"
+key "6"
+
+\end_inset
+
+A.
+ Menezes, P.
+ van Oorschot & S.
+ Vanstone, Handbook of Applied Cryptography, CRC Press, 1996, www.cacr.math.uwaterl
+oo.ca/hac 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Change this paragraphs style to 'Standard' to enable
+\end_layout
+
+\begin_layout Plain Layout
+BibTeX bibliography generation.
+\end_layout
+
+\begin_layout Plain Layout
+Remember though that your final submission is supposed to have
+\end_layout
+
+\begin_layout Plain Layout
+all the bibliography entries embedded in the latex file.
+ This means
+\end_layout
+
+\begin_layout Plain Layout
+you eventually have to copy the .bbl file into the latex file and
+\end_layout
+
+\begin_layout Plain Layout
+remove the bibtex lines.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "your_biblio_file"
+options "IEEEbib"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Biography without photo
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+David Irvine
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ is a Scottish Engineer and innovator who has spent the last 12 years researchin
+g ways to make computers function in a more efficient manner.
+\end_layout
+
+\begin_layout Biography without photo
+He is an Inventor listed on more than 20 patent submissions and was Designer
+ / Project Manager of one of the World's largest private networks (Saudi
+ Aramco, over $300M).
+ He is an experienced Project Manager and has been involved in start up
+ businesses since 1995 and has provided business consultancy to corporates
+ and SMEs in many sectors.
+\end_layout
+
+\begin_layout Biography without photo
+He has presented technology at Google (Seattle), British Computer Society
+ (Christmas Lecture) and many others.
+\end_layout
+
+\begin_layout Biography without photo
+He has spent many years as a lifeboat Helmsman and is a keen sailor when
+ time permits.
+\end_layout
+
+\end_body
+\end_document
