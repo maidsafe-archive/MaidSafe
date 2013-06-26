@@ -27,9 +27,9 @@ set(ENV{LC_ALL} C)
 
 if(WIN32)
   if(CTEST_CMAKE_GENERATOR MATCHES "64$")
-    set(MachineBuildType "x64")
+    set(MachineBuildType "kx64")
   else()
-    set(MachineBuildType "x86")
+    set(MachineBuildType "kx86")
   endif()
 endif()
 
