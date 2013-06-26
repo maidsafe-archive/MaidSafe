@@ -13,12 +13,12 @@
 #                                                                                                  #
 #  Module used to run CI on all submodules of MaidSafe/MaidSafe                                    #
 #                                                                                                  #
-#  Example usage: ctest -S CI_Continuous_Release.cmake                                             #
+#  Example usage: From MaidSafe build dir, run 'ctest -S CI_Continuous_Release.cmake'              #
 #                                                                                                  #
 #==================================================================================================#
 
 
-set(ScriptVersion 8)
+set(ScriptVersion 9)
 include(${CTEST_SOURCE_DIRECTORY}/CTestConfig.cmake)
 include(${CTEST_SOURCE_DIRECTORY}/cmake_modules/ci_utils.cmake)
 
@@ -107,6 +107,7 @@ while(${CTEST_ELAPSED_TIME} LESS 72000)
     update_sub_project(${SubProject})
   endforeach()
 
+  set(LastIterationBuildFailed ${BuildFailed})
   foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
     set_property(GLOBAL PROPERTY SubProject ${SubProject})
     set_property(GLOBAL PROPERTY Label ${SubProject})
@@ -114,7 +115,7 @@ while(${CTEST_ELAPSED_TIME} LESS 72000)
     math(EXPR FinalSubProjectIndex ${FinalSubProjectCount}-1)
     list(GET CTEST_PROJECT_SUBPROJECTS ${FinalSubProjectIndex} FinalSubProject)
     build_and_run(${SubProject} ${RunAll})
-    if(BuildFailed)
+    if(BuildFailed AND LastIterationBuildFailed)
       return()
     endif()
   endforeach()
