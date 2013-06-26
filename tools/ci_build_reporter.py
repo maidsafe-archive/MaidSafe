@@ -9,7 +9,7 @@ def main():
             'build_type' : sys.argv[2],
             'status' : sys.argv[3],
             'project' : sys.argv[4],
-            'commiter' : sys.argv[5]}
+            'committer' : sys.argv[5]}
   requests.get("http://109.228.30.58/Submit.aspx", params=values)
 
   # Send Mail Alert for Build Failure to dev@maidsafe.net
