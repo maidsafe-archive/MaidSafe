@@ -141,12 +141,12 @@ endfunction()
 
 function(report_build_result)
   if(NOT BuildResult)
-    set(Result ok)
+    set(Result true)
   elseif(${BuildResult} EQUAL 0)
-    set(Result ok)
+    set(Result true)
   else()
     message("\n#################################### ${SubProject} failed during build, exiting script ####################################\n")
-    set(Result fail)
+    set(Result false)
   endif()
   execute_process(COMMAND ${CTEST_PYTHON_EXECUTABLE} ci_build_reporter.py "${TargetPlatform}" "${MachineBuildType}" "${Result}" "${SubProject}" "${${SubProject}NewCommitLogAuthor}"
                   WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
