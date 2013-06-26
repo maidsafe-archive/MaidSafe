@@ -5,9 +5,9 @@ import sys
 
 def main():
 
-  values = {'os' : sys.argv[1],
+  values = {'machine_type' : sys.argv[1],
             'build_type' : sys.argv[2],
-            'status' : sys.argv[3],
+            'is_valid' : sys.argv[3],
             'project' : sys.argv[4],
             'committer' : sys.argv[5]}
   requests.get("http://109.228.30.58/Submit.aspx", params=values)

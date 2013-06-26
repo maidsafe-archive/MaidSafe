@@ -1,5 +1,5 @@
 set(DashboardModel @DashType@)
-set(TargetPlatform @TargetPlatform@)
+set(MachineType @MachineType@)
 set(CTEST_CONFIGURATION_TYPE @TestConfType@)
 set(CTEST_SITE "@ThisSite@")
 set(CTEST_CMAKE_GENERATOR "@CMAKE_GENERATOR@")
