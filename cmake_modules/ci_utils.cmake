@@ -171,8 +171,16 @@ function(build_and_run SubProject RunAll)
     return()
   endif()
 
-  message("Building ${SubProject}")
-  set(CTEST_BUILD_TARGET "All${SubProject}")
+  # If using VS Express, the build tool is MSBuild and due to a CMake bug, we can't build
+  # individual targets.
+  string(TOLOWER "${CMAKE_MAKE_PROGRAM}" MakeProgram)
+  if("${MakeProgram}" MATCHES "msbuild")
+    message("Building ${SubProject} using VS Express - building ALL_BUILD")
+    set(CTEST_BUILD_TARGET)
+  else()
+    message("Building ${SubProject}")
+    set(CTEST_BUILD_TARGET "All${SubProject}")
+  endif()
   # add coverage flags
   if(DashboardModel STREQUAL "Experimental" AND NOT WIN32)
     set(ExtraConfigureArgs "${ExtraConfigureArgs};-DCOVERAGE=ON")
