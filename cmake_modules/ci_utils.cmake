@@ -148,12 +148,12 @@ function(report_build_result)
     message("\n#################################### ${SubProject} failed during build, exiting script ####################################\n")
     set(Result false)
   endif()
-  execute_process(COMMAND ${CTEST_PYTHON_EXECUTABLE} ci_build_reporter.py "${MachineType}" "${MachineBuildType}" "${Result}" "${SubProject}" "${${SubProject}NewCommitLogAuthor}"
+  execute_process(COMMAND ${CTEST_PYTHON_EXECUTABLE} ci_build_reporter.py "${MachineType}" "k${MachineBuildType}" "${Result}" "${SubProject}" "${${SubProject}NewCommitLogAuthor}"
                   WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
                   RESULT_VARIABLE ResultVar
                   OUTPUT_VARIABLE OutputVar)
   if(NOT ${ResultVar} EQUAL 0)
-    message(WARNING "${SubProject} failed running \"${CTEST_PYTHON_EXECUTABLE} ci_build_reporter.py \"${MachineType}\" \"${MachineBuildType}\" \"${Result}\" \"${SubProject}\" \"${${SubProject}NewCommitLogAuthor}\"\"\n\n${OutputVar}")
+    message(WARNING "${SubProject} failed running \"${CTEST_PYTHON_EXECUTABLE} ci_build_reporter.py \"${MachineType}\" \"k${MachineBuildType}\" \"${Result}\" \"${SubProject}\" \"${${SubProject}NewCommitLogAuthor}\"\"\n\n${OutputVar}")
   endif()
 endfunction()
 
