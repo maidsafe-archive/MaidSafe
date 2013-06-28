@@ -19,8 +19,8 @@
 
 
 set(ApplicationVersionMajor 0)
-set(ApplicationVersionMinor 1)
-set(ApplicationVersionPatch 002)
+set(ApplicationVersionMinor 7)
+set(ApplicationVersionPatch 000)
 
 # Testing environment if ApplicationVersionMinor is odd
 math(EXPR MaidsafeTesting ${ApplicationVersionMinor}%2)
