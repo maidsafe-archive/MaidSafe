@@ -177,6 +177,12 @@ function(build_and_run SubProject RunAll)
     return()
   endif()
 
+  # add coverage flags
+  if(DashboardModel STREQUAL "Experimental" AND NOT WIN32)
+    set(ExtraConfigureArgs "${ExtraConfigureArgs};-DCOVERAGE=ON")
+  endif()
+  ctest_configure(OPTIONS "${ExtraConfigureArgs}")
+  ctest_read_custom_files(${CMAKE_CURRENT_BINARY_DIR})
   # If using VS Express, the build tool is MSBuild and due to a CMake bug, we can't build
   # individual targets.
   string(TOLOWER "${CMAKE_MAKE_PROGRAM}" MakeProgram)
@@ -187,12 +193,6 @@ function(build_and_run SubProject RunAll)
     message("Building ${SubProject}")
     set(CTEST_BUILD_TARGET "All${SubProject}")
   endif()
-  # add coverage flags
-  if(DashboardModel STREQUAL "Experimental" AND NOT WIN32)
-    set(ExtraConfigureArgs "${ExtraConfigureArgs};-DCOVERAGE=ON")
-  endif()
-  ctest_configure(OPTIONS "${ExtraConfigureArgs}")
-  ctest_read_custom_files(${CMAKE_CURRENT_BINARY_DIR})
   ctest_build(RETURN_VALUE BuildResult)
 
   # teardown network with python script if it's Lifestuff
