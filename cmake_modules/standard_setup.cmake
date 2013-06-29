@@ -71,7 +71,6 @@ include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/googlemo
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/leveldb/include")
 
 include(utils)
-include(run_protoc)
 
 
 # Create CTestCustom.cmake to avoid inclusion of coverage results from test files, protocol buffer files and main.cc files

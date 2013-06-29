@@ -22,6 +22,9 @@
 #==================================================================================================#
 
 
+include(add_protoc_command)
+
+
 function(check_compiler)
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "17")  # i.e for MSVC < Visual Studio 11
@@ -45,20 +48,13 @@ endfunction()
 # ${DataHolderProtos} and ${DataHolderAllFiles}.  ${DataHolderProtos} contains the contents of
 # ${DataHolderProtoSources}, ${DataHolderProtoHeaders} and all .proto files.
 macro(glob_dir BaseName Dir SourceGroupName)
-  string(REPLACE "src/maidsafe" "include/maidsafe" ApiDir ${Dir})
+  string(REPLACE "${PROJECT_SOURCE_DIR}/src" "${PROJECT_SOURCE_DIR}/include" ApiDir ${Dir})
   file(GLOB ${BaseName}Api ${ApiDir}/*.h)
-  file(GLOB ${BaseName}Protos ${Dir}/*.proto)
-  file(GLOB ${BaseName}ProtoSources ${Dir}/*.pb.cc)
-  file(GLOB ${BaseName}ProtoHeaders ${Dir}/*.pb.h)
-  set(${BaseName}Protos ${${BaseName}Protos} ${${BaseName}ProtoSources} ${${BaseName}ProtoHeaders})
+  set(ProtoRootDir ${PROJECT_SOURCE_DIR}/src)
+  string(REPLACE "${ProtoRootDir}" "" ProtoRelativeDir "${Dir}")
+  add_protoc_command(${BaseName} "${ProtoRootDir}" "${ProtoRelativeDir}")
   file(GLOB ${BaseName}Sources ${Dir}/*.cc)
   file(GLOB ${BaseName}Headers ${Dir}/*.h)
-  if(${BaseName}ProtoSources)
-    list(REMOVE_ITEM ${BaseName}Sources ${${BaseName}ProtoSources})
-  endif()
-  if(${BaseName}ProtoHeaders)
-    list(REMOVE_ITEM ${BaseName}Headers ${${BaseName}ProtoHeaders})
-  endif()
   set(${BaseName}AllFiles ${${BaseName}Api} ${${BaseName}Sources} ${${BaseName}Headers} ${${BaseName}Protos})
   set(${BaseName}SourceGroupName "${SourceGroupName} ")
   string(REPLACE "\\ " "\\" ${BaseName}SourceGroupName "${${BaseName}SourceGroupName}")

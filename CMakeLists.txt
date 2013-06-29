@@ -29,10 +29,10 @@ set(HR "========================================================================
 set(SubModules
       common
       private
+      passport
       rudp
       routing
       encrypt
-      passport
       nfs
       vault
       drive
@@ -98,10 +98,6 @@ option(USE_JUST_THREADS "If ON, try to find and use the just::thread library (Wi
 
 
 add_subdirectory(src/third_party_libs)
-
-
-# Build protoc if not already done
-include(build_protoc)
 
 
 # Add each sub-module
