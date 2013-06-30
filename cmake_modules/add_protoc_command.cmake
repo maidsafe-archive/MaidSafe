@@ -54,20 +54,19 @@ function(add_protoc_command BaseName ProtoRootDir ProtoRelativeDir)
   set(GeneratedProtoRootDir ${CMAKE_BINARY_DIR}/GeneratedProtoFiles)
   include_directories(${GeneratedProtoRootDir})
 
-
   # Get list of .proto files
-  file(GLOB ProtoFiles RELATIVE ${PROJECT_SOURCE_DIR} ${ProtoRootDir}/${ProtoRelativeDir}/*.proto)
+  file(GLOB ProtoFiles RELATIVE ${ProtoRootDir} ${ProtoRootDir}/${ProtoRelativeDir}/*.proto)
   
   # Search for and remove old generated .pb.cc and .pb.h files in the output dir
   file(GLOB ExistingPbFiles
-       RELATIVE ${GeneratedProtoRootDir}/${ProtoRelativeDir}
+       RELATIVE ${GeneratedProtoRootDir}
        ${GeneratedProtoRootDir}/${ProtoRelativeDir}/*.pb.*)
   list(LENGTH ExistingPbFiles ExistingPbFilesCount)
   string(REGEX REPLACE "([^;]*)\\.proto" "\\1.pb.cc;\\1.pb.h" GeneratedFiles "${ProtoFiles}")
   if(ExistingPbFilesCount)
     list(REMOVE_ITEM ExistingPbFiles ${GeneratedFiles})
     foreach(ExistingPbFile ${ExistingPbFiles})
-      file(REMOVE ${ProtoSrcDir}/${ExistingPbFile})
+      file(REMOVE ${GeneratedProtoRootDir}/${ExistingPbFile})
       message(STATUS "Removed ${ExistingPbFile}")
     endforeach()
   endif()
@@ -101,10 +100,10 @@ function(add_protoc_command BaseName ProtoRootDir ProtoRelativeDir)
     set(GeneratedHeader ${GeneratedProtoRootDir}/${ProtoRelativeDir}/${ProtoFileNameWe}.pb.h)
     list(APPEND GeneratedProtoSources "${GeneratedSource}")
     list(APPEND GeneratedProtoHeaders "${GeneratedHeader}")
-    list(APPEND Protos "${PROJECT_SOURCE_DIR}/${ProtoFile}")
+    list(APPEND Protos "${ProtoRootDir}/${ProtoFile}")
     add_custom_command(OUTPUT ${GeneratedSource} ${GeneratedHeader}
-                       COMMAND $<TARGET_FILE:protoc> ${ProtocArgs} ${PROJECT_SOURCE_DIR}/${ProtoFile}
-                       DEPENDS protoc ${PROJECT_SOURCE_DIR}/${ProtoFile}
+                       COMMAND $<TARGET_FILE:protoc> ${ProtocArgs} ${ProtoRootDir}/${ProtoFile}
+                       DEPENDS protoc ${ProtoRootDir}/${ProtoFile}
                        COMMENT "Generated files from ${ProtoFileNameWe}.proto"
                        VERBATIM)
   endforeach()
