@@ -42,8 +42,8 @@ set(BoostComponents
       thread
       timer
       )
-set(BoostVersion 1.54.0.beta.1)
-set(BoostSHA1 54d862d4171ccaaa03e860f7a63143ca7f1c84b2)
+set(BoostVersion 1.54.0)
+set(BoostSHA1 230782c7219882d0fab5f1effbe86edb85238bf4)
 
 
 
