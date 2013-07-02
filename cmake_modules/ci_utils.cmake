@@ -1,13 +1,19 @@
 #==================================================================================================#
 #                                                                                                  #
-#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#  Copyright 2012 MaidSafe.net limited                                                             #
 #                                                                                                  #
-#  The following source code is property of MaidSafe.net limited and is not meant for external     #
-#  use.  The use of this code is governed by the license file licence.txt found in the root        #
-#  directory of this project and also on www.maidsafe.net.                                         #
+#  This MaidSafe Software is licensed under the MaidSafe.net Commercial License, version 1.0 or    #
+#  later, and The General Public License (GPL), version 3. By contributing code to this project    #
+#  You agree to the terms laid out in the MaidSafe Contributor Agreement, version 1.0, found in    #
+#  the root directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also    #
+#  available at:                                                                                   #
 #                                                                                                  #
-#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
-#  permission of the board of directors of MaidSafe.net.                                           #
+#    http://www.novinet.com/license                                                                #
+#                                                                                                  #
+#  Unless required by applicable law or agreed to in writing, software distributed under the       #
+#  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,       #
+#  either express or implied. See the License for the specific language governing permissions      #
+#  and limitations under the License.                                                              #
 #                                                                                                  #
 #==================================================================================================#
 #                                                                                                  #
@@ -139,16 +145,21 @@ function(write_git_update_details_to_file)
 endfunction()
 
 
-function(handle_failed_build)
-  message("${SubProject} failed during build, exiting script")
-  if(WIN32)
-    # TODO(Viv) Check OS Version
-    execute_process(COMMAND cmd /c "ci_build_reporter.py win8 ${MachineBuildType} fail ${SubProject} ${${SubProject}NewCommitLogAuthor}"
-                    WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
-                    RESULT_VARIABLE ResultVar
-                    OUTPUT_VARIABLE OutputVar)
+function(report_build_result)
+  if(NOT BuildResult)
+    set(Result true)
+  elseif(${BuildResult} EQUAL 0)
+    set(Result true)
   else()
-    # Need Linux Execute Script Command with argument detections
+    message("\n#################################### ${SubProject} failed during build, exiting script ####################################\n")
+    set(Result false)
+  endif()
+  execute_process(COMMAND ${CTEST_PYTHON_EXECUTABLE} ci_build_reporter.py "${MachineType}" "k${MachineBuildType}" "${Result}" "${SubProject}" "${${SubProject}NewCommitLogAuthor}"
+                  WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
+                  RESULT_VARIABLE ResultVar
+                  OUTPUT_VARIABLE OutputVar)
+  if(NOT ${ResultVar} EQUAL 0)
+    message(WARNING "${SubProject} failed running \"${CTEST_PYTHON_EXECUTABLE} ci_build_reporter.py \"${MachineType}\" \"k${MachineBuildType}\" \"${Result}\" \"${SubProject}\" \"${${SubProject}NewCommitLogAuthor}\"\"\n\n${OutputVar}")
   endif()
 endfunction()
 
@@ -160,17 +171,28 @@ function(build_and_run SubProject RunAll)
   # endif()
   if(NOT ${SubProject}ShouldRun AND NOT RunAll)
     message("Not building or running tests in ${SubProject}")
+    if(${SubProject} STREQUAL ${FinalSubProject})
+      report_build_result()
+    endif()
     return()
   endif()
 
-  message("Building ${SubProject}")
-  set(CTEST_BUILD_TARGET "All${SubProject}")
   # add coverage flags
   if(DashboardModel STREQUAL "Experimental" AND NOT WIN32)
     set(ExtraConfigureArgs "${ExtraConfigureArgs};-DCOVERAGE=ON")
   endif()
   ctest_configure(OPTIONS "${ExtraConfigureArgs}")
   ctest_read_custom_files(${CMAKE_CURRENT_BINARY_DIR})
+  # If using VS Express, the build tool is MSBuild and due to a CMake bug, we can't build
+  # individual targets.
+  string(TOLOWER "${CMAKE_MAKE_PROGRAM}" MakeProgram)
+  if("${MakeProgram}" MATCHES "msbuild")
+    message("Building ${SubProject} using VS Express - building ALL_BUILD")
+    set(CTEST_BUILD_TARGET)
+  else()
+    message("Building ${SubProject}")
+    set(CTEST_BUILD_TARGET "All${SubProject}")
+  endif()
   ctest_build(RETURN_VALUE BuildResult)
 
   # teardown network with python script if it's Lifestuff
@@ -220,18 +242,10 @@ function(build_and_run SubProject RunAll)
   endif()
 
   if(NOT ${BuildResult} EQUAL 0)
-    handle_failed_build()
+    report_build_result()
     set(BuildFailed TRUE PARENT_SCOPE)
     break()
-  elseif(${SubProject} STREQUAL "LifestuffUiQt")
-    if(WIN32)
-      # TODO(Viv) Check OS Version
-      execute_process(COMMAND cmd /c "ci_build_reporter.py win8 ${MachineBuildType} ok ${SubProject} ${${SubProject}NewCommitLogAuthor}"
-                      WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
-                      RESULT_VARIABLE ResultVar
-                      OUTPUT_VARIABLE OutputVar)
-    else()
-      # Need Linux Execute Script Command with argument detections
-    endif()
+  elseif(FinalSubmodule)
+    report_build_result()
   endif()
 endfunction()

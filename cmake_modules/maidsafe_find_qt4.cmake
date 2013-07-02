@@ -1,13 +1,19 @@
 #==================================================================================================#
 #                                                                                                  #
-#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#  Copyright 2012 MaidSafe.net limited                                                             #
 #                                                                                                  #
-#  The following source code is property of MaidSafe.net limited and is not meant for external     #
-#  use.  The use of this code is governed by the license file licence.txt found in the root        #
-#  directory of this project and also on www.maidsafe.net.                                         #
+#  This MaidSafe Software is licensed under the MaidSafe.net Commercial License, version 1.0 or    #
+#  later, and The General Public License (GPL), version 3. By contributing code to this project    #
+#  You agree to the terms laid out in the MaidSafe Contributor Agreement, version 1.0, found in    #
+#  the root directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also    #
+#  available at:                                                                                   #
 #                                                                                                  #
-#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
-#  permission of the board of directors of MaidSafe.net.                                           #
+#    http://www.novinet.com/license                                                                #
+#                                                                                                  #
+#  Unless required by applicable law or agreed to in writing, software distributed under the       #
+#  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,       #
+#  either express or implied. See the License for the specific language governing permissions      #
+#  and limitations under the License.                                                              #
 #                                                                                                  #
 #==================================================================================================#
 #                                                                                                  #
@@ -71,8 +77,8 @@ if(NOT QT_QMAKE_EXECUTABLE)
   endif()
   set(ERROR_MESSAGE "${ERROR_MESSAGE}\nTo build Qt, see\n   https://github.com/maidsafe/MaidSafe/wiki/Installing-Prerequisites-and-Optional-Components#building-qt-484\n")
   set(ERROR_MESSAGE "${ERROR_MESSAGE}If Qt is already built, run:\n")
-  set(ERROR_MESSAGE "${ERROR_MESSAGE}${ERROR_MESSAGE_CMAKE_PATH} -DQT_ROOT_DIR=<Path to Qt root directory>\n")
-  set(ERROR_MESSAGE "${ERROR_MESSAGE}e.g.\n${ERROR_MESSAGE_CMAKE_PATH} -DQT_ROOT_DIR=\"C:\\Devel\\qt-everywhere-opensource-src-4.8.4\"\n\n")
+  set(ERROR_MESSAGE "${ERROR_MESSAGE}cmake . -DQT_ROOT_DIR=<Path to Qt root directory>\n")
+  set(ERROR_MESSAGE "${ERROR_MESSAGE}e.g.\ncmake . -DQT_ROOT_DIR=\"C:\\Devel\\qt-everywhere-opensource-src-4.8.4\"\n\n")
   message(FATAL_ERROR "${ERROR_MESSAGE}")
 endif()
 
@@ -98,8 +104,8 @@ endforeach()
 if(NOT ALL_QT_LIBRARIES_FOUND)
   set(ERROR_MESSAGE "${ERROR_MESSAGE}\nTo build Qt, see\n   https://github.com/maidsafe/MaidSafe/wiki/Installing-Prerequisites-and-Optional-Components#building-qt-484\n")
   set(ERROR_MESSAGE "${ERROR_MESSAGE}If Qt is already built, run:\n")
-  set(ERROR_MESSAGE "${ERROR_MESSAGE}${ERROR_MESSAGE_CMAKE_PATH} -DQT_ROOT_DIR=<Path to Qt root directory>\n")
-  set(ERROR_MESSAGE "${ERROR_MESSAGE}e.g.\n${ERROR_MESSAGE_CMAKE_PATH} -DQT_ROOT_DIR=\"C:\\Devel\\qt-everywhere-opensource-src-4.8.4\"\n\n")
+  set(ERROR_MESSAGE "${ERROR_MESSAGE}cmake . -DQT_ROOT_DIR=<Path to Qt root directory>\n")
+  set(ERROR_MESSAGE "${ERROR_MESSAGE}e.g.\ncmake . -DQT_ROOT_DIR=\"C:\\Devel\\qt-everywhere-opensource-src-4.8.4\"\n\n")
   message(FATAL_ERROR "${ERROR_MESSAGE}")
 endif()
 

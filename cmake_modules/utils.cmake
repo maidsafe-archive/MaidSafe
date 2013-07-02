@@ -1,13 +1,19 @@
 #==================================================================================================#
 #                                                                                                  #
-#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#  Copyright 2012 MaidSafe.net limited                                                             #
 #                                                                                                  #
-#  The following source code is property of MaidSafe.net limited and is not meant for external     #
-#  use.  The use of this code is governed by the license file licence.txt found in the root        #
-#  directory of this project and also on www.maidsafe.net.                                         #
+#  This MaidSafe Software is licensed under the MaidSafe.net Commercial License, version 1.0 or    #
+#  later, and The General Public License (GPL), version 3. By contributing code to this project    #
+#  You agree to the terms laid out in the MaidSafe Contributor Agreement, version 1.0, found in    #
+#  the root directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also    #
+#  available at:                                                                                   #
 #                                                                                                  #
-#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
-#  permission of the board of directors of MaidSafe.net.                                           #
+#    http://www.novinet.com/license                                                                #
+#                                                                                                  #
+#  Unless required by applicable law or agreed to in writing, software distributed under the       #
+#  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,       #
+#  either express or implied. See the License for the specific language governing permissions      #
+#  and limitations under the License.                                                              #
 #                                                                                                  #
 #==================================================================================================#
 #                                                                                                  #
@@ -283,6 +289,19 @@ function(setup_ci_scripts)
     find_program(HostnameCommand NAMES hostname)
     execute_process(COMMAND ${HostnameCommand} OUTPUT_VARIABLE Hostname OUTPUT_STRIP_TRAILING_WHITESPACE)
     set(ThisSite "${Hostname}")
+    if(${TargetPlatform} STREQUAL "Win8")
+      set(MachineType kWindows8)
+    elseif(${TargetPlatform} STREQUAL "Win7")
+      set(MachineType kWindows7)
+    elseif(${TargetPlatform} STREQUAL "Vista")
+      set(MachineType kWindowsVista)
+    elseif(${TargetPlatform} STREQUAL "Linux")
+      set(MachineType kLinux)
+    elseif(${TargetPlatform} STREQUAL "OSX10.8")
+      set(MachineType kMac)
+    else()
+      set(MachineType Unsupported)
+    endif()
     foreach(TestConfType Debug Release)
       foreach(DashType Experimental Continuous Nightly Weekly)
         if(QT_ROOT_DIR)
@@ -460,4 +479,54 @@ function(get_target_architecture)
   endif()
 
   set(TargetArchitecture "${ARCH}" PARENT_SCOPE)
+endfunction()
+
+
+# Gets all dependencies for the given Target
+function(get_dependencies Target OptimizedDeps DebugDeps)
+  # Recursively get all dependencies
+  macro(detail_recursive_get_dependencies Target Var)
+    if(TARGET ${Target} AND NOT GotDependsFor${Target})
+      set(GotDependsFor${Target} TRUE)
+      get_target_property(Depends ${Target} LINK_LIBRARIES)
+      list(APPEND ${Var} ${Depends})
+      foreach(Depend ${Depends})
+        detail_recursive_get_dependencies(${Depend} ${Var})
+      endforeach()
+    endif()
+  endmacro()
+
+  detail_recursive_get_dependencies(${Target} Deps)
+  # Remove duplicates
+  list(LENGTH Deps DepsLength)
+  if(${DepsLength})
+    list(REMOVE_DUPLICATES Deps)
+  endif()
+
+  # Sort into Release and Debug
+  foreach(Dep ${Deps})
+    if(TARGET ${Dep})
+      get_target_property(ReleaseLocation ${Dep} LOCATION_RELEASE)
+      get_target_property(DebugLocation ${Dep} LOCATION_DEBUG)
+      list(APPEND AllReleases "\"${ReleaseLocation}\"")
+      list(APPEND AllDebugs "\"${DebugLocation}\"")
+    elseif(Dep)
+      string(REGEX REPLACE "\\$<\\$<NOT:\\$<CONFIG:DEBUG>>:([^>]+)>" "\\1" ReleaseDep ${Dep})
+      if(NOT "${ReleaseDep}" STREQUAL "${Dep}")
+        list(APPEND AllReleases "\"${ReleaseDep}\"")
+      else()
+        string(REGEX REPLACE "\\$<\\$<CONFIG:DEBUG>:([^>]+)>" "\\1" DebugDep ${Dep})
+        if("${DebugDep}" STREQUAL "${Dep}")
+          set(ErrorMessage "\n\nExpected to find Release or Debug configuration:\nDep -        ${Dep}")
+          set(ErrorMessage "${ErrorMessage}\nReleaseDep - ${ReleaseDep}\nDebugDep -   ${DebugDep}\n")
+          message(FATAL_ERROR "${ErrorMessage}")
+        endif()
+        list(APPEND AllDebugs "\"${DebugDep}\"")
+      endif()
+    endif()
+  endforeach()
+
+  # Copy into parent scope
+  set(${OptimizedDeps} ${AllReleases} PARENT_SCOPE)
+  set(${DebugDeps} ${AllDebugs} PARENT_SCOPE)
 endfunction()
