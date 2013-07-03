@@ -1,13 +1,19 @@
 #==================================================================================================#
 #                                                                                                  #
-#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#  Copyright 2012 MaidSafe.net limited                                                             #
 #                                                                                                  #
-#  The following source code is property of MaidSafe.net limited and is not meant for external     #
-#  use.  The use of this code is governed by the license file licence.txt found in the root        #
-#  directory of this project and also on www.maidsafe.net.                                         #
+#  This MaidSafe Software is licensed under the MaidSafe.net Commercial License, version 1.0 or    #
+#  later, and The General Public License (GPL), version 3. By contributing code to this project    #
+#  You agree to the terms laid out in the MaidSafe Contributor Agreement, version 1.0, found in    #
+#  the root directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also    #
+#  available at:                                                                                   #
 #                                                                                                  #
-#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
-#  permission of the board of directors of MaidSafe.net.                                           #
+#    http://www.novinet.com/license                                                                #
+#                                                                                                  #
+#  Unless required by applicable law or agreed to in writing, software distributed under the       #
+#  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,       #
+#  either express or implied. See the License for the specific language governing permissions      #
+#  and limitations under the License.                                                              #
 #                                                                                                  #
 #==================================================================================================#
 #                                                                                                  #
@@ -36,7 +42,7 @@ if(APPLE)
   get_filename_component(Fuse_INCLUDE_DIR ${Fuse_INCLUDE_DIR} PATH)
   if(NOT Fuse_INCLUDE_DIR)
     set(ERROR_MESSAGE "\nCould not find include directory for OSXFUSE.")
-    set(ERROR_MESSAGE "${ERROR_MESSAGE}  Run\n${ERROR_MESSAGE_CMAKE_PATH} -DADD_FUSE_INCLUDE_DIR=<Path to osxfuse include directory>")
+    set(ERROR_MESSAGE "${ERROR_MESSAGE}  Run\ncmake . -DADD_FUSE_INCLUDE_DIR=<Path to osxfuse include directory>")
     message(FATAL_ERROR ${ERROR_MESSAGE})
   endif()
 else()
@@ -49,10 +55,10 @@ if(Fuse_LIBRARY)
 else()
   if(APPLE)
     set(ERROR_MESSAGE "\nCould not find library libosxfuse_i64.dylib.")
-    set(ERROR_MESSAGE "${ERROR_MESSAGE}  Run\n${ERROR_MESSAGE_CMAKE_PATH} -DADD_LIBRARY_DIR=<Path to libosxfuse_i64.dylib directory>")
+    set(ERROR_MESSAGE "${ERROR_MESSAGE}  Run\ncmake . -DADD_LIBRARY_DIR=<Path to libosxfuse_i64.dylib directory>")
   else()
     set(ERROR_MESSAGE "\nCould not find library libfuse.so.")
-    set(ERROR_MESSAGE "${ERROR_MESSAGE}  Run\n${ERROR_MESSAGE_CMAKE_PATH} -DADD_LIBRARY_DIR=<Path to libfuse directory>")
+    set(ERROR_MESSAGE "${ERROR_MESSAGE}  Run\ncmake . -DADD_LIBRARY_DIR=<Path to libfuse directory>")
   endif()
   message(FATAL_ERROR {ERROR_MESSAGE})
 endif()
