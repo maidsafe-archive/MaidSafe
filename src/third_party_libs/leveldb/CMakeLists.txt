@@ -113,34 +113,32 @@ set(SOURCE_FILES_LEVELDB_UTIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/util/arena.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/options.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/status.cc)
 
-if(WIN32)
-  add_definitions(-DLEVELDB_PLATFORM_WINDOWS -DOS_WIN -DWIN32_LEAN_AND_MEAN) # -DSNAPPY)
-  if(MSVC)
-    add_definitions(-DCOMPILER_MSVC)
-  endif()
+if (WIN32)
   list(APPEND HEADER_FILES_LEVELDB_PORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/port/port_win.h)
   set(SOURCE_FILES_LEVELDB_PORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/port/port_win.cc)
   list(APPEND SOURCE_FILES_LEVELDB_UTIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/util/env_win.cc)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
-  add_definitions(-DLEVELDB_PLATFORM_POSIX -DOS_FREEBSD)
-  set(PORT_SRCS port/port_posix.cc util/env_posix.cc)
-  set(CIF_SRCS db/c.cc)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  add_definitions(-DLEVELDB_PLATFORM_POSIX -DOS_LINUX)
-  # link pthread
+else()  # posix
   list(APPEND HEADER_FILES_LEVELDB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/c.h)
   list(APPEND SOURCE_FILES_LEVELDB_DB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/db/c.cc)
   list(APPEND HEADER_FILES_LEVELDB_PORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/port/port_posix.h)
   set(SOURCE_FILES_LEVELDB_PORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/port/port_posix.cc)
   list(APPEND SOURCE_FILES_LEVELDB_UTIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/util/env_posix.cc)
+endif()
+
+#definations
+if(WIN32)
+  add_definitions(-DLEVELDB_PLATFORM_WINDOWS -DOS_WIN -DWIN32_LEAN_AND_MEAN) # -DSNAPPY)
+  if(MSVC)
+    add_definitions(-DCOMPILER_MSVC)
+  endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+  add_definitions(-DLEVELDB_PLATFORM_POSIX -DOS_FREEBSD)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  add_definitions(-DLEVELDB_PLATFORM_POSIX -DOS_LINUX)
 elseif(CYGWIN)
   add_definitions(-DLEVELDB_PLATFORM_POSIX -DOS_LINUX)
-  set(PORT_SRCS port/port_posix.cc util/env_posix.cc)
-  set(CIF_SRCS db/c.cc)
 elseif(APPLE)
   add_definitions(-DLEVELDB_PLATFORM_POSIX -DOS_MACOSX)
-  set(PORT_SRCS port/port_posix.cc util/env_posix.cc)
-  set(CIF_SRCS db/c.cc)
 endif()
 
 #==================================================================================================#
