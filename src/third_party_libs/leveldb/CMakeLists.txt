@@ -169,48 +169,50 @@ set(ALL_FILES_LEVELDB_DIR ${HEADER_FILES_LEVELDB_INCLUDE_DIR}
 #==================================================================================================#
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_library(leveldb STATIC ${ALL_FILES_LEVELDB_DIR})
-target_link_libraries(leveldb ${BoostChronoLibs} ${BoostDateTimeLibs} ${BoostFilesystemLibs} ${BoostSystemLibs} ${BoostThreadLibs} ${JustThread_LIBRARIES})
+add_dependencies(leveldb boost)
+target_link_libraries(leveldb ${BoostFilesystemLibs} ${BoostSystemLibs} ${JustThread_LIBRARIES})
 set_target_properties(leveldb PROPERTIES FOLDER "Third Party/LevelDB")
 
 #==================================================================================================#
 # Tests                                                                                            #
 #==================================================================================================#
-set(SOURCE_FILES_LEVELDB_TESTHARNESS ${CMAKE_CURRENT_SOURCE_DIR}/util/testutil.cc ${CMAKE_CURRENT_SOURCE_DIR}/util/testharness.cc)
-add_library(leveldb-testharness STATIC ${SOURCE_FILES_LEVELDB_TESTHARNESS})
-target_link_libraries(leveldb-testharness leveldb)
-set_target_properties(leveldb-testharness PROPERTIES FOLDER "Third Party/LevelDB/Tests")
+if(MaidsafeTesting)
+  set(SOURCE_FILES_LEVELDB_TESTHARNESS ${CMAKE_CURRENT_SOURCE_DIR}/util/testutil.cc ${CMAKE_CURRENT_SOURCE_DIR}/util/testharness.cc)
+  add_library(leveldb-testharness STATIC ${SOURCE_FILES_LEVELDB_TESTHARNESS})
+  target_link_libraries(leveldb-testharness leveldb)
+  set_target_properties(leveldb-testharness PROPERTIES FOLDER "MaidSafe/Executables/Tests/Common/leveldb_tests")
 
-macro(leveldb_tests)
-  foreach(value ${ARGN})
-    get_filename_component(exe_name ${value} NAME_WE)
-    add_executable(${exe_name} ${value})
-    set(AllExesForCurrentProject ${AllExesForCurrentProject} ${exe_name})
-    add_test(NAME ${exe_name} COMMAND ${exe_name})
-    if(WIN32)
-      target_link_libraries(${exe_name} leveldb-testharness)
-    else()
-      target_link_libraries(${exe_name} leveldb-testharness pthread)
-    endif()
-    set_target_properties(${exe_name} PROPERTIES FOLDER "Third Party/LevelDB/Tests")
-  endforeach()
-endmacro()
+  macro(leveldb_tests)
+    foreach(value ${ARGN})
+      get_filename_component(exe_name ${value} NAME_WE)
+      ms_add_executable(${exe_name} "Tests/Common/leveldb_tests" ${value})
+      if(WIN32)
+        target_link_libraries(${exe_name} leveldb-testharness)
+      else()
+        target_link_libraries(${exe_name} leveldb-testharness pthread)
+      endif()
+    endforeach()
+  endmacro()
 
-leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/db_bench.cc
-              # ${CMAKE_CURRENT_SOURCE_DIR}/db/c_test.c
-              ${CMAKE_CURRENT_SOURCE_DIR}/db/corruption_test.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/db/db_test.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/db/dbformat_test.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/db/log_test.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/db/skiplist_test.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/db/version_edit_test.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/db/version_set_test.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/db/write_batch_test.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/table/table_test.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/util/arena_test.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/util/cache_test.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/util/coding_test.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/util/crc32c_test.cc
-              ${CMAKE_CURRENT_SOURCE_DIR}/util/env_test.cc)
+  leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/db_bench.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/db/corruption_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/db/db_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/db/dbformat_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/db/log_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/db/skiplist_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/db/version_edit_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/db/version_set_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/db/write_batch_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/table/table_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/util/arena_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/util/cache_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/util/coding_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/util/crc32c_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/util/env_test.cc)
+  if(NOT MSVC)
+    leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/c_test.c)
+  endif()
+endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
 if(MSVC)
