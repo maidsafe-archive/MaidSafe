@@ -148,14 +148,8 @@ endfunction()
 
 
 function(report_build_result Result)
-  if(NOT Result)
-  if(NOT BuildResult)
-    set(Result true)
-  elseif(${BuildResult} EQUAL 0)
-    set(Result true)
-  else()
+  if(${Result} STREQUAL "false")
     message(WARNING "\n#################################### ${SubProject} failed during build ####################################\n")
-    set(Result false)
   endif()
   execute_process(COMMAND ${CTEST_PYTHON_EXECUTABLE} ci_build_reporter.py "${MachineType}" "k${MachineBuildType}" "${Result}" "${SubProject}" "${${SubProject}NewCommitLogAuthor}"
                   WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
