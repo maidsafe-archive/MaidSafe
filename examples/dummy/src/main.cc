@@ -1,8 +1,8 @@
 #include "maidsafe/common/log.h"
 #include "maidsafe/common/test.h"
 
-TEST(Example, Dummy) {
-  SUCCEED();
+TEST(Dummy, HelloWorld) {
+  LOG(kInfo) << "Hello World";
 }
 
 int main(int argc, char **argv) {
