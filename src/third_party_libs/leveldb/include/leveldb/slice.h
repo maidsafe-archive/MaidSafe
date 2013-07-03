@@ -15,11 +15,6 @@
 #ifndef STORAGE_LEVELDB_INCLUDE_SLICE_H_
 #define STORAGE_LEVELDB_INCLUDE_SLICE_H_
 
-#ifdef _MSC_VER
-#  pragma warning(push)
-#  pragma warning(disable: 4267)
-#endif
-
 #include <assert.h>
 #include <stddef.h>
 #include <string.h>
@@ -99,7 +94,7 @@ inline bool operator!=(const Slice& x, const Slice& y) {
 }
 
 inline int Slice::compare(const Slice& b) const {
-  const int min_len = (size_ < b.size_) ? size_ : b.size_;
+  const int min_len = static_cast<int>((size_ < b.size_) ? size_ : b.size_);
   int r = memcmp(data_, b.data_, min_len);
   if (r == 0) {
     if (size_ < b.size_) r = -1;
@@ -110,8 +105,5 @@ inline int Slice::compare(const Slice& b) const {
 
 }  // namespace leveldb
 
-#ifdef _MSC_VER
-#  pragma warning(pop)
-#endif
 
 #endif  // STORAGE_LEVELDB_INCLUDE_SLICE_H_
