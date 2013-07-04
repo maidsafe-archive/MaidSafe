@@ -1,24 +1,30 @@
 #==================================================================================================#
 #                                                                                                  #
-#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#  Copyright 2012 MaidSafe.net limited                                                             #
 #                                                                                                  #
-#  The following source code is property of MaidSafe.net limited and is not meant for external     #
-#  use.  The use of this code is governed by the license file licence.txt found in the root        #
-#  directory of this project and also on www.maidsafe.net.                                         #
+#  This MaidSafe Software is licensed under the MaidSafe.net Commercial License, version 1.0 or    #
+#  later, and The General Public License (GPL), version 3. By contributing code to this project    #
+#  You agree to the terms laid out in the MaidSafe Contributor Agreement, version 1.0, found in    #
+#  the root directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also    #
+#  available at:                                                                                   #
 #                                                                                                  #
-#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
-#  permission of the board of directors of MaidSafe.net.                                           #
+#    http://www.novinet.com/license                                                                #
+#                                                                                                  #
+#  Unless required by applicable law or agreed to in writing, software distributed under the       #
+#  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,       #
+#  either express or implied. See the License for the specific language governing permissions      #
+#  and limitations under the License.                                                              #
 #                                                                                                  #
 #==================================================================================================#
 #                                                                                                  #
 #  Module used to run CI on all submodules of MaidSafe/MaidSafe                                    #
 #                                                                                                  #
-#  Example usage: ctest -S CI_Continuous_Release.cmake                                             #
+#  Example usage: From MaidSafe build dir, run 'ctest -S CI_Continuous_Release.cmake'              #
 #                                                                                                  #
 #==================================================================================================#
 
 
-set(ScriptVersion 8)
+set(ScriptVersion 10)
 include(${CTEST_SOURCE_DIRECTORY}/CTestConfig.cmake)
 include(${CTEST_SOURCE_DIRECTORY}/cmake_modules/ci_utils.cmake)
 
@@ -42,12 +48,12 @@ elseif(NOT DEFINED CTEST_USE_LAUNCHERS)
   set(CTEST_USE_LAUNCHERS 1)
 endif()
 
-message("Dashboard Model Selected:      ${DashboardModel}")
-message("Build Configuration Selected:  ${CTEST_CONFIGURATION_TYPE}")
-message("Hostname:                      ${CTEST_SITE}")
-message("Make Generator:                ${CTEST_CMAKE_GENERATOR}")
+message(STATUS "Dashboard Model Selected:      ${DashboardModel}")
+message(STATUS "Build Configuration Selected:  ${CTEST_CONFIGURATION_TYPE}")
+message(STATUS "Hostname:                      ${CTEST_SITE}")
+message(STATUS "Make Generator:                ${CTEST_CMAKE_GENERATOR}")
 if(WIN32)
-  message("Build Type:                    ${MachineBuildType}")
+  message(STATUS "Build Type:                    ${MachineBuildType}")
 endif()
 message("================================================================================")
 
@@ -77,16 +83,19 @@ set(RunAll ON)
 if(DashboardModel STREQUAL "Experimental")
 elseif(DashboardModel STREQUAL "Continuous")
   ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
-  message("Checking out super project to 'next'")
-  checkout_to_branch(${CTEST_SOURCE_DIRECTORY} next)
+  set(TestBranch next)
+  message(STATUS "Checking out super project to '${TestBranch}'")
+  checkout_to_branch(${CTEST_SOURCE_DIRECTORY} ${TestBranch})
 elseif(DashboardModel STREQUAL "Nightly")
   ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
-  message("Checking out super project to 'next'")
-  checkout_to_branch(${CTEST_SOURCE_DIRECTORY} next)
+  set(TestBranch next)
+  message(STATUS "Checking out super project to '${TestBranch}'")
+  checkout_to_branch(${CTEST_SOURCE_DIRECTORY} ${TestBranch})
 elseif(DashboardModel STREQUAL "Weekly")
   ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
-  message("Checking out super project to 'next'")
-  checkout_to_branch(${CTEST_SOURCE_DIRECTORY} next)
+  set(TestBranch next)
+  message(STATUS "Checking out super project to '${TestBranch}'")
+  checkout_to_branch(${CTEST_SOURCE_DIRECTORY} ${TestBranch})
 endif()
 
 
@@ -104,14 +113,19 @@ while(${CTEST_ELAPSED_TIME} LESS 72000)
   foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
     set_property(GLOBAL PROPERTY SubProject ${SubProject})
     set_property(GLOBAL PROPERTY Label ${SubProject})
+    message(STATUS "Checking out ${SubProject} project to '${TestBranch}'")
+    checkout_to_branch(${${SubProject}SourceDirectory} ${TestBranch})
     update_sub_project(${SubProject})
   endforeach()
 
   foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
     set_property(GLOBAL PROPERTY SubProject ${SubProject})
     set_property(GLOBAL PROPERTY Label ${SubProject})
+    list(LENGTH CTEST_PROJECT_SUBPROJECTS FinalSubProjectCount)
+    math(EXPR FinalSubProjectIndex ${FinalSubProjectCount}-1)
+    list(GET CTEST_PROJECT_SUBPROJECTS ${FinalSubProjectIndex} FinalSubProject)
     build_and_run(${SubProject} ${RunAll})
-    if(BuildFailed)
+    if(BuildFailed AND NOT DashboardModel STREQUAL "Continuous")
       return()
     endif()
   endforeach()
@@ -119,5 +133,6 @@ while(${CTEST_ELAPSED_TIME} LESS 72000)
   if(NOT DashboardModel STREQUAL "Continuous")
     return()
   endif()
+  message(STATUS "\n#################################### Iteration Complete ####################################\n")
   ctest_sleep(${StartTime} 300 ${CTEST_ELAPSED_TIME})
 endwhile()
