@@ -1,13 +1,19 @@
 #==================================================================================================#
 #                                                                                                  #
-#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#  Copyright 2012 MaidSafe.net limited                                                             #
 #                                                                                                  #
-#  The following source code is property of MaidSafe.net limited and is not meant for external     #
-#  use.  The use of this code is governed by the license file licence.txt found in the root        #
-#  directory of this project and also on www.maidsafe.net.                                         #
+#  This MaidSafe Software is licensed under the MaidSafe.net Commercial License, version 1.0 or    #
+#  later, and The General Public License (GPL), version 3. By contributing code to this project    #
+#  You agree to the terms laid out in the MaidSafe Contributor Agreement, version 1.0, found in    #
+#  the root directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also    #
+#  available at:                                                                                   #
 #                                                                                                  #
-#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
-#  permission of the board of directors of MaidSafe.net.                                           #
+#    http://www.novinet.com/license                                                                #
+#                                                                                                  #
+#  Unless required by applicable law or agreed to in writing, software distributed under the       #
+#  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,       #
+#  either express or implied. See the License for the specific language governing permissions      #
+#  and limitations under the License.                                                              #
 #                                                                                                  #
 #==================================================================================================#
 #                                                                                                  #
@@ -87,24 +93,24 @@ find_path(JustThread_INCLUDE_DIR thread PATHS ${JUST_THREAD_ROOT_DIR} PATH_SUFFI
 if(NOT JustThread_LIBRARY)
   set(ERROR_MESSAGE "\nCould not find just::thread.  NO just::thread LIBRARY - ")
   set(ERROR_MESSAGE "${ERROR_MESSAGE}If just::thread is already installed, run:\n")
-  set(ERROR_MESSAGE "${ERROR_MESSAGE}${ERROR_MESSAGE_CMAKE_PATH} -DJUST_THREAD_ROOT_DIR=<Path to just::thread root directory>\n")
-  set(ERROR_MESSAGE "${ERROR_MESSAGE}e.g.\n${ERROR_MESSAGE_CMAKE_PATH} -DJUST_THREAD_ROOT_DIR=\"C:\\Program Files\\JustSoftwareSolutions\\JustThread\"\n\n")
+  set(ERROR_MESSAGE "${ERROR_MESSAGE}cmake . -DJUST_THREAD_ROOT_DIR=<Path to just::thread root directory>\n")
+  set(ERROR_MESSAGE "${ERROR_MESSAGE}e.g.\ncmake . -DJUST_THREAD_ROOT_DIR=\"C:\\Program Files\\JustSoftwareSolutions\\JustThread\"\n\n")
   message(FATAL_ERROR "${ERROR_MESSAGE}")
 endif()
 
 if(NOT JustThread_LIBRARY_DEBUG)
   set(ERROR_MESSAGE "\nCould not find just::thread.  NO just::thread DEBUG LIBRARY - ")
   set(ERROR_MESSAGE "${ERROR_MESSAGE}If just::thread is already installed, run:\n")
-  set(ERROR_MESSAGE "${ERROR_MESSAGE}${ERROR_MESSAGE_CMAKE_PATH} -DJUST_THREAD_ROOT_DIR=<Path to just::thread root directory>\n")
-  set(ERROR_MESSAGE "${ERROR_MESSAGE}e.g.\n${ERROR_MESSAGE_CMAKE_PATH} -DJUST_THREAD_ROOT_DIR=\"C:\\Program Files\\JustSoftwareSolutions\\JustThread\"\n\n")
+  set(ERROR_MESSAGE "${ERROR_MESSAGE}cmake . -DJUST_THREAD_ROOT_DIR=<Path to just::thread root directory>\n")
+  set(ERROR_MESSAGE "${ERROR_MESSAGE}e.g.\ncmake . -DJUST_THREAD_ROOT_DIR=\"C:\\Program Files\\JustSoftwareSolutions\\JustThread\"\n\n")
   message(FATAL_ERROR "${ERROR_MESSAGE}")
 endif()
 
 if(NOT JustThread_INCLUDE_DIR)
   set(ERROR_MESSAGE "\nCould not find just::thread.  NO thread HEADER - ")
   set(ERROR_MESSAGE "${ERROR_MESSAGE}If just::thread is already installed, run:\n")
-  set(ERROR_MESSAGE "${ERROR_MESSAGE}${ERROR_MESSAGE_CMAKE_PATH} -DJUST_THREAD_ROOT_DIR=<Path to just::thread root directory>\n")
-  set(ERROR_MESSAGE "${ERROR_MESSAGE}e.g.\n${ERROR_MESSAGE_CMAKE_PATH} -DJUST_THREAD_ROOT_DIR=\"C:\\Program Files\\JustSoftwareSolutions\\JustThread\"\n\n")
+  set(ERROR_MESSAGE "${ERROR_MESSAGE}cmake . -DJUST_THREAD_ROOT_DIR=<Path to just::thread root directory>\n")
+  set(ERROR_MESSAGE "${ERROR_MESSAGE}e.g.\ncmake . -DJUST_THREAD_ROOT_DIR=\"C:\\Program Files\\JustSoftwareSolutions\\JustThread\"\n\n")
   message(FATAL_ERROR "${ERROR_MESSAGE}")
 endif()
 

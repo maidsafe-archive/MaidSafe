@@ -1,13 +1,19 @@
 #==================================================================================================#
 #                                                                                                  #
-#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#  Copyright 2012 MaidSafe.net limited                                                             #
 #                                                                                                  #
-#  The following source code is property of MaidSafe.net limited and is not meant for external     #
-#  use.  The use of this code is governed by the license file licence.txt found in the root        #
-#  directory of this project and also on www.maidsafe.net.                                         #
+#  This MaidSafe Software is licensed under the MaidSafe.net Commercial License, version 1.0 or    #
+#  later, and The General Public License (GPL), version 3. By contributing code to this project    #
+#  You agree to the terms laid out in the MaidSafe Contributor Agreement, version 1.0, found in    #
+#  the root directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also    #
+#  available at:                                                                                   #
 #                                                                                                  #
-#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
-#  permission of the board of directors of MaidSafe.net.                                           #
+#    http://www.novinet.com/license                                                                #
+#                                                                                                  #
+#  Unless required by applicable law or agreed to in writing, software distributed under the       #
+#  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,       #
+#  either express or implied. See the License for the specific language governing permissions      #
+#  and limitations under the License.                                                              #
 #                                                                                                  #
 #==================================================================================================#
 #                                                                                                  #
@@ -70,14 +76,14 @@ function(update_super_project)
                     OUTPUT_VARIABLE OutputVar
                     ERROR_VARIABLE ErrorVar)
     if(NOT ${ResultVar} EQUAL 0)
-      message(FATAL_ERROR "Failed to pull super project:\n\n${ErrorVar}")
+      message(WARNING "Failed to pull super project:\n\n${ErrorVar}")
     endif()
     get_git_log(CTEST_SOURCE_DIRECTORY SuperNewCommit SuperNewCommitLogMsg SuperNewCommitLogAuthor)
     if(${SuperNewCommit} STREQUAL ${SuperCurrentCommit})
       set(RunAll OFF PARENT_SCOPE)
     endif()
   elseif(DashboardModel STREQUAL "Nightly" OR DashboardModel STREQUAL "Weekly")
-    message("Updating super project")
+    message(STATUS "Updating super project")
     ctest_update(RETURN_VALUE UpdatedCount)
     if(UpdatedCount LESS 0)
       message(FATAL_ERROR "Failed to update the super project.")
@@ -89,11 +95,13 @@ endfunction()
 
 macro(update_sub_project SubProject)
   if(DashboardModel STREQUAL "Continuous")
-    message("Updating ${SubProject}")
+    message(STATUS "Updating ${SubProject}")
     get_git_log(${SubProject}SourceDirectory ${SubProject}CurrentCommit ${SubProject}CurrentCommitLogMsg ${SubProject}CurrentCommitLogAuthor)
     ctest_update(SOURCE ${${SubProject}SourceDirectory} RETURN_VALUE UpdatedCount)
     if(UpdatedCount LESS 0)
-      message(FATAL_ERROR "Failed to update ${SubProject}.")
+      message(WARNING "Failed to update ${SubProject}.")
+      set(${SubProject}ShouldRun OFF)
+      unset(${SubProject}UpdateXmlName)
     elseif(UpdatedCount GREATER 0)
       set(${SubProject}ShouldRun ON)
       # temporarily rename the Update.xml so it can be found and submitted along with the other subproject's xml files after testing
@@ -139,39 +147,62 @@ function(write_git_update_details_to_file)
 endfunction()
 
 
-function(handle_failed_build)
-  message("${SubProject} failed during build, exiting script")
-  if(WIN32)
-    # TODO(Viv) Check OS Version
-    execute_process(COMMAND cmd /c "ci_build_reporter.py win8 ${MachineBuildType} fail ${SubProject} ${${SubProject}NewCommitLogAuthor}"
-                    WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
-                    RESULT_VARIABLE ResultVar
-                    OUTPUT_VARIABLE OutputVar)
-  else()
-    # Need Linux Execute Script Command with argument detections
+function(report_build_result Result)
+  if(${Result} STREQUAL "false")
+    message(WARNING "\n#################################### ${SubProject} failed during build ####################################\n")
+  endif()
+  execute_process(COMMAND ${CTEST_PYTHON_EXECUTABLE} ci_build_reporter.py "${MachineType}" "k${MachineBuildType}" "${Result}" "${SubProject}" "${${SubProject}NewCommitLogAuthor}"
+                  WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
+                  RESULT_VARIABLE ResultVar
+                  OUTPUT_VARIABLE OutputVar)
+  if(NOT ${ResultVar} EQUAL 0)
+    message(WARNING "${SubProject} failed running \"${CTEST_PYTHON_EXECUTABLE} ci_build_reporter.py \"${MachineType}\" \"k${MachineBuildType}\" \"${Result}\" \"${SubProject}\" \"${${SubProject}NewCommitLogAuthor}\"\"\n\n${OutputVar}")
   endif()
 endfunction()
 
 
 function(build_and_run SubProject RunAll)
   # if(NOT ${SubProject} STREQUAL "Lifestuff")
-  #   message("Temporary skip of All${SubProject}")
+  #   message(STATUS "Temporary skip of All${SubProject}")
   #   return()
   # endif()
   if(NOT ${SubProject}ShouldRun AND NOT RunAll)
-    message("Not building or running tests in ${SubProject}")
+    message(STATUS "Not building or running tests in ${SubProject}")
+    if(${SubProject} STREQUAL ${FinalSubProject})
+      report_build_result("true")
+    endif()
     return()
   endif()
 
-  message("Building ${SubProject}")
-  set(CTEST_BUILD_TARGET "All${SubProject}")
   # add coverage flags
   if(DashboardModel STREQUAL "Experimental" AND NOT WIN32)
     set(ExtraConfigureArgs "${ExtraConfigureArgs};-DCOVERAGE=ON")
   endif()
   ctest_configure(OPTIONS "${ExtraConfigureArgs}")
   ctest_read_custom_files(${CMAKE_CURRENT_BINARY_DIR})
+  # If using VS Express, the build tool is MSBuild and due to a CMake bug, we can't build
+  # individual targets.
+  if(${UsingMsBuild})
+    message(STATUS "Building ${SubProject} using VS Express - building ALL_BUILD")
+    set(CTEST_BUILD_TARGET)
+  else()
+    message(STATUS "Building ${SubProject}")
+    set(CTEST_BUILD_TARGET "All${SubProject}")
+  endif()
+  
+  # build
   ctest_build(RETURN_VALUE BuildResult)
+  if(BuildResult EQUAL 0)
+    set(RecurringBuildFailureCount 0)
+  else()
+    if(${SubProject}RecurringBuildFailureCount)
+      math(EXPR RecurringBuildFailureCount ${${SubProject}RecurringBuildFailureCount}+1)
+    else()
+      set(RecurringBuildFailureCount 1)
+    endif()
+    message(WARNING "Recurring build failure count of ${RecurringBuildFailureCount} for ${SubProject}.")
+  endif()
+  set(${SubProject}RecurringBuildFailureCount ${RecurringBuildFailureCount} PARENT_SCOPE)
 
   # teardown network with python script if it's Lifestuff
   #if(${SubProject} STREQUAL "Lifestuff")
@@ -181,20 +212,22 @@ function(build_and_run SubProject RunAll)
 
   # set up network with python script if it's Lifestuff
   if(${SubProject} STREQUAL "Lifestuff")
-    #message("--------------------------------------------: python ${CTEST_SOURCE_DIRECTORY}/tools/py_function.py")
+    #message(STATUS "--------------------------------------------: python ${CTEST_SOURCE_DIRECTORY}/tools/py_function.py")
     #execute_process(COMMAND python ${CTEST_SOURCE_DIRECTORY}/tools/py_function.py
     #                WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY})
     #                #RESULT_VARIABLE SetupResult)
     #                #OUTPUT_VARIABLE SetupOutput)
-    #message("++++++++++++++++++++++++++++++++++++++++++++: ${SetupOutput}")
+    #message(STATUS "++++++++++++++++++++++++++++++++++++++++++++: ${SetupOutput}")
     #if(SetupResult EQUAL 0)
     #  message(FATAL_ERROR "Error running set up")
     #endif()
   endif()
 
-  # runs only tests that have a LABELS property matching "${SubProject}"
-  message("Testing ${SubProject}")
-  ctest_test(INCLUDE_LABEL "${SubProject}")
+  if(RecurringBuildFailureCount EQUAL 0)
+    # runs only tests that have a LABELS property matching "${SubProject}"
+    message(STATUS "Testing ${SubProject}")
+    ctest_test(INCLUDE_LABEL "${SubProject}")
+  endif()
 
   # teardown network with python script if it's Lifestuff
   if(${SubProject} STREQUAL "Lifestuff")
@@ -211,27 +244,20 @@ function(build_and_run SubProject RunAll)
     file(RENAME ${${SubProject}UpdateXmlName} ${CTEST_BINARY_DIRECTORY}/Testing/${TagId}/Update.xml)
   endif()
 
-  ctest_submit(RETURN_VALUE ReturnVar)
+  # Avoid clogging dashboard with repeated build failures
+  if(RecurringBuildFailureCount LESS 3)
+    ctest_submit(RETURN_VALUE ReturnVar)
+  endif()
 
   if(${ReturnVar} EQUAL 0)
-    message("Submitted results for ${SubProject}\n-----------------------------------")
+    message(STATUS "Submitted results for ${SubProject}\n-----------------------------------")
   else()
-    message("Failed to submit results for ${SubProject}\n-------------------------------------------")
+    message(WARNING "Failed to submit results for ${SubProject}\n-------------------------------------------")
   endif()
 
   if(NOT ${BuildResult} EQUAL 0)
-    handle_failed_build()
-    set(BuildFailed TRUE PARENT_SCOPE)
-    break()
-  elseif(${SubProject} STREQUAL "LifestuffUiQt")
-    if(WIN32)
-      # TODO(Viv) Check OS Version
-      execute_process(COMMAND cmd /c "ci_build_reporter.py win8 ${MachineBuildType} ok ${SubProject} ${${SubProject}NewCommitLogAuthor}"
-                      WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
-                      RESULT_VARIABLE ResultVar
-                      OUTPUT_VARIABLE OutputVar)
-    else()
-      # Need Linux Execute Script Command with argument detections
-    endif()
+    report_build_result("false")
+  elseif(FinalSubmodule)
+    report_build_result("true")
   endif()
 endfunction()

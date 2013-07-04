@@ -1,13 +1,19 @@
 #==================================================================================================#
 #                                                                                                  #
-#  Copyright (c) 2013 MaidSafe.net limited                                                         #
+#  Copyright 2013 MaidSafe.net limited                                                             #
 #                                                                                                  #
-#  The following source code is property of MaidSafe.net limited and is not meant for external     #
-#  use.  The use of this code is governed by the license file licence.txt found in the root        #
-#  directory of this project and also on www.maidsafe.net.                                         #
+#  This MaidSafe Software is licensed under the MaidSafe.net Commercial License, version 1.0 or    #
+#  later, and The General Public License (GPL), version 3. By contributing code to this project    #
+#  You agree to the terms laid out in the MaidSafe Contributor Agreement, version 1.0, found in    #
+#  the root directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also    #
+#  available at:                                                                                   #
 #                                                                                                  #
-#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
-#  permission of the board of directors of MaidSafe.net.                                           #
+#    http://www.novinet.com/license                                                                #
+#                                                                                                  #
+#  Unless required by applicable law or agreed to in writing, software distributed under the       #
+#  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,       #
+#  either express or implied. See the License for the specific language governing permissions      #
+#  and limitations under the License.                                                              #
 #                                                                                                  #
 #==================================================================================================#
 #                                                                                                  #
@@ -36,8 +42,8 @@ set(BoostComponents
       thread
       timer
       )
-set(BoostVersion 1.54.0.beta.1)
-set(BoostSHA1 54d862d4171ccaaa03e860f7a63143ca7f1c84b2)
+set(BoostVersion 1.54.0)
+set(BoostSHA1 230782c7219882d0fab5f1effbe86edb85238bf4)
 
 
 
@@ -67,7 +73,7 @@ if(MSVC)
     list(APPEND b2Args address-model=64)
   endif()
 elseif(UNIX)
-  list(APPEND b2Args variant=release cxxflags=-std=c++11 -sNO_BZIP2=1) # --layout=system)
+  list(APPEND b2Args variant=release cxxflags=-fPIC cxxflags=-std=c++11 -sNO_BZIP2=1) # --layout=system)
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     list(APPEND b2Args toolset=clang)
     if(HAVE_LIBC++)
@@ -77,7 +83,7 @@ elseif(UNIX)
     list(APPEND b2Args toolset=gcc)
   endif()
 elseif(APPLE)
-  list(APPEND b2Args toolset=clang cxxflags=-std=c++11 architecture=combined address-model=32_64)
+  list(APPEND b2Args toolset=clang cxxflags=-fPIC cxxflags=-std=c++11 architecture=combined address-model=32_64)
 endif()
 
 # Create build folder name derived from version

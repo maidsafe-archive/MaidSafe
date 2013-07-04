@@ -1,13 +1,19 @@
 #==================================================================================================#
 #                                                                                                  #
-#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#  Copyright 2012 MaidSafe.net limited                                                             #
 #                                                                                                  #
-#  The following source code is property of MaidSafe.net limited and is not meant for external     #
-#  use.  The use of this code is governed by the license file licence.txt found in the root        #
-#  directory of this project and also on www.maidsafe.net.                                         #
+#  This MaidSafe Software is licensed under the MaidSafe.net Commercial License, version 1.0 or    #
+#  later, and The General Public License (GPL), version 3. By contributing code to this project    #
+#  You agree to the terms laid out in the MaidSafe Contributor Agreement, version 1.0, found in    #
+#  the root directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also    #
+#  available at:                                                                                   #
 #                                                                                                  #
-#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
-#  permission of the board of directors of MaidSafe.net.                                           #
+#    http://www.novinet.com/license                                                                #
+#                                                                                                  #
+#  Unless required by applicable law or agreed to in writing, software distributed under the       #
+#  License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,       #
+#  either express or implied. See the License for the specific language governing permissions      #
+#  and limitations under the License.                                                              #
 #                                                                                                  #
 #==================================================================================================#
 #                                                                                                  #
@@ -91,8 +97,8 @@ endif()
 function(fatal_find_error MissingComponent)
   set(ErrorMessage "\nCould not find Callback File System.  NO ${MissingComponent} - ")
   set(ErrorMessage "${ErrorMessage}If Cbfs is already installed, run:\n")
-  set(ErrorMessage "${ErrorMessage}${ERROR_MESSAGE_CMAKE_PATH} -DCBFS_ROOT_DIR=<Path to Cbfs root directory>\n")
-  set(ErrorMessage "${ErrorMessage}e.g.\n${ERROR_MESSAGE_CMAKE_PATH} -DCBFS_ROOT_DIR=\"C:\\Program Files\\EldoS\\Callback File System\"\n\n")
+  set(ErrorMessage "${ErrorMessage}cmake . -DCBFS_ROOT_DIR=<Path to Cbfs root directory>\n")
+  set(ErrorMessage "${ErrorMessage}e.g.\ncmake . -DCBFS_ROOT_DIR=\"C:\\Program Files\\EldoS\\Callback File System\"\n\n")
   message(FATAL_ERROR "${ErrorMessage}")
 endfunction()
 
@@ -170,8 +176,8 @@ else()
       set(ErrorMessage "${ErrorMessage}to set CBFS_KEY when invoking cmake.  You can either provide ")
       set(ErrorMessage "${ErrorMessage}the value of the key or else the path to a file containing ")
       set(ErrorMessage "${ErrorMessage}only the key's value:\n")
-      set(ErrorMessage "${ErrorMessage}${ERROR_MESSAGE_CMAKE_PATH} -DCBFS_KEY=<Value of key>\n")
-      set(ErrorMessage "${ErrorMessage}or\n${ERROR_MESSAGE_CMAKE_PATH} -DCBFS_KEY=<Path to key file>\n")
+      set(ErrorMessage "${ErrorMessage}cmake . -DCBFS_KEY=<Value of key>\n")
+      set(ErrorMessage "${ErrorMessage}or\ncmake . -DCBFS_KEY=<Path to key file>\n")
       message(FATAL_ERROR "${ErrorMessage}")
     endif()
     # Hash check file
