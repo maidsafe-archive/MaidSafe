@@ -182,7 +182,7 @@ function(build_and_run SubProject RunAll)
   ctest_read_custom_files(${CMAKE_CURRENT_BINARY_DIR})
   # If using VS Express, the build tool is MSBuild and due to a CMake bug, we can't build
   # individual targets.
-  if(${UsingMsBuild})
+  if(UsingMsBuild)
     message(STATUS "Building ${SubProject} using VS Express - building ALL_BUILD")
     set(CTEST_BUILD_TARGET)
   else()
