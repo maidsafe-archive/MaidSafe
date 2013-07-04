@@ -45,6 +45,9 @@
 #else
 # include <limits.h>
 # include <climits>  // Some Linux distributions define PATH_MAX here.
+# ifndef _POSIX_PATH_MAX
+#  define _POSIX_PATH_MAX 256
+# endif
 #endif  // GTEST_OS_WINDOWS_MOBILE
 
 #if GTEST_OS_WINDOWS
