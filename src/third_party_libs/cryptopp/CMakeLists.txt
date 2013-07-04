@@ -107,7 +107,7 @@ if(UNIX)
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     if(HAVE_LIBC++)
       set(LibCXX "-stdlib=libc++")
-      set_target_properties(cryptest PROPERTIES LINK_FLAGS "${LibCXX} -ldl -lc++abi")
+      set_target_properties(cryptest PROPERTIES LINK_FLAGS "${LibCXX} -ldl ${LibCppAbi}")
     endif()
     add_definitions(-DCRYPTOPP_DISABLE_ASM -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION)
     set_target_properties(cryptopp cryptest PROPERTIES
