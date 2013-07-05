@@ -1,7 +1,6 @@
 #ifndef CRYPTOPP_FLTRIMPL_H
 #define CRYPTOPP_FLTRIMPL_H
 
-
 #define FILTER_BEGIN	\
 	switch (m_continueAt)	\
 	{	\
@@ -25,8 +24,7 @@
 			return 1;	\
 	FILTER_END_NO_MESSAGE_END
 */
-#pragma gcc diagnostic push
-#pragma gcc diagnostic ignored "-Wunused-value"
+
 #define FILTER_OUTPUT3(site, statement, output, length, messageEnd, channel)	\
 	{\
 	case site:	\
@@ -34,17 +32,13 @@
 	if (Output(site, output, length, messageEnd, blocking, channel))	\
 		return STDMAX(size_t(1), length-m_inputPosition);\
 	}
-#pragma gcc diagnostic pop
-#pragma gcc diagnostic push
-#pragma gcc diagnostic ignored "-Wunused-value"
+
 #define FILTER_OUTPUT2(site, statement, output, length, messageEnd)	\
 	FILTER_OUTPUT3(site, statement, output, length, messageEnd, DEFAULT_CHANNEL)
-#pragma gcc diagnostic pop
-#pragma gcc diagnostic push
-#pragma gcc diagnostic ignored "-Wunused-value"
+
 #define FILTER_OUTPUT(site, output, length, messageEnd)	\
 	FILTER_OUTPUT2(site, 0, output, length, messageEnd)
-#pragma gcc diagnostic pop
+
 #define FILTER_OUTPUT_BYTE(site, output)	\
 	FILTER_OUTPUT(site, &(const byte &)(byte)output, 1, 0)
 
@@ -69,7 +63,5 @@
 
 #define FILTER_OUTPUT_MAYBE_MODIFIABLE(site, output, length, messageEnd, modifiable)	\
 	FILTER_OUTPUT2_MAYBE_MODIFIABLE(site, 0, output, length, messageEnd, modifiable)
-	
-	
 
 #endif
