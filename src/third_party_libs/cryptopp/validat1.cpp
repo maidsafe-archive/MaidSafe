@@ -55,7 +55,6 @@ bool ValidateAll(bool thorough)
 	pass=ValidateMD2() && pass;
 	pass=ValidateMD5() && pass;
 	pass=ValidateSHA() && pass;
-	pass=RunTestDataFile("TestVectors/sha3.txt") && pass;
 	pass=ValidateTiger() && pass;
 	pass=ValidateRIPEMD() && pass;
 	pass=ValidatePanama() && pass;
