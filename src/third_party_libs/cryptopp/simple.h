@@ -32,14 +32,14 @@ public:
 class CRYPTOPP_DLL InvalidKeyLength : public InvalidArgument
 {
 public:
-	explicit InvalidKeyLength(const std::string &algorithm, int64_t length) : InvalidArgument(algorithm + ": " + IntToString(length) + " is not a valid key length") {}
+	explicit InvalidKeyLength(const std::string &algorithm, size_t length) : InvalidArgument(algorithm + ": " + IntToString(length) + " is not a valid key length") {}
 };
 
 //! _
 class CRYPTOPP_DLL InvalidRounds : public InvalidArgument
 {
 public:
-	explicit InvalidRounds(const std::string &algorithm, int rounds) : InvalidArgument(algorithm + ": " + IntToString(rounds) + " is not a valid number of rounds") {}
+	explicit InvalidRounds(const std::string &algorithm, unsigned int rounds) : InvalidArgument(algorithm + ": " + IntToString(rounds) + " is not a valid number of rounds") {}
 };
 
 // *****************************

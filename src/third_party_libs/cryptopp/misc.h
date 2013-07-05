@@ -141,7 +141,7 @@ const T & Singleton<T, F, instance>::Ref(CRYPTOPP_NOINLINE_DOTDOTDOT) const
 
 // ************** misc functions ***************
 
-#if (!__STDC_WANT_SECURE_LIB__)
+#if (!__STDC_WANT_SECURE_LIB__ && !defined(_MEMORY_S_DEFINED))
 inline void memcpy_s(void *dest, size_t sizeInBytes, const void *src, size_t count)
 {
 	if (count > sizeInBytes)
@@ -544,13 +544,8 @@ inline void SecureWipeArray(T *buf, size_t n)
 		SecureWipeBuffer((byte *)buf, n * sizeof(T));
 }
 
-// Replaced original "static" keyword with "inline" for this function.  This avoids multiple
-// instances of "C4505 'function' : unreferenced local function has been removed" warnings which
-// cannot be easily selectively disabled with pragmas.  For rationale, see
-// http://stackoverflow.com/q/7610668/424459  (Fraser)
-
 // this function uses wcstombs(), which assumes that setlocale() has been called
-inline std::string StringNarrow(const wchar_t *str, bool throwOnError = true)
+static std::string StringNarrow(const wchar_t *str, bool throwOnError = true)
 {
 #ifdef _MSC_VER
 #pragma warning(push)
