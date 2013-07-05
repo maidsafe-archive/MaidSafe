@@ -46,6 +46,12 @@ endif()
 if(HAVE_LIBC++)
   set(LibCpp "-stdlib=libc++")
 endif()
+# enable libc++abi if available
+if(HAVE_LIBC++ABI)
+  set(LibCppAbi "-lc++abi")
+endif()
+
+
 
 if(WIN32)
   if (CMAKE_CL_64)
@@ -146,8 +152,8 @@ elseif(UNIX)
     add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1 -D_FILE_OFFSET_BITS=64)
     add_definitions(-DCRYPTOPP_DISABLE_ASM -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LibCpp}")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fdiagnostics-format=clang -fdiagnostics-show-option -fdiagnostics-fixit-info")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LibCpp}")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fdiagnostics-format=clang -fdiagnostics-show-option -fdiagnostics-fixit-info -Wno-unused-command-line-argument")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LibCpp} ${LibCppAbi}")
   elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++")
   endif()
