@@ -95,7 +95,7 @@ public:
 	CRYPTOPP_CONSTANT(IV_REQUIREMENT=IV_REQ)
 	CRYPTOPP_CONSTANT(IV_LENGTH=IV_L)
 
-	static size_t CRYPTOPP_API StaticGetValidKeyLength(int64_t n)
+	static size_t CRYPTOPP_API StaticGetValidKeyLength(size_t n)
 	{
 		if (n < (size_t)MIN_KEYLENGTH)
 			return MIN_KEYLENGTH;

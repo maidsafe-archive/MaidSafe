@@ -2,9 +2,6 @@
 
 #include "pch.h"
 #include "base64.h"
-#include <atomic>
-#include <thread>
-#include <mutex>
 
 NAMESPACE_BEGIN(CryptoPP)
 
@@ -31,19 +28,15 @@ void Base64Encoder::IsolatedInitialize(const NameValuePairs &parameters)
 
 const int *Base64Decoder::GetDecodingLookupArray()
 {
-  static std::once_flag s_initialized_flag;
-  static std::atomic<bool> s_initialized(false);
+	static volatile bool s_initialized = false;
 	static int s_array[256];
 
-  std::call_once(s_initialized_flag, [] {
-      InitializeDecodingLookupArray(s_array, s_vec, 64, false);
-      s_initialized = true;
-  });
-
-  while (!s_initialized)
-    std::this_thread::yield();
-
-  return s_array;
+	if (!s_initialized)
+	{
+		InitializeDecodingLookupArray(s_array, s_vec, 64, false);
+		s_initialized = true;
+	}
+	return s_array;
 }
 
 NAMESPACE_END
