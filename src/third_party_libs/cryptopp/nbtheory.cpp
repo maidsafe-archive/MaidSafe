@@ -10,7 +10,6 @@
 
 #include <math.h>
 #include <vector>
-#include <deque>
 
 #ifdef _OPENMP
 // needed in MSVC 2005 to generate correct manifest
@@ -292,12 +291,12 @@ public:
 	bool NextCandidate(Integer &c);
 
 	void DoSieve();
-	static void SieveSingle(std::deque<bool> &sieve, word16 p, const Integer &first, const Integer &step, word16 stepInv);
+	static void SieveSingle(std::vector<bool> &sieve, word16 p, const Integer &first, const Integer &step, word16 stepInv);
 
 	Integer m_first, m_last, m_step;
 	signed int m_delta;
 	word m_next;
-	std::deque<bool> m_sieve;
+	std::vector<bool> m_sieve;
 };
 
 PrimeSieve::PrimeSieve(const Integer &first, const Integer &last, const Integer &step, signed int delta)
@@ -330,7 +329,7 @@ bool PrimeSieve::NextCandidate(Integer &c)
 	}
 }
 
-void PrimeSieve::SieveSingle(std::deque<bool> &sieve, word16 p, const Integer &first, const Integer &step, word16 stepInv)
+void PrimeSieve::SieveSingle(std::vector<bool> &sieve, word16 p, const Integer &first, const Integer &step, word16 stepInv)
 {
 	if (stepInv)
 	{

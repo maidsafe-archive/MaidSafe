@@ -46,6 +46,12 @@ endif()
 if(HAVE_LIBC++)
   set(LibCpp "-stdlib=libc++")
 endif()
+# enable libc++abi if available
+if(HAVE_LIBC++ABI)
+  set(LibCppAbi "-lc++abi")
+endif()
+
+
 
 if(WIN32)
   if (CMAKE_CL_64)
@@ -63,7 +69,6 @@ elseif(UNIX)
 endif()
 
 
-file(GLOB_RECURSE PbFiles *.pb.cc)
 if(MSVC)
   add_definitions(-D__MSVC__ -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=0x600)
   add_definitions(-D_CONSOLE -D_UNICODE -DUNICODE -D_BIND_TO_CURRENT_VCLIBS_VERSION=1)
@@ -135,7 +140,6 @@ if(MSVC)
                           LINK_FLAGS_DEBUG "/DEBUG"
                           LINK_FLAGS_RELWITHDEBINFO "/OPT:REF /OPT:ICF /LTCG /INCREMENTAL:NO /DEBUG"
                           LINK_FLAGS_MINSIZEREL "/LTCG")
-  set_source_files_properties(${PbFiles} PROPERTIES COMPILE_FLAGS "/W0")
 
 elseif(UNIX)
   if(MaidsafeCoverage)
@@ -148,8 +152,8 @@ elseif(UNIX)
     add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1 -D_FILE_OFFSET_BITS=64)
     add_definitions(-DCRYPTOPP_DISABLE_ASM -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LibCpp}")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fdiagnostics-format=clang -fdiagnostics-show-option -fdiagnostics-fixit-info")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LibCpp}")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fdiagnostics-format=clang -fdiagnostics-show-option -fdiagnostics-fixit-info -Wno-unused-command-line-argument")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LibCpp} ${LibCppAbi}")
   elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++")
   endif()
@@ -169,7 +173,6 @@ elseif(UNIX)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_JUST_THREAD_DEADLOCK_CHECK")
   endif()
   unset(COVERAGE CACHE)
-  set_source_files_properties(${PbFiles} PROPERTIES COMPILE_FLAGS "-w")
 endif()
 
 # Enable OpenMP if available
