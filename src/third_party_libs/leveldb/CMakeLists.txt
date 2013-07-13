@@ -216,7 +216,7 @@ endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
 if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX-")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4100 /wd4127 /wd4189 /wd4244 /wd4267 /wd4389")
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error -w")
 endif()

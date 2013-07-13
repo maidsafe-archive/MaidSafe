@@ -317,6 +317,9 @@ endfunction()
 
 # Gets the target platform name
 function(get_target_platform)
+  if(TargetPlatform)
+    return()
+  endif()
   if(WIN32)
     # See http://en.wikipedia.org/wiki/Comparison_of_Windows_versions
     if(CMAKE_SYSTEM_VERSION VERSION_EQUAL 6.2)
@@ -404,6 +407,9 @@ set(archdetect_c_code "
 # will be treated as invalid architectures since they are no longer supported by Apple
 
 function(get_target_architecture)
+  if(TargetArchitecture)
+    return()
+  endif()
   if(APPLE AND CMAKE_OSX_ARCHITECTURES)
     # On OS X we use CMAKE_OSX_ARCHITECTURES *if* it was set
     # First let's normalize the order of the values

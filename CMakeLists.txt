@@ -110,11 +110,9 @@ endforeach()
 if(EXISTS ${CMAKE_SOURCE_DIR}/src/sandbox)
   message("${HR}\nConfiguring Sandbox projects\n----------------------------")
   file(GLOB AllSandboxDirs "${maidsafe_SOURCE_DIR}/src/sandbox/*")
-  list(REMOVE_ITEM AllSandboxDirs "${maidsafe_SOURCE_DIR}/src/sandbox/default"
-                                  "${maidsafe_SOURCE_DIR}/src/sandbox/.git"
+  list(REMOVE_ITEM AllSandboxDirs "${maidsafe_SOURCE_DIR}/src/sandbox/.git"
                                   "${maidsafe_SOURCE_DIR}/src/sandbox/.gitignore"
-                                  "${maidsafe_SOURCE_DIR}/src/sandbox/README"
-                                  "${maidsafe_SOURCE_DIR}/src/sandbox/standard_sandbox_setup.cmake")
+                                  "${maidsafe_SOURCE_DIR}/src/sandbox/README")
   foreach(SandboxDir ${AllSandboxDirs})
     get_filename_component(DirName ${SandboxDir} NAME)
     message(STATUS "${DirName}")
