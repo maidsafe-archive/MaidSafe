@@ -62,8 +62,11 @@ set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 include(version)
 
 
-# Enable auto-linking qtmain for Windows
-cmake_policy(SET CMP0020 NEW)
+# Disable auto-linking qtmain for Windows.  This policy can be set to NEW (and the corresponding
+# explicit linking of qtmain can be removed) when the minimum CMake version becomes 2.8.11.
+if(POLICY CMP0020)
+  cmake_policy(SET CMP0020 OLD)
+endif()
 
 
 # Force all libraries and exes to be built to the top-level build dir.

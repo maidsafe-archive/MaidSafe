@@ -22,8 +22,11 @@
 #==================================================================================================#
 
 
-# Enable auto-linking qtmain for Windows
-cmake_policy(SET CMP0020 NEW)
+# Disable auto-linking qtmain for Windows.  This policy can be set to NEW (and the corresponding
+# explicit linking of qtmain can be removed) when the minimum CMake version becomes 2.8.11.
+if(POLICY CMP0020)
+  cmake_policy(SET CMP0020 OLD)
+endif()
 
 check_compiler()
 underscores_to_camel_case(${PROJECT_NAME} CamelCaseProjectName)
