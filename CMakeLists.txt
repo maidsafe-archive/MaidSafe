@@ -62,6 +62,10 @@ set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 include(version)
 
 
+# Enable auto-linking qtmain for Windows
+cmake_policy(SET CMP0020 NEW)
+
+
 # Force all libraries and exes to be built to the top-level build dir.
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})

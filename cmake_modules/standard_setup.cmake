@@ -21,6 +21,10 @@
 #                                                                                                  #
 #==================================================================================================#
 
+
+# Enable auto-linking qtmain for Windows
+cmake_policy(SET CMP0020 NEW)
+
 check_compiler()
 underscores_to_camel_case(${PROJECT_NAME} CamelCaseProjectName)
 
