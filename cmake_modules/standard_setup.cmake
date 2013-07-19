@@ -25,7 +25,7 @@ check_compiler()
 underscores_to_camel_case(${PROJECT_NAME} CamelCaseProjectName)
 
 string(REGEX REPLACE . "-" UNDERSCORE ${PROJECT_NAME})
-if(NOT PROJECT_NAME STREQUAL Cryptopp AND NOT PROJECT_NAME STREQUAL leveldb)
+if(NOT PROJECT_NAME STREQUAL Cryptopp AND NOT PROJECT_NAME STREQUAL leveldb AND NOT PROJECT_NAME STREQUAL network_viewer)
   message("${HR}\nConfiguring MaidSafe ${CamelCaseProjectName} project\n--------------------${UNDERSCORE}---------")
 endif()
 
