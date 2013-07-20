@@ -25,7 +25,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 # Find the Qt libraries
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT_BIN_DIR}/..)
+if(QT_BIN_DIR)
+  set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT_BIN_DIR}/..)
+endif()
 find_package(Qt5Core QUIET)
 if(NOT Qt5Core_FOUND)
   if(Qt5Required)

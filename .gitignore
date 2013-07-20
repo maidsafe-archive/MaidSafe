@@ -39,15 +39,16 @@ src/lifestuff_ui_qt
 *.sql
 *.sqlite
 
-# OS generated files #
-######################
+# OS and IDE generated files #
+##############################
 .DS_Store*
 ehthumbs.db
 Icon?
 Thumbs.db
 *~
-~.swp
+*.swp
 *.kdev*
+*.user
 *desktop.ini
 *maidsafe_log.ini
 
@@ -61,6 +62,3 @@ build*
 *.vcxproj
 *install_me*
 
-# swap files #
-# ############
-*.swp
