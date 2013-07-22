@@ -49,6 +49,7 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Network REQUIRED)
 find_package(Qt5WebKit REQUIRED)
 find_package(Qt5WebKitWidgets REQUIRED)
+find_package(Qt5LinguistTools REQUIRED)
 
 # Copy dlls to binary directory
 if(MSVC)
