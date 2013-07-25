@@ -169,7 +169,8 @@ else()
                     RESULT_VARIABLE ResultVar
                     OUTPUT_VARIABLE OutputVar
                     ERROR_VARIABLE ErrorVar)
-    if(NOT ${ResultVar} EQUAL 0)
+    # Don't rely on RESULT_VARIABLE to indicate success here, since some versions of git may return 1 for success
+    if(NOT EXISTS ${LicenseFile})
       set(ErrorMessage "\nFailed to clone MaidSafe-Drive-Private.\n\n${OutputVar}\n\n${ErrorVar}\n\n")
       set(ErrorMessage "${ErrorMessage}If you don't have permission to clone ")
       set(ErrorMessage "${ErrorMessage}git@github.com:maidsafe/MaidSafe-Drive-Private.git, you need ")
