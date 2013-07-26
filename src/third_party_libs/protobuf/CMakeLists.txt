@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
 include(../../../cmake_modules/standard_flags.cmake)
 
 if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4005 /wd4100 /wd4125 /wd4127 /wd4244 /wd4267 /wd4389 /wd4510 /wd4610 /wd4701 /wd4702 /wd4703 /wd4800")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4005 /wd4018 /wd4100 /wd4125 /wd4127 /wd4244 /wd4267 /wd4389 /wd4510 /wd4610 /wd4701 /wd4702 /wd4703 /wd4800")
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 endif()
