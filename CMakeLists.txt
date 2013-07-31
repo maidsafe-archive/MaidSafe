@@ -43,10 +43,6 @@ foreach(SubModule ${SubModules})
   set(${SubModule}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/${SubModule})
 endforeach()
 
-if(EXISTS ${CMAKE_SOURCE_DIR}/src/lifestuff_ui_qt)
-  list(APPEND SubModules lifestuff_ui_qt)
-endif()
-
 # Check the submodules are initialised
 foreach(SubModule ${SubModules})
   if(NOT EXISTS "${CMAKE_SOURCE_DIR}/src/${SubModule}/.git")
