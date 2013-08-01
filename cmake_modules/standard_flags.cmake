@@ -34,6 +34,11 @@ if(MaidsafeTesting)
   add_definitions(-DTESTING)
 endif()
 
+add_definitions(-DBOOST_ASIO_HAS_MOVE
+                -DBOOST_ASIO_HAS_STD_ARRAY
+                -DBOOST_ASIO_HAS_STD_ATOMIC
+                -DBOOST_ASIO_HAS_STD_SHARED_PTR
+                -DBOOST_ASIO_HAS_STD_CHRONO)
 add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_FILESYSTEM_VERSION=3)
 add_definitions(-DBOOST_PYTHON_STATIC_LIB)
 
