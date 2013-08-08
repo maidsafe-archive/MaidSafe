@@ -116,8 +116,8 @@ endif()
 
 set(JustThread_FOUND 1 CACHE INTERNAL "" FORCE)
 
-get_filename_component(JUST_THREAD_ROOT_DIR ${JustThread_LIBRARY} PATH)
-set(JustThread_LIBRARY_DIR ${JUST_THREAD_ROOT_DIR} CACHE PATH "Path to just::thread library directory" FORCE)
+get_filename_component(JustThread_LIBRARY_DIR ${JustThread_LIBRARY} PATH)
+set(JustThread_LIBRARY_DIR ${JustThread_LIBRARY_DIR} CACHE PATH "Path to just::thread library directory" FORCE)
 
 include_directories(SYSTEM ${JustThread_INCLUDE_DIR})
 if(CMAKE_INCLUDE_DIRECTORIES_BEFORE)
