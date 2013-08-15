@@ -538,3 +538,47 @@ function(get_dependencies Target OptimizedDeps DebugDeps)
   set(${OptimizedDeps} ${AllReleases} PARENT_SCOPE)
   set(${DebugDeps} ${AllDebugs} PARENT_SCOPE)
 endfunction()
+
+
+# Sets up the custom commands needed by the 'configure_meta_files.cmake' for
+# auto-generating Message typedefs and boost::variants of these.
+function(set_meta_files_custom_commands OutputFile InputFile MetaFiles OutputFileSourceGroup CMakeFilesSourceGroup)
+  set(IntermediateDir "${CMAKE_CURRENT_BINARY_DIR}/copied_message_types")
+  # An apparent bug in CMake means that file(READ...) can only be done from within
+  # CMAKE_CURRENT_BINARY_DIR.  Hence message_types.meta files are copied here to allow
+  # configure_meta_files.cmake to work.
+  foreach(MetaFile ${MetaFiles})
+    string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/" "" RelativeMetaFile "${MetaFile}")
+    set(IntermediateOutputFile "${IntermediateDir}/${RelativeMetaFile}")
+    get_filename_component(FilePath "${IntermediateOutputFile}" PATH)
+    list(APPEND IntermediateOutputFiles "${IntermediateOutputFile}")
+    execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${FilePath}")
+    add_custom_command(OUTPUT "${IntermediateOutputFile}"
+                       COMMAND ${CMAKE_COMMAND} -E copy_if_different "${MetaFile}" "${IntermediateOutputFile}"
+                       DEPENDS "${MetaFile}"
+                       COMMENT "Copying ${RelativeMetaFile} to ${IntermediateDir}/")
+  endforeach()
+
+  # Grab the list of files currently in the binary dir and remove any which are no longer required
+  file(GLOB_RECURSE ExtraMetaFiles "${IntermediateDir}/*.message_types.meta")
+  list(REMOVE_ITEM ExtraMetaFiles ${IntermediateOutputFiles})
+  foreach(ExtraMetaFile ${ExtraMetaFiles})
+    execute_process(COMMAND ${CMAKE_COMMAND} -E remove "${ExtraMetaFile}")
+    message(STATUS "Removed \"${ExtraMetaFile}\"")
+  endforeach()
+
+  set(ConfigureCMakeFile "${CMAKE_SOURCE_DIR}/cmake_modules/configure_meta_files.cmake")
+  set(CMAKE_DISABLE_SOURCE_CHANGES OFF)
+  add_custom_command(OUTPUT ${OutputFile}
+                     COMMAND ${CMAKE_COMMAND} -DOutputFile="${OutputFile}"
+                                              -DInputFile="${InputFile}"
+                                              -P ${ConfigureCMakeFile}
+                     DEPENDS ${IntermediateOutputFiles}
+                             ${InputFile}
+                             ${ConfigureCMakeFile}
+                     COMMENT "Configuring message_types.h")
+  set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+  set_source_files_properties(${OutputFile} PROPERTIES GENERATED TRUE)
+  source_group("${OutputFileSourceGroup}" FILES ${OutputFile})
+  source_group("${CMakeFilesSourceGroup}" FILES ${CMAKE_CURRENT_LIST_FILE} ${InputFile} ${MetaFiles})
+endfunction()
