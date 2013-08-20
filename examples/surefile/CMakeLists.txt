@@ -89,7 +89,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 # Define libraries and executables.                                                                #
 #==================================================================================================#
 add_library(surefile STATIC ${ProjectAllFiles})
-target_link_libraries(surefile maidsafe_lifestuff)
+target_link_libraries(surefile maidsafe_drive)
 set_target_properties(surefile PROPERTIES FOLDER "Library")
 
 add_executable(surefile_demo ${ProjectDemo})

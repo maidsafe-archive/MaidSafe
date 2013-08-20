@@ -36,7 +36,7 @@ License.
 #include "maidsafe/passport/detail/secure_string.h"
 #include "maidsafe/data_store/surefile_store.h"
 
-#include "maidsafe/lifestuff/surefile_api.h"
+#include "maidsafe/surefile/surefile_api.h"
 
 #ifdef WIN32
 #ifndef CBFS_KEY
@@ -47,45 +47,25 @@ License.
 namespace fs = boost::filesystem;
 namespace po = boost::program_options;
 
-typedef maidsafe::passport::detail::Keyword Keyword;
-typedef maidsafe::passport::detail::Pin Pin;
 typedef maidsafe::passport::detail::Password Password;
 
 namespace maidsafe {
-namespace lifestuff {
+namespace surefile {
 
 typedef std::unique_ptr<SureFile> SureFilePtr;
 
-int Init(const fs::path &/*mount_directory*/,
-         const fs::path &chunk_directory,
-         const Keyword& keyword,
-         const Pin& pin,
-         const Password& password) {
-  UpdateAvailableFunction update_available([](const std::string&) {});
-  OperationsPendingFunction operations_pending([](bool) {});
-
-  Slots slots;
-  slots.update_available = update_available;
-  slots.operations_pending = operations_pending;
-
+int Init(const Password& password) {
+  lifestuff::Slots slots;
   SureFilePtr surefile(new SureFile(slots));
 
-  ReportProgressFunction report_progress([](Action, ProgressCode) {});
-
-//  surefile->InsertUserInput(0, std::string(keyword.string().begin(), keyword.string().end()), kKeyword);
-//  surefile->InsertUserInput(0, std::string(pin.string().begin(), pin.string().end()), kPin);
-//  surefile->InsertUserInput(0, std::string(password.string().begin(), password.string().end()), kPassword);
-
-  surefile->InsertUserInput(0, std::string(keyword.string().data(), keyword.string().size()), kKeyword);
-  surefile->InsertUserInput(0, std::string(pin.string().data(), pin.string().size()), kPin);
-  surefile->InsertUserInput(0, std::string(password.string().data(), password.string().size()), kPassword);
+  surefile->InsertUserInput(0, std::string(password.string().data(), password.string().size()), lifestuff::kPassword);
 
   try {
     boost::system::error_code error_code;
-    if (!fs::exists(chunk_directory / "data", error_code))
-      surefile->CreateUser((chunk_directory / "data").string(), report_progress);
+    if (!fs::exists(fs::path(), error_code))
+      surefile->CreateUser();
     else
-      surefile->LogIn((chunk_directory / "data").string(), report_progress);
+      surefile->LogIn();
   }
   catch(...) {
     LOG(kError) << "User creation/login failed.";
@@ -101,7 +81,7 @@ int Init(const fs::path &/*mount_directory*/,
   return 0;
 }
 
-}  // namespace lifestuff
+}  // namespace surefile
 }  // namespace maidsafe
 
 
@@ -242,40 +222,32 @@ int main(int argc, char *argv[]) {
       return 0;
     }
 
-   if (chunkstore_path == fs::path()) {
-      LOG(kWarning) << options_description;
-      return 1;
-    }
-#ifndef WIN32
-    if (mount_path == fs::path()) {
-      LOG(kWarning) << options_description;
-      return 1;
-    }
-#endif
+//   if (chunkstore_path == fs::path()) {
+//      LOG(kWarning) << options_description;
+//      return 1;
+//    }
+//#ifndef WIN32
+//    if (mount_path == fs::path()) {
+//      LOG(kWarning) << options_description;
+//      return 1;
+//    }
+//#endif
 
-    std::string keyword_str(GetUserInputFromProgramOption("keyword", &variables_map, true));
-    std::string pin_str(GetUserInputFromProgramOption("pin", &variables_map, true));
-    std::string password_str(GetUserInputFromProgramOption("password", &variables_map, true));
+    std::string password_str; // (GetUserInputFromProgramOption("password", &variables_map, true));
 
-    if (keyword_str.empty() || pin_str.empty() || password_str.empty()) {
-      std::cout << "Enter keyword" << std::endl;
-      getline(std::cin, keyword_str);
-      std::cout << "Enter pin" << std::endl;
-      getline(std::cin, pin_str);
+    if (password_str.empty()) {
       std::cout << "Enter password" << std::endl;
       getline(std::cin, password_str);
     }
 
-    if (keyword_str.empty() || pin_str.empty() || password_str.empty()) {
+    if (password_str.empty()) {
       LOG(kError) << options_description;
       return 1;
     }
 
-    Keyword keyword(keyword_str);
-    Pin pin(pin_str);
     Password password(password_str);
 
-    int result(maidsafe::lifestuff::Init(mount_path, chunkstore_path, keyword, pin, password));
+    int result(maidsafe::surefile::Init(password));
     return result;
   }
   catch(const std::exception& e) {

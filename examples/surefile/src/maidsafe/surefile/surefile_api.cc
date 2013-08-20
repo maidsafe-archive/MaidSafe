@@ -50,6 +50,10 @@ void SureFile::LogIn() {
   return surefile_impl_->LogIn();
 }
 
+void SureFile::LogOut() {
+  return surefile_impl_->LogOut();
+}
+
 void SureFile::ChangePassword() {
   return surefile_impl_->ChangePassword();
 }

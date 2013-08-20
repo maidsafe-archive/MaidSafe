@@ -20,13 +20,16 @@ License.
 namespace maidsafe {
 namespace surefile {
 
-SureFileImpl::SureFileImpl(const lifestuff::Slots& slots)
+SureFileImpl::SureFileImpl(const lifestuff::Slots& /*slots*/)
   : logged_in_(false),
     password_(),
     confirmation_password_(),
     current_password_(),
-    maid_(),
-    unique_user_id_() {}
+    unique_user_id_(),
+    root_parent_id_(),
+    mount_path_(),
+    drive_(),
+    mount_thread_() {}
 
 SureFileImpl::~SureFileImpl() {}
 
@@ -148,37 +151,35 @@ bool SureFileImpl::ConfirmUserInput(lifestuff::InputField input_field) {
 void SureFileImpl::CreateUser() {
   FinaliseUserInput();
   ResetConfirmationInput();
-  client_maid_.CreateUser(*keyword_, *pin_, *password_, storage_path, report_progress);
-
-  maid_.reset(new Maid(Maid::signer_type()));
-  unique_user_id_.reset(new Identity(RandomAlphaNumericString(64)));
+  unique_user_id_ = Identity(RandomAlphaNumericString(64));
   DiskUsage disk_usage(10737418240);
   storage_.reset(new SureFileStore(boost::filesystem::path(), disk_usage)); // TODO() need a valid path or change store implementation.
-
-  user_storage_.MountDrive(*storage_, session_);
-
-  PutSession(keyword, pin, password);
-
-
-
+  MountDrive();
+  PutSession();
   logged_in_ = true;
 }
 
-void SureFileImpl::LogIn(const boost::filesystem::path& storage_path,
-                                ReportProgressFunction& report_progress) {
+void SureFileImpl::LogIn() {
   FinaliseUserInput();
-  client_maid_.LogIn(*keyword_, *pin_, *password_, storage_path, report_progress);
-  ResetInput();
+  GetSession();
+  // TODO() from session get storage paths, disk usage and user credentials.
+  DiskUsage disk_usage(10737418240);
+  storage_.reset(new SureFileStore(boost::filesystem::path(), disk_usage));
+  MountDrive();
   logged_in_ = true;
-  return;
 }
 
-void SureFileImpl::ChangePassword(ReportProgressFunction& report_progress) {
-  report_progress(kChangePassword, kConfirmingUserInput);
-  if (!ConfirmUserInput(kCurrentPassword))
+void SureFileImpl::LogOut() {
+  UnmountDrive();
+  PutSession();
+  logged_in_ = false;
+}
+
+void SureFileImpl::ChangePassword() {
+  // TODO() check this!
+  if (!ConfirmUserInput(lifestuff::kCurrentPassword))
     ThrowError(CommonErrors::invalid_parameter);
-  client_maid_.ChangePassword(session_.keyword(), session_.pin(), *password_, report_progress);
-  password_.reset();
+  PutSession();
   confirmation_password_.reset();
   current_password_.reset();
   return;
@@ -189,7 +190,15 @@ bool SureFileImpl::logged_in() const {
 }
 
 boost::filesystem::path SureFileImpl::mount_path() {
-  return client_maid_.mount_path();
+  return mount_path_;
+}
+
+const lifestuff::Slots& SureFileImpl::CheckSlots(const lifestuff::Slots& slots) {
+  /*if (!slots.update_available)
+    ThrowError(CommonErrors::uninitialised);
+  if (!slots.operations_pending)
+    ThrowError(CommonErrors::uninitialised);*/
+  return slots;
 }
 
 void SureFileImpl::FinaliseUserInput() {
@@ -203,6 +212,82 @@ void SureFileImpl::ResetInput() {
 
 void SureFileImpl::ResetConfirmationInput() {
   confirmation_password_.reset();
+}
+
+void SureFileImpl::MountDrive() {
+#ifdef WIN32
+  std::uint32_t drive_letters, mask = 0x4, count = 2;
+  drive_letters = GetLogicalDrives();
+  while ((drive_letters & mask) != 0) {
+    mask <<= 1;
+    ++count;
+  }
+  if (count > 25) {
+    LOG(kError) << "No available drive letters.";
+    return;
+  }
+  char drive_name[3] = {'A' + static_cast<char>(count), ':', '\0'};
+  mount_path_ = drive_name;
+  drive_.reset(new Drive(*storage_,
+                         unique_user_id_,
+                         root_parent_id_,
+                         mount_path_,
+                         kDriveLogo.string(),
+                         storage_->GetMaxDiskUsage(),
+                         storage_->GetCurrentDiskUsage()));
+  if (root_parent_id_ != drive_->root_parent_id())
+    root_parent_id_ = drive_->root_parent_id();
+#else
+  boost::system::error_code error_code;
+  if (!boost::filesystem::exists(mount_path_)) {
+    boost::filesystem::create_directories(mount_path_, error_code);
+    if (error_code) {
+      LOG(kError) << "Failed to create mount dir(" << mount_path_ << "): "
+                  << error_code.message();
+    }
+  }
+  drive_.reset(new Drive(*storage_,
+                         unique_user_id_,
+                         root_parent_id_,
+                         mount_path_,
+                         kDriveLogo.string(),
+                         storage_->GetMaxDiskUsage(),
+                         storage_->GetCurrentDiskUsage()));
+  mount_thread_ = std::move(std::thread([this] {
+                                          drive_->Mount();
+                                        }));
+  mount_status_ = drive_->WaitUntilMounted();
+#endif
+}
+
+void SureFileImpl::UnmountDrive() {
+  if (!logged_in_)
+    return;
+  int64_t max_space(0), used_space(0);
+#ifdef WIN32
+  drive_->Unmount(max_space, used_space);
+#else
+  drive_->Unmount(max_space, used_space);
+  drive_->WaitUntilUnMounted();
+  mount_thread_.join();
+  boost::system::error_code error_code;
+  boost::filesystem::remove_all(mount_path_, error_code);
+#endif
+}
+
+void SureFileImpl::PutSession() {
+  // TODO() write data to file
+  return;
+}
+
+void SureFileImpl::DeleteSession() {
+  // TODO() delete data from file
+  return;
+}
+
+void SureFileImpl::GetSession() {
+  // TODO() get data from file
+  return;
 }
 
 }  // namespace surefile

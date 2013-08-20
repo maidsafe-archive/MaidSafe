@@ -23,6 +23,8 @@ License.
 namespace maidsafe {
 namespace surefile {
 
+class SureFileImpl;
+
 class SureFile {
  public:
   // SureFile constructor, refer to discussion in LifeStuff.h for Slots. Throws
@@ -48,6 +50,8 @@ class SureFile {
   // Recovers session details subject to validation from input password. If an exception is thrown
   // during the call, attempts cleanup then rethrows the exception.
   void LogIn();
+  // Unmounts the virtual drive and saves session details.
+  void LogOut();
 
   // The following method can be used to change a user's credentials.
   void ChangePassword();

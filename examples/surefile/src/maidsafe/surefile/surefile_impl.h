@@ -20,19 +20,45 @@ License.
 
 #include "maidsafe/data_store/surefile_store.h"
 #include "maidsafe/passport/detail/secure_string.h"
+#ifdef WIN32
+#  ifdef HAVE_CBFS
+#    include "maidsafe/drive/win_drive.h"
+#  else
+#    include "maidsafe/drive/dummy_win_drive.h"
+#  endif
+#else
+#  include "maidsafe/drive/unix_drive.h"
+#endif
 #include "maidsafe/lifestuff/lifestuff.h"
 
-//#include "maidsafe/lifestuff/detail/client_maid.h"
-//#include "maidsafe/lifestuff/detail/client_mpid.h"
 
 namespace maidsafe {
 namespace surefile {
 
+const NonEmptyString kDriveLogo("SureFile Drive");
+const boost::filesystem::path kSureFileConfigPath("SureFile-Config");
+
+#ifdef WIN32
+#  ifdef HAVE_CBFS
+template<typename Storage>
+struct Drive {
+  typedef drive::CbfsDriveInUserSpace<Storage> MaidDrive;
+};
+#  else
+typedef drive::DummyWinDriveInUserSpace MaidDrive;
+#  endif
+#else
+template<typename Storage>
+struct Drive {
+typedef drive::FuseDriveInUserSpace<Storage> MaidDrive;
+};
+#endif
+
 class SureFileImpl {
  public:
   typedef passport::detail::Password Password;
-  typedef passport::Maid Maid;
   typedef data_store::SureFileStore SureFileStore;
+  typedef Drive<SureFileStore>::MaidDrive Drive;
 
   explicit SureFileImpl(const lifestuff::Slots& slots);
   ~SureFileImpl();
@@ -53,15 +79,27 @@ class SureFileImpl {
   boost::filesystem::path mount_path();
 
  private:
+  const lifestuff::Slots& CheckSlots(const lifestuff::Slots& slots);
+
   void FinaliseUserInput();
   void ResetInput();
   void ResetConfirmationInput();
 
+  void MountDrive();
+  void UnmountDrive();
+
+  void PutSession();
+  void DeleteSession();
+  void GetSession();
+
   bool logged_in_;
   std::unique_ptr<Password> password_, confirmation_password_, current_password_;
   std::unique_ptr<SureFileStore> storage_;
-  std::unique_ptr<Maid> maid_;
-  std::unique_ptr<Identity> unique_user_id_;
+  Identity unique_user_id_;
+  std::string root_parent_id_;
+  boost::filesystem::path mount_path_;
+  std::unique_ptr<Drive> drive_;
+  std::thread mount_thread_;
 };
 
 }  // namespace surefile
