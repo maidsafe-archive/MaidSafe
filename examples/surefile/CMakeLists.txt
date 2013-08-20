@@ -26,8 +26,9 @@ get_filename_component(ProjectId "${CMAKE_SOURCE_DIR}" NAME)
 string(REPLACE " " "_" ProjectId "${ProjectId}")
 project(${ProjectId})
 
+
 #==================================================================================================#
-#  Import standard environment and bring the MaidSafe libraries into scope as CMake targets.       #                                                                                 #
+#  Import standard environment and bring the MaidSafe libraries into scope as CMake targets.       #
 #==================================================================================================#
 find_file(MaidSafeExport NAMES maidsafe_export.cmake
                          PATHS ${MAIDSAFE_BINARY_DIR} ../build ../../build
@@ -41,11 +42,11 @@ if(NOT MaidSafeExport)
   set(ErrorMessage "${ErrorMessage}    cmake . -DMAIDSAFE_BINARY_DIR=\"<path to build root>\"\n\n")
   message(FATAL_ERROR "${ErrorMessage}")
 else()
-  get_filename_component(ExportDir "${MaidSafeExport}" PATH)
-  get_filename_component(MAIDSAFE_BINARY_DIR "${ExportDir}" PATH CACHE)
+  get_filename_component(MAIDSAFE_BINARY_DIR "${MaidSafeExport}" PATH CACHE)
 endif()
 
 include(${MaidSafeExport})
+
 
 #==================================================================================================#
 #  Standard setup stuff.                                                                           #
@@ -60,6 +61,12 @@ include_directories("${PROJECT_SOURCE_DIR}/src")
 include(utils)
 get_target_platform()
 get_target_architecture()
+
+if(WIN32)
+  set(CBFS_KEY "${MAIDSAFE_BINARY_DIR}/MaidSafe-Drive-Private/eldos_licence_key.txt")
+  include(maidsafe_find_cbfs)
+endif()
+
 
 #==================================================================================================#
 # Set up files.                                                                                    #
@@ -77,19 +84,23 @@ list(REMOVE_ITEM ProjectAllFiles ${ProjectDemo})
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-#==================================================================================================#
-# Define libraries and executables.                                                                    #
-#==================================================================================================#
 
-#ms_add_static_library(surefile ${ProjectSourceFiles})
-add_library(${ProjectId} STATIC ${ProjectAllFiles})
-set_target_properties(${ProjectId} PROPERTIES FOLDER "Library")
-target_link_libraries(${ProjectId} maidsafe_lifestuff)
+#==================================================================================================#
+# Define libraries and executables.                                                                #
+#==================================================================================================#
+add_library(surefile STATIC ${ProjectAllFiles})
+target_link_libraries(surefile maidsafe_lifestuff)
+set_target_properties(surefile PROPERTIES FOLDER "Library")
 
-add_executable(${ProjectId}_demo ${ProjectDemo})
-set_target_properties(${ProjectId}_demo PROPERTIES FOLDER "Executables")
+add_executable(surefile_demo ${ProjectDemo})
+target_link_libraries(surefile_demo surefile)
+set_target_properties(surefile_demo PROPERTIES FOLDER "Executables")
+
 
 #==================================================================================================#
 #  Set compiler and linker flags.                                                                  #
 #==================================================================================================#
 include(standard_flags)
+if(Cbfs_FOUND)
+  add_definitions(-DCBFS_KEY=${Cbfs_KEY} -DHAVE_CBFS)
+endif()
