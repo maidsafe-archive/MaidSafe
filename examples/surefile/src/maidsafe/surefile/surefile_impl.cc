@@ -33,7 +33,8 @@ SureFileImpl::SureFileImpl(const lifestuff::Slots& /*slots*/)
 
 SureFileImpl::~SureFileImpl() {}
 
-void SureFileImpl::InsertUserInput(uint32_t position, const std::string& characters, lifestuff::InputField input_field) {
+void SureFileImpl::InsertUserInput(uint32_t position, const std::string& characters,
+                                   lifestuff::InputField input_field) {
   switch (input_field) {
     case lifestuff::kPassword: {
       if (!password_)
@@ -215,6 +216,8 @@ void SureFileImpl::ResetConfirmationInput() {
 }
 
 void SureFileImpl::MountDrive() {
+  if (logged_in_)
+    return;
 #ifdef WIN32
   std::uint32_t drive_letters, mask = 0x4, count = 2;
   drive_letters = GetLogicalDrives();
@@ -256,7 +259,7 @@ void SureFileImpl::MountDrive() {
   mount_thread_ = std::move(std::thread([this] {
                                           drive_->Mount();
                                         }));
-  mount_status_ = drive_->WaitUntilMounted();
+  drive_->WaitUntilMounted();  // FIXME(Team): Throw on mount failure?
 #endif
 }
 

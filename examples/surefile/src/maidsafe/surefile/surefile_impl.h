@@ -50,7 +50,7 @@ typedef drive::DummyWinDriveInUserSpace MaidDrive;
 #else
 template<typename Storage>
 struct Drive {
-typedef drive::FuseDriveInUserSpace<Storage> MaidDrive;
+typedef drive::detail::FuseDriveInUserSpace<Storage> MaidDrive;
 };
 #endif
 
@@ -96,7 +96,7 @@ class SureFileImpl {
   std::unique_ptr<Password> password_, confirmation_password_, current_password_;
   std::unique_ptr<SureFileStore> storage_;
   Identity unique_user_id_;
-  std::string root_parent_id_;
+  Identity root_parent_id_;
   boost::filesystem::path mount_path_;
   std::unique_ptr<Drive> drive_;
   std::thread mount_thread_;
