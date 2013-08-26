@@ -47,16 +47,12 @@ endif()
 
 include(${MaidSafeExport})
 
-
 #==================================================================================================#
 #  Standard setup stuff.                                                                           #
 #==================================================================================================#
 enable_testing()
 include(CTest)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-include_directories("${PROJECT_SOURCE_DIR}/include")
-include_directories("${PROJECT_SOURCE_DIR}/src")
 
 include(utils)
 get_target_platform()
@@ -69,7 +65,7 @@ endif()
 
 
 #==================================================================================================#
-# Set up files.                                                                                    #
+#  Set up files.                                                                                   #
 #==================================================================================================#
 set(ProjectApiDir ${PROJECT_SOURCE_DIR}/include/maidsafe/${ProjectId})
 set(ProjectSourcesDir ${PROJECT_SOURCE_DIR}/src/maidsafe/${ProjectId})
@@ -78,15 +74,16 @@ glob_dir(${ProjectId} ${ProjectSourcesDir} ${ProjectId})
 
 file(GLOB ProjectApiFiles "${ProjectApiDir}/*.*")
 file(GLOB ProjectSourceFiles "${ProjectSourcesDir}/*.*")
-set(ProjectAllFiles ${ProjectApiFiles} ${ProjectSourceFiles})
 
+set(ProjectAllFiles ${${ProjectId}AllFiles})
 list(REMOVE_ITEM ProjectAllFiles ${ProjectDemo})
+
+set(TestFiles ${PROJECT_SOURCE_DIR}/src/maidsafe/${ProjectId}/tests/surefile_test.cc)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-
 #==================================================================================================#
-# Define libraries and executables.                                                                #
+#  Define libraries and executables.                                                               #
 #==================================================================================================#
 add_library(surefile STATIC ${ProjectAllFiles})
 target_link_libraries(surefile maidsafe_drive)
@@ -95,6 +92,10 @@ set_target_properties(surefile PROPERTIES FOLDER "Library")
 add_executable(surefile_demo ${ProjectDemo})
 target_link_libraries(surefile_demo surefile)
 set_target_properties(surefile_demo PROPERTIES FOLDER "Executables")
+
+add_executable(TESTsurefile ${TestFiles})
+target_link_libraries(TESTsurefile surefile)
+set_target_properties(TESTsurefile PROPERTIES FOLDER "Tests")
 
 
 #==================================================================================================#

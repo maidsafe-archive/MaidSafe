@@ -12,9 +12,8 @@ distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, e
 implied. See the License for the specific language governing permissions and limitations under the
 License.
 */
-#ifdef WIN32
-#include <conio.h>
-#endif
+
+#include <signal.h>
 
 #include <functional>
 #include <iostream>  // NOLINT
@@ -36,7 +35,7 @@ License.
 #include "maidsafe/passport/detail/secure_string.h"
 #include "maidsafe/data_store/surefile_store.h"
 
-#include "maidsafe/surefile/surefile_api.h"
+#include "maidsafe/surefile/surefile.h"
 
 #ifdef WIN32
 #ifndef CBFS_KEY
@@ -52,93 +51,51 @@ typedef maidsafe::passport::detail::Password Password;
 namespace maidsafe {
 namespace surefile {
 
+namespace {
+
+std::function<void()> g_unmount_functor;
+
+void CtrlCHandler(int /*value*/) {
+  g_unmount_functor();
+}
+
+}  // unnamed namespace
+
 typedef std::unique_ptr<SureFile> SureFilePtr;
+static uint32_t count = 0;
 
 int Init(const Password& password) {
+  SureFilePtr surefile;
   lifestuff::Slots slots;
-  SureFilePtr surefile(new SureFile(slots));
+  slots.configuration_error = [](){ LOG(kError) << "Configuration error."; };
+  slots.on_service_added = [&surefile](const std::string& service_alias) {
+    boost::filesystem::path storage_path(maidsafe::GetUserAppDir() / std::to_string(count));
+    while (boost::filesystem::exists(storage_path))
+      storage_path = maidsafe::GetUserAppDir() / std::to_string(count = ++count);
+    boost::filesystem::create_directory(storage_path);
+    surefile->AddService(storage_path.string(), service_alias);
+  };
 
-  surefile->InsertUserInput(0, std::string(password.string().data(), password.string().size()), lifestuff::kPassword);
+  surefile.reset(new SureFile(slots));
+
+  std::string password_string(password.string().data(), password.string().size());
+  surefile->InsertInput(0, password_string, lifestuff::kPassword);
 
   try {
-    boost::system::error_code error_code;
-    if (!fs::exists(fs::path(), error_code))
-      surefile->CreateUser();
-    else
-      surefile->LogIn();
+    surefile->LogIn();
   }
   catch(...) {
-    LOG(kError) << "User creation/login failed.";
+    LOG(kError) << "User login failed.";
     return 1;
   }
-#ifdef WIN32
-  while(!kbhit());
-#else
-  int value(0);
-  std::cin >> value;
-#endif
-  surefile->LogOut();
+
+  g_unmount_functor = [&] { surefile->LogOut(); };
+  signal(SIGINT, CtrlCHandler);
   return 0;
 }
 
 }  // namespace surefile
 }  // namespace maidsafe
-
-
-fs::path GetPathFromProgramOption(const std::string &option_name,
-                                  po::variables_map *variables_map,
-                                  bool must_exist) {
-  if (variables_map->count(option_name)) {
-    boost::system::error_code error_code;
-    fs::path option_path(variables_map->at(option_name).as<std::string>());
-    if (must_exist) {
-      if (!fs::exists(option_path, error_code) || error_code) {
-        LOG(kError) << "Invalid " << option_name << " option.  " << option_path
-                    << " doesn't exist or can't be accessed (error message: "
-                    << error_code.message() << ")";
-        return fs::path();
-      }
-      if (!fs::is_directory(option_path, error_code) || error_code) {
-        LOG(kError) << "Invalid " << option_name << " option.  " << option_path
-                    << " is not a directory (error message: "
-                    << error_code.message() << ")";
-        return fs::path();
-      }
-    } else {
-      if (fs::exists(option_path, error_code)) {
-        LOG(kError) << "Invalid " << option_name << " option.  " << option_path
-                    << " already exists (error message: "
-                    << error_code.message() << ")";
-        return fs::path();
-      }
-    }
-    LOG(kInfo) << option_name << " set to " << option_path;
-    return option_path;
-  } else {
-    LOG(kWarning) << "You must set the " << option_name << " option to a"
-                 << (must_exist ? "n " : " non-") << "existing directory.";
-    return fs::path();
-  }
-}
-
-std::string GetUserInputFromProgramOption(const std::string &option_name,
-                                          po::variables_map *variables_map,
-                                          bool must_exist) {
-  if (variables_map->count(option_name)) {
-    std::string option(variables_map->at(option_name).as<std::string>());
-    if (must_exist) {
-      if (option.empty()) {
-        //LOG(kError) << "Invalid " << option_name << " option.  " << option << " empty.";
-        return std::string();
-      }
-    }
-    // LOG(kInfo) << option_name << " set to " << option;
-    return option;
-  } else {
-    //LOG(kWarning) << "You must set the " << option_name << " option to a non-empty string.";
-    return std::string();
-  }
-}
 
 int main(int argc, char *argv[]) {
   maidsafe::log::Logging::Instance().Initialise(argc, argv);
@@ -159,94 +116,17 @@ int main(int argc, char *argv[]) {
   if (!fs::exists(logging_dir, error_code))
     LOG(kError) << "Couldn't create logging directory at " << logging_dir;
   fs::path log_path(logging_dir / "surefile");
-  // All command line parameters are only for this run. To allow persistance, update the config
-  // file. Command line overrides any config file settings.
   try {
-    po::options_description options_description("Allowed options");
-    options_description.add_options()
-        ("help,H", "print this help message")
-        ("chunkdir,C", po::value<std::string>(), "set directory to store chunks")
-        ("mountdir,D", po::value<std::string>(), "set virtual drive name")
-        ("password,P", po::value<std::string>()->default_value(""), "password")
-        ("keyword,K", po::value<std::string>()->default_value(""), "keyword")
-        ("pin,I", po::value<std::string>()->default_value(""), "pin")
-        ("checkdata", "check all data (metadata and chunks)")
-        ("start", "start MaidSafeDrive (mount drive) [default]")
-        ("stop", "stop MaidSafeDrive (unmount drive) [not implemented]"); // dunno if we can from here!
-
-    po::variables_map variables_map;
-    po::store(po::command_line_parser(argc, argv).options(options_description).allow_unregistered().
-                                                  run(), variables_map);
-    po::notify(variables_map);
-
-    // set up options for config file
-    po::options_description config_file_options;
-    config_file_options.add(options_description);
-
-    // try open some config options
-    std::ifstream local_config_file("surefile.conf");
-#ifdef WIN32
-    fs::path main_config_path("C:/ProgramData/MaidSafe/SureFile/surefile.conf");
-#else
-    fs::path main_config_path("/etc/surefile.conf");
-#endif
-    std::ifstream main_config_file(main_config_path.string().c_str());
-
-    // try local first for testing
-    if (local_config_file) {
-      LOG(kInfo) << "Using local config file \"surefile.conf\"";
-      store(parse_config_file(local_config_file, config_file_options), variables_map);
-      notify(variables_map);
-    } else if (main_config_file) {
-      LOG(kInfo) << "Using main config file " << main_config_path;
-      store(parse_config_file(main_config_file, config_file_options), variables_map);
-      notify(variables_map);
-    } else {
-      LOG(kWarning) << "No configuration file found at " << main_config_path;
-    }
-
-    if (variables_map.count("help")) {
-      LOG(kInfo) << options_description;
-      return 1;
-    }
-
-    fs::path chunkstore_path(GetPathFromProgramOption("chunkdir", &variables_map, true));
-#ifdef WIN32
-    fs::path mount_path(GetPathFromProgramOption("mountdir", &variables_map, false));
-#else
-    fs::path mount_path(GetPathFromProgramOption("mountdir", &variables_map, true));
-#endif
-
-    if (variables_map.count("stop")) {
-      LOG(kInfo) << "Trying to stop.";
-      return 0;
-    }
-
-//   if (chunkstore_path == fs::path()) {
-//      LOG(kWarning) << options_description;
-//      return 1;
-//    }
-//#ifndef WIN32
-//    if (mount_path == fs::path()) {
-//      LOG(kWarning) << options_description;
-//      return 1;
-//    }
-//#endif
-
-    std::string password_str; // (GetUserInputFromProgramOption("password", &variables_map, true));
+    std::string password_str;
+    std::cout << "Enter password" << std::endl;
+    getline(std::cin, password_str);
 
     if (password_str.empty()) {
-      std::cout << "Enter password" << std::endl;
-      getline(std::cin, password_str);
-    }
-
-    if (password_str.empty()) {
-      LOG(kError) << options_description;
+      LOG(kError) << "Invalid password";
       return 1;
     }
 
     Password password(password_str);
-
     int result(maidsafe::surefile::Init(password));
     return result;
   }
