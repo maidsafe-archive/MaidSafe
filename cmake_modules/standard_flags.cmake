@@ -106,9 +106,11 @@ if(MSVC)
   # Disabled as per advice at https://svn.boost.org/trac/boost/wiki/Guidelines/WarningsGuidelines
   # C4512 'assignment operator could not be generated' caused by boost signals2
   # Disabled as per advice at http://lists.boost.org/boost-users/2009/01/44368.php
+  # C4913 'default built-in binary operator ',' used' caused by inclusion of boost/utility/result_of.hpp
+  # Disabled due to boost bug https://svn.boost.org/trac/boost/ticket/7663
   # C4996 'Function call with parameters that may be unsafe' caused by boost signals2
   # Disabled as per advice at https://svn.boost.org/trac/boost/wiki/Guidelines/WarningsGuidelines
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4351 /wd4503 /wd4512 /wd4996")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4351 /wd4503 /wd4512 /wd4913 /wd4996")
 
   # O2 - Optimise code for maximum speed.  Implies the following:
   #      Og (global optimisations)
