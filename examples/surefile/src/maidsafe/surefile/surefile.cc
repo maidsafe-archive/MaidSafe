@@ -350,8 +350,7 @@ SureFile::Map SureFile::ReadConfigFile() {
   auto it = content.begin();
   auto end = content.end();
   auto skipper = ascii::space | '#' >> *(qi::char_ - qi::eol) >> qi::eol;
-  typedef decltype(skipper) skipper_type;
-  grammer<std::string::iterator, skipper_type> parser;
+  grammer<std::string::iterator, decltype(skipper)> parser;
   bool result = qi::phrase_parse(it, end, parser, skipper, service_pairs);
   if (!(result && it == end))
     slots_.configuration_error();
@@ -361,7 +360,7 @@ SureFile::Map SureFile::ReadConfigFile() {
 void SureFile::WriteConfigFile(const Map& service_pairs) {
   std::ostringstream content;
   if (service_pairs.empty())
-    content << EncryptComment();
+    content << "#" << EncryptComment() << "\n";
   else
     content << kConfigFileComment
             << karma::format(*(karma::string << '>' << karma::string << ':'), service_pairs);
@@ -434,7 +433,7 @@ void SureFile::CheckConfigFileContent(const std::string& content) {
   crypto::SecurePassword secure_password(SecurePassword());
   crypto::AES256Key key(SecureKey(secure_password));
   crypto::AES256InitialisationVector iv(SecureIv(secure_password));
-  crypto::CipherText cipher_text(content);
+  crypto::CipherText cipher_text(content.substr(1, content.size() - 2));
   crypto::PlainText plain_text(crypto::SymmDecrypt(cipher_text, key, iv));
   if (plain_text.string() != kConfigFileComment)
     ThrowError(CommonErrors::symmetric_decryption_error);

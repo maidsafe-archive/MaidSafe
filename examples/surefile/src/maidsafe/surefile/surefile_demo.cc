@@ -102,10 +102,11 @@ int Init(const Password& password) {
     return 1;
   }
 
-  g_unmount_functor = [&] { surefile->LogOut(); };
+  g_unmount_functor = [&] {};
   signal(SIGINT, CtrlCHandler);
   int x;
   std::cin >> x;
+  surefile->LogOut();
   return 0;
 }
 
@@ -116,7 +117,7 @@ int main(int argc, char *argv[]) {
   maidsafe::log::Logging::Instance().Initialise(argc, argv);
   boost::system::error_code error_code;
 #ifdef WIN32
-  fs::path logging_dir(maidsafe::GetSystemAppSupportDir().parent_path().parent_path() / "MaidSafe\\SureFile\\logs");
+  fs::path logging_dir(maidsafe::GetSystemAppSupportDir().parent_path() / "SureFile\\logs");
 #else
   fs::path logging_dir(fs::temp_directory_path(error_code) / "MaidSafe/SureFile/logs");
   if (error_code) {
