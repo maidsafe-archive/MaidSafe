@@ -158,6 +158,7 @@ public:
   boost::filesystem::path mount_path_;
   std::unique_ptr<Drive> drive_;
   std::map<std::string, std::pair<Identity, Identity>> pending_service_additions_;
+  mutable std::mutex mutex_;
   std::thread mount_thread_;
   static const boost::filesystem::path kConfigFilePath;
   static const boost::filesystem::path kCredentialsFilename;

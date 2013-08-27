@@ -50,6 +50,7 @@ SureFile::SureFile(const lifestuff::Slots& slots)
     mount_path_(),
     drive_(),
     pending_service_additions_(),
+    mutex_(),
     mount_thread_() {}
 
 SureFile::~SureFile() {}
@@ -184,11 +185,10 @@ void SureFile::CreateUser() {
   std::string config_content;
   if (!ReadFile(kConfigFilePath, &config_content))
     ThrowError(CommonErrors::filesystem_io_error);
-  if (!config_content.empty()) {
+  if (!config_content.empty())
     ThrowError(CommonErrors::invalid_parameter);
-  } else {
+  else
     WriteConfigFile(Map());
-  }
   Identity drive_root_id = Identity(RandomAlphaNumericString(64));
   MountDrive(drive_root_id);
   logged_in_ = true;
@@ -228,6 +228,7 @@ void SureFile::AddService(const std::string& storage_path, const std::string& se
   CheckValid(storage_path, service_alias);
   AddConfigEntry(storage_path, service_alias);
   drive_->AddService(service_alias, storage_path);
+  std::lock_guard<std::mutex> lock(mutex_);
   auto it(pending_service_additions_.find(service_alias));
   if (it == pending_service_additions_.end())
     ThrowError(CommonErrors::invalid_parameter);
@@ -382,8 +383,11 @@ void SureFile::AddConfigEntry(const std::string& storage_path, const std::string
 void SureFile::OnServiceAdded(const std::string& service_alias,
                               const Identity& drive_root_id,  
                               const Identity& service_root_id) {
-  pending_service_additions_.insert(
-    std::make_pair(service_alias, std::make_pair(drive_root_id, service_root_id)));
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    pending_service_additions_.insert(
+      std::make_pair(service_alias, std::make_pair(drive_root_id, service_root_id)));
+  }
   slots_.on_service_added(service_alias);
 }
 
