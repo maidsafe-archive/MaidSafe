@@ -32,7 +32,7 @@ class SureFileTest : public testing::Test {
  protected:
   void SetUp() {
     slots_.configuration_error = [](){ LOG(kError) << "Configuration error."; };
-    slots_.on_service_added = [](const std::string&, const Identity&, const Identity&) {};
+    slots_.on_service_added = [](const std::string&) {};
   }
   void TearDown() {}
 
@@ -43,10 +43,14 @@ class SureFileTest : public testing::Test {
   SureFileTest& operator=(const SureFileTest&);
 };
 
-TEST_F(SureFileTest, BEH_LogIn) {  
+TEST_F(SureFileTest, BEH_CreateUser) {
   SureFile surefile(slots_);
 
   surefile.InsertInput(0, "password", lifestuff::kPassword);
+  // EXPECT_TRUE(surefile.CanCreateUser());
+  // EXPECT_NO_THROW(surefile.CreateUser());
+
+  EXPECT_FALSE(surefile.CanCreateUser());
   EXPECT_NO_THROW(surefile.LogIn());
 }
 

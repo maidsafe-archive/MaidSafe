@@ -17,10 +17,12 @@ License.
 
 #include <sstream>
 
-#include <boost/spirit/include/karma.hpp>
-#include <boost/fusion/include/std_pair.hpp>
-#include "boost/filesystem/path.hpp"
-#include "boost/filesystem/operations.hpp"
+#pragma warning(disable: 4100 4127)
+# include <boost/spirit/include/karma.hpp>
+# include <boost/fusion/include/std_pair.hpp>
+# include "boost/filesystem/path.hpp"
+# include "boost/filesystem/operations.hpp"
+#pragma warning(default: 4100 4127)
 
 #include "maidsafe/common/utils.h"
 #include "maidsafe/common/crypto.h"
@@ -167,25 +169,51 @@ bool SureFile::ConfirmInput(lifestuff::InputField input_field) {
   return false;
 }
 
+bool SureFile::CanCreateUser() {
+  std::string config_content;
+  if (!ReadFile(kConfigFilePath, &config_content))
+    ThrowError(CommonErrors::filesystem_io_error);
+  if (config_content.empty())
+    return true;
+  return false;
+}
+
+void SureFile::CreateUser() {
+  FinaliseInput();
+  ResetConfirmationInput();
+  std::string config_content;
+  if (!ReadFile(kConfigFilePath, &config_content))
+    ThrowError(CommonErrors::filesystem_io_error);
+  if (!config_content.empty()) {
+    ThrowError(CommonErrors::invalid_parameter);
+  } else {
+    WriteConfigFile(Map());
+  }
+  Identity drive_root_id = Identity(RandomAlphaNumericString(64));
+  MountDrive(drive_root_id);
+  logged_in_ = true;
+}
+
 void SureFile::LogIn() {
   FinaliseInput();
   ResetConfirmationInput();
-  Map root_pairs(ReadConfigFile());
-  if (root_pairs.empty()) {
+  Map service_pairs(ReadConfigFile());
+  if (service_pairs.empty()) {
+    std::string content;
+    if (!ReadFile(kConfigFilePath.string(), &content))
+      ThrowError(CommonErrors::filesystem_io_error);
+    CheckConfigFileContent(content);
     Identity drive_root_id(RandomAlphaNumericString(64));
     MountDrive(drive_root_id);
   } else {
-    crypto::SecurePassword secure_password(CreateSecurePassword());
-    crypto::AES256Key key(SecureKey(secure_password));
-    crypto::AES256InitialisationVector iv(SecureIv(secure_password));
     std::pair<Identity, Identity> ids;
     bool mounted(false);
-    for (const auto& root_pair : root_pairs) {
-      ids = GetCredentials(root_pair.first, key, iv);
+    for (const auto& service_pair : service_pairs) {
+      ids = GetCredentials(service_pair.first);
       if (!mounted)
         MountDrive(ids.first);
       mounted = true;
-      InitialiseService(root_pair.first, root_pair.second, ids.second);
+      InitialiseService(service_pair.first, service_pair.second, ids.second);
     }
   }
   logged_in_ = true;
@@ -200,18 +228,15 @@ void SureFile::AddService(const std::string& storage_path, const std::string& se
   CheckValid(storage_path, service_alias);
   AddConfigEntry(storage_path, service_alias);
   drive_->AddService(service_alias, storage_path);
-  crypto::SecurePassword secure_password(CreateSecurePassword());
-  crypto::AES256Key key(SecureKey(secure_password));
-  crypto::AES256InitialisationVector iv(SecureIv(secure_password));
   auto it(pending_service_additions_.find(service_alias));
   if (it == pending_service_additions_.end())
     ThrowError(CommonErrors::invalid_parameter);
-  PutCredentials(storage_path, key, iv, it->second.first, it->second.second);
+  PutCredentials(storage_path, it->second.first, it->second.second);
   pending_service_additions_.erase(it);
 }
 
-void SureFile::AddServiceFailed(const std::string& /*service_alias*/) {
-  // drive_->AddServiceFailed(service_alias);
+void SureFile::AddServiceFailed(const std::string& service_alias) {
+  drive_->RemoveService(service_alias);
 }
 
 bool SureFile::logged_in() const {
@@ -238,8 +263,6 @@ void SureFile::InitialiseService(const std::string& storage_path,
 }
 
 void SureFile::FinaliseInput() {
-  if (!password_)
-    ThrowError(CommonErrors::invalid_parameter);
   password_->Finalise();
 }
 
@@ -318,43 +341,43 @@ void SureFile::UnmountDrive() {
 }
 
 SureFile::Map SureFile::ReadConfigFile() {
-  std::ifstream file(kConfigFilePath.string(), std::ifstream::in | std::ifstream::binary);
-  if (file.bad())
-    ThrowError(CommonErrors::no_such_element);
-  std::ostringstream file_content;
-  file_content << file.rdbuf();
-  file.close();
-  std::string content(file_content.str());
+  Map service_pairs;
+  std::string content;
+  if (!ReadFile(kConfigFilePath.string(), &content))
+    ThrowError(CommonErrors::filesystem_io_error);
   if (content.empty())
-    return Map();
+    return service_pairs;
   auto it = content.begin();
   auto end = content.end();
   auto skipper = ascii::space | '#' >> *(qi::char_ - qi::eol) >> qi::eol;
   typedef decltype(skipper) skipper_type;
   grammer<std::string::iterator, skipper_type> parser;
-  Map root_pairs;
-  bool result = qi::phrase_parse(it, end, parser, skipper, root_pairs);
+  bool result = qi::phrase_parse(it, end, parser, skipper, service_pairs);
   if (!(result && it == end))
     slots_.configuration_error();
-  return root_pairs;
+  return service_pairs;
 }
 
-void SureFile::WriteConfigFile(const Map& root_pairs) {
+void SureFile::WriteConfigFile(const Map& service_pairs) {
   std::ostringstream content;
-  content << karma::format(*(karma::string << '>' << karma::string << ':'), root_pairs);
+  if (service_pairs.empty())
+    content << EncryptComment();
+  else
+    content << kConfigFileComment
+            << karma::format(*(karma::string << '>' << karma::string << ':'), service_pairs);
   if (!WriteFile(kConfigFilePath, content.str()))
     ThrowError(CommonErrors::invalid_parameter);
 }
 
 void SureFile::AddConfigEntry(const std::string& storage_path, const std::string& service_alias) {
-  Map root_pairs(ReadConfigFile());
-  auto find_it(root_pairs.find(storage_path));
-  if (find_it != root_pairs.end())
+  Map service_pairs(ReadConfigFile());
+  auto find_it(service_pairs.find(storage_path));
+  if (find_it != service_pairs.end())
     ThrowError(CommonErrors::invalid_parameter);
-  auto insert_it(root_pairs.insert(std::make_pair(storage_path, service_alias)));
+  auto insert_it(service_pairs.insert(std::make_pair(storage_path, service_alias)));
   if (!insert_it.second)
     ThrowError(CommonErrors::invalid_parameter);  // ...requires more informative error
-  WriteConfigFile(root_pairs);
+  WriteConfigFile(service_pairs);
 }
 
 void SureFile::OnServiceAdded(const std::string& service_alias,
@@ -366,22 +389,23 @@ void SureFile::OnServiceAdded(const std::string& service_alias,
 }
 
 void SureFile::OnServiceRemoved(const std::string& service_alias) {
-  Map root_pairs(ReadConfigFile());
-  for (const auto& root_pair : root_pairs) {
-    if (root_pair.second == service_alias) {
-      auto result(root_pairs.erase(root_pair.first));
+  Map service_pairs(ReadConfigFile());
+  for (const auto& service_pair : service_pairs) {
+    if (service_pair.second == service_alias) {
+      auto result(service_pairs.erase(service_pair.first));
       assert(result == 1);
-      WriteConfigFile(root_pairs);
+      WriteConfigFile(service_pairs);
       break;
     }    
   }
 }
 
 void SureFile::PutCredentials(const fs::path& storage_path,
-                              const crypto::AES256Key& key,
-                              const crypto::AES256InitialisationVector& iv,
                               const Identity& drive_root_id,
                               const Identity& service_root_id) {
+  crypto::SecurePassword secure_password(SecurePassword());
+  crypto::AES256Key key(SecureKey(secure_password));
+  crypto::AES256InitialisationVector iv(SecureIv(secure_password));
   crypto::CipherText cipher_text(crypto::SymmEncrypt(
       Serialise(drive_root_id, service_root_id), key, iv));
   if (!WriteFile(storage_path / kCredentialsFilename, cipher_text.string()))
@@ -392,10 +416,10 @@ void SureFile::DeleteCredentials(const fs::path& storage_path) {
   fs::remove(storage_path / kCredentialsFilename);
 }
 
-std::pair<Identity, Identity> SureFile::GetCredentials(
-    const fs::path& storage_path,
-    const crypto::AES256Key& key,
-    const crypto::AES256InitialisationVector& iv) {
+std::pair<Identity, Identity> SureFile::GetCredentials(const fs::path& storage_path) {
+  crypto::SecurePassword secure_password(SecurePassword());
+  crypto::AES256Key key(SecureKey(secure_password));
+  crypto::AES256InitialisationVector iv(SecureIv(secure_password));
   NonEmptyString cipher_text(ReadFile(storage_path / kCredentialsFilename));
   crypto::PlainText serialised_credentials(crypto::SymmDecrypt(cipher_text, key, iv));
   return Parse(serialised_credentials);
@@ -404,6 +428,16 @@ std::pair<Identity, Identity> SureFile::GetCredentials(
 void SureFile::CheckValid(const std::string& storage_path, const std::string& service_alias) {
   if (!boost::filesystem::exists(storage_path) || drive::detail::ExcludedFilename(service_alias))
     ThrowError(CommonErrors::invalid_parameter);
+}
+
+void SureFile::CheckConfigFileContent(const std::string& content) {
+  crypto::SecurePassword secure_password(SecurePassword());
+  crypto::AES256Key key(SecureKey(secure_password));
+  crypto::AES256InitialisationVector iv(SecureIv(secure_password));
+  crypto::CipherText cipher_text(content);
+  crypto::PlainText plain_text(crypto::SymmDecrypt(cipher_text, key, iv));
+  if (plain_text.string() != kConfigFileComment)
+    ThrowError(CommonErrors::symmetric_decryption_error);
 }
 
 NonEmptyString SureFile::Serialise(const Identity& drive_root_id, const Identity& service_root_id) {
@@ -420,13 +454,8 @@ std::pair<Identity, Identity> SureFile::Parse(const NonEmptyString& serialised_c
                         Identity(credentials.service_root_id()));
 }
 
-crypto::SecurePassword SureFile::CreateSecurePassword() {
-  std::hash<passport::detail::SafeString> hash;
-  uint32_t pin_value(hash(password_->string()));
-  passport::detail::Pin pin(std::to_string(pin_value));
-  crypto::Salt salt(crypto::Hash<crypto::SHA512>(
-                  pin.Hash<crypto::SHA512>() + password_->string()));
-  return crypto::CreateSecurePassword<Password>(*password_, salt, pin_value);
+crypto::SecurePassword SureFile::SecurePassword() {
+  return crypto::SecurePassword(crypto::Hash<crypto::SHA512>(password_->string()));
 }
 
 crypto::AES256Key SureFile::SecureKey(const crypto::SecurePassword& secure_password) {
@@ -439,9 +468,19 @@ crypto::AES256InitialisationVector SureFile::SecureIv(
       secure_password.string().substr(crypto::AES256_KeySize, crypto::AES256_IVSize));
 }
 
+std::string SureFile::EncryptComment() {
+  crypto::SecurePassword secure_password(SecurePassword());
+  crypto::AES256Key key(SecureKey(secure_password));
+  crypto::AES256InitialisationVector iv(SecureIv(secure_password));
+  crypto::PlainText plain_text(kConfigFileComment);
+  crypto::CipherText cipher_text(crypto::SymmEncrypt(plain_text, key, iv));
+  return cipher_text.string();
+}
+
 const fs::path SureFile::kConfigFilePath(GetSystemAppSupportDir() /
                                          "MaidSafe/SureFile/surefile.conf");
 const fs::path SureFile::kCredentialsFilename("surefile.dat");
+const std::string SureFile::kConfigFileComment("# Please do NOT edit.\n");
 
 }  // namespace surefile
 }  // namespace maidsafe

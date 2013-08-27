@@ -20,7 +20,10 @@ License.
 #include <map>
 #include <string>
 
-#include <boost/spirit/include/qi.hpp>
+#pragma warning(disable: 4100 4127)
+# include <boost/spirit/include/qi.hpp>
+#pragma warning(default: 4100 4127)
+
 #include "boost/filesystem/path.hpp"
 
 #include "maidsafe/data_store/surefile_store.h"
@@ -84,6 +87,8 @@ public:
   // Compares input types, dependent on 'input_field' value, for equality.
   bool ConfirmInput(lifestuff::InputField input_field);
 
+  bool CanCreateUser();
+  void CreateUser();
   // Mounts virtual drive and initialises services if any. Throws on exception.
   void LogIn();
   // Unmounts virtual drive.
@@ -131,23 +136,21 @@ public:
   void OnServiceRemoved(const std::string& service_alias);
   
   void PutCredentials(const boost::filesystem::path& storage_path,
-                      const crypto::AES256Key& key,
-                      const crypto::AES256InitialisationVector& iv,
                       const Identity& drive_root_id,
                       const Identity& service_root_id);
   void DeleteCredentials(const boost::filesystem::path& storage_path);
-  std::pair<Identity, Identity> GetCredentials(const boost::filesystem::path& storage_path,
-                                               const crypto::AES256Key& key,
-                                               const crypto::AES256InitialisationVector& iv);
+  std::pair<Identity, Identity> GetCredentials(const boost::filesystem::path& storage_path);
 
   void CheckValid(const std::string& storage_path, const std::string& service_alias);
+  void CheckConfigFileContent(const std::string& content);
 
   NonEmptyString Serialise(const Identity& drive_root_id, const Identity& service_root_id);
   std::pair<Identity, Identity> Parse(const NonEmptyString& serialised_credentials);
 
-  crypto::SecurePassword CreateSecurePassword();
+  crypto::SecurePassword SecurePassword();
   crypto::AES256Key SecureKey(const crypto::SecurePassword& secure_password);
   crypto::AES256InitialisationVector SecureIv(const crypto::SecurePassword& secure_password);
+  std::string SureFile::EncryptComment();
 
   const lifestuff::Slots& slots_;
   bool logged_in_;
@@ -158,6 +161,7 @@ public:
   std::thread mount_thread_;
   static const boost::filesystem::path kConfigFilePath;
   static const boost::filesystem::path kCredentialsFilename;
+  static const std::string kConfigFileComment;
 };
 
 template<typename Iterator, typename Skipper>

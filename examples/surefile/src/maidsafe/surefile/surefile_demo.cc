@@ -78,19 +78,34 @@ int Init(const Password& password) {
 
   surefile.reset(new SureFile(slots));
 
+  std::string content;
+  boost::filesystem::path config_file_path(GetSystemAppSupportDir().parent_path() /
+                                           "SureFile/surefile.conf");
+  if (boost::filesystem::exists(config_file_path)) {
+    if (!ReadFile(config_file_path, &content))
+      return 1;
+  } else {
+    return 1;
+  }
+
   std::string password_string(password.string().data(), password.string().size());
   surefile->InsertInput(0, password_string, lifestuff::kPassword);
 
   try {
-    surefile->LogIn();
+    if (content.empty())
+      surefile->CreateUser();
+    else
+      surefile->LogIn();
   }
   catch(...) {
-    LOG(kError) << "User login failed.";
+    LOG(kError) << "User creation/login failed.";
     return 1;
   }
 
   g_unmount_functor = [&] { surefile->LogOut(); };
   signal(SIGINT, CtrlCHandler);
+  int x;
+  std::cin >> x;
   return 0;
 }
 
