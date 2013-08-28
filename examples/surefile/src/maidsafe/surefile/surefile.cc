@@ -181,6 +181,10 @@ bool SureFile::CanCreateUser() {
 
 void SureFile::CreateUser() {
   FinaliseInput();
+  if (!ConfirmInput(lifestuff::kPassword))
+    ThrowError(SureFileErrors::invalid_password);
+  if (!ConfirmInput(lifestuff::kConfirmationPassword))
+    ThrowError(SureFileErrors::password_confirmation_failed);
   ResetConfirmationInput();
   std::string config_content;
   if (!ReadFile(kConfigFilePath, &config_content))
@@ -264,7 +268,12 @@ void SureFile::InitialiseService(const std::string& storage_path,
 }
 
 void SureFile::FinaliseInput() {
+  if (!password_)
+    ThrowError(SureFileErrors::invalid_password);
   password_->Finalise();
+  if (!confirmation_password_)
+    ThrowError(SureFileErrors::password_confirmation_failed);
+  confirmation_password_->Finalise();
 }
 
 void SureFile::ResetInput() {

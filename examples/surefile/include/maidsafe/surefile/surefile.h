@@ -39,6 +39,7 @@ License.
 #endif
 #include "maidsafe/lifestuff/lifestuff.h"
 
+#include "maidsafe/surefile/error.h"
 
 namespace maidsafe {
 namespace surefile {

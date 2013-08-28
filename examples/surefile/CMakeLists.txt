@@ -47,6 +47,7 @@ endif()
 
 include(${MaidSafeExport})
 
+
 #==================================================================================================#
 #  Standard setup stuff.                                                                           #
 #==================================================================================================#
@@ -81,21 +82,32 @@ list(REMOVE_ITEM ProjectAllFiles ${ProjectDemo})
 set(TestFiles ${PROJECT_SOURCE_DIR}/src/maidsafe/${ProjectId}/tests/surefile_test.cc)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/src)
+
 
 #==================================================================================================#
 #  Define libraries and executables.                                                               #
 #==================================================================================================#
-add_library(surefile STATIC ${ProjectAllFiles})
-target_link_libraries(surefile maidsafe_drive)
-set_target_properties(surefile PROPERTIES FOLDER "Library")
+add_library(maidsafe_surefile STATIC ${ProjectAllFiles})
+target_link_libraries(maidsafe_surefile maidsafe_drive)
+set_target_properties(maidsafe_surefile PROPERTIES FOLDER "Library")
 
 add_executable(surefile_demo ${ProjectDemo})
-target_link_libraries(surefile_demo surefile)
+target_link_libraries(surefile_demo maidsafe_surefile)
 set_target_properties(surefile_demo PROPERTIES FOLDER "Executables")
 
 add_executable(TESTsurefile ${TestFiles})
-target_link_libraries(TESTsurefile surefile)
+target_link_libraries(TESTsurefile maidsafe_surefile)
 set_target_properties(TESTsurefile PROPERTIES FOLDER "Tests")
+
+
+#==================================================================================================#
+#  Export detail                                                                                   #
+#==================================================================================================#
+set(ExportFile ${CMAKE_BINARY_DIR}/surefile_export.cmake)
+file(APPEND ${ExportFile} "# Include paths\n")
+file(APPEND ${ExportFile} "include_directories(\"${PROJECT_SOURCE_DIR}/include\")\n")
+export(TARGETS maidsafe_surefile APPEND FILE ${ExportFile})
 
 
 #==================================================================================================#
