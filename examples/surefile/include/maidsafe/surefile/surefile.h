@@ -83,10 +83,6 @@ public:
   // Removes the sequence of characters starting at position 'position' and ending at position
   // 'position' + 'length' from the input type determined by 'input_field'.
   void RemoveInput(uint32_t position, uint32_t length, lifestuff::InputField input_field);
-  // Clears the currently inserted characters from the input type determined by 'input_field'.
-  void ClearInput(lifestuff::InputField input_field);
-  // Compares input types, dependent on 'input_field' value, for equality.
-  bool ConfirmInput(lifestuff::InputField input_field);
 
   bool CanCreateUser();
   void CreateUser();
@@ -120,12 +116,15 @@ public:
                          const std::string& service_alias,
                          const Identity& service_root_id);
 
-  void FinaliseInput();
-  void ResetInput();
-  void ResetConfirmationInput();
+  void FinaliseInput(bool login);
+  void ClearInput();
+  void ConfirmInput();
+  void ResetPassword();
+  void ResetConfirmationPassword();
 
   void MountDrive(const Identity& drive_root_id);
   void UnmountDrive();
+  std::string GetMountPath() const;
 
   Map ReadConfigFile();
   void WriteConfigFile(const Map& root_pairs);
@@ -155,7 +154,7 @@ public:
 
   const lifestuff::Slots& slots_;
   bool logged_in_;
-  std::unique_ptr<Password> password_, confirmation_password_, current_password_;
+  std::unique_ptr<Password> password_, confirmation_password_;
   boost::filesystem::path mount_path_;
   std::unique_ptr<Drive> drive_;
   std::map<std::string, std::pair<Identity, Identity>> pending_service_additions_;

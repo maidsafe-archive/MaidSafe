@@ -69,7 +69,8 @@ int Init(const Password& password) {
   lifestuff::Slots slots;
   slots.configuration_error = [](){ LOG(kError) << "Configuration error."; };
   slots.on_service_added = [&surefile](const std::string& service_alias) {
-    boost::filesystem::path storage_path(maidsafe::GetUserAppDir() / std::to_string(count));
+    boost::filesystem::path storage_path(maidsafe::GetUserAppDir().parent_path() /
+                                         "SureFile" / std::to_string(count));
     while (boost::filesystem::exists(storage_path))
       storage_path = maidsafe::GetUserAppDir() / std::to_string(count = ++count);
     boost::filesystem::create_directory(storage_path);
@@ -79,7 +80,7 @@ int Init(const Password& password) {
   surefile.reset(new SureFile(slots));
 
   std::string content;
-  boost::filesystem::path config_file_path(GetSystemAppSupportDir().parent_path() /
+  boost::filesystem::path config_file_path(maidsafe::GetUserAppDir().parent_path() /
                                            "SureFile/surefile.conf");
   if (boost::filesystem::exists(config_file_path)) {
     if (!ReadFile(config_file_path, &content))
@@ -92,10 +93,12 @@ int Init(const Password& password) {
   surefile->InsertInput(0, password_string, lifestuff::kPassword);
 
   try {
-    if (content.empty())
+    if (content.empty()) {
+      surefile->InsertInput(0, password_string, lifestuff::kConfirmationPassword);
       surefile->CreateUser();
-    else
+    } else {
       surefile->LogIn();
+    }
   }
   catch(...) {
     LOG(kError) << "User creation/login failed.";

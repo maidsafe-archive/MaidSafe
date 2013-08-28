@@ -46,7 +46,6 @@ SureFile::SureFile(const lifestuff::Slots& slots)
     logged_in_(false),
     password_(),
     confirmation_password_(),
-    current_password_(),
     mount_path_(),
     drive_(),
     pending_service_additions_(),
@@ -69,12 +68,6 @@ void SureFile::InsertInput(uint32_t position, const std::string& characters, lif
       confirmation_password_->Insert(position, characters);
       break;
     }
-    case lifestuff::kCurrentPassword: {
-      if (!current_password_)
-        current_password_.reset(new Password());
-      current_password_->Insert(position, characters);
-      break;
-    }
     default:
       ThrowError(CommonErrors::unknown);
   }
@@ -94,83 +87,14 @@ void SureFile::RemoveInput(uint32_t position, uint32_t length, lifestuff::InputF
       confirmation_password_->Remove(position, length);
       break;
     }
-    case lifestuff::kCurrentPassword: {
-      if (!current_password_)
-        ThrowError(CommonErrors::uninitialised);
-      current_password_->Remove(position, length);
-      break;
-    }
     default:
       ThrowError(CommonErrors::unknown);
   }
-}
-
-void SureFile::ClearInput(lifestuff::InputField input_field) {
-  switch (input_field) {
-    case lifestuff::kPassword: {
-      if (password_)
-        password_->Clear();
-      break;
-    }
-    case lifestuff::kConfirmationPassword: {
-      if (confirmation_password_)
-        confirmation_password_->Clear();
-      break;
-    }
-    case lifestuff::kCurrentPassword: {
-      if (current_password_)
-        current_password_->Clear();
-      break;
-    }
-    default:
-      ThrowError(CommonErrors::unknown);
-  }
-}
-
-bool SureFile::ConfirmInput(lifestuff::InputField input_field) {
-  switch (input_field) {
-    case lifestuff::kPassword: {
-      if (!password_)
-        return false;
-      return password_->IsValid(boost::regex(lifestuff::kCharRegex));
-    }
-    case lifestuff::kConfirmationPassword: {
-      if (!password_ || !confirmation_password_)
-        return false;
-      if (!password_->IsFinalised())
-        password_->Finalise();
-      if (!confirmation_password_->IsFinalised())
-        confirmation_password_->Finalise();
-      if (password_->string() != confirmation_password_->string())
-        return false;
-      return true;
-    }
-    case lifestuff::kCurrentPassword: {
-      if (!current_password_)
-        return false;
-      if (!current_password_->IsFinalised())
-        current_password_->Finalise();
-      if (password_) {
-        password_->Finalise();
-        if (!confirmation_password_)
-          return false;
-        confirmation_password_->Finalise();
-        if (password_->string() != confirmation_password_->string()
-            || password_->string() != current_password_->string())
-          return false;
-      } else {
-        if (password_->string() != current_password_->string())
-          return false;
-      }
-      return true;
-    }
-    default:
-      ThrowError(CommonErrors::unknown);
-  }
-  return false;
 }
 
 bool SureFile::CanCreateUser() {
+  if (logged_in_)
+    return false;
   std::string config_content;
   if (!ReadFile(kConfigFilePath, &config_content))
     ThrowError(CommonErrors::filesystem_io_error);
@@ -180,12 +104,11 @@ bool SureFile::CanCreateUser() {
 }
 
 void SureFile::CreateUser() {
-  FinaliseInput();
-  if (!ConfirmInput(lifestuff::kPassword))
-    ThrowError(SureFileErrors::invalid_password);
-  if (!ConfirmInput(lifestuff::kConfirmationPassword))
-    ThrowError(SureFileErrors::password_confirmation_failed);
-  ResetConfirmationInput();
+  if (logged_in_)
+    return;
+  FinaliseInput(false);
+  ConfirmInput();
+  ResetConfirmationPassword();
   std::string config_content;
   if (!ReadFile(kConfigFilePath, &config_content))
     ThrowError(CommonErrors::filesystem_io_error);
@@ -199,8 +122,10 @@ void SureFile::CreateUser() {
 }
 
 void SureFile::LogIn() {
-  FinaliseInput();
-  ResetConfirmationInput();
+  if (logged_in_)
+    return;
+  FinaliseInput(true);
+  assert(!confirmation_password_);
   Map service_pairs(ReadConfigFile());
   if (service_pairs.empty()) {
     std::string content;
@@ -211,24 +136,28 @@ void SureFile::LogIn() {
     MountDrive(drive_root_id);
   } else {
     std::pair<Identity, Identity> ids;
-    bool mounted(false);
-    for (const auto& service_pair : service_pairs) {
-      ids = GetCredentials(service_pair.first);
-      if (!mounted)
-        MountDrive(ids.first);
-      mounted = true;
-      InitialiseService(service_pair.first, service_pair.second, ids.second);
+    auto it(service_pairs.begin()), end(service_pairs.end());
+    ids = GetCredentials(it->first);
+    MountDrive(ids.first);
+    InitialiseService(it->first, it->second, ids.second);
+    while (++it != end) {
+      ids = GetCredentials(it->first);
+      InitialiseService(it->first, it->second, ids.second);
     }
   }
   logged_in_ = true;
 }
 
 void SureFile::LogOut() {
+  if (!logged_in_)
+    ThrowError(CommonErrors::uninitialised);
   UnmountDrive();
   logged_in_ = false;
 }
 
 void SureFile::AddService(const std::string& storage_path, const std::string& service_alias) {
+  if (!logged_in_)
+    ThrowError(CommonErrors::uninitialised);
   CheckValid(storage_path, service_alias);
   AddConfigEntry(storage_path, service_alias);
   drive_->AddService(service_alias, storage_path);
@@ -241,6 +170,8 @@ void SureFile::AddService(const std::string& storage_path, const std::string& se
 }
 
 void SureFile::AddServiceFailed(const std::string& service_alias) {
+  if (!logged_in_)
+    ThrowError(CommonErrors::uninitialised);
   drive_->RemoveService(service_alias);
 }
 
@@ -267,20 +198,47 @@ void SureFile::InitialiseService(const std::string& storage_path,
   drive_->ReInitialiseService(service_alias, storage_path, service_root_id);
 }
 
-void SureFile::FinaliseInput() {
-  if (!password_)
+void SureFile::FinaliseInput(bool login) {
+  if (!password_) {
+    if (confirmation_password_)
+      ResetConfirmationPassword();
     ThrowError(SureFileErrors::invalid_password);
+  }
   password_->Finalise();
-  if (!confirmation_password_)
-    ThrowError(SureFileErrors::password_confirmation_failed);
-  confirmation_password_->Finalise();
+  if (!login) {
+    if (!confirmation_password_) {
+      ResetPassword();
+      ThrowError(SureFileErrors::password_confirmation_failed);
+    }
+    confirmation_password_->Finalise();
+  }
 }
 
-void SureFile::ResetInput() {
+void SureFile::ClearInput() {
+  if (password_)
+    password_->Clear();
+  if (confirmation_password_)
+    confirmation_password_->Clear();
+}
+
+void SureFile::ConfirmInput() {
+  if (!password_->IsValid(boost::regex(lifestuff::kCharRegex))) {
+    ResetPassword();
+    ResetConfirmationPassword();
+    ThrowError(SureFileErrors::invalid_password);
+  }
+  if (password_->string() != confirmation_password_->string()) {
+    ResetPassword();
+    ResetConfirmationPassword();
+    ThrowError(SureFileErrors::password_confirmation_failed);
+  }
+}
+
+void SureFile::ResetPassword() {
   password_.reset();
 }
 
-void SureFile::ResetConfirmationInput() {
+void SureFile::ResetConfirmationPassword() {
   confirmation_password_.reset();
 }
 
@@ -297,18 +255,7 @@ void SureFile::MountDrive(const Identity& drive_root_id) {
                                             });
   fs::path drive_name("SureFile Drive");
 #ifdef WIN32
-  std::uint32_t drive_letters, mask = 0x4, count = 2;
-  drive_letters = GetLogicalDrives();
-  while ((drive_letters & mask) != 0) {
-    mask <<= 1;
-    ++count;
-  }
-  if (count > 25) {
-    LOG(kError) << "No available drive letters.";
-    return;
-  }
-  char drive_path[3] = {'A' + static_cast<char>(count), ':', '\0'};
-  mount_path_ = drive_path;
+  mount_path_ = GetMountPath();
   drive_.reset(new Drive(drive_root_id,
                          mount_path_,
                          drive_name,
@@ -348,6 +295,19 @@ void SureFile::UnmountDrive() {
   boost::system::error_code error_code;
   boost::filesystem::remove_all(mount_path_, error_code);
 #endif
+}
+
+std::string SureFile::GetMountPath() const {
+  std::uint32_t drive_letters, mask = 0x4, count = 2;
+  drive_letters = GetLogicalDrives();
+  while ((drive_letters & mask) != 0) {
+    mask <<= 1;
+    ++count;
+  }
+  if (count > 25)
+    ThrowError(CommonErrors::uninitialised);
+  char mount_path[3] = {'A' + static_cast<char>(count), ':', '\0'};
+  return mount_path;
 }
 
 SureFile::Map SureFile::ReadConfigFile() {
@@ -448,8 +408,10 @@ void SureFile::CheckConfigFileContent(const std::string& content) {
   crypto::AES256InitialisationVector iv(SecureIv(secure_password));
   crypto::CipherText cipher_text(content.substr(1, content.size() - 2));
   crypto::PlainText plain_text(crypto::SymmDecrypt(cipher_text, key, iv));
-  if (plain_text.string() != kConfigFileComment)
-    ThrowError(CommonErrors::symmetric_decryption_error);
+  if (plain_text.string() != kConfigFileComment) {
+    ResetPassword();
+    ThrowError(SureFileErrors::invalid_password);
+  }
 }
 
 NonEmptyString SureFile::Serialise(const Identity& drive_root_id, const Identity& service_root_id) {
@@ -489,8 +451,7 @@ std::string SureFile::EncryptComment() {
   return cipher_text.string();
 }
 
-const fs::path SureFile::kConfigFilePath(GetSystemAppSupportDir() /
-                                         "MaidSafe/SureFile/surefile.conf");
+const fs::path SureFile::kConfigFilePath(GetUserAppDir() / "MaidSafe/SureFile/surefile.conf");
 const fs::path SureFile::kCredentialsFilename("surefile.dat");
 const std::string SureFile::kConfigFileComment("# Please do NOT edit.\n");
 
