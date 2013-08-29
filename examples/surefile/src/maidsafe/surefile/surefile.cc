@@ -255,11 +255,11 @@ void SureFile::MountDrive(const Identity& drive_root_id) {
   drive::OnServiceRemoved on_service_removed([this](const fs::path& service_alias) {
                                                 OnServiceRemoved(service_alias.string());
                                             });
-  /*drive::OnServiceRemoved on_service_renamed([this](const fs::path& old_service_alias,
+  drive::OnServiceRenamed on_service_renamed([this](const fs::path& old_service_alias,
                                                     const fs::path& new_service_alias) {
                                                 OnServiceRenamed(old_service_alias.string(),
                                                                  new_service_alias.string());
-                                            });*/
+                                            });
   fs::path drive_name("SureFile Drive");
 #ifdef WIN32
   mount_path_ = GetMountPath();
@@ -267,8 +267,8 @@ void SureFile::MountDrive(const Identity& drive_root_id) {
                          mount_path_,
                          drive_name,
                          on_service_added,
-                         on_service_removed/*,
-                         on_service_renamed*/));
+                         on_service_removed,
+                         on_service_renamed));
 #else
   boost::system::error_code error_code;
   if (!boost::filesystem::exists(mount_path_)) {
