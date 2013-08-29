@@ -41,7 +41,7 @@ namespace karma = boost::spirit::karma;
 namespace ascii = boost::spirit::ascii;
 namespace fs = boost::filesystem;
 
-SureFile::SureFile(const lifestuff::Slots& slots)
+SureFile::SureFile(lifestuff::Slots slots)
   : slots_(CheckSlots(slots)),
     logged_in_(false),
     password_(),
@@ -52,7 +52,10 @@ SureFile::SureFile(const lifestuff::Slots& slots)
     mutex_(),
     mount_thread_() {}
 
-SureFile::~SureFile() {}
+SureFile::~SureFile() {
+  if (logged_in_)
+    UnmountDrive();
+}
 
 void SureFile::InsertInput(uint32_t position, const std::string& characters, lifestuff::InputField input_field) {
   switch (input_field) {
@@ -116,12 +119,18 @@ void SureFile::CreateUser() {
     ThrowError(CommonErrors::invalid_parameter);
   else
     WriteConfigFile(Map());
-  Identity drive_root_id = Identity(RandomAlphaNumericString(64));
-  MountDrive(drive_root_id);
+  try {
+    Identity drive_root_id = Identity(RandomAlphaNumericString(64));
+    MountDrive(drive_root_id);
+  }
+  catch(const std::exception& exception) {
+    WriteFile(kConfigFilePath, std::string());
+    boost::throw_exception(exception);
+  }
   logged_in_ = true;
 }
 
-void SureFile::LogIn() {
+void SureFile::Login() {
   if (logged_in_)
     return;
   FinaliseInput(true);
@@ -146,13 +155,6 @@ void SureFile::LogIn() {
     }
   }
   logged_in_ = true;
-}
-
-void SureFile::LogOut() {
-  if (!logged_in_)
-    ThrowError(CommonErrors::uninitialised);
-  UnmountDrive();
-  logged_in_ = false;
 }
 
 void SureFile::AddService(const std::string& storage_path, const std::string& service_alias) {
@@ -183,7 +185,7 @@ std::string SureFile::mount_path() {
   return mount_path_.string();
 }
 
-const lifestuff::Slots& SureFile::CheckSlots(const lifestuff::Slots& slots) {
+lifestuff::Slots SureFile::CheckSlots(lifestuff::Slots slots) {
   if (!slots.configuration_error)
     ThrowError(CommonErrors::uninitialised);
   if (!slots.on_service_added)

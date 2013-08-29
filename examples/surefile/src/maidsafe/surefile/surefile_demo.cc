@@ -97,7 +97,7 @@ int Init(const Password& password) {
       surefile->InsertInput(0, password_string, lifestuff::kConfirmationPassword);
       surefile->CreateUser();
     } else {
-      surefile->LogIn();
+      surefile->Login();
     }
   }
   catch(...) {
@@ -109,7 +109,6 @@ int Init(const Password& password) {
   signal(SIGINT, CtrlCHandler);
   int x;
   std::cin >> x;
-  surefile->LogOut();
   return 0;
 }
 

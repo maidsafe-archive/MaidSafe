@@ -73,7 +73,7 @@ public:
 
   // SureFile constructor, refer to discussion in LifeStuff.h for Slots. Throws
   // CommonErrors::uninitialised if any 'slots' member has not been initialised.
-  explicit SureFile(const lifestuff::Slots& slots);
+  explicit SureFile(lifestuff::Slots slots);
   ~SureFile();
 
   // Creates and/or inserts a string of 'characters' at position 'position' in the input type,
@@ -87,9 +87,7 @@ public:
   bool CanCreateUser();
   void CreateUser();
   // Mounts virtual drive and initialises services if any. Throws on exception.
-  void LogIn();
-  // Unmounts virtual drive.
-  void LogOut();
+  void Login();
 
   void AddService(const std::string& storage_path, const std::string& service_alias);
   void AddServiceFailed(const std::string& service_alias);
@@ -110,7 +108,7 @@ public:
     boost::spirit::qi::rule<Iterator, std::string()> key, value;
   };
 
-  const lifestuff::Slots& CheckSlots(const lifestuff::Slots& slots);
+  lifestuff::Slots CheckSlots(lifestuff::Slots slots);
 
   void InitialiseService(const std::string& storage_path,
                          const std::string& service_alias,
@@ -152,7 +150,7 @@ public:
   crypto::AES256InitialisationVector SecureIv(const crypto::SecurePassword& secure_password);
   std::string SureFile::EncryptComment();
 
-  const lifestuff::Slots& slots_;
+  lifestuff::Slots slots_;
   bool logged_in_;
   std::unique_ptr<Password> password_, confirmation_password_;
   boost::filesystem::path mount_path_;
