@@ -27,7 +27,8 @@ namespace surefile {
 
 enum class SureFileErrors {
   invalid_password = 1,
-  password_confirmation_failed
+  password_confirmation_failed,
+  invalid_service
 };
 
 class surefile_error : public maidsafe_error {

@@ -32,6 +32,8 @@ std::string SureFileCategory::message(int error_value) const MAIDSAFE_NOEXCEPT {
       return "Invalid password";
     case SureFileErrors::password_confirmation_failed:
       return "Password Confirmation Failed";
+    case SureFileErrors::invalid_service:
+      return "Invalid Service Path";
     default:
       return "Unknown error in SureFile";
   }

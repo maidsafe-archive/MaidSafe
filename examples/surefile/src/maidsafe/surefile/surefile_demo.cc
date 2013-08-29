@@ -79,21 +79,11 @@ int Init(const Password& password) {
 
   surefile.reset(new SureFile(slots));
 
-  std::string content;
-  boost::filesystem::path config_file_path(maidsafe::GetUserAppDir().parent_path() /
-                                           "SureFile/surefile.conf");
-  if (boost::filesystem::exists(config_file_path)) {
-    if (!ReadFile(config_file_path, &content))
-      return 1;
-  } else {
-    return 1;
-  }
-
   std::string password_string(password.string().data(), password.string().size());
   surefile->InsertInput(0, password_string, lifestuff::kPassword);
 
   try {
-    if (content.empty()) {
+    if (surefile->CanCreateUser()) {
       surefile->InsertInput(0, password_string, lifestuff::kConfirmationPassword);
       surefile->CreateUser();
     } else {

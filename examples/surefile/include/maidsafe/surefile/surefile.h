@@ -132,12 +132,14 @@ public:
                       const Identity& drive_root_id,  
                       const Identity& service_root_id);  
   void OnServiceRemoved(const std::string& service_alias);
-  
-  void PutCredentials(const boost::filesystem::path& storage_path,
-                      const Identity& drive_root_id,
-                      const Identity& service_root_id);
-  void DeleteCredentials(const boost::filesystem::path& storage_path);
-  std::pair<Identity, Identity> GetCredentials(const boost::filesystem::path& storage_path);
+  void OnServiceRenamed(const std::string& old_service_alias,
+                        const std::string& new_service_alias);
+
+  void PutIds(const boost::filesystem::path& storage_path,
+              const Identity& drive_root_id,
+              const Identity& service_root_id);
+  void DeleteIds(const boost::filesystem::path& storage_path);
+  std::pair<Identity, Identity> GetIds(const boost::filesystem::path& storage_path);
 
   void CheckValid(const std::string& storage_path, const std::string& service_alias);
   void CheckConfigFileContent(const std::string& content);
