@@ -320,15 +320,18 @@ std::string SureFile::GetMountPath() const {
 
 SureFile::Map SureFile::ReadConfigFile() {
   Map service_pairs;
-  std::string content;
-  if (!ReadFile(kConfigFilePath.string(), &content))
-    ThrowError(CommonErrors::filesystem_io_error);
-  auto it = content.begin();
-  auto end = content.end();
-  auto skipper = ascii::space | '#' >> *(qi::char_ - qi::eol) >> qi::eol;
-  grammer<std::string::iterator, decltype(skipper)> parser;
-  bool result = qi::phrase_parse(it, end, parser, skipper, service_pairs);
-  if (!(result && it == end))
+  std::ifstream file_in(kConfigFilePath.string().c_str(), std::ios::in | std::ios::binary);
+  std::vector<std::string> lines;
+  std::string file_content;
+  while (std::getline(file_in, file_content))
+    lines.push_back(file_content);
+  if (lines.size() < 2)
+    return service_pairs;
+  auto it = lines[1].begin();
+  auto end = lines[1].end();
+  grammer<std::string::iterator> parser;
+  bool result = qi::parse(it, end, parser, service_pairs);
+  if (!result || it != end)
     slots_.configuration_error();
   return service_pairs;
 }
@@ -371,6 +374,7 @@ void SureFile::OnServiceRemoved(const std::string& service_alias) {
   for (const auto& service_pair : service_pairs) {
     if (service_pair.second == service_alias) {
       auto result(service_pairs.erase(service_pair.first));
+      static_cast<void>(result);
       assert(result == 1);
       WriteConfigFile(service_pairs);
       break;
