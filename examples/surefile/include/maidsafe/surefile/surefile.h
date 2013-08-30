@@ -26,7 +26,7 @@ License.
 
 #include "boost/filesystem/path.hpp"
 
-#include "maidsafe/data_store/surefile_store.h"
+#include "maidsafe/data_store/sure_file_store.h"
 #include "maidsafe/passport/detail/secure_string.h"
 #ifdef WIN32
 #  ifdef HAVE_CBFS
@@ -99,11 +99,11 @@ public:
 
   friend class test::SureFileTest;
  private:
-  template<typename Iterator, typename Skipper>
-  struct grammer : boost::spirit::qi::grammar<Iterator, Map(), Skipper> {    
+  template<typename Iterator>
+  struct grammer : boost::spirit::qi::grammar<Iterator, Map()> {
     grammer();
 
-    boost::spirit::qi::rule<Iterator, Map(), Skipper> start;
+    boost::spirit::qi::rule<Iterator, Map()> start;
     boost::spirit::qi::rule<Iterator, Pair()> pair;
     boost::spirit::qi::rule<Iterator, std::string()> key, value;
   };
@@ -165,8 +165,8 @@ public:
   static const std::string kConfigFileComment;
 };
 
-template<typename Iterator, typename Skipper>
-SureFile::grammer<Iterator, Skipper>::grammer()
+template<typename Iterator>
+SureFile::grammer<Iterator>::grammer()
     : grammer::base_type(start) {
   start = *pair;
   pair  =  key >> '>' >> value;
