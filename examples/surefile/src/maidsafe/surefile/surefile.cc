@@ -374,7 +374,7 @@ void SureFile::OnServiceRemoved(const std::string& service_alias) {
   for (const auto& service_pair : service_pairs) {
     if (service_pair.second == service_alias) {
       auto result(service_pairs.erase(service_pair.first));
-      result;
+      static_cast<void>(result);
       assert(result == 1);
       WriteConfigFile(service_pairs);
       break;
