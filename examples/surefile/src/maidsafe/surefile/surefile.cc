@@ -18,8 +18,8 @@ License.
 #include <sstream>
 
 #pragma warning(disable: 4100 4127)
-# include <boost/spirit/include/karma.hpp>
-# include <boost/fusion/include/std_pair.hpp>
+# include "boost/spirit/include/karma.hpp"
+# include "boost/fusion/include/std_pair.hpp"
 # include "boost/filesystem/path.hpp"
 # include "boost/filesystem/operations.hpp"
 #pragma warning(default: 4100 4127)
@@ -126,8 +126,6 @@ void SureFile::Login() {
   assert(!confirmation_password_);
   Map service_pairs(ReadConfigFile());
   if (service_pairs.empty()) {
-    NonEmptyString content(ReadFile(kConfigFilePath.string()));
-    CheckConfigFileContent(content.string());
     Identity drive_root_id(RandomAlphaNumericString(64));
     MountDrive(drive_root_id);
   } else {
@@ -320,15 +318,15 @@ std::string SureFile::GetMountPath() const {
 
 SureFile::Map SureFile::ReadConfigFile() {
   Map service_pairs;
-  std::ifstream file_in(kConfigFilePath.string().c_str(), std::ios::in | std::ios::binary);
-  std::vector<std::string> lines;
-  std::string file_content;
-  while (std::getline(file_in, file_content))
-    lines.push_back(file_content);
-  if (lines.size() < 2)
+  std::string content;
+  if (!ReadFile(kConfigFilePath, &content))
+    ThrowError(CommonErrors::filesystem_io_error);
+  if (content.substr(0, kSureFile.size()) == kSureFile) {
+    CheckConfigFileContent(content);
     return service_pairs;
-  auto it = lines[1].begin();
-  auto end = lines[1].end();
+  }
+  auto it = content.begin() + kConfigFileComment.size();
+  auto end = content.end();
   grammer<std::string::iterator> parser;
   bool result = qi::parse(it, end, parser, service_pairs);
   if (!result || it != end)
@@ -339,10 +337,10 @@ SureFile::Map SureFile::ReadConfigFile() {
 void SureFile::WriteConfigFile(const Map& service_pairs) {
   std::ostringstream content;
   if (service_pairs.empty())
-    content << '#' << EncryptComment() << '\n';
+    content << kSureFile << EncryptComment();
   else
-    content << kConfigFileComment
-            << karma::format(*(karma::string << '>' << karma::string << ':'), service_pairs);
+    content << kConfigFileComment << karma::format(*(karma::string << '>' << karma::string << ':'),
+                                                   service_pairs);
   if (!WriteFile(kConfigFilePath, content.str()))
     ThrowError(CommonErrors::invalid_parameter);
 }
@@ -428,7 +426,8 @@ void SureFile::CheckConfigFileContent(const std::string& content) {
   crypto::SecurePassword secure_password(SecurePassword());
   crypto::AES256Key key(SecureKey(secure_password));
   crypto::AES256InitialisationVector iv(SecureIv(secure_password));
-  crypto::CipherText cipher_text(content.substr(1, content.size() - 2));
+  uint32_t size(kSureFile.size());
+  crypto::CipherText cipher_text(content.substr(size, content.size() - size));
   crypto::PlainText plain_text(crypto::SymmDecrypt(cipher_text, key, iv));
   if (plain_text.string() == kConfigFileComment)
     return;
@@ -475,6 +474,7 @@ std::string SureFile::EncryptComment() {
 
 const fs::path SureFile::kConfigFilePath(GetUserAppDir() / "MaidSafe/SureFile/surefile.conf");
 const fs::path SureFile::kCredentialsFilename("surefile.dat");
+const std::string SureFile::kSureFile("surefile");
 const std::string SureFile::kConfigFileComment("# Please do NOT edit.\n");
 
 }  // namespace surefile
