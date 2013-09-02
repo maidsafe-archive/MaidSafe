@@ -163,6 +163,7 @@ public:
   static const boost::filesystem::path kConfigFilePath;
   static const boost::filesystem::path kCredentialsFilename;
   static const std::string kConfigFileComment;
+  static const std::string kSureFile;
 };
 
 template<typename Iterator>
