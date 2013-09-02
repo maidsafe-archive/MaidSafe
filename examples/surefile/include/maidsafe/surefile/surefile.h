@@ -67,8 +67,8 @@ public:
   typedef passport::detail::Password Password;
   typedef data_store::SureFileStore SureFileStore;
   typedef SureFileDrive<SureFileStore>::Drive Drive;
-  typedef std::map<std::string, std::string> Map;
-  typedef std::pair<std::string, std::string> Pair;
+  typedef std::map<std::string, std::string> ServiceMap;
+  typedef std::pair<std::string, std::string> ServicePair;
   typedef lifestuff::ConfigurationErrorFunction ConfigurationErrorFunction;
 
   // SureFile constructor, refer to discussion in LifeStuff.h for Slots. Throws
@@ -100,11 +100,11 @@ public:
   friend class test::SureFileTest;
  private:
   template<typename Iterator>
-  struct grammer : boost::spirit::qi::grammar<Iterator, Map()> {
+  struct grammer : boost::spirit::qi::grammar<Iterator, ServiceMap()> {
     grammer();
 
-    boost::spirit::qi::rule<Iterator, Map()> start;
-    boost::spirit::qi::rule<Iterator, Pair()> pair;
+    boost::spirit::qi::rule<Iterator, ServiceMap()> start;
+    boost::spirit::qi::rule<Iterator, ServicePair()> pair;
     boost::spirit::qi::rule<Iterator, std::string()> key, value;
   };
 
@@ -124,8 +124,8 @@ public:
   void UnmountDrive();
   std::string GetMountPath() const;
 
-  Map ReadConfigFile();
-  void WriteConfigFile(const Map& root_pairs);
+  ServiceMap ReadConfigFile();
+  void WriteConfigFile(const ServiceMap& service_pairs);
   void AddConfigEntry(const std::string& storage_path, const std::string& service_alias);
 
   void OnServiceAdded(const std::string& service_alias,
@@ -142,7 +142,7 @@ public:
   std::pair<Identity, Identity> GetIds(const boost::filesystem::path& storage_path);
 
   void CheckValid(const std::string& storage_path, const std::string& service_alias);
-  void CheckConfigFileContent(const std::string& content);
+  void ValidateContent(const std::string& content);
 
   NonEmptyString Serialise(const Identity& drive_root_id, const Identity& service_root_id);
   std::pair<Identity, Identity> Parse(const NonEmptyString& serialised_credentials);
@@ -150,7 +150,7 @@ public:
   crypto::SecurePassword SecurePassword();
   crypto::AES256Key SecureKey(const crypto::SecurePassword& secure_password);
   crypto::AES256InitialisationVector SecureIv(const crypto::SecurePassword& secure_password);
-  std::string SureFile::EncryptComment();
+  std::string SureFile::EncryptSureFile();
 
   lifestuff::Slots slots_;
   bool logged_in_;
@@ -160,10 +160,8 @@ public:
   std::map<std::string, std::pair<Identity, Identity>> pending_service_additions_;
   mutable std::mutex mutex_;
   std::thread mount_thread_;
-  static const boost::filesystem::path kConfigFilePath;
-  static const boost::filesystem::path kCredentialsFilename;
-  static const std::string kConfigFileComment;
   static const std::string kSureFile;
+  static const boost::filesystem::path kUserAppPath;
 };
 
 template<typename Iterator>
