@@ -69,11 +69,11 @@ int Init(const Password& password) {
   lifestuff::Slots slots;
   slots.configuration_error = [](){ LOG(kError) << "Configuration error."; };
   slots.on_service_added = [&surefile](const std::string& service_alias) {
-    boost::filesystem::path storage_path(maidsafe::GetUserAppDir().parent_path() /
-                                         "SureFile" / std::to_string(count));
-    while (boost::filesystem::exists(storage_path))
+    fs::path storage_path(maidsafe::GetUserAppDir().parent_path() /
+                          "SureFile" / std::to_string(count));
+    while (fs::exists(storage_path))
       storage_path = maidsafe::GetUserAppDir() / std::to_string(count = ++count);
-    boost::filesystem::create_directory(storage_path);
+    fs::create_directory(storage_path);
     surefile->AddService(storage_path.string(), service_alias);
   };
 
