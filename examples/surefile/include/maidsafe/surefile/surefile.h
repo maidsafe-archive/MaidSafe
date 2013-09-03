@@ -94,7 +94,7 @@ public:
   void Login();
 
   void AddService(const std::string& storage_path, const std::string& service_alias);
-  void AddServiceFailed(const std::string& service_alias);
+  void RemoveService(const std::string& service_alias);
 
   // Returns whether user is logged in or not.
   bool logged_in() const;
@@ -133,9 +133,7 @@ public:
   void WriteConfigFile(const ServiceMap& service_pairs);
   void AddConfigEntry(const std::string& storage_path, const std::string& service_alias);
 
-  void OnServiceAdded(const std::string& service_alias,
-                      const Identity& drive_root_id,  
-                      const Identity& service_root_id);  
+  void OnServiceAdded();  
   void OnServiceRemoved(const std::string& service_alias);
   void OnServiceRenamed(const std::string& old_service_alias,
                         const std::string& new_service_alias);
@@ -161,7 +159,8 @@ public:
   bool logged_in_;
   std::unique_ptr<Password> password_, confirmation_password_;
   boost::filesystem::path mount_path_;
-  std::unique_ptr<Drive> drive_;
+  Identity drive_root_id_;
+  std::unique_ptr<Drive> drive_; 
   std::map<std::string, std::pair<Identity, Identity>> pending_service_additions_;
   mutable std::mutex mutex_;
   std::thread mount_thread_;
