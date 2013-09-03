@@ -43,7 +43,7 @@ namespace qi = boost::spirit::qi;
 namespace karma = boost::spirit::karma;
 namespace fs = boost::filesystem;
 
-SureFile::SureFile(lifestuff::Slots slots)
+SureFile::SureFile(Slots slots)
   : slots_(CheckSlots(slots)),
     logged_in_(false),
     password_(),
@@ -61,15 +61,15 @@ SureFile::~SureFile() {
     UnmountDrive();
 }
 
-void SureFile::InsertInput(uint32_t position, const std::string& characters, lifestuff::InputField input_field) {
+void SureFile::InsertInput(uint32_t position, const std::string& characters, InputField input_field) {
   switch (input_field) {
-    case lifestuff::kPassword: {
+    case kPassword: {
       if (!password_)
         password_.reset(new Password());
       password_->Insert(position, characters);
       break;
     }
-    case lifestuff::kConfirmationPassword: {
+    case kConfirmationPassword: {
       if (!confirmation_password_)
         confirmation_password_.reset(new Password());
       confirmation_password_->Insert(position, characters);
@@ -80,15 +80,15 @@ void SureFile::InsertInput(uint32_t position, const std::string& characters, lif
   }
 }
 
-void SureFile::RemoveInput(uint32_t position, uint32_t length, lifestuff::InputField input_field) {
+void SureFile::RemoveInput(uint32_t position, uint32_t length, InputField input_field) {
   switch (input_field) {
-    case lifestuff::kPassword: {
+    case kPassword: {
       if (!password_)
         ThrowError(CommonErrors::uninitialised);
       password_->Remove(position, length);
       break;
     }
-    case lifestuff::kConfirmationPassword: {
+    case kConfirmationPassword: {
       if (!confirmation_password_)
         ThrowError(CommonErrors::uninitialised);
       confirmation_password_->Remove(position, length);
@@ -161,9 +161,6 @@ void SureFile::RemoveService(const std::string& service_alias) {
   if (!logged_in_)
     ThrowError(CommonErrors::uninitialised);
   drive_->RemoveService(service_alias);
-
-
-
   ServiceMap service_pairs(ReadConfigFile());
   for (const auto& service_pair : service_pairs) {
     if (service_pair.second == service_alias) {
@@ -184,10 +181,12 @@ std::string SureFile::mount_path() const {
   return mount_path_.string();
 }
 
-lifestuff::Slots SureFile::CheckSlots(lifestuff::Slots slots) const {
+Slots SureFile::CheckSlots(Slots slots) const {
   if (!slots.configuration_error)
     ThrowError(CommonErrors::uninitialised);
   if (!slots.on_service_added)
+    ThrowError(CommonErrors::uninitialised);
+  if (!slots.on_service_removed)
     ThrowError(CommonErrors::uninitialised);
   return slots;
 }
@@ -223,7 +222,7 @@ void SureFile::ClearInput() {
 }
 
 void SureFile::ConfirmInput() {
-  if (!password_->IsValid(boost::regex(lifestuff::kCharRegex))) {
+  if (!password_->IsValid(boost::regex(kCharRegex))) {
     ResetPassword();
     ResetConfirmationPassword();
     ThrowError(SureFileErrors::invalid_password);
@@ -309,7 +308,10 @@ SureFile::ServiceMap SureFile::ReadConfigFile() {
   NonEmptyString content(ReadFile(kUserAppPath / kSureFile));
   if (content.string().size() > kSureFile.size()) {
     if (content.string().substr(0, kSureFile.size()) == kSureFile) {
-      ValidateContent(content.string());
+      if (!ValidateContent(content.string())) {
+        ResetPassword();
+        ThrowError(SureFileErrors::invalid_password);
+      }
       return service_pairs;
     }
   }
@@ -392,7 +394,7 @@ void SureFile::CheckValid(const std::string& storage_path, const std::string& se
     ThrowError(SureFileErrors::invalid_service);
 }
 
-void SureFile::ValidateContent(const std::string& content) {
+bool SureFile::ValidateContent(const std::string& content) const {
   crypto::SecurePassword secure_password(SecurePassword());
   crypto::AES256Key key(SecureKey(secure_password));
   crypto::AES256InitialisationVector iv(SecureIv(secure_password));
@@ -400,9 +402,8 @@ void SureFile::ValidateContent(const std::string& content) {
   crypto::CipherText cipher_text(content.substr(size, content.size() - size));
   crypto::PlainText plain_text(crypto::SymmDecrypt(cipher_text, key, iv));
   if (plain_text.string() == kSureFile)
-    return;
-  ResetPassword();
-  ThrowError(SureFileErrors::invalid_password);
+    return true;
+  return false;
 }
 
 NonEmptyString SureFile::Serialise(const Identity& drive_root_id,

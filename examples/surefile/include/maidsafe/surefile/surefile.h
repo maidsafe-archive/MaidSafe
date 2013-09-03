@@ -38,9 +38,10 @@ License.
 #include "maidsafe/data_store/sure_file_store.h"
 #include "maidsafe/passport/detail/secure_string.h"
 #include "maidsafe/drive/drive_api.h"
-#include "maidsafe/lifestuff/lifestuff.h"
+#include "maidsafe/drive/drive.h"
 
 #include "maidsafe/surefile/error.h"
+#include "maidsafe/surefile/config.h"
 
 namespace maidsafe {
 namespace surefile {
@@ -53,23 +54,20 @@ public:
   typedef data_store::SureFileStore SureFileStore;
   typedef drive::VirtualDrive<SureFileStore>::value_type Drive;
   typedef std::map<std::string, std::string> ServiceMap;
-  typedef ServiceMap::value_type ServicePair;
-  typedef lifestuff::ConfigurationErrorFunction ConfigurationErrorFunction;
+  typedef std::pair<std::string, std::string> ServicePair;
 
   // SureFile constructor, refer to discussion in LifeStuff.h for Slots. Throws
   // CommonErrors::uninitialised if any 'slots' member has not been initialised.
-  explicit SureFile(lifestuff::Slots slots);
+  explicit SureFile(Slots slots);
   ~SureFile();
 
   // Creates and/or inserts a string of 'characters' at position 'position' in the input type,
   // password, confirmation password etc., determined by 'input_field', see lifestuff.h for the
   // definition of InputField. Implicitly accepts Unicode characters converted to std::string.
-  void InsertInput(uint32_t position,
-                   const std::string& characters,
-                   lifestuff::InputField input_field);
+  void InsertInput(uint32_t position, const std::string& characters, InputField input_field);
   // Removes the sequence of characters starting at position 'position' and ending at position
   // 'position' + 'length' from the input type determined by 'input_field'.
-  void RemoveInput(uint32_t position, uint32_t length, lifestuff::InputField input_field);
+  void RemoveInput(uint32_t position, uint32_t length, InputField input_field);
 
   bool CanCreateUser() const;
   void CreateUser();
@@ -95,7 +93,7 @@ public:
     boost::spirit::qi::rule<Iterator, std::string()> key, value;
   };
 
-  lifestuff::Slots CheckSlots(lifestuff::Slots slots) const;
+  Slots CheckSlots(Slots slots) const;
 
   void InitialiseService(const std::string& storage_path,
                          const std::string& service_alias,
@@ -124,7 +122,7 @@ public:
   std::pair<Identity, Identity> GetIds(const boost::filesystem::path& storage_path) const;
 
   void CheckValid(const std::string& storage_path, const std::string& service_alias) const;
-  void ValidateContent(const std::string& content);
+  bool ValidateContent(const std::string& content) const;
 
   NonEmptyString Serialise(const Identity& drive_root_id, const Identity& service_root_id) const;
   std::pair<Identity, Identity> Parse(const NonEmptyString& serialised_credentials) const;
@@ -134,7 +132,7 @@ public:
   crypto::AES256InitialisationVector SecureIv(const crypto::SecurePassword& secure_password) const;
   std::string EncryptSureFile() const;
 
-  lifestuff::Slots slots_;
+  Slots slots_;
   bool logged_in_;
   std::unique_ptr<Password> password_, confirmation_password_;
   boost::filesystem::path mount_path_;

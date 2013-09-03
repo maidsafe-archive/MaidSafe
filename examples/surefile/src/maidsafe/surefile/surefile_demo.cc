@@ -66,25 +66,30 @@ static uint32_t count = 0;
 
 int Init(const Password& password) {
   SureFilePtr surefile;
-  lifestuff::Slots slots;
+  Slots slots;
   slots.configuration_error = [](){ LOG(kError) << "Configuration error."; };
-  slots.on_service_added = [&surefile](const std::string& service_alias) {
+  slots.on_service_added = [&surefile]() {
     fs::path storage_path(maidsafe::GetUserAppDir().parent_path() /
                           "SureFile" / std::to_string(count));
     while (fs::exists(storage_path))
       storage_path = maidsafe::GetUserAppDir() / std::to_string(count = ++count);
     fs::create_directory(storage_path);
+    std::string service_alias(RandomAlphaNumericString(5));
     surefile->AddService(storage_path.string(), service_alias);
+  };
+
+  slots.on_service_removed = [&surefile](const std::string& service_alias) {
+    surefile->RemoveService(service_alias);
   };
 
   surefile.reset(new SureFile(slots));
 
   std::string password_string(password.string().data(), password.string().size());
-  surefile->InsertInput(0, password_string, lifestuff::kPassword);
+  surefile->InsertInput(0, password_string, kPassword);
 
   try {
     if (surefile->CanCreateUser()) {
-      surefile->InsertInput(0, password_string, lifestuff::kConfirmationPassword);
+      surefile->InsertInput(0, password_string, kConfirmationPassword);
       surefile->CreateUser();
     } else {
       surefile->Login();
@@ -109,7 +114,7 @@ int main(int argc, char *argv[]) {
   maidsafe::log::Logging::Instance().Initialise(argc, argv);
   boost::system::error_code error_code;
 #ifdef MAIDSAFE_WIN32
-  fs::path logging_dir(maidsafe::GetSystemAppSupportDir().parent_path() / "SureFile\\logs");
+  fs::path logging_dir(maidsafe::GetUserAppDir().parent_path() / "SureFile\\logs");
 #else
   fs::path logging_dir(fs::temp_directory_path(error_code) / "MaidSafe/SureFile/logs");
   if (error_code) {
