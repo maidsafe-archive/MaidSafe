@@ -20,9 +20,13 @@ License.
 #include <map>
 #include <string>
 
-#pragma warning(disable: 4100 4127)
+#ifdef __MSVC__
+#  pragma warning(push, 1)
+#endif
 # include <boost/spirit/include/qi.hpp>
-#pragma warning(default: 4100 4127)
+#ifdef __MSVC__
+#  pragma warning(pop)
+#endif
 
 #include "boost/filesystem/path.hpp"
 
@@ -58,7 +62,7 @@ typedef drive::DummyWinDriveInUserSpace Drive;
 #else
 template<typename Storage>
 struct SureFileDrive {
-  typedef drive::FuseDriveInUserSpace<Storage> Drive;
+  typedef drive::detail::FuseDriveInUserSpace<Storage> Drive;
 };
 #endif
 
@@ -122,7 +126,6 @@ public:
 
   void MountDrive(const Identity& drive_root_id);
   void UnmountDrive();
-
   ServiceMap ReadConfigFile();
   void WriteConfigFile(const ServiceMap& service_pairs);
   void AddConfigEntry(const std::string& storage_path, const std::string& service_alias);
@@ -149,7 +152,7 @@ public:
   crypto::SecurePassword SecurePassword();
   crypto::AES256Key SecureKey(const crypto::SecurePassword& secure_password);
   crypto::AES256InitialisationVector SecureIv(const crypto::SecurePassword& secure_password);
-  std::string SureFile::EncryptSureFile();
+  std::string EncryptSureFile();
 
   lifestuff::Slots slots_;
   bool logged_in_;
@@ -159,6 +162,7 @@ public:
   std::map<std::string, std::pair<Identity, Identity>> pending_service_additions_;
   mutable std::mutex mutex_;
   std::thread mount_thread_;
+  bool mount_status_;
   static const std::string kSureFile;
   static const boost::filesystem::path kUserAppPath;
 };

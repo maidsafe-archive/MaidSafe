@@ -17,10 +17,14 @@ License.
 
 #include <sstream>
 
-#pragma warning(disable: 4100 4127)
+#ifdef __MSVC__
+#  pragma warning(push, 1)
+#endif
 # include "boost/spirit/include/karma.hpp"
 # include "boost/fusion/include/std_pair.hpp"
-#pragma warning(default: 4100 4127)
+#ifdef __MSVC__
+#  pragma warning(pop)
+#endif
 
 #include "boost/filesystem/operations.hpp"
 
@@ -48,7 +52,8 @@ SureFile::SureFile(lifestuff::Slots slots)
     drive_(),
     pending_service_additions_(),
     mutex_(),
-    mount_thread_() {}
+    mount_thread_(),
+    mount_status_(false) {}
 
 SureFile::~SureFile() {
   if (logged_in_)
@@ -275,13 +280,18 @@ void SureFile::MountDrive(const Identity& drive_root_id) {
                   << error_code.message();
     }
   }
-  drive_.reset(new Drive(drive_root_id,
-                         mount_path_,
-                         drive_name,
-                         on_service_added,
-                         on_service_removed));
-  mount_thread_ = std::move(std::thread([this] {
-                                          drive_->Mount();
+  mount_thread_ = std::move(std::thread([this,
+                                        drive_root_id,
+                                        drive_name,
+                                        on_service_added,
+                                        on_service_removed,
+                                        on_service_renamed] {
+      drive_.reset(new Drive(drive_root_id,
+                             mount_path_,
+                             drive_name,
+                             on_service_added,
+                             on_service_removed,
+                             on_service_renamed));
                                         }));
   mount_status_ = drive_->WaitUntilMounted();
 #endif
