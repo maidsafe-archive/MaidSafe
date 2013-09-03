@@ -28,7 +28,7 @@ License.
 
 #include "maidsafe/data_store/sure_file_store.h"
 #include "maidsafe/passport/detail/secure_string.h"
-#ifdef WIN32
+#ifdef MAIDSAFE_WIN32
 #  ifdef HAVE_CBFS
 #    include "maidsafe/drive/win_drive.h"
 #  else
@@ -46,7 +46,7 @@ namespace surefile {
 
 namespace test { class SureFileTest; }
 
-#ifdef WIN32
+#ifdef MAIDSAFE_WIN32
 #  ifdef HAVE_CBFS
 template<typename Storage>
 struct SureFileDrive {
@@ -122,7 +122,6 @@ public:
 
   void MountDrive(const Identity& drive_root_id);
   void UnmountDrive();
-  std::string GetMountPath() const;
 
   ServiceMap ReadConfigFile();
   void WriteConfigFile(const ServiceMap& service_pairs);

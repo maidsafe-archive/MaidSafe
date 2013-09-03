@@ -37,7 +37,7 @@ License.
 
 #include "maidsafe/surefile/surefile.h"
 
-#ifdef WIN32
+#ifdef MAIDSAFE_WIN32
 #ifndef CBFS_KEY
 #  error CBFS_KEY must be defined.
 #endif
@@ -108,7 +108,7 @@ int Init(const Password& password) {
 int main(int argc, char *argv[]) {
   maidsafe::log::Logging::Instance().Initialise(argc, argv);
   boost::system::error_code error_code;
-#ifdef WIN32
+#ifdef MAIDSAFE_WIN32
   fs::path logging_dir(maidsafe::GetSystemAppSupportDir().parent_path() / "SureFile\\logs");
 #else
   fs::path logging_dir(fs::temp_directory_path(error_code) / "MaidSafe/SureFile/logs");

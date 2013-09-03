@@ -258,8 +258,8 @@ void SureFile::MountDrive(const Identity& drive_root_id) {
                                                                  new_service_alias.string());
                                             });
   fs::path drive_name("SureFile Drive");
-#ifdef WIN32
-  mount_path_ = GetMountPath();
+#ifdef MAIDSAFE_WIN32
+  mount_path_ = drive::GetNextAvailableDrivePath();
   drive_.reset(new Drive(drive_root_id,
                          mount_path_,
                          drive_name,
@@ -290,7 +290,7 @@ void SureFile::MountDrive(const Identity& drive_root_id) {
 void SureFile::UnmountDrive() {
   if (!logged_in_)
     return;
-#ifdef WIN32
+#ifdef MAIDSAFE_WIN32
   drive_->Unmount();
 #else
   drive_->Unmount();
@@ -299,19 +299,6 @@ void SureFile::UnmountDrive() {
   boost::system::error_code error_code;
   boost::filesystem::remove_all(mount_path_, error_code);
 #endif
-}
-
-std::string SureFile::GetMountPath() const {
-  std::uint32_t drive_letters, mask = 0x4, count = 2;
-  drive_letters = GetLogicalDrives();
-  while ((drive_letters & mask) != 0) {
-    mask <<= 1;
-    ++count;
-  }
-  if (count > 25)
-    ThrowError(CommonErrors::uninitialised);
-  char mount_path[3] = {'A' + static_cast<char>(count), ':', '\0'};
-  return mount_path;
 }
 
 SureFile::ServiceMap SureFile::ReadConfigFile() {
@@ -422,7 +409,7 @@ void SureFile::ValidateContent(const std::string& content) {
   crypto::SecurePassword secure_password(SecurePassword());
   crypto::AES256Key key(SecureKey(secure_password));
   crypto::AES256InitialisationVector iv(SecureIv(secure_password));
-  uint32_t size(kSureFile.size());
+  auto size(kSureFile.size());
   crypto::CipherText cipher_text(content.substr(size, content.size() - size));
   crypto::PlainText plain_text(crypto::SymmDecrypt(cipher_text, key, iv));
   if (plain_text.string() == kSureFile)
