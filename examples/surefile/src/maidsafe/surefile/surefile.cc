@@ -280,7 +280,12 @@ void SureFile::MountDrive(const Identity& drive_root_id) {
                   << error_code.message();
     }
   }
-  mount_thread_ = std::move(std::thread([this, drive_root_id, drive_name, on_service_added, on_service_removed, on_service_renamed] {
+  mount_thread_ = std::move(std::thread([this,
+                                        drive_root_id,
+                                        drive_name,
+                                        on_service_added,
+                                        on_service_removed,
+                                        on_service_renamed] {
       drive_.reset(new Drive(drive_root_id,
                              mount_path_,
                              drive_name,
