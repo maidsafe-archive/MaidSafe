@@ -103,7 +103,7 @@ bool SureFile::CanCreateUser() const {
   if (logged_in_)
     return false;
   boost::system::error_code ec;
-  return !fs::exists(kUserAppPath / kSureFile, ec);
+  return !fs::exists(GetUserAppDir() / kSureFile, ec);
 }
 
 void SureFile::CreateUser() {
@@ -112,10 +112,10 @@ void SureFile::CreateUser() {
   FinaliseInput(false);
   ConfirmInput();
   ResetConfirmationPassword();
-  if (fs::exists(kUserAppPath / kSureFile))
+  if (fs::exists(GetUserAppDir() / kSureFile))
     ThrowError(CommonErrors::invalid_parameter);
-  if (!fs::exists(kUserAppPath))
-    if (!fs::create_directories(kUserAppPath))
+  if (!fs::exists(GetUserAppDir()))
+    if (!fs::create_directories(GetUserAppDir()))
       ThrowError(CommonErrors::filesystem_io_error);
   drive_root_id_ = Identity(RandomAlphaNumericString(64));
   MountDrive(drive_root_id_);
@@ -305,7 +305,7 @@ void SureFile::UnmountDrive() {
 
 SureFile::ServiceMap SureFile::ReadConfigFile() {
   ServiceMap service_pairs;
-  NonEmptyString content(ReadFile(kUserAppPath / kSureFile));
+  NonEmptyString content(ReadFile(GetUserAppDir() / kSureFile));
   if (content.string().size() > kSureFile.size()) {
     if (content.string().substr(0, kSureFile.size()) == kSureFile) {
       if (!ValidateContent(content.string())) {
@@ -329,7 +329,7 @@ void SureFile::WriteConfigFile(const ServiceMap& service_pairs) const {
     content << kSureFile << EncryptSureFile();
   else
     content << karma::format(*(karma::string << '>' << karma::string << ':'), service_pairs);
-  if (!WriteFile(kUserAppPath / kSureFile, content.str()))
+  if (!WriteFile(GetUserAppDir() / kSureFile, content.str()))
     ThrowError(CommonErrors::invalid_parameter);
 }
 
@@ -444,7 +444,6 @@ std::string SureFile::EncryptSureFile() const {
   return cipher_text.string();
 }
 
-const fs::path SureFile::kUserAppPath(GetUserAppDir() / "MaidSafe" / "SureFile");
 const std::string SureFile::kSureFile("surefile");
 
 }  // namespace surefile

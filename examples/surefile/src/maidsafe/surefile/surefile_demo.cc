@@ -124,15 +124,7 @@ int Init(const Password& password) {
 int main(int argc, char *argv[]) {
   maidsafe::log::Logging::Instance().Initialise(argc, argv);
   boost::system::error_code error_code;
-#ifdef MAIDSAFE_WIN32
-  fs::path logging_dir(maidsafe::GetUserAppDir().parent_path() / "SureFile\\logs");
-#else
-  fs::path logging_dir(fs::temp_directory_path(error_code) / "MaidSafe/SureFile/logs");
-  if (error_code) {
-    LOG(kError) << error_code.message();
-    return 1;
-  }
-#endif
+  fs::path logging_dir(maidsafe::GetUserAppDir() / "logs");
   if (!fs::exists(logging_dir, error_code))
     fs::create_directories(logging_dir, error_code);
   if (error_code)

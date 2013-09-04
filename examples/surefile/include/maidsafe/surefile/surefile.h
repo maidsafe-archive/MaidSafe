@@ -143,7 +143,6 @@ public:
   std::thread mount_thread_;
   bool mount_status_;
   static const std::string kSureFile;
-  static const boost::filesystem::path kUserAppPath;
 };
 
 template<typename Iterator>
