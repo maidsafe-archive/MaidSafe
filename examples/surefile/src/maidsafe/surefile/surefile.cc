@@ -444,7 +444,7 @@ std::string SureFile::EncryptSureFile() const {
   return cipher_text.string();
 }
 
-const fs::path SureFile::kUserAppPath(GetUserAppDir() / "MaidSafe/SureFile");
+const fs::path SureFile::kUserAppPath(GetUserAppDir() / "MaidSafe" / "SureFile");
 const std::string SureFile::kSureFile("surefile");
 
 }  // namespace surefile
