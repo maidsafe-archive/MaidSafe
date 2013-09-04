@@ -36,6 +36,9 @@ License.
 
 #include "maidsafe/surefile/surefile.pb.h"
 
+const std::string kCompanyName = "MaidSafe";
+const std::string kApplicationName = "SureFile";
+
 namespace maidsafe {
 namespace surefile {
 

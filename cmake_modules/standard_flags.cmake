@@ -22,8 +22,6 @@
 #==================================================================================================#
 
 
-add_definitions(-DCOMPANY_NAME=maidsafe -DAPPLICATION_NAME=lifestuff)
-
 add_definitions(-DAPPLICATION_VERSION_MAJOR=${ApplicationVersionMajor}
                 -DAPPLICATION_VERSION_MINOR=${ApplicationVersionMinor}
                 -DAPPLICATION_VERSION_PATCH=${ApplicationVersionPatch}
