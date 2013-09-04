@@ -114,6 +114,14 @@ export(TARGETS maidsafe_surefile APPEND FILE ${ExportFile})
 #  Set compiler and linker flags.                                                                  #
 #==================================================================================================#
 include(standard_flags)
+remove_definitions(-DAPPLICATION_NAME=LifeStuff
+                   -DAPPLICATION_VERSION_MAJOR=${ApplicationVersionMajor}
+                   -DAPPLICATION_VERSION_MINOR=${ApplicationVersionMinor}
+                   -DAPPLICATION_VERSION_PATCH=${ApplicationVersionPatch})
+add_definitions(-DAPPLICATION_NAME=SureFile
+                -DAPPLICATION_VERSION_MAJOR=0
+                -DAPPLICATION_VERSION_MINOR=5
+                -DAPPLICATION_VERSION_PATCH=000)
 if(Cbfs_FOUND)
   add_definitions(-DCBFS_KEY=${Cbfs_KEY} -DHAVE_CBFS)
 endif()

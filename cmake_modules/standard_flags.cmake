@@ -22,6 +22,8 @@
 #==================================================================================================#
 
 
+add_definitions(-DCOMPANY_NAME=MaidSafe -DAPPLICATION_NAME=LifeStuff)
+
 add_definitions(-DAPPLICATION_VERSION_MAJOR=${ApplicationVersionMajor}
                 -DAPPLICATION_VERSION_MINOR=${ApplicationVersionMinor}
                 -DAPPLICATION_VERSION_PATCH=${ApplicationVersionPatch}
