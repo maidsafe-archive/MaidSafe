@@ -20,15 +20,19 @@ License.
 #include <map>
 #include <string>
 
-#pragma warning(disable: 4100 4127)
+#ifdef __MSVC__
+#  pragma warning(push, 1)
+#endif
 # include <boost/spirit/include/qi.hpp>
-#pragma warning(default: 4100 4127)
+#ifdef __MSVC__
+#  pragma warning(pop)
+#endif
 
 #include "boost/filesystem/path.hpp"
 
 #include "maidsafe/data_store/sure_file_store.h"
 #include "maidsafe/passport/detail/secure_string.h"
-#ifdef WIN32
+#ifdef MAIDSAFE_WIN32
 #  ifdef HAVE_CBFS
 #    include "maidsafe/drive/win_drive.h"
 #  else
@@ -46,7 +50,7 @@ namespace surefile {
 
 namespace test { class SureFileTest; }
 
-#ifdef WIN32
+#ifdef MAIDSAFE_WIN32
 #  ifdef HAVE_CBFS
 template<typename Storage>
 struct SureFileDrive {
@@ -58,7 +62,7 @@ typedef drive::DummyWinDriveInUserSpace Drive;
 #else
 template<typename Storage>
 struct SureFileDrive {
-  typedef drive::FuseDriveInUserSpace<Storage> Drive;
+  typedef drive::detail::FuseDriveInUserSpace<Storage> Drive;
 };
 #endif
 
@@ -67,8 +71,8 @@ public:
   typedef passport::detail::Password Password;
   typedef data_store::SureFileStore SureFileStore;
   typedef SureFileDrive<SureFileStore>::Drive Drive;
-  typedef std::map<std::string, std::string> Map;
-  typedef std::pair<std::string, std::string> Pair;
+  typedef std::map<std::string, std::string> ServiceMap;
+  typedef std::pair<std::string, std::string> ServicePair;
   typedef lifestuff::ConfigurationErrorFunction ConfigurationErrorFunction;
 
   // SureFile constructor, refer to discussion in LifeStuff.h for Slots. Throws
@@ -100,11 +104,11 @@ public:
   friend class test::SureFileTest;
  private:
   template<typename Iterator>
-  struct grammer : boost::spirit::qi::grammar<Iterator, Map()> {
+  struct grammer : boost::spirit::qi::grammar<Iterator, ServiceMap()> {
     grammer();
 
-    boost::spirit::qi::rule<Iterator, Map()> start;
-    boost::spirit::qi::rule<Iterator, Pair()> pair;
+    boost::spirit::qi::rule<Iterator, ServiceMap()> start;
+    boost::spirit::qi::rule<Iterator, ServicePair()> pair;
     boost::spirit::qi::rule<Iterator, std::string()> key, value;
   };
 
@@ -122,10 +126,8 @@ public:
 
   void MountDrive(const Identity& drive_root_id);
   void UnmountDrive();
-  std::string GetMountPath() const;
-
-  Map ReadConfigFile();
-  void WriteConfigFile(const Map& root_pairs);
+  ServiceMap ReadConfigFile();
+  void WriteConfigFile(const ServiceMap& service_pairs);
   void AddConfigEntry(const std::string& storage_path, const std::string& service_alias);
 
   void OnServiceAdded(const std::string& service_alias,
@@ -142,7 +144,7 @@ public:
   std::pair<Identity, Identity> GetIds(const boost::filesystem::path& storage_path);
 
   void CheckValid(const std::string& storage_path, const std::string& service_alias);
-  void CheckConfigFileContent(const std::string& content);
+  void ValidateContent(const std::string& content);
 
   NonEmptyString Serialise(const Identity& drive_root_id, const Identity& service_root_id);
   std::pair<Identity, Identity> Parse(const NonEmptyString& serialised_credentials);
@@ -150,7 +152,7 @@ public:
   crypto::SecurePassword SecurePassword();
   crypto::AES256Key SecureKey(const crypto::SecurePassword& secure_password);
   crypto::AES256InitialisationVector SecureIv(const crypto::SecurePassword& secure_password);
-  std::string SureFile::EncryptComment();
+  std::string EncryptSureFile();
 
   lifestuff::Slots slots_;
   bool logged_in_;
@@ -160,10 +162,9 @@ public:
   std::map<std::string, std::pair<Identity, Identity>> pending_service_additions_;
   mutable std::mutex mutex_;
   std::thread mount_thread_;
-  static const boost::filesystem::path kConfigFilePath;
-  static const boost::filesystem::path kCredentialsFilename;
-  static const std::string kConfigFileComment;
+  bool mount_status_;
   static const std::string kSureFile;
+  static const boost::filesystem::path kUserAppPath;
 };
 
 template<typename Iterator>
