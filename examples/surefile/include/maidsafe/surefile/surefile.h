@@ -16,103 +16,84 @@ License.
 #ifndef MAIDSAFE_SUREFILE_SUREFILE_H_
 #define MAIDSAFE_SUREFILE_SUREFILE_H_
 
-#include <memory>
+#include <cstdint>
 #include <map>
+#include <memory>
+#include <mutex>
+#include <thread>
 #include <string>
 
 #ifdef __MSVC__
 #  pragma warning(push, 1)
 #endif
-# include <boost/spirit/include/qi.hpp>
+# include "boost/spirit/include/qi.hpp"
 #ifdef __MSVC__
 #  pragma warning(pop)
 #endif
 
 #include "boost/filesystem/path.hpp"
 
+#include "maidsafe/common/crypto.h"
+#include "maidsafe/common/types.h"
 #include "maidsafe/data_store/sure_file_store.h"
 #include "maidsafe/passport/detail/secure_string.h"
-#ifdef MAIDSAFE_WIN32
-#  ifdef HAVE_CBFS
-#    include "maidsafe/drive/win_drive.h"
-#  else
-#    include "maidsafe/drive/dummy_win_drive.h"
-#  endif
-#else
-#  include "maidsafe/drive/unix_drive.h"
-#endif
-#include "maidsafe/lifestuff/lifestuff.h"
+#include "maidsafe/drive/drive_api.h"
+#include "maidsafe/drive/drive.h"
 
 #include "maidsafe/surefile/error.h"
+#include "maidsafe/surefile/config.h"
 
 namespace maidsafe {
 namespace surefile {
 
 namespace test { class SureFileTest; }
 
-#ifdef MAIDSAFE_WIN32
-#  ifdef HAVE_CBFS
-template<typename Storage>
-struct SureFileDrive {
-  typedef drive::detail::CbfsDriveInUserSpace<data_store::SureFileStore> Drive;
-};
-#  else
-typedef drive::DummyWinDriveInUserSpace Drive;
-#  endif
-#else
-template<typename Storage>
-struct SureFileDrive {
-  typedef drive::detail::FuseDriveInUserSpace<Storage> Drive;
-};
-#endif
-
 class SureFile {
 public:
   typedef passport::detail::Password Password;
   typedef data_store::SureFileStore SureFileStore;
-  typedef SureFileDrive<SureFileStore>::Drive Drive;
+  typedef drive::VirtualDrive<SureFileStore>::value_type Drive;
   typedef std::map<std::string, std::string> ServiceMap;
   typedef std::pair<std::string, std::string> ServicePair;
-  typedef lifestuff::ConfigurationErrorFunction ConfigurationErrorFunction;
 
   // SureFile constructor, refer to discussion in LifeStuff.h for Slots. Throws
   // CommonErrors::uninitialised if any 'slots' member has not been initialised.
-  explicit SureFile(lifestuff::Slots slots);
+  explicit SureFile(Slots slots);
   ~SureFile();
 
   // Creates and/or inserts a string of 'characters' at position 'position' in the input type,
   // password, confirmation password etc., determined by 'input_field', see lifestuff.h for the
   // definition of InputField. Implicitly accepts Unicode characters converted to std::string.
-  void InsertInput(uint32_t position, const std::string& characters, lifestuff::InputField input_field);
+  void InsertInput(uint32_t position, const std::string& characters, InputField input_field);
   // Removes the sequence of characters starting at position 'position' and ending at position
   // 'position' + 'length' from the input type determined by 'input_field'.
-  void RemoveInput(uint32_t position, uint32_t length, lifestuff::InputField input_field);
+  void RemoveInput(uint32_t position, uint32_t length, InputField input_field);
 
-  bool CanCreateUser();
+  bool CanCreateUser() const;
   void CreateUser();
   // Mounts virtual drive and initialises services if any. Throws on exception.
   void Login();
 
   void AddService(const std::string& storage_path, const std::string& service_alias);
-  void AddServiceFailed(const std::string& service_alias);
+  void RemoveService(const std::string& service_alias);
 
   // Returns whether user is logged in or not.
   bool logged_in() const;
   // Root path of mounted virtual drive or empty if unmounted.
-  std::string mount_path();
+  std::string mount_path() const;
 
   friend class test::SureFileTest;
  private:
   template<typename Iterator>
-  struct grammer : boost::spirit::qi::grammar<Iterator, ServiceMap()> {
-    grammer();
+  struct Grammer : boost::spirit::qi::grammar<Iterator, ServiceMap()> {
+    Grammer();
 
     boost::spirit::qi::rule<Iterator, ServiceMap()> start;
     boost::spirit::qi::rule<Iterator, ServicePair()> pair;
     boost::spirit::qi::rule<Iterator, std::string()> key, value;
   };
 
-  lifestuff::Slots CheckSlots(lifestuff::Slots slots);
+  Slots CheckSlots(Slots slots) const;
 
   void InitialiseService(const std::string& storage_path,
                          const std::string& service_alias,
@@ -127,38 +108,36 @@ public:
   void MountDrive(const Identity& drive_root_id);
   void UnmountDrive();
   ServiceMap ReadConfigFile();
-  void WriteConfigFile(const ServiceMap& service_pairs);
+  void WriteConfigFile(const ServiceMap& service_pairs) const;
   void AddConfigEntry(const std::string& storage_path, const std::string& service_alias);
 
-  void OnServiceAdded(const std::string& service_alias,
-                      const Identity& drive_root_id,  
-                      const Identity& service_root_id);  
+  void OnServiceAdded();  
   void OnServiceRemoved(const std::string& service_alias);
-  void OnServiceRenamed(const std::string& old_service_alias,
-                        const std::string& new_service_alias);
+  void OnServiceRenamed(const std::string& old_service_alias, const std::string& new_service_alias);
 
   void PutIds(const boost::filesystem::path& storage_path,
               const Identity& drive_root_id,
-              const Identity& service_root_id);
-  void DeleteIds(const boost::filesystem::path& storage_path);
-  std::pair<Identity, Identity> GetIds(const boost::filesystem::path& storage_path);
+              const Identity& service_root_id) const;
+  void DeleteIds(const boost::filesystem::path& storage_path) const;
+  std::pair<Identity, Identity> GetIds(const boost::filesystem::path& storage_path) const;
 
-  void CheckValid(const std::string& storage_path, const std::string& service_alias);
-  void ValidateContent(const std::string& content);
+  void CheckValid(const std::string& storage_path, const std::string& service_alias) const;
+  bool ValidateContent(const std::string& content) const;
 
-  NonEmptyString Serialise(const Identity& drive_root_id, const Identity& service_root_id);
-  std::pair<Identity, Identity> Parse(const NonEmptyString& serialised_credentials);
+  NonEmptyString Serialise(const Identity& drive_root_id, const Identity& service_root_id) const;
+  std::pair<Identity, Identity> Parse(const NonEmptyString& serialised_credentials) const;
 
-  crypto::SecurePassword SecurePassword();
-  crypto::AES256Key SecureKey(const crypto::SecurePassword& secure_password);
-  crypto::AES256InitialisationVector SecureIv(const crypto::SecurePassword& secure_password);
-  std::string EncryptSureFile();
+  crypto::SecurePassword SecurePassword() const;
+  crypto::AES256Key SecureKey(const crypto::SecurePassword& secure_password) const;
+  crypto::AES256InitialisationVector SecureIv(const crypto::SecurePassword& secure_password) const;
+  std::string EncryptSureFile() const;
 
-  lifestuff::Slots slots_;
+  Slots slots_;
   bool logged_in_;
   std::unique_ptr<Password> password_, confirmation_password_;
   boost::filesystem::path mount_path_;
-  std::unique_ptr<Drive> drive_;
+  Identity drive_root_id_;
+  std::unique_ptr<Drive> drive_; 
   std::map<std::string, std::pair<Identity, Identity>> pending_service_additions_;
   mutable std::mutex mutex_;
   std::thread mount_thread_;
@@ -168,8 +147,8 @@ public:
 };
 
 template<typename Iterator>
-SureFile::grammer<Iterator>::grammer()
-    : grammer::base_type(start) {
+SureFile::Grammer<Iterator>::Grammer()
+    : Grammer::base_type(start) {
   start = *pair;
   pair  =  key >> '>' >> value;
   key   = +(boost::spirit::qi::char_ - '>');

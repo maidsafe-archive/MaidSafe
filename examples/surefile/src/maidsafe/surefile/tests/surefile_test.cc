@@ -32,11 +32,14 @@ class SureFileTest : public testing::Test {
  protected:
   void SetUp() {
     slots_.configuration_error = [](){ LOG(kError) << "Configuration error."; };
-    slots_.on_service_added = [](const std::string&) {};
+    slots_.on_service_added = [] { LOG(kInfo) << "Attempt to add a service."; };
+    slots_.on_service_removed = [](const std::string& alias)  {
+                                    LOG(kInfo) << "Attempt to remove service '" << alias << "'";
+                                };
   }
   void TearDown() {}
 
-  lifestuff::Slots slots_;
+  Slots slots_;
 
  private:
   SureFileTest(const SureFileTest&);
@@ -46,12 +49,12 @@ class SureFileTest : public testing::Test {
 TEST_F(SureFileTest, BEH_CreateUser) {
   SureFile surefile(slots_);
 
-  surefile.InsertInput(0, "password", lifestuff::kPassword);
+  surefile.InsertInput(0, "password", kPassword);
   // EXPECT_TRUE(surefile.CanCreateUser());
   // EXPECT_NO_THROW(surefile.CreateUser());
 
   EXPECT_FALSE(surefile.CanCreateUser());
-  EXPECT_NO_THROW(surefile.LogIn());
+  EXPECT_NO_THROW(surefile.Login());
 }
 
 }  // namespace test
