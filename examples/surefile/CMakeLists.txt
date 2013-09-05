@@ -24,7 +24,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
 get_filename_component(ProjectId "${CMAKE_SOURCE_DIR}" NAME)
 string(REPLACE " " "_" ProjectId "${ProjectId}")
-project(${ProjectId})
+project(${ProjectId}_lib)
 
 
 #==================================================================================================#
