@@ -29,11 +29,13 @@ const char* SureFileCategory::name() const MAIDSAFE_NOEXCEPT {
 std::string SureFileCategory::message(int error_value) const MAIDSAFE_NOEXCEPT {
   switch (static_cast<SureFileErrors>(error_value)) {
     case SureFileErrors::invalid_password:
-      return "Invalid password";
+      return "Invalid Password";
     case SureFileErrors::password_confirmation_failed:
       return "Password Confirmation Failed";
     case SureFileErrors::invalid_service:
       return "Invalid Service Path";
+    case SureFileErrors::duplicate_service:
+      return "Service Already Exists";
     default:
       return "Unknown error in SureFile";
   }

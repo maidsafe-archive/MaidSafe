@@ -75,7 +75,7 @@ public:
   void Login();
 
   void AddService(const std::string& storage_path, const std::string& service_alias);
-  void RemoveService(const std::string& service_alias);
+  bool RemoveService(const std::string& service_alias);
 
   // Returns whether user is logged in or not.
   bool logged_in() const;
@@ -121,7 +121,8 @@ public:
   void DeleteIds(const boost::filesystem::path& storage_path) const;
   std::pair<Identity, Identity> GetIds(const boost::filesystem::path& storage_path) const;
 
-  void CheckValid(const std::string& storage_path, const std::string& service_alias) const;
+  void CheckValid(const std::string& storage_path, const std::string& service_alias);
+  void CheckDuplicate(const std::string& storage_path, const std::string& service_alias);
   bool ValidateContent(const std::string& content) const;
 
   NonEmptyString Serialise(const Identity& drive_root_id, const Identity& service_root_id) const;

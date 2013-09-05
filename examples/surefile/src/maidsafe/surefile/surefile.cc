@@ -151,26 +151,21 @@ void SureFile::AddService(const std::string& storage_path, const std::string& se
   if (!logged_in_)
     ThrowError(CommonErrors::uninitialised);
   CheckValid(storage_path, service_alias);
+  CheckDuplicate(storage_path, service_alias);
   Identity service_root_id(RandomAlphaNumericString(64));
   drive_->AddService(service_alias, storage_path, service_root_id);
   PutIds(storage_path, drive_root_id_, service_root_id);
   AddConfigEntry(storage_path, service_alias);
 }
 
-void SureFile::RemoveService(const std::string& service_alias) {
+bool SureFile::RemoveService(const std::string& service_alias) {
   if (!logged_in_)
     ThrowError(CommonErrors::uninitialised);
-  drive_->RemoveService(service_alias);
-  ServiceMap service_pairs(ReadConfigFile());
-  for (const auto& service_pair : service_pairs) {
-    if (service_pair.second == service_alias) {
-      auto result(service_pairs.erase(service_pair.first));
-      static_cast<void>(result);
-      assert(result == 1);
-      WriteConfigFile(service_pairs);
-      break;
-    }    
-  }
+  if (!fs::exists(mount_path_ / service_alias))
+    return false;
+  boost::system::error_code error_code;
+  fs::remove_all(mount_path_ / service_alias, error_code);
+  return error_code.value() == 0;
 }
 
 bool SureFile::logged_in() const {
@@ -185,8 +180,6 @@ Slots SureFile::CheckSlots(Slots slots) const {
   if (!slots.configuration_error)
     ThrowError(CommonErrors::uninitialised);
   if (!slots.on_service_added)
-    ThrowError(CommonErrors::uninitialised);
-  if (!slots.on_service_removed)
     ThrowError(CommonErrors::uninitialised);
   return slots;
 }
@@ -349,7 +342,15 @@ void SureFile::OnServiceAdded() {
 }
 
 void SureFile::OnServiceRemoved(const std::string& service_alias) {
-  slots_.on_service_removed(service_alias);
+  ServiceMap service_pairs(ReadConfigFile());
+  for (const auto& service_pair : service_pairs) {
+    if (service_pair.second == service_alias) {
+      auto result(service_pairs.erase(service_pair.first));
+      assert(result == 1);
+      WriteConfigFile(service_pairs);
+      break;
+    }
+  }
 }
 
 void SureFile::OnServiceRenamed(const std::string& old_service_alias,
@@ -389,9 +390,17 @@ std::pair<Identity, Identity> SureFile::GetIds(const fs::path& storage_path) con
   return Parse(serialised_credentials);
 }
 
-void SureFile::CheckValid(const std::string& storage_path, const std::string& service_alias) const {
-  if (!fs::exists(storage_path) || drive::detail::ExcludedFilename(service_alias))
+void SureFile::CheckValid(const std::string& storage_path, const std::string& service_alias) {
+  if (!fs::exists(storage_path) || drive::detail::ExcludedFilename(service_alias) ||
+      service_alias.empty())
     ThrowError(SureFileErrors::invalid_service);
+}
+
+void SureFile::CheckDuplicate(const std::string& storage_path, const std::string& service_alias) {
+  ServiceMap service_pairs(ReadConfigFile());
+  for (const auto& service_pair : service_pairs)
+    if (service_pair.first == storage_path || service_pair.second == service_alias)
+      ThrowError(SureFileErrors::duplicate_service);
 }
 
 bool SureFile::ValidateContent(const std::string& content) const {
