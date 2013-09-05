@@ -161,14 +161,6 @@ function(tidy_ctest_custom)
 endfunction()
 
 
-function(label_as_critical_tests)
-  foreach(CriticalTest ${ARGV})
-    get_test_property(${CriticalTest} LABELS CurrentLabels)
-    set_property(TEST ${CriticalTest} PROPERTY LABELS Critical ${CurrentLabels})
-  endforeach()
-endfunction()
-
-
 # Moves executable files found within the build tree which don't match current target filenames to
 # a directory named 'old' in the build tree root.  This avoids accidentally running outdated
 # executables in the case of renaming a CMake Target.

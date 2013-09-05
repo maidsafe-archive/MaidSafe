@@ -26,6 +26,7 @@ License.
 #include "boost/program_options.hpp"
 #include "boost/preprocessor/stringize.hpp"
 #include "boost/system/error_code.hpp"
+#include "boost/thread/thread.hpp"
 
 #include "maidsafe/common/crypto.h"
 #include "maidsafe/common/log.h"
@@ -69,7 +70,8 @@ int Init(const Password& password) {
   Slots slots;
   slots.configuration_error = [](){ LOG(kError) << "Configuration error."; };
   slots.on_service_added = [&surefile] {
-    std::thread thread([&surefile] {
+    // Must be boost::thread not std::thread since MSVC doesn't correctly handle detach().
+    boost::thread thread([&surefile] {
       std::this_thread::sleep_for(std::chrono::seconds(3));
       fs::path storage_path(maidsafe::GetUserAppDir().parent_path() /
                             "SureFile" / std::to_string(count));
@@ -83,7 +85,8 @@ int Init(const Password& password) {
   };
 
   slots.on_service_removed = [&surefile](const std::string& service_alias) {
-    std::thread thread([&surefile, service_alias] {
+    // Must be boost::thread not std::thread since MSVC doesn't correctly handle detach().
+    boost::thread thread([&surefile, service_alias] {
       std::this_thread::sleep_for(std::chrono::seconds(1));
       surefile->RemoveService(service_alias);
     });
@@ -121,15 +124,7 @@ int Init(const Password& password) {
 int main(int argc, char *argv[]) {
   maidsafe::log::Logging::Instance().Initialise(argc, argv);
   boost::system::error_code error_code;
-#ifdef MAIDSAFE_WIN32
-  fs::path logging_dir(maidsafe::GetUserAppDir().parent_path() / "SureFile\\logs");
-#else
-  fs::path logging_dir(fs::temp_directory_path(error_code) / "MaidSafe/SureFile/logs");
-  if (error_code) {
-    LOG(kError) << error_code.message();
-    return 1;
-  }
-#endif
+  fs::path logging_dir(maidsafe::GetUserAppDir() / "logs");
   if (!fs::exists(logging_dir, error_code))
     fs::create_directories(logging_dir, error_code);
   if (error_code)
