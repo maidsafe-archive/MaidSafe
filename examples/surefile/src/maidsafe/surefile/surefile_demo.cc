@@ -84,15 +84,6 @@ int Init(const Password& password) {
     thread.detach();
   };
 
-//  slots.on_service_removed = [&surefile](const std::string& service_alias) {
-//    // Must be boost::thread not std::thread since MSVC doesn't correctly handle detach().
-//    boost::thread thread([&surefile, service_alias] {
-//      std::this_thread::sleep_for(std::chrono::seconds(1));
-//      surefile->RemoveService(service_alias);
-//    });
-//    thread.detach();
-//  };
-
   surefile.reset(new SureFile(slots));
 
   std::string password_string(password.string().data(), password.string().size());

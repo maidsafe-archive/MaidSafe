@@ -33,9 +33,6 @@ class SureFileTest : public testing::Test {
   void SetUp() {
     slots_.configuration_error = [](){ LOG(kError) << "Configuration error."; };
     slots_.on_service_added = [] { LOG(kInfo) << "Attempt to add a service."; };
-//    slots_.on_service_removed = [](const std::string& alias)  {
-//                                    LOG(kInfo) << "Attempt to remove service '" << alias << "'";
-//                                };
   }
   void TearDown() {}
 

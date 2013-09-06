@@ -257,6 +257,8 @@ void SureFile::MountDrive(const Identity& drive_root_id) {
                          on_service_removed,
                          on_service_renamed));
 #else
+  // TODO() Confirm location of mount point
+  mount_path_ = GetUserAppDir() / RandomAlphaNumericString(10);
   boost::system::error_code error_code;
   if (!fs::exists(mount_path_)) {
     fs::create_directories(mount_path_, error_code);
@@ -265,19 +267,20 @@ void SureFile::MountDrive(const Identity& drive_root_id) {
                   << error_code.message();
     }
   }
-  mount_thread_ = std::move(std::thread([this,
+/*  mount_thread_ = std::move(std::thread([this,
                                         drive_root_id,
                                         drive_name,
                                         on_service_added,
                                         on_service_removed,
-                                        on_service_renamed] {
+                                        on_service_renamed] {*/
       drive_.reset(new Drive(drive_root_id,
                              mount_path_,
                              drive_name,
                              on_service_added,
                              on_service_removed,
                              on_service_renamed));
-                                        }));
+                                        //}));
+//  mount_thread_.join();
   mount_status_ = drive_->WaitUntilMounted();
 #endif
 }
