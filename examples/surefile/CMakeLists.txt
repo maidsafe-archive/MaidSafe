@@ -59,6 +59,8 @@ include(utils)
 get_target_platform()
 get_target_architecture()
 
+include(maidsafe_find_openmp)
+
 if(WIN32)
   set(CBFS_KEY "${MAIDSAFE_BINARY_DIR}/MaidSafe-Drive-Private/eldos_licence_key.txt")
   include(maidsafe_find_cbfs)

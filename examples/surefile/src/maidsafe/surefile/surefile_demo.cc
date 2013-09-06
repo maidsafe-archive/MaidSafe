@@ -76,7 +76,7 @@ int Init(const Password& password) {
       fs::path storage_path(maidsafe::GetUserAppDir().parent_path() /
                             "SureFile" / std::to_string(count));
       while (fs::exists(storage_path))
-        storage_path = maidsafe::GetUserAppDir() / std::to_string(count = ++count);
+        storage_path = maidsafe::GetUserAppDir() / std::to_string(++count);
       fs::create_directory(storage_path);
       std::string service_alias(RandomAlphaNumericString(5));
       surefile->AddService(storage_path.string(), service_alias);
@@ -84,14 +84,14 @@ int Init(const Password& password) {
     thread.detach();
   };
 
-  slots.on_service_removed = [&surefile](const std::string& service_alias) {
-    // Must be boost::thread not std::thread since MSVC doesn't correctly handle detach().
-    boost::thread thread([&surefile, service_alias] {
-      std::this_thread::sleep_for(std::chrono::seconds(1));
-      surefile->RemoveService(service_alias);
-    });
-    thread.detach();
-  };
+//  slots.on_service_removed = [&surefile](const std::string& service_alias) {
+//    // Must be boost::thread not std::thread since MSVC doesn't correctly handle detach().
+//    boost::thread thread([&surefile, service_alias] {
+//      std::this_thread::sleep_for(std::chrono::seconds(1));
+//      surefile->RemoveService(service_alias);
+//    });
+//    thread.detach();
+//  };
 
   surefile.reset(new SureFile(slots));
 
