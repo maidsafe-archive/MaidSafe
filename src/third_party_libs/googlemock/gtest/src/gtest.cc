@@ -3912,6 +3912,8 @@ internal::ParameterizedTestCaseRegistry&
 
 // Creates an empty UnitTest.
 UnitTest::UnitTest() {
+  // Force intialisation order to ensure Logging is available in UnitTest's destructor
+  maidsafe::log::Logging::Instance();
   impl_ = new internal::UnitTestImpl(this);
 }
 
