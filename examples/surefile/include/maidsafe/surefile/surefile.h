@@ -84,6 +84,7 @@ public:
   bool logged_in() const;
   // Root path of mounted virtual drive or empty if unmounted.
   std::string mount_path() const;
+  ServiceMap service_pairs() const;
 
   friend class test::SureFileTest;
  private:
@@ -110,13 +111,13 @@ public:
 
   void MountDrive(const Identity& drive_root_id);
   void UnmountDrive();
-  ServiceMap ReadConfigFile();
+  ServiceMap ReadConfigFile() const;
   void WriteConfigFile(const ServiceMap& service_pairs) const;
-  void AddConfigEntry(const std::string& storage_path, const std::string& service_alias);
+  void AddConfigEntry(const std::string& storage_path, const std::string& service_alias) const;
 
-  void OnServiceAdded();  
-  void OnServiceRemoved(const std::string& service_alias);
-  void OnServiceRenamed(const std::string& old_service_alias, const std::string& new_service_alias);
+  void OnServiceAdded() const;
+  void OnServiceRemoved(const std::string& service_alias) const;
+  void OnServiceRenamed(const std::string& old_service_alias, const std::string& new_service_alias) const;
 
   void PutIds(const boost::filesystem::path& storage_path,
               const Identity& drive_root_id,
@@ -124,8 +125,8 @@ public:
   void DeleteIds(const boost::filesystem::path& storage_path) const;
   std::pair<Identity, Identity> GetIds(const boost::filesystem::path& storage_path) const;
 
-  void CheckValid(const std::string& storage_path, const std::string& service_alias);
-  void CheckDuplicate(const std::string& storage_path, const std::string& service_alias);
+  void CheckValid(const std::string& storage_path, const std::string& service_alias) const;
+  void CheckDuplicate(const std::string& storage_path, const std::string& service_alias) const;
   bool ValidateContent(const std::string& content) const;
 
   NonEmptyString Serialise(const Identity& drive_root_id, const Identity& service_root_id) const;

@@ -33,11 +33,18 @@ enum InputField { kPassword, kConfirmationPassword };
 typedef std::function<void()> ConfigurationErrorFunction;
 // Inform UI of request for the addition of a new directory at the root of the drive.
 typedef std::function<void()> OnServiceAddedFunction;
+// Inform UI of deletion of a directory at the root of the drive.
+typedef std::function<void(const std::string& /*service_alias*/)> OnServiceRemovedFunction;
+// Inform UI of rename of a directory at the root of the drive.
+typedef std::function<void(const std::string& /*old_service_alias*/,
+                           const std::string& /*new_service_alias*/)> OnServiceRenamedFunction;
 
 // Slots are used to provide useful information back to the client application.
 struct Slots {
   ConfigurationErrorFunction configuration_error;
   OnServiceAddedFunction on_service_added;
+  OnServiceRemovedFunction on_service_removed;
+  OnServiceRenamedFunction on_service_renamed;
 };
 
 const char kCharRegex[] = ".*";

@@ -71,18 +71,34 @@ static uint32_t count = 0;
 int Init(const Password& password) {
   SureFilePtr surefile;
   Slots slots;
-  slots.configuration_error = [](){ LOG(kError) << "Configuration error."; };
+  slots.configuration_error = []() { LOG(kError) << "Configuration error."; };
   slots.on_service_added = [&surefile] {
     // Must be boost::thread not std::thread since MSVC doesn't correctly handle detach().
     boost::thread thread([&surefile] {
       std::this_thread::sleep_for(std::chrono::seconds(3));
-      fs::path storage_path(maidsafe::GetUserAppDir().parent_path() /
-                            "SureFile" / std::to_string(count));
+      fs::path storage_path(maidsafe::GetUserAppDir() / std::to_string(count));
       while (fs::exists(storage_path))
         storage_path = maidsafe::GetUserAppDir() / std::to_string(++count);
       fs::create_directory(storage_path);
       std::string service_alias(RandomAlphaNumericString(5));
       surefile->AddService(storage_path.string(), service_alias);
+    });
+    thread.detach();
+  };
+
+  slots.on_service_removed = [&surefile](const std::string& service_alias) {
+    // Must be boost::thread not std::thread since MSVC doesn't correctly handle detach().
+    boost::thread thread([&surefile, &service_alias] {
+      LOG(kInfo) << "Removed service " << service_alias;
+    });
+    thread.detach();
+  };
+
+  slots.on_service_renamed = [&surefile](const std::string& old_service_alias,
+                                         const std::string& new_service_alias) {
+    // Must be boost::thread not std::threa d since MSVC doesn't correctly handle detach().
+    boost::thread thread([&surefile, &old_service_alias, &new_service_alias] {
+      LOG(kInfo) << "Renamed service " << old_service_alias << " to " << new_service_alias;
     });
     thread.detach();
   };

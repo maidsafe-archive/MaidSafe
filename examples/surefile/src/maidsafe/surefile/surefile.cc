@@ -131,7 +131,15 @@ void SureFile::Login() {
     return;
   FinaliseInput(true);
   assert(!confirmation_password_);
-  ServiceMap service_pairs(ReadConfigFile());
+  ServiceMap service_pairs;
+  try {
+    service_pairs = ReadConfigFile();
+  }
+  catch(const surefile_error& exception) {
+    if (exception.code() == make_error_code(SureFileErrors::invalid_password))
+      ResetPassword();
+    boost::throw_exception(exception);
+  }
   if (service_pairs.empty()) {
     drive_root_id_ = Identity(RandomAlphaNumericString(64));
     MountDrive(drive_root_id_);
@@ -179,10 +187,15 @@ std::string SureFile::mount_path() const {
   return mount_path_.string();
 }
 
+SureFile::ServiceMap SureFile::service_pairs() const {
+  return ReadConfigFile();
+}
+
 Slots SureFile::CheckSlots(Slots slots) const {
-  if (!slots.configuration_error)
-    ThrowError(CommonErrors::uninitialised);
-  if (!slots.on_service_added)
+  if (!(slots.configuration_error &&
+        slots.on_service_removed &&
+        slots.on_service_renamed &&
+        slots.on_service_added))
     ThrowError(CommonErrors::uninitialised);
   return slots;
 }
@@ -302,15 +315,13 @@ void SureFile::UnmountDrive() {
 #endif
 }
 
-SureFile::ServiceMap SureFile::ReadConfigFile() {
+SureFile::ServiceMap SureFile::ReadConfigFile() const {
   ServiceMap service_pairs;
   NonEmptyString content(ReadFile(GetUserAppDir() / kSureFile));
   if (content.string().size() > kSureFile.size()) {
     if (content.string().substr(0, kSureFile.size()) == kSureFile) {
-      if (!ValidateContent(content.string())) {
-        ResetPassword();
+      if (!ValidateContent(content.string()))
         ThrowError(SureFileErrors::invalid_password);
-      }
       return service_pairs;
     }
   }
@@ -332,7 +343,7 @@ void SureFile::WriteConfigFile(const ServiceMap& service_pairs) const {
     ThrowError(CommonErrors::invalid_parameter);
 }
 
-void SureFile::AddConfigEntry(const std::string& storage_path, const std::string& service_alias) {
+void SureFile::AddConfigEntry(const std::string& storage_path, const std::string& service_alias) const {
   ServiceMap service_pairs(ReadConfigFile());
   auto find_it(service_pairs.find(storage_path));
   if (find_it != service_pairs.end())
@@ -343,29 +354,32 @@ void SureFile::AddConfigEntry(const std::string& storage_path, const std::string
   WriteConfigFile(service_pairs);
 }
 
-void SureFile::OnServiceAdded() {
+void SureFile::OnServiceAdded() const {
   slots_.on_service_added();
 }
 
-void SureFile::OnServiceRemoved(const std::string& service_alias) {
+void SureFile::OnServiceRemoved(const std::string& service_alias) const {
   ServiceMap service_pairs(ReadConfigFile());
   for (const auto& service_pair : service_pairs) {
     if (service_pair.second == service_alias) {
       auto result(service_pairs.erase(service_pair.first));
       assert(result == 1);
+      static_cast<void>(result);
       WriteConfigFile(service_pairs);
+      slots_.on_service_removed(service_alias);
       break;
     }
   }
 }
 
 void SureFile::OnServiceRenamed(const std::string& old_service_alias,
-                                const std::string& new_service_alias) {
+                                const std::string& new_service_alias) const {
   ServiceMap service_pairs(ReadConfigFile());
   for (auto& service_pair : service_pairs) {
     if (service_pair.second == old_service_alias) {
       service_pair.second = new_service_alias;
       WriteConfigFile(service_pairs);
+      slots_.on_service_renamed(old_service_alias, new_service_alias);
       break;
     }    
   }
@@ -396,13 +410,13 @@ std::pair<Identity, Identity> SureFile::GetIds(const fs::path& storage_path) con
   return Parse(serialised_credentials);
 }
 
-void SureFile::CheckValid(const std::string& storage_path, const std::string& service_alias) {
+void SureFile::CheckValid(const std::string& storage_path, const std::string& service_alias) const {
   if (!fs::exists(storage_path) || drive::detail::ExcludedFilename(service_alias) ||
       service_alias.empty())
     ThrowError(SureFileErrors::invalid_service);
 }
 
-void SureFile::CheckDuplicate(const std::string& storage_path, const std::string& service_alias) {
+void SureFile::CheckDuplicate(const std::string& storage_path, const std::string& service_alias) const {
   ServiceMap service_pairs(ReadConfigFile());
   for (const auto& service_pair : service_pairs)
     if (service_pair.first == storage_path || service_pair.second == service_alias)
