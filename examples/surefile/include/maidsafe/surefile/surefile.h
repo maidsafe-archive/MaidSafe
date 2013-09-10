@@ -73,9 +73,9 @@ public:
   void RemoveInput(uint32_t position, uint32_t length, InputField input_field);
 
   bool CanCreateUser() const;
-  void CreateUser();
+  void CreateUser(const std::string& product_id);
   // Mounts virtual drive and initialises services if any. Throws on exception.
-  void Login();
+  void Login(const std::string& product_id);
 
   void AddService(const std::string& storage_path, const std::string& service_alias);
   bool RemoveService(const std::string& service_alias);
@@ -109,7 +109,7 @@ public:
   void ResetPassword();
   void ResetConfirmationPassword();
 
-  void MountDrive(const Identity& drive_root_id);
+  void MountDrive(const std::string& product_id, const Identity& drive_root_id);
   void UnmountDrive();
   ServiceMap ReadConfigFile() const;
   void WriteConfigFile(const ServiceMap& service_pairs) const;

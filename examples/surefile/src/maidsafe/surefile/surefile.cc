@@ -109,7 +109,7 @@ bool SureFile::CanCreateUser() const {
   return !fs::exists(GetUserAppDir() / kSureFile, ec);
 }
 
-void SureFile::CreateUser() {
+void SureFile::CreateUser(const std::string& product_id) {
   if (logged_in_)
     return;
   FinaliseInput(false);
@@ -121,12 +121,12 @@ void SureFile::CreateUser() {
     if (!fs::create_directories(GetUserAppDir()))
       ThrowError(CommonErrors::filesystem_io_error);
   drive_root_id_ = Identity(RandomAlphaNumericString(64));
-  MountDrive(drive_root_id_);
+  MountDrive(product_id, drive_root_id_);
   WriteConfigFile(ServiceMap());
   logged_in_ = true;
 }
 
-void SureFile::Login() {
+void SureFile::Login(const std::string& product_id) {
   if (logged_in_)
     return;
   FinaliseInput(true);
@@ -142,7 +142,7 @@ void SureFile::Login() {
   }
   if (service_pairs.empty()) {
     drive_root_id_ = Identity(RandomAlphaNumericString(64));
-    MountDrive(drive_root_id_);
+    MountDrive(product_id, drive_root_id_);
   } else {
     std::pair<Identity, Identity> ids;
     auto it(service_pairs.begin()), end(service_pairs.end());
@@ -154,7 +154,7 @@ void SureFile::Login() {
       ThrowError(SureFileErrors::invalid_password);
     }
     drive_root_id_ = ids.first;
-    MountDrive(drive_root_id_);
+    MountDrive(product_id, drive_root_id_);
     InitialiseService(it->first, it->second, ids.second);
     while (++it != end) {
       ids = GetIds(it->first);
@@ -261,7 +261,7 @@ void SureFile::ResetConfirmationPassword() {
   confirmation_password_.reset();
 }
 
-void SureFile::MountDrive(const Identity& drive_root_id) {
+void SureFile::MountDrive(const std::string& product_id, const Identity& drive_root_id) {
   drive::OnServiceAdded on_service_added([this]() {
                                             OnServiceAdded();
                                         });
@@ -278,6 +278,7 @@ void SureFile::MountDrive(const Identity& drive_root_id) {
   mount_path_ = drive::GetNextAvailableDrivePath();
   drive_.reset(new Drive(drive_root_id,
                          mount_path_,
+                         product_id,
                          drive_name,
                          on_service_added,
                          on_service_removed,
@@ -294,13 +295,15 @@ void SureFile::MountDrive(const Identity& drive_root_id) {
     }
   }
 /*  mount_thread_ = std::move(std::thread([this,
-                                        drive_root_id,
-                                        drive_name,
-                                        on_service_added,
-                                        on_service_removed,
-                                        on_service_renamed] {*/
+                                           drive_root_id,
+                                           product_id,
+                                           drive_name,
+                                           on_service_added,
+                                           on_service_removed,
+                                           on_service_renamed] {*/
       drive_.reset(new Drive(drive_root_id,
                              mount_path_,
+                             product_id,
                              drive_name,
                              on_service_added,
                              on_service_removed,
