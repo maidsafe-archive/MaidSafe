@@ -146,7 +146,13 @@ void SureFile::Login() {
   } else {
     std::pair<Identity, Identity> ids;
     auto it(service_pairs.begin()), end(service_pairs.end());
-    ids = GetIds(it->first);
+    try {
+      ids = GetIds(it->first);
+    }
+    catch(...) {
+      ResetPassword();
+      ThrowError(SureFileErrors::invalid_password);
+    }
     drive_root_id_ = ids.first;
     MountDrive(drive_root_id_);
     InitialiseService(it->first, it->second, ids.second);
@@ -184,7 +190,11 @@ bool SureFile::logged_in() const {
 }
 
 std::string SureFile::mount_path() const {
+#ifdef MAIDSAFE_WIN32
+  return mount_path_.string() + "\\";
+#else
   return mount_path_.string();
+#endif
 }
 
 SureFile::ServiceMap SureFile::service_pairs() const {
