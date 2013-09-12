@@ -103,6 +103,8 @@ add_custom_command(TARGET cryptest
 target_link_libraries(cryptest cryptopp ${JustThread_LIBRARIES})
 #target_link_libraries(TESTcryptopp cryptopp gtest ${JustThread_LIBRARIES})
 
+add_definitions(-DCRYPTOPP_DISABLE_SSE2)
+
 if(UNIX)
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     if(HAVE_LIBC++)
