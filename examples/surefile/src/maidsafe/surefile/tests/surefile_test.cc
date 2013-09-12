@@ -48,13 +48,13 @@ class SureFileTest : public testing::Test {
 
 TEST_F(SureFileTest, BEH_CreateUser) {
   SureFile surefile(slots_);
-
+  std::string product_id;
   surefile.InsertInput(0, "password", kPassword);
   // EXPECT_TRUE(surefile.CanCreateUser());
   // EXPECT_NO_THROW(surefile.CreateUser());
 
   EXPECT_FALSE(surefile.CanCreateUser());
-  EXPECT_NO_THROW(surefile.Login());
+  EXPECT_NO_THROW(surefile.Login(product_id));
 }
 
 }  // namespace test

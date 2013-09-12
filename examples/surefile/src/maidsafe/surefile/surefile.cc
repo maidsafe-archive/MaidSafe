@@ -301,13 +301,23 @@ void SureFile::MountDrive(const std::string& product_id, const Identity& drive_r
                                            on_service_added,
                                            on_service_removed,
                                            on_service_renamed] {*/
-      drive_.reset(new Drive(drive_root_id,
-                             mount_path_,
-                             product_id,
-                             drive_name,
-                             on_service_added,
-                             on_service_removed,
-                             on_service_renamed));
+#ifdef MAIDSAFE_WIN32
+  drive_.reset(new Drive(drive_root_id,
+                         mount_path_,
+                         product_id,
+                         drive_name,
+                         on_service_added,
+                         on_service_removed,
+                         on_service_renamed));
+#else
+  static_cast<void>(product_id);
+  drive_.reset(new Drive(drive_root_id,
+                         mount_path_,
+                         drive_name,
+                         on_service_added,
+                         on_service_removed,
+                         on_service_renamed));
+#endif
                                         //}));
 //  mount_thread_.join();
   mount_status_ = drive_->WaitUntilMounted();

@@ -107,13 +107,13 @@ int Init(const Password& password) {
 
   std::string password_string(password.string().data(), password.string().size());
   surefile->InsertInput(0, password_string, kPassword);
-
   try {
+    std::string product_id;
     if (surefile->CanCreateUser()) {
       surefile->InsertInput(0, password_string, kConfirmationPassword);
-      surefile->CreateUser();
+      surefile->CreateUser(product_id);
     } else {
-      surefile->Login();
+      surefile->Login(product_id);
     }
   }
   catch(...) {
