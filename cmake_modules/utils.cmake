@@ -180,9 +180,15 @@ function(rename_outdated_built_exes)
     file(GLOB_RECURSE BuiltExesRelWithDebInfo RELATIVE ${CMAKE_BINARY_DIR} "${CMAKE_BINARY_DIR}/RelWithDebInfo/*.exe")
     set(BuiltExes ${BuiltExesDebug} ${BuiltExesBuiltExesMinSizeRel} ${BuiltExesRelease} ${BuiltExesRelWithDebInfo})
   else()
-    execute_process(COMMAND find . -maxdepth 1 -executable -type f
-                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                    OUTPUT_VARIABLE FindResult)
+    if(APPLE)
+      execute_process(COMMAND find . -maxdepth 1 -perm +111 -type f
+                      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                      OUTPUT_VARIABLE FindResult)
+    else()
+      execute_process(COMMAND find . -maxdepth 1 -executable -type f
+                      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                      OUTPUT_VARIABLE FindResult)
+    endif()
     string(REPLACE "\n" ";" BuiltExes "${FindResult}")
   endif()
 
