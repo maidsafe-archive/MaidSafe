@@ -16,6 +16,7 @@ message("${HR}\nConfiguring third party projects\n------------------------------
 
 
 include(add_boost)
+include(add_catch)
 add_subdirectory(cryptopp)
 add_subdirectory(googlemock)
 add_subdirectory(protobuf)
