@@ -36,7 +36,7 @@ if(Git_EXECUTABLE)
   execute_process(COMMAND ${Git_EXECUTABLE} --version RESULT_VARIABLE ResultVar OUTPUT_QUIET ERROR_QUIET)
   if(ResultVar EQUAL 0)
     # Set the path to git's folder so that CMake's built-in FindGit module can work if required later.
-    get_filename_component(GitFolder ${Git_EXECUTABLE} DIRECTORY)
+    get_filename_component(GitFolder ${Git_EXECUTABLE} PATH)
     list(APPEND CMAKE_SYSTEM_PREFIX_PATH ${GitFolder})
     return()
   endif()
