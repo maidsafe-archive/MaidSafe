@@ -40,23 +40,19 @@ if(CMAKE_CL_64)
 endif()
 
 # Not used
-list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/eccrypto.cpp")
-list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/eprecomp.cpp")
-list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/cryptlib_bds.cpp")
-
+list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/eccrypto.cpp"
+                                  "${CMAKE_CURRENT_SOURCE_DIR}/eprecomp.cpp"
+                                  "${CMAKE_CURRENT_SOURCE_DIR}/cryptlib_bds.cpp"
+                                  "${CMAKE_CURRENT_SOURCE_DIR}/algebra.cpp"
+                                  "${CMAKE_CURRENT_SOURCE_DIR}/polynomi.cpp"
+                                  "${CMAKE_CURRENT_SOURCE_DIR}/simple.cpp"
+                                  "${CMAKE_CURRENT_SOURCE_DIR}/strciphr.cpp")
+if(NOT MSVC)
+  list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/pch.cpp"
+                                    "${CMAKE_CURRENT_SOURCE_DIR}/winpipes.cpp")
+endif()
 
 # Set up test
-list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/bench.cpp")
-list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/bench2.cpp")
-list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/datatest.cpp")
-list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/dlltest.cpp")
-list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/fipsalgt.cpp")
-list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/regtest.cpp")
-list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/test.cpp")
-list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/validat1.cpp")
-list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/validat2.cpp")
-list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/validat3.cpp")
-
 set(cryptopp_TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/bench.cpp
                           ${CMAKE_CURRENT_SOURCE_DIR}/bench2.cpp
                           ${CMAKE_CURRENT_SOURCE_DIR}/datatest.cpp
@@ -67,14 +63,12 @@ set(cryptopp_TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/bench.cpp
                           ${CMAKE_CURRENT_SOURCE_DIR}/validat1.cpp
                           ${CMAKE_CURRENT_SOURCE_DIR}/validat2.cpp
                           ${CMAKE_CURRENT_SOURCE_DIR}/validat3.cpp)
-
-list(REMOVE_ITEM cryptopp_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/bench.h")
-list(REMOVE_ITEM cryptopp_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/factory.h")
-list(REMOVE_ITEM cryptopp_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/validate.h")
-
 set(cryptopp_TEST_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/bench.h
                           ${CMAKE_CURRENT_SOURCE_DIR}/factory.h
                           ${CMAKE_CURRENT_SOURCE_DIR}/validate.h)
+
+list(REMOVE_ITEM cryptopp_SOURCES ${cryptopp_TEST_SOURCES})
+list(REMOVE_ITEM cryptopp_HEADERS ${cryptopp_TEST_HEADERS})
 
 set(CurrentCamelCaseProjectName ${CamelCaseProjectName})
 set(CamelCaseProjectName Common)
