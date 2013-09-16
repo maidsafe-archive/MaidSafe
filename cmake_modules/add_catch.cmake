@@ -1,6 +1,6 @@
 #==================================================================================================#
 #                                                                                                  #
-#  Copyright 2012 MaidSafe.net limited                                                             #
+#  Copyright 2013 MaidSafe.net limited                                                             #
 #                                                                                                  #
 #  This MaidSafe Software is licensed to you under (1) the MaidSafe.net Commercial License,        #
 #  version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which    #
@@ -20,55 +20,30 @@
 #                                                                                                  #
 #==================================================================================================#
 #                                                                                                  #
-#  Module used to locate Git.                                                                      #
-#                                                                                                  #
-#  Settable variables to aid with finding Git are:                                                 #
-#    GIT_ROOT_DIR                                                                                  #
+#  Sets up Catch using ExternalProject_Add.                                                        #
 #                                                                                                  #
 #  Variables set and cached by this module are:                                                    #
-#    Git_EXECUTABLE                                                                                #
+#    CatchSourceDir (required for subsequent include_directories calls)                            #
 #                                                                                                  #
 #==================================================================================================#
 
 
-if(Git_EXECUTABLE)
-  # Check the exe path is still correct
-  execute_process(COMMAND ${Git_EXECUTABLE} --version RESULT_VARIABLE ResultVar OUTPUT_QUIET ERROR_QUIET)
-  if(ResultVar EQUAL 0)
-    # Set the path to git's folder so that CMake's built-in FindGit module can work if required later.
-    get_filename_component(GitFolder ${Git_EXECUTABLE} DIRECTORY)
-    list(APPEND CMAKE_SYSTEM_PREFIX_PATH ${GitFolder})
-    return()
-  endif()
-endif()
+# Set up build steps
+include(ExternalProject)
+ExternalProject_Add(
+    catch
+    PREFIX ${CMAKE_BINARY_DIR}/catch
+    GIT_REPOSITORY https://github.com/philsquared/Catch.git
+    TIMEOUT 600
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    LOG_DOWNLOAD ON
+    )
 
-
-if(GIT_ROOT_DIR)
-  set(GIT_ROOT_DIR ${GIT_ROOT_DIR} CACHE PATH "Path to Git directory" FORCE)
-else()
-  set(GIT_ROOT_DIR
-          "C:/Program Files/Git"
-          "C:/Program Files (x86)/Git"
-          "D:/Program Files/Git"
-          "D:/Program Files (x86)/Git"
-          "E:/Program Files/Git"
-          "E:/Program Files (x86)/Git"
-          "usr" "usr/local")
-endif()
-
-set(GIT_PATH_SUFFIXES cmd bin)
-
-set(GIT_NAMES git)
-if(WIN32 AND NOT CMAKE_GENERATOR MATCHES "MSYS")
-  set(GIT_NAMES git.cmd git)
-endif()
-
-find_program(Git_EXECUTABLE NAMES ${GIT_NAMES} PATHS ${GIT_ROOT_DIR} PATH_SUFFIXES ${GIT_PATH_SUFFIXES})
-
-if(NOT Git_EXECUTABLE)
-  message(FATAL_ERROR "\n\nCouldn't find Git executable. Specify path to Git root as e.g. -DGIT_ROOT_DIR=\"C:/Program Files/Git\"\n\n")
-else()
-  message(STATUS "Found Git")
-  get_filename_component(GitFolder ${Git_EXECUTABLE} DIRECTORY)
-  list(APPEND CMAKE_SYSTEM_PREFIX_PATH ${GitFolder})
-endif()
+# Expose required variable (CatchSourceDir) to parent scope
+ExternalProject_Get_Property(catch source_dir)
+set(CatchSourceDir ${source_dir}/include)
+set(CatchSourceDir ${CatchSourceDir} PARENT_SCOPE)
+include_directories(SYSTEM "${CatchSourceDir}")
+set_target_properties(catch PROPERTIES LABELS Catch FOLDER "Third Party/Catch")
