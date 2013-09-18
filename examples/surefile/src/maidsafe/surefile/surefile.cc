@@ -284,6 +284,7 @@ void SureFile::MountDrive(const std::string& product_id, const Identity& drive_r
                          on_service_removed,
                          on_service_renamed));
 #else
+  static_cast<void>(product_id);
   // TODO() Confirm location of mount point
   mount_path_ = GetUserAppDir() / RandomAlphaNumericString(10);
   boost::system::error_code error_code;
@@ -404,7 +405,7 @@ void SureFile::OnServiceRenamed(const std::string& old_service_alias,
       WriteConfigFile(service_pairs);
       slots_.on_service_renamed(old_service_alias, new_service_alias);
       break;
-    }    
+    }
   }
 }
 
