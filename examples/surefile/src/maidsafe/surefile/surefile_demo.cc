@@ -111,9 +111,9 @@ int Init(const Password& password) {
   try {
     if (surefile->CanCreateUser()) {
       surefile->InsertInput(0, password_string, kConfirmationPassword);
-      surefile->CreateUser();
+      surefile->CreateUser("");
     } else {
-      surefile->Login();
+      surefile->Login("");
     }
   }
   catch(...) {

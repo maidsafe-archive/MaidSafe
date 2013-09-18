@@ -54,7 +54,7 @@ TEST_F(SureFileTest, BEH_CreateUser) {
   // EXPECT_NO_THROW(surefile.CreateUser());
 
   EXPECT_FALSE(surefile.CanCreateUser());
-  EXPECT_NO_THROW(surefile.Login());
+  EXPECT_NO_THROW(surefile.Login(""));
 }
 
 }  // namespace test
