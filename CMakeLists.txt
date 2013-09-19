@@ -97,7 +97,6 @@ include(maidsafe_find_openmp)
 
 if(APPLE)
   option(HAVE_LIBC++ "If ON, '-stdlib=libc++' is added to the compile and link flags" ON)
-
 else()
   option(HAVE_LIBC++ "If ON, '-stdlib=libc++' is added to the compile and link flags" OFF)
   option(HAVE_LIBC++ABI "If ON, '-lc++abi' is added to the link flags" OFF)

@@ -81,7 +81,9 @@ include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/googlemo
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/googlemock/include")
 include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/leveldb/include")
 
+include(check_licenses)
 include(utils)
+check_licenses()
 
 
 # Create CTestCustom.cmake to avoid inclusion of coverage results from test files, protocol buffer files and main.cc files

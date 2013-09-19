@@ -58,7 +58,9 @@ enable_testing()
 include(CTest)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+include(check_licenses)
 include(utils)
+check_licenses()
 get_target_platform()
 get_target_architecture()
 
