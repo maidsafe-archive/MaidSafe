@@ -28,13 +28,22 @@
 #==================================================================================================#
 
 
+# Need patch to disable MSVC warning
+if(MSVC)
+  set(PatchCommandArgs "${GIT_EXECUTABLE} apply ${CMAKE_SOURCE_DIR}/src/third_party_libs/catch.patch")
+else()
+  set(PatchCommandArgs "\"\"")
+endif()
+
+
 # Set up build steps
 include(ExternalProject)
 ExternalProject_Add(
     catch
     PREFIX ${CMAKE_BINARY_DIR}/catch
     GIT_REPOSITORY https://github.com/philsquared/Catch.git
-    TIMEOUT 600
+    TIMEOUT 10
+    PATCH_COMMAND ${GIT_EXECUTABLE} apply ${CMAKE_SOURCE_DIR}/src/third_party_libs/catch.patch
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
