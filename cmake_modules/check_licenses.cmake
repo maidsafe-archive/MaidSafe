@@ -56,10 +56,7 @@ function(get_file Filename)
 
   # Don't use the SHA1 inside the download command, since a 404 will cause CMake to fail.
   file(DOWNLOAD ${BaseURL}/${Filename}.txt ${DownloadedFile} TIMEOUT 5 STATUS Status)
-# list(GET Status 0 ErrorCode)
-# message("\${Status} - ${Status}")
-  file(READ ${DownloadedFile} Contents)
-  string(REGEX MATCH "Error 404" ErrorCode "${Contents}")
+  list(GET Status 0 ErrorCode)
   if(ErrorCode)
     message(STATUS "Failed to download ${BaseURL}/${Filename}.txt   ${ErrorCode}")
     file(REMOVE ${DownloadedFile})
