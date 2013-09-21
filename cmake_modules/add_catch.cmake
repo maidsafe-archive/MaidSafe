@@ -28,12 +28,11 @@
 #==================================================================================================#
 
 
-# Need patch to disable MSVC warning
-if(MSVC)
-  set(PatchCommandArgs "${GIT_EXECUTABLE} apply ${CMAKE_SOURCE_DIR}/src/third_party_libs/catch.patch")
-else()
-  set(PatchCommandArgs "\"\"")
-endif()
+# Need patch to disable MSVC warning.  Git requires Unix-style line endings in patch, but converts
+# Unix to Windows line endings by default when committing, so to work around this failing, use
+# configure_file to force Unix line endings.
+set(CatchPatch ${CMAKE_BINARY_DIR}/catch.patch)
+configure_file(${CMAKE_SOURCE_DIR}/src/third_party_libs/catch.patch ${CatchPatch} NEWLINE_STYLE UNIX)
 
 
 # Set up build steps
@@ -43,7 +42,7 @@ ExternalProject_Add(
     PREFIX ${CMAKE_BINARY_DIR}/catch
     GIT_REPOSITORY https://github.com/philsquared/Catch.git
     TIMEOUT 10
-    PATCH_COMMAND ${GIT_EXECUTABLE} apply ${CMAKE_SOURCE_DIR}/src/third_party_libs/catch.patch
+    PATCH_COMMAND ${GIT_EXECUTABLE} apply ${CatchPatch}
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
