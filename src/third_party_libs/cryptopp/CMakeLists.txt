@@ -97,7 +97,6 @@ add_custom_command(TARGET cryptest
 target_link_libraries(cryptest cryptopp ${JustThread_LIBRARIES})
 #target_link_libraries(TESTcryptopp cryptopp gtest ${JustThread_LIBRARIES})
 
-add_definitions(-DCRYPTOPP_DISABLE_SSE2)
 
 if(UNIX)
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
@@ -119,6 +118,7 @@ if(UNIX)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_JUST_THREAD_DEADLOCK_CHECK")
   endif()
 elseif(MSVC)
+  add_definitions(-DCRYPTOPP_DISABLE_SSE2)
   set_target_properties(cryptopp PROPERTIES
                           COMPILE_FLAGS "/D_WINDOWS /DUSE_PRECOMPILED_HEADERS /DWIN32 /D_VC80_UPGRADE=0x0710 /EHsc /W3 /wd4068"
                           STATIC_LIBRARY_FLAGS_RELEASE "/LTCG"
