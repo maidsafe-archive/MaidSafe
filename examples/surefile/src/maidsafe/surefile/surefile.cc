@@ -178,10 +178,10 @@ void SureFile::AddService(const std::string& storage_path, const std::string& se
 bool SureFile::RemoveService(const std::string& service_alias) {
   if (!logged_in_)
     ThrowError(CommonErrors::uninitialised);
-  if (!fs::exists(mount_path_ / service_alias))
+  if (!fs::exists(boost::filesystem::path(mount_path()) / service_alias))
     return false;
   boost::system::error_code error_code;
-  fs::remove_all(mount_path_ / service_alias, error_code);
+  fs::remove_all(boost::filesystem::path(mount_path()) / service_alias, error_code);
   return error_code.value() == 0;
 }
 
@@ -386,9 +386,10 @@ void SureFile::OnServiceRemoved(const std::string& service_alias) const {
   ServiceMap service_pairs(ReadConfigFile());
   for (const auto& service_pair : service_pairs) {
     if (service_pair.second == service_alias) {
-      auto result(service_pairs.erase(service_pair.first));
-      assert(result == 1);
-      static_cast<void>(result);
+      boost::system::error_code error_code;
+      fs::remove_all(service_pair.first, error_code);
+      assert(error_code.value() == 0);
+      service_pairs.erase(service_pair.first);
       WriteConfigFile(service_pairs);
       slots_.on_service_removed(service_alias);
       break;
