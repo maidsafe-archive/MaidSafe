@@ -5,6 +5,9 @@
 #ifndef CRYPTOPP_IMPORTS
 
 #include "hex.h"
+#include <atomic>
+#include <thread>
+#include <mutex>
 
 NAMESPACE_BEGIN(CryptoPP)
 
@@ -28,15 +31,19 @@ void HexDecoder::IsolatedInitialize(const NameValuePairs &parameters)
 
 const int *HexDecoder::GetDefaultDecodingLookupArray()
 {
-	static volatile bool s_initialized = false;
+  static std::once_flag s_initialized_flag;
+  static std::atomic<bool> s_initialized(false);
 	static int s_array[256];
 
-	if (!s_initialized)
-	{
+  std::call_once(s_initialized_flag, [] {
 		InitializeDecodingLookupArray(s_array, s_vecUpper, 16, true);
 		s_initialized = true;
-	}
-	return s_array;
+  });
+
+  while (!s_initialized)
+    std::this_thread::yield();
+
+  return s_array;
 }
 
 NAMESPACE_END
