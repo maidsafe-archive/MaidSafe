@@ -3,8 +3,6 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 project(Protobuf)
 
-cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
-
 include(../../../cmake_modules/standard_flags.cmake)
 
 if(MSVC)
@@ -16,20 +14,19 @@ endif()
 include_directories(${PROJECT_SOURCE_DIR}/src)
 add_definitions(-D_CONSOLE)
 
-# library
-FILE(GLOB_RECURSE LIB_PROTBUF_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/*.cc")
-FILE(GLOB_RECURSE LIB_PROTBUF_HEADERS "${PROJECT_SOURCE_DIR}/src/google/protobuf/*.h")
-SET(PROTOBUF_DIR ${LIB_PROTBUF_SOURCES} ${LIB_PROTBUF_HEADERS})
-# compiler
-FILE(GLOB_RECURSE LIB_PROTOC_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/compiler/*.cc")
-FILE(GLOB_RECURSE LIB_PROTOC_HEADERS "${PROJECT_SOURCE_DIR}/src/google/protobuf/compiler/*.h")
-SET(PROTOC_DIR ${LIB_PROTOC_SOURCES} ${LIB_PROTOC_HEADERS})
-#tests
-FILE(GLOB_RECURSE PROTOC_TESTS_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/tests/*.cc")
-FILE(GLOB_RECURSE PROTOC_TESTS_HEADERS "${PROJECT_SOURCE_DIR}/src/google/protobuf/tests/*.h")
-SET(TESTS ${PROTOC_TESTS_SOURCES} ${PROTOC_TESTS_HEADERS})
+file(GLOB_RECURSE LIB_PROTBUF_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/*.cc")
+file(GLOB_RECURSE LIB_PROTBUF_HEADERS "${PROJECT_SOURCE_DIR}/src/google/protobuf/*.h")
+set(PROTOBUF_DIR ${LIB_PROTBUF_SOURCES} ${LIB_PROTBUF_HEADERS})
 
-LIST(REMOVE_ITEM PROTOBUF_DIR ${PROTOC_DIR} ${TESTS})
+file(GLOB_RECURSE LIB_PROTOC_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/compiler/*.cc")
+file(GLOB_RECURSE LIB_PROTOC_HEADERS "${PROJECT_SOURCE_DIR}/src/google/protobuf/compiler/*.h")
+set(PROTOC_DIR ${LIB_PROTOC_SOURCES} ${LIB_PROTOC_HEADERS})
+
+file(GLOB_RECURSE PROTOC_TESTS_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/tests/*.cc")
+file(GLOB_RECURSE PROTOC_TESTS_HEADERS "${PROJECT_SOURCE_DIR}/src/google/protobuf/tests/*.h")
+set(TESTS ${PROTOC_TESTS_SOURCES} ${PROTOC_TESTS_HEADERS})
+
+list(REMOVE_ITEM PROTOBUF_DIR ${PROTOC_DIR} ${TESTS})
 
 add_library(protobuf ${PROTOBUF_DIR})
 add_executable(protoc ${PROTOC_DIR})

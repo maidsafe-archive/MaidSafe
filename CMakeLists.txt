@@ -24,7 +24,7 @@
 cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 project(maidsafe)
 
-enable_testing()
+include(CTest)
 set(BUILD_SHARED_LIBS OFF)
 set(HR "================================================================================")
 
@@ -147,7 +147,6 @@ rename_outdated_built_exes()
 
 
 unset(MAKECOMMAND CACHE)
-include(CTest)
 setup_ci_scripts()
 unset(QA_BUILD CACHE)
 

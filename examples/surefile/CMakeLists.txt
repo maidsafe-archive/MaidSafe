@@ -24,7 +24,7 @@
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
-cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 get_filename_component(ProjectId "${CMAKE_SOURCE_DIR}" NAME)
 string(REPLACE " " "_" ProjectId "${ProjectId}")
 project(${ProjectId}_lib)
@@ -54,7 +54,6 @@ include(${MaidSafeExport})
 #==================================================================================================#
 #  Standard setup stuff.                                                                           #
 #==================================================================================================#
-enable_testing()
 include(CTest)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
