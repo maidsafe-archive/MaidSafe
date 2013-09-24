@@ -126,7 +126,7 @@ function(add_project_experimental)
   else()
     add_custom_target(Exper${CamelCaseProjectName} COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION> -S ${CMAKE_CURRENT_BINARY_DIR}/run_experimental_$<CONFIGURATION>.cmake -V)
   endif()
-  set_target_properties(Exper${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/Executables/Tests/${TEST_FOLDER_NAME}")
+  set_target_properties(Exper${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/Experimentals")
 endfunction()
 
 
