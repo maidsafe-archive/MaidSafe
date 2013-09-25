@@ -3548,7 +3548,7 @@ _HEADERS_CONTAINING_TEMPLATES = (
     ('<set>', ('set', 'multiset',)),
     ('<stack>', ('stack',)),
     ('<string>', ('char_traits', 'basic_string',)),
-    ('<utility>', ('pair',)),
+    ('<utility>', ('pair', 'std::swap')),
     ('<vector>', ('vector',)),
 
     # gcc extensions.
@@ -3561,8 +3561,7 @@ _HEADERS_CONTAINING_TEMPLATES = (
 _RE_PATTERN_STRING = re.compile(r'\bstring\b')
 
 _re_pattern_algorithm_header = []
-for _template in ('copy', 'max', 'min', 'min_element', 'sort', 'swap',
-                  'transform'):
+for _template in ('copy', 'max', 'min', 'min_element', 'sort', 'transform'):
   # Match max<type>(..., ...), max(..., ...), but not foo->max, foo.max or
   # type::max().
   _re_pattern_algorithm_header.append(
