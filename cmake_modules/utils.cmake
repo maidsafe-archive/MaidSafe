@@ -114,15 +114,19 @@ endfunction()
 function(add_project_experimental)
   add_custom_target(All${CamelCaseProjectName} DEPENDS ${AllExesForCurrentProject})
   set_target_properties(All${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/All")
+  foreach(CTEST_CONFIGURATION_TYPE ${CMAKE_CONFIGURATION_TYPES} ${CMAKE_BUILD_TYPE})
+    configure_file(${CMAKE_SOURCE_DIR}/cmake_modules/run_experimental.cmake.in
+                   ${CMAKE_CURRENT_BINARY_DIR}/run_experimental_${CTEST_CONFIGURATION_TYPE}.cmake
+                   @ONLY)
+  endforeach()
   if(${CamelCaseProjectName} MATCHES "Lifestuff")
     add_custom_target(Exper${CamelCaseProjectName} COMMAND python ${maidsafe_SOURCE_DIR}/tools/run_lifestuff_experimental.py ${CMAKE_CTEST_COMMAND} $<CONFIGURATION> ${CMAKE_SOURCE_DIR}/tools/
                                                    DEPENDS All${CamelCaseProjectName}
                                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
   else()
-    add_custom_target(Exper${CamelCaseProjectName} COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION> -M Experimental -T Start -T Build --build-noclean -T Test -T Coverage -T Submit
-                                                   DEPENDS All${CamelCaseProjectName})
+    add_custom_target(Exper${CamelCaseProjectName} COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION> -S ${CMAKE_CURRENT_BINARY_DIR}/run_experimental_$<CONFIGURATION>.cmake -V)
   endif()
-  set_target_properties(Exper${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/Executables/Tests/${TEST_FOLDER_NAME}")
+  set_target_properties(Exper${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/Experimentals")
 endfunction()
 
 
@@ -228,9 +232,6 @@ endfunction()
 
 # Searches for and removes old test directories that may have been left in %temp%
 function(cleanup_temp_dir)
-  if(CMAKE_VERSION VERSION_LESS 2.8.11)  # Need file(TIMESTAMP ...) and string(TIMESTAMP ...)
-    return()
-  endif()
   # Get temp dir as per http://www.boost.org/doc/libs/release/libs/filesystem/doc/reference.html#temp_directory_path
   if(DEFINED ENV{TMPDIR})
     set(TempDir "$ENV{TMPDIR}")

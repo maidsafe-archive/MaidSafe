@@ -48,7 +48,6 @@ add_definitions(-DBOOST_THREAD_VERSION=4)
 add_definitions(-DGTEST_DONT_DEFINE_FAIL=1 -DGTEST_DONT_DEFINE_SUCCEED=1)
 
 if(MSVC)
-  add_definitions(-DCRYPTOPP_DISABLE_SSE2)
   set(CMAKE_CXX_FLAGS)
   set(CMAKE_CXX_FLAGS_INIT)
 endif()
@@ -65,10 +64,9 @@ endif()
 
 
 if(WIN32)
-  if (CMAKE_CL_64)
-    add_definitions(-DWIN32 -D_WIN32 -D__WINDOWS__ -D__WIN32__ -DMAIDSAFE_WIN32 -DMAIDSAFE_WIN64)
-  else()
-    add_definitions(-DWIN32 -D_WIN32 -D__WINDOWS__ -D__WIN32__ -DMAIDSAFE_WIN32)
+  add_definitions(-DWIN32 -D_WIN32 -D__WINDOWS__ -D__WIN32__ -DMAIDSAFE_WIN32)
+  if(CMAKE_CL_64)
+    add_definitions(-DMAIDSAFE_WIN64)
   endif()
 elseif(UNIX)
   add_definitions(-D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=30)
@@ -83,6 +81,7 @@ endif()
 if(MSVC)
   add_definitions(-D__MSVC__ -DWIN32_LEAN_AND_MEAN -D_WIN32_WINNT=0x600)
   add_definitions(-D_CONSOLE -D_UNICODE -DUNICODE -D_BIND_TO_CURRENT_VCLIBS_VERSION=1)
+  add_definitions(-DCRYPTOPP_DISABLE_SSE2)
 
   # VC11 contains std::tuple with variadic templates emulation macro.
   # _VARIADIC_MAX defaulted to 5 but gtest requires 10.
@@ -92,7 +91,7 @@ if(MSVC)
   add_definitions(-DNOMINMAX)
 
   # flag to link to static version of Google Glog
-  add_definitions(-DGOOGLE_GLOG_DLL_DECL=)
+  add_definitions(-DGOOGLE_GLOG_DLL_DECL)
 
   # prevents from automatic linking of boost libraries
   add_definitions(-DBOOST_ALL_NO_LIB)

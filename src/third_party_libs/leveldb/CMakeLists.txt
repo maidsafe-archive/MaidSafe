@@ -11,13 +11,14 @@
 #                                                                                                  #
 #==================================================================================================#
 
-cmake_minimum_required(VERSION 2.8.10 FATAL_ERROR)
+
 project(leveldb)
 
 include(CheckIncludeFile)
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_setup.cmake)
 
 enable_testing()
+
 
 #==================================================================================================#
 # Files                                                                                            #
@@ -113,11 +114,11 @@ set(SOURCE_FILES_LEVELDB_UTIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/util/arena.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/options.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/util/status.cc)
 
-if (WIN32)
+if(WIN32)
   list(APPEND HEADER_FILES_LEVELDB_PORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/port/port_win.h)
   set(SOURCE_FILES_LEVELDB_PORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/port/port_win.cc)
   list(APPEND SOURCE_FILES_LEVELDB_UTIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/util/env_win.cc)
-else()  # posix
+else()
   list(APPEND HEADER_FILES_LEVELDB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/c.h)
   list(APPEND SOURCE_FILES_LEVELDB_DB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/db/c.cc)
   list(APPEND HEADER_FILES_LEVELDB_PORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/port/port_posix.h)
@@ -125,7 +126,10 @@ else()  # posix
   list(APPEND SOURCE_FILES_LEVELDB_UTIL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/util/env_posix.cc)
 endif()
 
-#definations
+
+#==================================================================================================#
+# Definitions                                                                                      #
+#==================================================================================================#
 if(WIN32)
   add_definitions(-DLEVELDB_PLATFORM_WINDOWS -DOS_WIN -DWIN32_LEAN_AND_MEAN) # -DSNAPPY)
   if(MSVC)
@@ -140,6 +144,7 @@ elseif(CYGWIN)
 elseif(APPLE)
   add_definitions(-DLEVELDB_PLATFORM_POSIX -DOS_MACOSX)
 endif()
+
 
 #==================================================================================================#
 # Groups                                                                                           #
@@ -164,6 +169,7 @@ set(ALL_FILES_LEVELDB_DIR ${HEADER_FILES_LEVELDB_INCLUDE_DIR}
                           ${HEADER_FILES_LEVELDB_UTIL_DIR}
                           ${SOURCE_FILES_LEVELDB_UTIL_DIR})
 
+
 #==================================================================================================#
 # Library                                                                                          #
 #==================================================================================================#
@@ -172,6 +178,7 @@ add_library(leveldb STATIC ${ALL_FILES_LEVELDB_DIR})
 add_dependencies(leveldb boost)
 target_link_libraries(leveldb ${BoostFilesystemLibs} ${BoostSystemLibs} ${JustThread_LIBRARIES})
 set_target_properties(leveldb PROPERTIES FOLDER "Third Party/LevelDB")
+
 
 #==================================================================================================#
 # Tests                                                                                            #

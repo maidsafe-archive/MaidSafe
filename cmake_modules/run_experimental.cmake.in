@@ -1,6 +1,6 @@
 #==================================================================================================#
 #                                                                                                  #
-#  Copyright 2012 MaidSafe.net limited                                                             #
+#  Copyright 2013 MaidSafe.net limited                                                             #
 #                                                                                                  #
 #  This MaidSafe Software is licensed to you under (1) the MaidSafe.net Commercial License,        #
 #  version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which    #
@@ -19,24 +19,39 @@
 #  use of the MaidSafe Software.                                                                   #
 #                                                                                                  #
 #==================================================================================================#
+#                                                                                                  #
+#  Module used to run Experimental tests on single submodules.                                     #
+#                                                                                                  #
+#==================================================================================================#
 
 
-set(CTEST_PROJECT_NAME "maidsafe")
-set(CTEST_NIGHTLY_START_TIME "00:00:00 UTC")
-set(CTEST_DROP_METHOD "http")
-set(CTEST_DROP_SITE "dash.maidsafe.net")
-set(CTEST_DROP_LOCATION "/submit.php?project=MaidSafe")
-set(CTEST_DROP_SITE_CDASH TRUE)
-set(CTEST_PROJECT_SUBPROJECTS
-    Common
-    Private
-    Passport
-    Rudp
-    Routing
-    Nfs
-    Encrypt
-    Drive
-    Vault
-    Lifestuff
-    LifestuffUiQt
-    )
+set(CTEST_CONFIGURATION_TYPE @CTEST_CONFIGURATION_TYPE@)
+set(CTEST_CMAKE_GENERATOR "@CMAKE_GENERATOR@")
+set(CTEST_CMAKE_COMMAND "@CMAKE_COMMAND@")
+set(CTEST_SOURCE_DIRECTORY @CMAKE_SOURCE_DIR@)
+set(CTEST_BINARY_DIRECTORY @CMAKE_BINARY_DIR@)
+
+# Avoid non-ascii characters in tool output.
+set(ENV{LC_ALL} C)
+
+find_program(HostnameCommand NAMES hostname)
+execute_process(COMMAND ${HostnameCommand} OUTPUT_VARIABLE CTEST_SITE OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+if(WIN32)
+  if(CTEST_CMAKE_GENERATOR MATCHES "64$")
+    set(MachineBuildType "x64")
+  else()
+    set(MachineBuildType "x86")
+  endif()
+endif()
+set(CTEST_BUILD_NAME "Experimental Build - ${CTEST_CONFIGURATION_TYPE} @TargetPlatform@ ${MachineBuildType}")
+
+set_property(GLOBAL PROPERTY SubProject @CamelCaseProjectName@)
+set_property(GLOBAL PROPERTY Label @CamelCaseProjectName@)
+
+ctest_start(Experimental TRACK Experimental)
+ctest_submit(FILES "${CTEST_SOURCE_DIRECTORY}/Project.xml")
+ctest_configure()
+ctest_build(TARGET All@CamelCaseProjectName@)
+ctest_test(INCLUDE_LABEL @CamelCaseProjectName@)
+ctest_submit()
