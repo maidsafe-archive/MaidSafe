@@ -114,7 +114,7 @@ endfunction()
 function(add_project_experimental)
   add_custom_target(All${CamelCaseProjectName} DEPENDS ${AllExesForCurrentProject})
   set_target_properties(All${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/All")
-  foreach(CTEST_CONFIGURATION_TYPE ${CMAKE_CONFIGURATION_TYPES})
+  foreach(CTEST_CONFIGURATION_TYPE ${CMAKE_CONFIGURATION_TYPES} ${CMAKE_BUILD_TYPE})
     configure_file(${CMAKE_SOURCE_DIR}/cmake_modules/run_experimental.cmake.in
                    ${CMAKE_CURRENT_BINARY_DIR}/run_experimental_${CTEST_CONFIGURATION_TYPE}.cmake
                    @ONLY)
