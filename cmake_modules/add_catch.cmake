@@ -42,12 +42,14 @@ ExternalProject_Add(
     PREFIX ${CMAKE_BINARY_DIR}/catch
     GIT_REPOSITORY https://github.com/philsquared/Catch.git
     TIMEOUT 10
-    PATCH_COMMAND ${GIT_EXECUTABLE} apply ${CatchPatch}
+    PATCH_COMMAND ${GIT_EXECUTABLE} checkout . && ${GIT_EXECUTABLE} apply ${CatchPatch}
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
     LOG_DOWNLOAD ON
     )
+
+
 
 # Expose required variable (CatchSourceDir) to parent scope
 ExternalProject_Get_Property(catch source_dir)
