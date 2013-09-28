@@ -322,11 +322,12 @@ function(add_maidsafe_test GTEST_FIXTURE_NAME GTEST_NAME FULL_GTEST_NAME TEST_EX
         endif()
         if("${TEST_EXECUTABLE}" MATCHES "^TESTlifestuff_api")
           set(NEEDS_NETWORK "1")
+          add_test(NAME ${FULL_GTEST_NAME}
+                   COMMAND python ${CMAKE_SOURCE_DIR}/tools/run_test.py $<TARGET_FILE:${TEST_EXECUTABLE}> ${FULL_GTEST_NAME} ${CATCH_EXCEPTIONS} ${NEEDS_NETWORK})
         else()
-          set(NEEDS_NETWORK "0")
+          add_test(NAME ${FULL_GTEST_NAME}
+                   COMMAND ${TEST_EXECUTABLE} --gtest_filter=${FULL_GTEST_NAME} --gtest_catch_exceptions=${CATCH_EXCEPTIONS})#${CMAKE_SOURCE_DIR})
         endif()
-        add_test(NAME ${FULL_GTEST_NAME}
-                 COMMAND python ${CMAKE_SOURCE_DIR}/tools/run_test.py $<TARGET_FILE:${TEST_EXECUTABLE}> ${FULL_GTEST_NAME} ${CATCH_EXCEPTIONS} ${NEEDS_NETWORK})#${CMAKE_SOURCE_DIR})
       endif()
       if("${GTEST_NAME}" MATCHES "^FUNC_" OR "${GTEST_NAME}" MATCHES "^DISABLED_FUNC_")
         set_property(TEST ${FULL_GTEST_NAME} PROPERTY LABELS ${CamelCaseProjectName} Functional)
