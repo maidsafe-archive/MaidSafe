@@ -24,6 +24,11 @@
 cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 project(maidsafe)
 
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+  message(STATUS "No build type given.  Setting CMAKE_BUILD_TYPE to Debug.")
+  set(CMAKE_BUILD_TYPE Debug)
+endif()
+
 include(CTest)
 set(BUILD_SHARED_LIBS OFF)
 set(HR "================================================================================")

@@ -27,6 +27,7 @@
 
 set(CTEST_CONFIGURATION_TYPE @CTEST_CONFIGURATION_TYPE@)
 set(CTEST_CMAKE_GENERATOR "@CMAKE_GENERATOR@")
+set(CMAKE_CXX_COMPILER_ID "@CMAKE_CXX_COMPILER_ID@")
 set(CTEST_CMAKE_COMMAND "@CMAKE_COMMAND@")
 set(CTEST_SOURCE_DIRECTORY @CMAKE_SOURCE_DIR@)
 set(CTEST_BINARY_DIRECTORY @CMAKE_BINARY_DIR@)
@@ -44,7 +45,7 @@ if(WIN32)
     set(MachineBuildType "x86")
   endif()
 endif()
-set(CTEST_BUILD_NAME "Experimental Build - ${CTEST_CONFIGURATION_TYPE} @TargetPlatform@ ${MachineBuildType}")
+set(CTEST_BUILD_NAME "Experimental Build - ${CTEST_CONFIGURATION_TYPE} @TargetPlatform@ ${CMAKE_CXX_COMPILER_ID} ${MachineBuildType}")
 
 set_property(GLOBAL PROPERTY SubProject @CamelCaseProjectName@)
 set_property(GLOBAL PROPERTY Label @CamelCaseProjectName@)

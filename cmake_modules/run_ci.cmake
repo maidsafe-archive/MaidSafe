@@ -42,7 +42,7 @@ if(WIN32)
   endif()
 endif()
 
-set(CTEST_BUILD_NAME "${DashboardModel} Build - ${CTEST_CONFIGURATION_TYPE} ${MachineBuildType}, Script Version - ${ScriptVersion}")
+set(CTEST_BUILD_NAME "${DashboardModel} Build - ${CTEST_CONFIGURATION_TYPE} ${MachineBuildType} ${CMAKE_CXX_COMPILER_ID}, Script Version - ${ScriptVersion}")
 set(CTEST_UPDATE_COMMAND ${CTEST_GIT_COMMAND})
 
 if(NOT "${CTEST_CMAKE_GENERATOR}" MATCHES "[Mm]ake")
@@ -113,7 +113,7 @@ while(${CTEST_ELAPSED_TIME} LESS 72000)
 
   ctest_submit(FILES "${CTEST_SOURCE_DIRECTORY}/Project.xml")
   update_super_project()
-  
+
   if(TestBranch)
     foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
       set_property(GLOBAL PROPERTY SubProject ${SubProject})
