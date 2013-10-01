@@ -42,7 +42,7 @@ if(WIN32)
   endif()
 endif()
 
-set(CTEST_BUILD_NAME "${DashboardModel} Build - ${CTEST_CONFIGURATION_TYPE} ${MachineBuildType} ${CMAKE_CXX_COMPILER_ID}, Script Version - ${ScriptVersion}")
+set(CTEST_BUILD_NAME "${DashboardModel} Build - ${CTEST_CONFIGURATION_TYPE} ${MachineBuildType} ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}, Script Version - ${ScriptVersion}")
 set(CTEST_UPDATE_COMMAND ${CTEST_GIT_COMMAND})
 
 if(NOT "${CTEST_CMAKE_GENERATOR}" MATCHES "[Mm]ake")
