@@ -38,5 +38,4 @@ set(CTEST_PROJECT_SUBPROJECTS
     Drive
     Vault
     Lifestuff
-    LifestuffUiQt
     )
