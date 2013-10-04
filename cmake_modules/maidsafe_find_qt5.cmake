@@ -56,27 +56,91 @@ find_package(Qt5LinguistTools REQUIRED)
 
 # Copy dlls to binary directory
 if(MSVC)
-  file(GLOB QtImageFormatsPluginsRelease "${QT_BIN_DIR}/../plugins/imageformats/*[^d].dll")
-  file(GLOB QtImageFormatsPluginsDebug "${QT_BIN_DIR}/../plugins/imageformats/*d.dll")
-  file(GLOB QtLibsRelease "${QT_BIN_DIR}/*[^d].dll")
-  file(GLOB QtLibsDebug "${QT_BIN_DIR}/*d.dll" "${QT_BIN_DIR}/icuin51.dll" "${QT_BIN_DIR}/icuuc51.dll" "${QT_BIN_DIR}/icudt51.dll")
-  execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Release/plugins/imageformats")
-  execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Debug/plugins/imageformats")
-  foreach(QtReleaseDll ${QtLibsRelease})
-    get_filename_component(FileName "${QtReleaseDll}" NAME)
-    configure_file("${QtReleaseDll}" "${CMAKE_BINARY_DIR}/Release/${FileName}" COPYONLY)
-  endforeach()
-  foreach(QtReleasePluginDll ${QtImageFormatsPluginsRelease})
-    get_filename_component(FileName "${QtReleasePluginDll}" NAME)
-    configure_file("${QtReleasePluginDll}" "${CMAKE_BINARY_DIR}/Release/plugins/imageformats/${FileName}" COPYONLY)
-  endforeach()
-  foreach(QtDebugDll ${QtLibsDebug})
-    get_filename_component(FileName "${QtDebugDll}" NAME)
-    configure_file("${QtDebugDll}" "${CMAKE_BINARY_DIR}/Debug/${FileName}" COPYONLY)
-  endforeach()
-  foreach(QtDebugPluginDll ${QtImageFormatsPluginsDebug})
-    get_filename_component(FileName "${QtDebugPluginDll}" NAME)
-    configure_file("${QtDebugPluginDll}" "${CMAKE_BINARY_DIR}/Debug/plugins/imageformats/${FileName}" COPYONLY)
-  endforeach()
+  # Image format plugins
+  file(TO_CMAKE_PATH "${QT_BIN_DIR}/../plugins" QtPluginsPath)
+  file(GLOB_RECURSE QtPluginsRelease "${QtPluginsPath}/*[^d].dll")
+  file(GLOB_RECURSE QtPluginsDebug "${QtPluginsPath}/*d.dll")
+
+  # QML Platforms dll's
+  file(TO_CMAKE_PATH "${QT_BIN_DIR}/../qml" QtQmlPath)
+  file(GLOB_RECURSE QtQmlCollection "${QtQmlPath}/*[^.pdb]")
+  # file(GLOB_RECURSE QtQmlDebug "${QtQmlPath}/*d.dll")
+
+  # Required Qt Libraries
+  set(REQUIRED_QT_LIBS  "d3dcompiler_46"
+                        "icudt51"
+                        "icuin51"
+                        "icuuc51"
+                        "libEGL"
+                        "libGLESv2"
+                        "Qt5Concurrent"
+                        "Qt5Core"
+                        "Qt5Gui"
+                        "Qt5Network"
+                        "Qt5Qml"
+                        "Qt5Quick"
+                        "Qt5QuickParticles"
+                        "Qt5Svg"
+                        "Qt5V8"
+                        "Qt5Widgets")
+
+  execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Release")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Debug")
+
+  # Qt Plugins Dll's
+  function(TransferPluginDlls QtDlls BuildType)
+    foreach(QtDll ${${QtDlls}})
+      get_filename_component(DirPath "${QtDll}" PATH)
+      get_filename_component(DirName "${DirPath}" NAME)
+      if (${DirName} STREQUAL "platforms")
+        set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/${BuildType}")
+      else()
+        set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/${BuildType}/plugins")
+      endif()
+      string(REPLACE "${QtPluginsPath}" "${OUTPUT_PATH}" DestPath ${QtDll})
+      get_filename_component(DestPath "${DestPath}" PATH)
+      file(COPY ${QtDll} DESTINATION ${DestPath})
+    endforeach()
+  endfunction()
+
+  TransferPluginDlls(QtPluginsRelease "Release")
+  TransferPluginDlls(QtPluginsDebug "Debug")
+
+  # Qt Qml dependencies
+  function(TransferQMLDependencies QmlFiles BuildType)
+    foreach(QmlFile ${${QmlFiles}})
+      set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/${BuildType}/qml")
+      string(REPLACE "${QtQmlPath}" "${OUTPUT_PATH}" DestPath ${QmlFile})
+      get_filename_component(DestPath "${DestPath}" PATH)
+      if (${BuildType} STREQUAL "Debug")
+        if (NOT ${QmlFile} MATCHES "[^d].dll$")
+          file(COPY ${QmlFile} DESTINATION ${DestPath})
+        endif()
+      else()
+        if (NOT ${QmlFile} MATCHES "d.dll$")
+          file(COPY ${QmlFile} DESTINATION ${DestPath})
+        endif()
+      endif()
+    endforeach()
+  endfunction()
+
+  TransferQMLDependencies(QtQmlCollection "Release")
+  TransferQMLDependencies(QtQmlCollection "Debug")
+
+  # Qt Bin Dll's
+  function(TransferQtBinDlls QtDlls BuildType)
+    foreach(QtDll ${${QtDlls}})
+      set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/${BuildType}")
+      if (${QtDll} MATCHES "^Qt" AND ${BuildType} STREQUAL "Debug")
+        set(FORMATTED_NAME "${QtDll}d")
+      else()
+        set(FORMATTED_NAME "${QtDll}")
+      endif()
+      file(COPY "${QT_BIN_DIR}/${FORMATTED_NAME}.dll" DESTINATION ${OUTPUT_PATH})
+    endforeach()
+  endfunction()
+
+  TransferQtBinDlls(REQUIRED_QT_LIBS "Release")
+  TransferQtBinDlls(REQUIRED_QT_LIBS "Debug")
 endif()
 
