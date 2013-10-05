@@ -55,7 +55,8 @@
 
 # Main function - the only one designed to be called from outside this module.
 function(add_gtests TEST_TARGET)
-  set_target_properties(${TEST_TARGET} PROPERTIES COMPILE_FLAGS "-DUSE_GTEST")
+  get_target_property(Definitions ${TEST_TARGET} COMPILE_DEFINITIONS)
+  set_target_properties(${TEST_TARGET} PROPERTIES COMPILE_DEFINITIONS "${Definitions};USE_GTEST")
 
   if(NOT BEHAVIOURAL_TEST_TIMEOUT)
     set(BEHAVIOURAL_TEST_TIMEOUT 60)

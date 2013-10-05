@@ -71,7 +71,8 @@ set(UnitTimeout 1)
 
 # Main function - the only one designed to be called from outside this module.
 function(add_catch_tests TestTarget)
-  set_target_properties(${TestTarget} PROPERTIES COMPILE_FLAGS "-DUSE_CATCH")
+  get_target_property(Definitions ${TestTarget} COMPILE_DEFINITIONS)
+  set_target_properties(${TestTarget} PROPERTIES COMPILE_DEFINITIONS "${Definitions};USE_CATCH")
   get_target_property(SourceFiles ${TestTarget} SOURCES)
   foreach(SourceFile ${SourceFiles})
     parse_file(${SourceFile} ${TestTarget})
