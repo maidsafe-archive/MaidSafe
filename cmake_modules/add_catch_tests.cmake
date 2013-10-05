@@ -54,8 +54,8 @@
 #                                                                                                  #
 #  Usage                                                                                           #
 #  =====                                                                                           #
-#  For a test target named TESTvault, the module is invoked in a CMake file by calling:            #
-#    add_catch_tests(TESTvault)                                                                    #
+#  For a test target named test_vault, the module is invoked in a CMake file by calling:           #
+#    add_catch_tests(test_vault)                                                                   #
 #                                                                                                  #
 #  To run e.g. all behavioural tests in Debug mode, from the build dir run:                        #
 #    ctest -C Debug -L behavioural                                                                 #
