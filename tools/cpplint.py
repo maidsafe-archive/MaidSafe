@@ -2735,13 +2735,13 @@ def CheckCheck(filename, clean_lines, linenum, error):
   line = clean_lines.elided[linenum]        # get rid of comments and strings
 
   # Encourage replacing plain CHECKs with CHECK_EQ/CHECK_NE/etc.
-  for operator in ['==', '!=', '>=', '>', '<=', '<']:
-    if ReplaceableCheck(operator, current_macro, line):
-      error(filename, linenum, 'readability/check', 2,
-            'Consider using %s instead of %s(a %s b)' % (
-                _CHECK_REPLACEMENT[current_macro][operator],
-                current_macro, operator))
-      break
+#   for operator in ['==', '!=', '>=', '>', '<=', '<']:
+#     if ReplaceableCheck(operator, current_macro, line):
+#       error(filename, linenum, 'readability/check', 2,
+#             'Consider using %s instead of %s(a %s b)' % (
+#                 _CHECK_REPLACEMENT[current_macro][operator],
+#                 current_macro, operator))
+#       break
 
 
 def CheckAltTokens(filename, clean_lines, linenum, error):

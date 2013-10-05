@@ -42,14 +42,14 @@ endif()
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 
 
-set(MAIDSAFE_TEST_TYPE_MESSAGE "Tests included: All")
+set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: All")
 if(NOT MAIDSAFE_TEST_TYPE)
   set(MAIDSAFE_TEST_TYPE "ALL" CACHE string "Choose the type of TEST, options are: ALL, BEH, FUNC" FORCE)
 else()
   if(${MAIDSAFE_TEST_TYPE} MATCHES BEH)
-    set(MAIDSAFE_TEST_TYPE_MESSAGE "Tests included: Behavioural")
+    set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Behavioural")
   elseif(${MAIDSAFE_TEST_TYPE} MATCHES FUNC)
-    set(MAIDSAFE_TEST_TYPE_MESSAGE "Tests included: Functional")
+    set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Functional")
   else()
     set(MAIDSAFE_TEST_TYPE "ALL" CACHE string "Choose the type of TEST, options are: ALL BEH FUNC" FORCE)
   endif()
@@ -83,6 +83,7 @@ include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/leveldb/
 
 include(check_licenses)
 include(utils)
+include(add_catch_tests)
 check_licenses()
 
 

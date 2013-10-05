@@ -28,7 +28,7 @@
 #  "Values(v1, v2, ..., vN)" and "Bool()").                                                        #
 #                                                                                                  #
 #  There is basic support for TEST(...), TEST_F(...), TEST_P(...), TYPED_TEST(...) and             #
-#  TYPED_TEST_P(...).                                      #
+#  TYPED_TEST_P(...).                                                                              #
 #                                                                                                  #
 #  There is also support for the MaidSafe macro style of                                           #
 #  TEST_MS_NET(fixture_name, test_type(FUNC or BEH), general_name, test_name)                      #
@@ -55,6 +55,8 @@
 
 # Main function - the only one designed to be called from outside this module.
 function(add_gtests TEST_TARGET)
+  set_target_properties(${TEST_TARGET} PROPERTIES COMPILE_FLAGS "-DUSE_GTEST")
+
   if(NOT BEHAVIOURAL_TEST_TIMEOUT)
     set(BEHAVIOURAL_TEST_TIMEOUT 60)
   endif()

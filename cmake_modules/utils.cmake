@@ -132,7 +132,11 @@ endfunction()
 
 function(test_summary_output)
   list(LENGTH ALL_GTESTS GtestCount)
-  message(STATUS "${MAIDSAFE_TEST_TYPE_MESSAGE}.   ${GtestCount} Google test(s) enabled.")
+  list(LENGTH AllCatchTests AllCatchTestsCount)
+  list(LENGTH HiddenCatchTests HiddenCatchTestsCount)
+  message(STATUS "${MAIDSAFE_TEST_TYPE_MESSAGE}.  ${GtestCount} Google test(s) enabled.")
+  message(STATUS "${AllCatchTestsCount} Catch test(s) enabled.")
+  message(STATUS "${HiddenCatchTestsCount} Catch test(s) disabled.")
 endfunction()
 
 
