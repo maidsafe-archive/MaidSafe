@@ -140,9 +140,9 @@ if(UNIX)
   endif()
 endif()
 
-message(STATUS "To include all tests,                    cmake . -DMAIDSAFE_TEST_TYPE=ALL")
-message(STATUS "To include only behavioural tests,       cmake . -DMAIDSAFE_TEST_TYPE=BEH")
-message(STATUS "To include only functional tests,        cmake . -DMAIDSAFE_TEST_TYPE=FUNC")
+message(STATUS "To include all GTests,                   cmake . -DMAIDSAFE_TEST_TYPE=ALL")
+message(STATUS "To include only behavioural GTests,      cmake . -DMAIDSAFE_TEST_TYPE=BEH")
+message(STATUS "To include only functional GTests,       cmake . -DMAIDSAFE_TEST_TYPE=FUNC")
 message("${HR}")
 
 
