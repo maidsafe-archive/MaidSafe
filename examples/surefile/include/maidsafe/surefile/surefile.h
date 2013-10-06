@@ -23,8 +23,9 @@
 #include <map>
 #include <memory>
 #include <mutex>
-#include <thread>
 #include <string>
+#include <thread>
+#include <utility>
 
 #ifdef __MSVC__
 #  pragma warning(push, 1)
@@ -52,7 +53,7 @@ namespace surefile {
 namespace test { class SureFileTest; }
 
 class SureFile {
-public:
+ public:
   typedef passport::detail::Password Password;
   typedef data_store::SureFileStore SureFileStore;
   typedef drive::VirtualDrive<SureFileStore>::value_type Drive;
@@ -117,7 +118,8 @@ public:
 
   void OnServiceAdded() const;
   void OnServiceRemoved(const std::string& service_alias) const;
-  void OnServiceRenamed(const std::string& old_service_alias, const std::string& new_service_alias) const;
+  void OnServiceRenamed(const std::string& old_service_alias,
+                        const std::string& new_service_alias) const;
 
   void PutIds(const boost::filesystem::path& storage_path,
               const Identity& drive_root_id,
@@ -142,7 +144,7 @@ public:
   std::unique_ptr<Password> password_, confirmation_password_;
   boost::filesystem::path mount_path_;
   Identity drive_root_id_;
-  std::unique_ptr<Drive> drive_; 
+  std::unique_ptr<Drive> drive_;
   std::map<std::string, std::pair<Identity, Identity>> pending_service_additions_;
   mutable std::mutex mutex_;
   std::thread mount_thread_;

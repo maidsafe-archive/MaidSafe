@@ -71,7 +71,7 @@ static uint32_t count = 0;
 int Init(const Password& password) {
   SureFilePtr surefile;
   Slots slots;
-  slots.configuration_error = []() { LOG(kError) << "Configuration error."; };
+  slots.configuration_error = [] { LOG(kError) << "Configuration error."; };  // NOLINT
   slots.on_service_added = [&surefile] {
     // Must be boost::thread not std::thread since MSVC doesn't correctly handle detach().
     boost::thread thread([&surefile] {
@@ -121,7 +121,7 @@ int Init(const Password& password) {
     return 1;
   }
 
-  g_unmount_functor = [&] {};
+  g_unmount_functor = [] {};  // NOLINT
   signal(SIGINT, CtrlCHandler);
   int x;
   std::cin >> x;

@@ -102,9 +102,12 @@ add_executable(surefile_demo ${ProjectDemo})
 target_link_libraries(surefile_demo maidsafe_surefile)
 set_target_properties(surefile_demo PROPERTIES FOLDER "Executables")
 
-add_executable(TESTsurefile ${TestFiles})
-target_link_libraries(TESTsurefile maidsafe_surefile)
-set_target_properties(TESTsurefile PROPERTIES FOLDER "Tests")
+add_executable(test_surefile ${TestFiles})
+target_link_libraries(test_surefile maidsafe_surefile)
+set_target_properties(test_surefile PROPERTIES FOLDER "Tests")
+
+set(ALL_LIBRARIES maidsafe_surefile)
+set(AllExesForCurrentProject surefile_demo test_surefile)
 
 
 #==================================================================================================#
@@ -131,3 +134,13 @@ add_definitions(-DAPPLICATION_NAME=SureFile
 if(Cbfs_FOUND)
   add_definitions(-DCBFS_KEY=${Cbfs_KEY} -DHAVE_CBFS)
 endif()
+
+
+#==================================================================================================#
+# Tests                                                                                            #
+#==================================================================================================#
+set(MaidsafeTesting ON)  # To enable the style test
+add_style_test()
+include(add_catch_tests)
+add_catch_tests(test_surefile)
+test_summary_output()

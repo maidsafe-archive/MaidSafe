@@ -28,33 +28,30 @@ namespace surefile {
 
 namespace test {
 
-class SureFileTest : public testing::Test {
+class SureFileTest {
  public:
-  SureFileTest() {}
-
- protected:
-  void SetUp() {
-    slots_.configuration_error = [](){ LOG(kError) << "Configuration error."; };
-    slots_.on_service_added = [] { LOG(kInfo) << "Attempt to add a service."; };
+  SureFileTest() {
+    slots_.configuration_error = [] { LOG(kError) << "Configuration error."; };  // NOLINT
+    slots_.on_service_added = [] { LOG(kInfo) << "Attempt to add a service."; };  // NOLINT
   }
-  void TearDown() {}
 
   Slots slots_;
 
  private:
   SureFileTest(const SureFileTest&);
+  SureFileTest(SureFileTest&&);
   SureFileTest& operator=(const SureFileTest&);
 };
 
-TEST_F(SureFileTest, BEH_CreateUser) {
+TEST_CASE_METHOD(SureFileTest, "Create user", "[SureFile][Behavioural]") {
   SureFile surefile(slots_);
   std::string product_id;
   surefile.InsertInput(0, "password", kPassword);
-  // EXPECT_TRUE(surefile.CanCreateUser());
-  // EXPECT_NO_THROW(surefile.CreateUser());
+  // CHECK(surefile.CanCreateUser());
+  // CHECK_NOTHROW(surefile.CreateUser());
 
-  EXPECT_FALSE(surefile.CanCreateUser());
-  EXPECT_NO_THROW(surefile.Login(product_id));
+  CHECK_FALSE(surefile.CanCreateUser());
+  CHECK_NOTHROW(surefile.Login(product_id));
 }
 
 }  // namespace test

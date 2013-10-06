@@ -64,7 +64,8 @@ SureFile::~SureFile() {
     UnmountDrive();
 }
 
-void SureFile::InsertInput(uint32_t position, const std::string& characters, InputField input_field) {
+void SureFile::InsertInput(uint32_t position, const std::string& characters,
+                           InputField input_field) {
   switch (input_field) {
     case kPassword: {
       if (!password_)
@@ -285,7 +286,7 @@ void SureFile::MountDrive(const std::string& product_id, const Identity& drive_r
                          on_service_renamed));
 #else
   static_cast<void>(product_id);
-  // TODO() Confirm location of mount point
+  // TODO(Team) Confirm location of mount point
   mount_path_ = GetUserAppDir() / RandomAlphaNumericString(10);
   boost::system::error_code error_code;
   if (!fs::exists(mount_path_)) {
@@ -319,7 +320,7 @@ void SureFile::MountDrive(const std::string& product_id, const Identity& drive_r
                          on_service_removed,
                          on_service_renamed));
 #endif
-                                        //}));
+                                        // }));
 //  mount_thread_.join();
   mount_status_ = drive_->WaitUntilMounted();
 #endif
@@ -367,7 +368,8 @@ void SureFile::WriteConfigFile(const ServiceMap& service_pairs) const {
     ThrowError(CommonErrors::invalid_parameter);
 }
 
-void SureFile::AddConfigEntry(const std::string& storage_path, const std::string& service_alias) const {
+void SureFile::AddConfigEntry(const std::string& storage_path,
+                              const std::string& service_alias) const {
   ServiceMap service_pairs(ReadConfigFile());
   auto find_it(service_pairs.find(storage_path));
   if (find_it != service_pairs.end())
@@ -441,7 +443,8 @@ void SureFile::CheckValid(const std::string& storage_path, const std::string& se
     ThrowError(SureFileErrors::invalid_service);
 }
 
-void SureFile::CheckDuplicate(const std::string& storage_path, const std::string& service_alias) const {
+void SureFile::CheckDuplicate(const std::string& storage_path,
+                              const std::string& service_alias) const {
   ServiceMap service_pairs(ReadConfigFile());
   for (const auto& service_pair : service_pairs)
     if (service_pair.first == storage_path || service_pair.second == service_alias)
