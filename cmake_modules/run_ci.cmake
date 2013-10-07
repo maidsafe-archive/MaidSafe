@@ -106,14 +106,40 @@ endif()
 #==================================================================================================#
 # Build project & run tests if needed                                                              #
 #==================================================================================================#
+
+
+
 while(${CTEST_ELAPSED_TIME} LESS 72000)
+
+file(DOWNLOAD "http://www.maidsafe.net/test_downloads/ci_master_config.dat" "${CTEST_BINARY_DIRECTORY}/CI_Master_Config.cmake")
+include("${CTEST_BINARY_DIRECTORY}/CI_Master_Config.cmake")
+
+if(Master_Kill_ALL_Tests)
+	message(WARNING "Master Kill ALL is ON!")
+	return()
+endif()
+
+string(TIMESTAMP CurrTime %H)
+if(DashboardModel STREQUAL "Continuous" AND CurrTime LESS 4)
+	message(WARNING "C Continuous Testing is not available between 12am and 4am")
+	return()
+endif()
   set(StartTime ${CTEST_ELAPSED_TIME})
   ctest_start(${DashboardModel} TRACK ${DashboardModel})
   get_tag()
 
   ctest_submit(FILES "${CTEST_SOURCE_DIRECTORY}/Project.xml")
   update_super_project()
-
+  
+  if(NOT UpdateSuperResult EQUAL 0)
+  	while(NOT UpdateSuperResult EQUAL 0)
+  		message(WARNING "Super Project Failed to update! Sleeping for 5 minutes")
+  		ctest_sleep(300)
+  		update_super_project()
+  	endwhile()
+  	#message(FATAL_ERROR "Updating Super Project Failed")
+  endif()
+  
   if(TestBranch)
     foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
       set_property(GLOBAL PROPERTY SubProject ${SubProject})
