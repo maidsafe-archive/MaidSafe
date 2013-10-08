@@ -78,7 +78,7 @@ function(update_super_project)
                     RESULT_VARIABLE ResultVar
                     OUTPUT_VARIABLE OutputVar
                     ERROR_VARIABLE ErrorVar)
-    set(UpdateSuperResult $(ResultVar) PARENT_SCOPE)
+    set(UpdateSuperResult ${ResultVar} PARENT_SCOPE)
     if(NOT ${ResultVar} EQUAL 0)
     	return()
       #message(WARNING "Failed to pull super project:\n\n${ErrorVar}")
