@@ -38,6 +38,7 @@ set(BoostComponents
       date_time
       filesystem
       iostreams
+      locale
       program_options
       python
       regex
