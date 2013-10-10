@@ -42,7 +42,7 @@ if(WIN32)
   endif()
 endif()
 
-set(CTEST_BUILD_NAME "${DashboardModel} Build - ${CTEST_CONFIGURATION_TYPE} ${MachineBuildType} ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}, Script Version - ${ScriptVersion}")
+set(CTEST_BUILD_NAME "${CTEST_CONFIGURATION_TYPE} ${MachineBuildType}, ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}, Script v${ScriptVersion}")
 set(CTEST_UPDATE_COMMAND ${CTEST_GIT_COMMAND})
 
 if(NOT "${CTEST_CMAKE_GENERATOR}" MATCHES "[Mm]ake")
@@ -66,14 +66,9 @@ message("=======================================================================
 # Set sub-projects' source and binary directories                                                  #
 #==================================================================================================#
 foreach(SubProject ${CTEST_PROJECT_SUBPROJECTS})
-  # if(${SubProject} STREQUAL "LifestuffUiQt")
-  #   set(${SubProject}SourceDirectory ${CTEST_SOURCE_DIRECTORY}/src/lifestuff_ui_qt)
-  #   set(${SubProject}BinaryDirectory ${CMAKE_CURRENT_BINARY_DIR}/src/lifestuff_ui_qt)
-  # else()
-    string(TOLOWER ${SubProject} subproject)
-    set(${SubProject}SourceDirectory ${CTEST_SOURCE_DIRECTORY}/src/${subproject})
-    set(${SubProject}BinaryDirectory ${CMAKE_CURRENT_BINARY_DIR}/src/${subproject})
-    #  endif()
+  string(TOLOWER ${SubProject} subproject)
+  set(${SubProject}SourceDirectory ${CTEST_SOURCE_DIRECTORY}/src/${subproject})
+  set(${SubProject}BinaryDirectory ${CMAKE_CURRENT_BINARY_DIR}/src/${subproject})
   if(NOT EXISTS ${${SubProject}SourceDirectory} OR NOT EXISTS ${${SubProject}BinaryDirectory})
     message(FATAL_ERROR "Unable to find ${SubProject} source (${${SubProject}SourceDirectory}) or binary (${${SubProject}BinaryDirectory}) directory.")
   endif()

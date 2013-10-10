@@ -41,12 +41,12 @@ execute_process(COMMAND ${HostnameCommand} OUTPUT_VARIABLE CTEST_SITE OUTPUT_STR
 
 if(WIN32)
   if(CTEST_CMAKE_GENERATOR MATCHES "64$")
-    set(MachineBuildType "x64")
+    set(MachineBuildType " x64")
   else()
-    set(MachineBuildType "x86")
+    set(MachineBuildType " x86")
   endif()
 endif()
-set(CTEST_BUILD_NAME "Experimental Build - ${CTEST_CONFIGURATION_TYPE} @TargetPlatform@ ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION} ${MachineBuildType}")
+set(CTEST_BUILD_NAME "${CTEST_CONFIGURATION_TYPE} @TargetPlatform@${MachineBuildType}, ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 
 set_property(GLOBAL PROPERTY SubProject @CamelCaseProjectName@)
 set_property(GLOBAL PROPERTY Label @CamelCaseProjectName@)

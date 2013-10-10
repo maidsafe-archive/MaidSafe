@@ -62,15 +62,4 @@
     <Dependency name="Encrypt"/>
     <Dependency name="Drive"/>
   </SubProject>
-  <SubProject name="LifestuffUiQt">
-    <Dependency name="Common"/>
-    <Dependency name="Private"/>
-    <Dependency name="Passport"/>
-    <Dependency name="Rudp"/>
-    <Dependency name="Routing"/>
-    <Dependency name="Nfs"/>
-    <Dependency name="Encrypt"/>
-    <Dependency name="Drive"/>
-    <Dependency name="Lifestuff"/>
-  </SubProject>
 </Project>
