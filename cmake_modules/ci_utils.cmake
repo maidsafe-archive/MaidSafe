@@ -23,7 +23,8 @@
 #  Helper module used in running CI on all submodules of MaidSafe/MaidSafe                         #
 #                                                                                                  #
 #==================================================================================================#
-
+set(SelfGitFetchCheck ON)
+set(NetworkDown OFF PARENT_SCOPE)
 
 function(checkout_to_branch SourceDir Branch)
   execute_process(COMMAND ${CTEST_GIT_COMMAND} checkout ${Branch}
@@ -69,6 +70,21 @@ function(get_git_log SourceDir CommitHash CommitMessage Author)
   set(${Author} ${${Author}} PARENT_SCOPE)
 endfunction()
 
+#Calls fetch via execute_process to check error code
+#Current workaround to the ctest_update = 0 regardless of Git Fetch cmd failure
+# Relate CMake Bugs: http://www.cmake.org/Bug/view.php?id=8262 && http://www.cmake.org/Bug/view.php?id=8277
+function(CheckFetchFailure)
+  execute_process(COMMAND ${CTEST_GIT_COMMAND} fetch --dry-run
+				WORKING_DIRECTORY ${CTEST_SOURCE_DIRECTORY}
+				RESULT_VARIABLE FetchResult
+				OUTPUT_VARIABLE OutputVar
+				ERROR_VARIABLE ErrorVar)
+	if(FetchResult EQUAL 0)
+		set(NetworkDown OFF PARENT_SCOPE)
+	else()
+		set(NetworkDown ON PARENT_SCOPE)
+	endif()
+endfunction()
 
 function(update_super_project)
   if(DashboardModel STREQUAL "Continuous")
@@ -92,7 +108,8 @@ function(update_super_project)
     ctest_update(RETURN_VALUE UpdatedCount)
     set(UpdateSuperResult ${UpdatedCount} PARENT_SCOPE)
     if(UpdatedCount LESS 0)
-      message(FATAL_ERROR "Failed to update the super project.")
+      return()
+      #message(FATAL_ERROR "Failed to update the super project.")
     endif()
     ctest_submit()
   endif()
@@ -117,10 +134,16 @@ macro(update_sub_project SubProject)
                                                                            # Look at project's dependencies
       set(${SubProject}ShouldRun OFF)
       unset(${SubProject}UpdateXmlName)
+      if(SelfGitFetchCheck)
+	    CheckFetchFailure()
+      endif()
     endif()
     get_git_log(${SubProject}SourceDirectory ${SubProject}NewCommit ${SubProject}NewCommitLogMsg ${SubProject}NewCommitLogAuthor)
   else()
     set(${SubProject}ShouldRun ON)
+	if(SelfGitFetchCheck)
+	  CheckFetchFailure()
+	endif()
   endif()
 endmacro()
 
@@ -207,6 +230,9 @@ function(build_and_run SubProject RunAll)
       set(RecurringBuildFailureCount 1)
     endif()
     message(WARNING "Recurring build failure count of ${RecurringBuildFailureCount} for ${SubProject}.")
+    if(SelfGitFetchCheck)
+	    CheckFetchFailure()
+    endif()
   endif()
   set(${SubProject}RecurringBuildFailureCount ${RecurringBuildFailureCount} PARENT_SCOPE)
 
@@ -263,6 +289,7 @@ function(build_and_run SubProject RunAll)
 
   if(NOT ${BuildResult} EQUAL 0)
     report_build_result("false")
+    message(FATAL_ERROR "Build of ${SubProject} has resulted in a fatal error. Reported to Dash.")
   elseif(FinalSubmodule)
     report_build_result("true")
   endif()
