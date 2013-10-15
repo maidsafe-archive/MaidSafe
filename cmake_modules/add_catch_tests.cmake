@@ -102,8 +102,10 @@ function(parse_file SourceFile TestTarget)
     # Strip newlines
     string(REGEX REPLACE "\\\\\n|\n" "" TestName "${TestName}")
 
-    # Get test type
-    string(REGEX MATCH "(CATCH_)?(TEST_CASE_METHOD|SCENARIO|TEST_CASE)" TestType "${TestName}")
+    # Get test type and fixture if applicable
+    string(REGEX MATCH "(CATCH_)?(TEST_CASE_METHOD|SCENARIO|TEST_CASE)[ \t]*\\([^,^\"]*" TestTypeAndFixture "${TestName}")
+    string(REGEX MATCH "(CATCH_)?(TEST_CASE_METHOD|SCENARIO|TEST_CASE)" TestType "${TestTypeAndFixture}")
+    string(REPLACE "${TestType}(" "" TestFixture "${TestTypeAndFixture}")
 
     # Get string parts of test definition
     string(REGEX MATCHALL "\"+([^\\^\"]|\\\\\")+\"+" TestStrings "${TestName}")
@@ -125,6 +127,11 @@ function(parse_file SourceFile TestTarget)
     list(GET TestStrings 0 Name)
     if("${TestType}" STREQUAL "SCENARIO")
       set(Name "Scenario: ${Name}")
+    endif()
+    if(TestFixture)
+      set(CTestName "${TestFixture}:${Name}")
+    else()
+      set(CTestName "${Name}")
     endif()
     list(GET TestStrings 1 Tags)
     string(TOLOWER "${Tags}" Tags)
@@ -163,20 +170,20 @@ function(parse_file SourceFile TestTarget)
     # Disable test if "[hide]" is a tag
     list(FIND Tags "hide" HideFound)
     if(HideFound GREATER -1)
-      set(HiddenCatchTests ${HiddenCatchTests} ${Name})
+      set(HiddenCatchTests ${HiddenCatchTests} ${CTestName})
       set(HiddenCatchTests ${HiddenCatchTests} PARENT_SCOPE)
     else()
       # Add the test and set its properties
-      add_test(NAME "\"${Name}\""
+      add_test(NAME "\"${CTestName}\""
                COMMAND ${TestTarget} ${Name} --durations yes --warn NoAssertions
                        --name "${TestTarget} ($<CONFIGURATION> build)")
 
-      set_tests_properties("\"${Name}\"" PROPERTIES
+      set_tests_properties("\"${CTestName}\"" PROPERTIES
                            FAIL_REGULAR_EXPRESSION "No tests ran"
                            TIMEOUT ${Timeout}
                            LABELS "${CamelCaseProjectName};${Tags}")
 
-      set(AllCatchTests ${AllCatchTests} "\"${Name}\"")
+      set(AllCatchTests ${AllCatchTests} "\"${CTestName}\"")
       set(AllCatchTests ${AllCatchTests} PARENT_SCOPE)
     endif()
   endforeach()
