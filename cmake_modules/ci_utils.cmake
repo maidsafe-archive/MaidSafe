@@ -24,7 +24,7 @@
 #                                                                                                  #
 #==================================================================================================#
 set(SelfGitFetchCheck ON)
-set(NetworkDown OFF PARENT_SCOPE)
+set(NetworkDown OFF)
 
 function(checkout_to_branch SourceDir Branch)
   execute_process(COMMAND ${CTEST_GIT_COMMAND} checkout ${Branch}
