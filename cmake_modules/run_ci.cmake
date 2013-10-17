@@ -27,7 +27,7 @@
 #==================================================================================================#
 
 
-set(ScriptVersion 11)
+set(ScriptVersion 12)
 include(${CTEST_SOURCE_DIRECTORY}/CTestConfig.cmake)
 include(${CTEST_SOURCE_DIRECTORY}/cmake_modules/ci_utils.cmake)
 
@@ -101,11 +101,7 @@ endif()
 #==================================================================================================#
 # Build project & run tests if needed                                                              #
 #==================================================================================================#
-
-
-
 while(${CTEST_ELAPSED_TIME} LESS 72000)
-
   file(DOWNLOAD "http://www.maidsafe.net/test_downloads/ci_master_config.dat" "${CTEST_BINARY_DIRECTORY}/CI_Master_Config.cmake")
   include("${CTEST_BINARY_DIRECTORY}/CI_Master_Config.cmake")
 
@@ -116,9 +112,10 @@ while(${CTEST_ELAPSED_TIME} LESS 72000)
 
   string(TIMESTAMP CurrTime %H)
   if(DashboardModel STREQUAL "Continuous" AND CurrTime LESS 4)
-    message(WARNING "C Continuous Testing is not available between 12am and 4am")
+    message(WARNING "Continuous testing is not available between 00:00 and 04:00")
     return()
   endif()
+
   set(StartTime ${CTEST_ELAPSED_TIME})
   ctest_start(${DashboardModel} TRACK ${DashboardModel})
   get_tag()
@@ -127,21 +124,17 @@ while(${CTEST_ELAPSED_TIME} LESS 72000)
   update_super_project()
 
   if(DashboardModel STREQUAL "Continuous")
-    if(NOT ${UpdateSuperResult} EQUAL 0)
-      while(NOT ${UpdateSuperResult} EQUAL 0)
-        message(WARNING "Super Project Failed to update! Sleeping for 5 minutes")
-        ctest_sleep(300)
-        update_super_project()
-      endwhile()
-    endif()
-  elseif(DashboardModel STREQUAL "Nightly" OR DashboardModel STREQUAL "Weekly")
-    if(${UpdateSuperResult} LESS 0 OR FetchFailed)
-    while(${UpdateSuperResult} LESS 0 OR FetchFailed)
-      message(WARNING "Super Project Failed to update! Sleeping for 5 minutes")
+    while(NOT ${UpdateSuperResult} EQUAL 0)
+      message(WARNING "Super project failed to update.  Sleeping for 5 minutes.")
       ctest_sleep(300)
       update_super_project()
     endwhile()
-    endif()
+  elseif(NOT DashboardModel STREQUAL "Experimental")
+    while(${UpdateSuperResult} LESS 0 OR FetchFailed)
+      message(WARNING "Super project failed to update.  Sleeping for 5 minutes.")
+      ctest_sleep(300)
+      update_super_project()
+    endwhile()
   endif()
 
   if(TestBranch)
@@ -151,13 +144,11 @@ while(${CTEST_ELAPSED_TIME} LESS 72000)
       message("Checking out ${SubProject} project to '${TestBranch}'")
       checkout_to_branch(${${SubProject}SourceDirectory} ${TestBranch})
       update_sub_project(${SubProject})
-      if(NetworkDown)
-        while(NetworkDown)
-          message(WARNING "${SubProject} Failed to update! Sleeping for 5 Minutes")
-          ctest_sleep(300)
-          update_sub_project(${SubProject})
-        endwhile()
-      endif()
+      while(NetworkDown)
+        message(WARNING "${SubProject} failed to update.  Sleeping for 5 minutes.")
+        ctest_sleep(300)
+        update_sub_project(${SubProject})
+      endwhile()
     endforeach()
   endif()
 

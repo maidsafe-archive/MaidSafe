@@ -632,7 +632,8 @@ function(set_meta_files_custom_commands OutputFile InputFile MetaFiles OutputFil
                      COMMAND ${CMAKE_COMMAND} -DOutputFile="${OutputFile}"
                                               -DInputFile="${InputFile}"
                                               -P ${ConfigureCMakeFile}
-                     DEPENDS ${IntermediateOutputFiles}
+                     DEPENDS ${MetaFile}
+                             ${IntermediateOutputFiles}
                              ${InputFile}
                              ${ConfigureCMakeFile}
                      COMMENT "Configuring message_types.h")

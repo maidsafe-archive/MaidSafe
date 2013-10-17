@@ -31,6 +31,8 @@ endif()
 
 include(CTest)
 set(BUILD_SHARED_LIBS OFF)
+set(CMAKE_ERROR_DEPRECATED ON)
+set(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION ON)
 set(HR "================================================================================")
 
 

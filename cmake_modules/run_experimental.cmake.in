@@ -46,7 +46,7 @@ if(WIN32)
     set(MachineBuildType " x86")
   endif()
 endif()
-set(CTEST_BUILD_NAME "${CTEST_CONFIGURATION_TYPE} @TargetPlatform@${MachineBuildType}, ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+set(CTEST_BUILD_NAME "@CamelCaseProjectName@ ${CTEST_CONFIGURATION_TYPE} @TargetPlatform@${MachineBuildType}, ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 
 set_property(GLOBAL PROPERTY SubProject @CamelCaseProjectName@)
 set_property(GLOBAL PROPERTY Label @CamelCaseProjectName@)
