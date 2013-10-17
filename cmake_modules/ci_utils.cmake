@@ -24,7 +24,7 @@
 #                                                                                                  #
 #==================================================================================================#
 set(SelfGitFetchCheck ON)
-set(NetworkDown OFF)
+set(FetchFailed OFF)
 
 function(checkout_to_branch SourceDir Branch)
   execute_process(COMMAND ${CTEST_GIT_COMMAND} checkout ${Branch}
@@ -80,9 +80,9 @@ function(CheckFetchFailure)
 				OUTPUT_VARIABLE OutputVar
 				ERROR_VARIABLE ErrorVar)
 	if(FetchResult EQUAL 0)
-		set(NetworkDown OFF PARENT_SCOPE)
+		set(FetchFailed OFF PARENT_SCOPE)
 	else()
-		set(NetworkDown ON PARENT_SCOPE)
+		set(FetchFailed ON PARENT_SCOPE)
 	endif()
 endfunction()
 
@@ -109,6 +109,13 @@ function(update_super_project)
     set(UpdateSuperResult ${UpdatedCount} PARENT_SCOPE)
     if(UpdatedCount LESS 0)
       return()
+    elseif(UpdatedCount EQUAL 0)
+      if(SelfGitFetchCheck)
+	      CheckFetchFailure()
+        if(FetchFailed)
+          return()
+        endif()
+      endif()
       #message(FATAL_ERROR "Failed to update the super project.")
     endif()
     ctest_submit()
@@ -218,7 +225,7 @@ function(build_and_run SubProject RunAll)
     message("Building ${SubProject}")
     set(CTEST_BUILD_TARGET "All${SubProject}")
   endif()
-  
+
   # build
   ctest_build(RETURN_VALUE BuildResult)
   if(BuildResult EQUAL 0)
