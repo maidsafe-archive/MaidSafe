@@ -23,6 +23,7 @@
 
 set(DashboardModel @DashType@)
 set(MachineType @MachineType@)
+set(TargetPlatform @TargetPlatform@)
 set(UsingMsBuild @UsingMsBuild@)
 set(CTEST_CONFIGURATION_TYPE @TestConfType@)
 set(CTEST_SITE "@ThisSite@")

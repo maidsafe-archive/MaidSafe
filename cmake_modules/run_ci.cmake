@@ -36,13 +36,13 @@ set(ENV{LC_ALL} C)
 
 if(WIN32)
   if(CTEST_CMAKE_GENERATOR MATCHES "64$")
-    set(MachineBuildType "x64")
+    set(MachineBuildType " x64")
   else()
-    set(MachineBuildType "x86")
+    set(MachineBuildType " x86")
   endif()
 endif()
 
-set(CTEST_BUILD_NAME "${CTEST_CONFIGURATION_TYPE} ${MachineBuildType}, ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}, Script v${ScriptVersion}")
+set(CTEST_BUILD_NAME "${CTEST_CONFIGURATION_TYPE} ${TargetPlatform}${MachineBuildType}, ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}, Script v${ScriptVersion}")
 set(CTEST_UPDATE_COMMAND ${CTEST_GIT_COMMAND})
 
 if(NOT "${CTEST_CMAKE_GENERATOR}" MATCHES "[Mm]ake")
