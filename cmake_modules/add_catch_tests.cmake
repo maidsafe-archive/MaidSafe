@@ -89,6 +89,9 @@ endfunction()
 
 # Worker function
 function(parse_file SourceFile TestTarget)
+  if(NOT EXISTS ${SourceFile})
+    return()
+  endif()
   file(STRINGS ${SourceFile} Contents NEWLINE_CONSUME)
 
   # Remove block comments and full single line comments
