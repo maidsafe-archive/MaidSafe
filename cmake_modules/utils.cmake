@@ -642,3 +642,16 @@ function(set_meta_files_custom_commands OutputFile InputFile MetaFiles OutputFil
   source_group("${OutputFileSourceGroup}" FILES ${OutputFile})
   source_group("${CMakeFilesSourceGroup}" FILES ${CMAKE_CURRENT_LIST_FILE} ${InputFile} ${MetaFiles})
 endfunction()
+
+# Configures 'OutputFile' to provide a C++ function which returns the absolute path to 'TargetName'.
+function(add_process_location TargetName OutputFile)
+  underscores_to_camel_case(${TargetName} Process)
+  add_custom_command(OUTPUT ${OutputFile}
+                     COMMAND ${CMAKE_COMMAND} -DInputFile="${CMAKE_SOURCE_DIR}/tools/process_helpers/process_location.h.in"
+                                              -DOutputFile="${OutputFile}"
+                                              -DProcess=${Process}
+                                              -DProcessLocation="$<TARGET_FILE:${TargetName}>"
+                                              -P "${CMAKE_SOURCE_DIR}/tools/process_helpers/process_location.cmake"
+                     COMMENT "Generating ${OutputFile}")
+  set_source_files_properties(${OutputFile} PROPERTIES GENERATED TRUE)
+endfunction()
