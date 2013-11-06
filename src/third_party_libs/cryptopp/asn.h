@@ -242,7 +242,7 @@ public:
 };
 
 //! encodes/decodes subjectPublicKeyInfo
-class CRYPTOPP_DLL X509PublicKey : public ASN1CryptoMaterial<PublicKey>
+class CRYPTOPP_DLL X509PublicKey : public virtual ASN1CryptoMaterial<PublicKey>
 {
 public:
 	void BERDecode(BufferedTransformation &bt);
@@ -261,7 +261,7 @@ public:
 };
 
 //! encodes/decodes privateKeyInfo
-class CRYPTOPP_DLL PKCS8PrivateKey : public ASN1CryptoMaterial<PrivateKey>
+class CRYPTOPP_DLL PKCS8PrivateKey : public virtual ASN1CryptoMaterial<PrivateKey>
 {
 public:
 	void BERDecode(BufferedTransformation &bt);
