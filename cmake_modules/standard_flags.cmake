@@ -61,7 +61,10 @@ endif()
 if(HAVE_LIBC++ABI)
   set(LibCppAbi "-lc++abi")
 endif()
-
+# basic profiling support
+if(PROFILING)
+  add_definitions(-DUSE_PROFILING)
+endif()
 
 
 if(WIN32)
