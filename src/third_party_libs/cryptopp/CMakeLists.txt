@@ -106,10 +106,9 @@ target_compile_definitions(cryptopp
   PUBLIC
     $<$<BOOL:${MSVC}>:CRYPTOPP_DISABLE_SSE2>
     $<$<AND:$<BOOL:${UNIX}>,$<CXX_COMPILER_ID:Clang>>:CRYPTOPP_DISABLE_ASM CRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION>
-    $<$<AND:$<BOOL:${JUST_THREAD_DEADLOCK_CHECK}>,$<CONFIG:Debug>>:_JUST_THREAD_DEADLOCK_CHECK>>
+    $<$<AND:$<BOOL:${JUST_THREAD_DEADLOCK_CHECK}>,$<CONFIG:Debug>>:_JUST_THREAD_DEADLOCK_CHECK>
   PRIVATE
     $<$<BOOL:${MSVC}>:_WINDOWS USE_PRECOMPILED_HEADERS WIN32 _VC80_UPGRADE=0x0710>
-    $<$<BOOL:${UNIX}>:>
     $<$<CONFIG:Release>:NDEBUG>
 )
 
@@ -134,7 +133,6 @@ target_compile_options(cryptopp
 target_compile_definitions(cryptest
   PRIVATE
     $<$<BOOL:${MSVC}>:WIN32 _VC80_UPGRADE=0x0710 _MBCS $<$<CONFIG:Debug>:_DEBUG>>
-    $<$<BOOL:${UNIX}>:>
     $<$<CONFIG:Release>:NDEBUG>
 )
 
