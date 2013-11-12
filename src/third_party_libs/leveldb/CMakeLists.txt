@@ -199,7 +199,7 @@ if(MaidsafeTesting)
       else()
         target_link_libraries(${exe_name} leveldb-testharness pthread)
       endif()
-      target_compile_options(leveldb PRIVATE
+      target_compile_options(${exe_name} PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:/wd4018 /wd4244 /wd4267 /wd4800 /wd4996>
         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>)
     endforeach()

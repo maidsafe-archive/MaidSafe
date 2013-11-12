@@ -53,7 +53,7 @@ target_compile_definitions(protoc
 
 target_compile_options(protoc
   PRIVATE
-    $<$<BOOL:${MSVC}>:/W3 /wd4244 /wd4267 /wd4996>
+    $<$<BOOL:${MSVC}>:/W3 /wd4244 /wd4267 /wd4800 /wd4996>
     $<$<BOOL:${UNIX}>:-w>
 )
 
