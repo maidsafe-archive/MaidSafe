@@ -29,7 +29,8 @@ include(../../../cmake_modules/standard_flags.cmake)
 
 target_compile_definitions(protobuf
   PUBLIC
-    $<$<AND:$<BOOL:${JUST_THREAD_DEADLOCK_CHECK}>,$<CONFIG:Debug>>:_JUST_THREAD_DEADLOCK_CHECK>>
+    $<$<AND:$<BOOL:${JUST_THREAD_DEADLOCK_CHECK}>,$<CONFIG:Debug>>:_JUST_THREAD_DEADLOCK_CHECK>
+    $<$<BOOL:${UNIX}>:HAVE_PTHREAD>
 )
 
 target_compile_options(protobuf
@@ -48,7 +49,7 @@ target_compile_options(protobuf
 
 target_compile_definitions(protoc
   PUBLIC
-    $<$<AND:$<BOOL:${JUST_THREAD_DEADLOCK_CHECK}>,$<CONFIG:Debug>>:_JUST_THREAD_DEADLOCK_CHECK>>
+    $<$<AND:$<BOOL:${JUST_THREAD_DEADLOCK_CHECK}>,$<CONFIG:Debug>>:_JUST_THREAD_DEADLOCK_CHECK>
 )
 
 target_compile_options(protoc

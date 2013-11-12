@@ -174,7 +174,11 @@ set(ALL_FILES_LEVELDB_DIR ${HEADER_FILES_LEVELDB_INCLUDE_DIR}
 add_library(leveldb STATIC ${ALL_FILES_LEVELDB_DIR})
 target_include_directories(leveldb SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR} ${BoostSourceDir})
 add_dependencies(leveldb boost)
-target_link_libraries(leveldb ${BoostFilesystemLibs} ${BoostSystemLibs} ${JustThread_LIBRARIES})
+if(MSVC)
+  target_link_libraries(leveldb ${BoostFilesystemLibs} ${BoostSystemLibs} ${JustThread_LIBRARIES})
+else()
+  target_link_libraries(leveldb ${BoostFilesystemLibs} ${BoostSystemLibs} ${JustThread_LIBRARIES} -lpthread)
+endif()
 set_target_properties(leveldb PROPERTIES FOLDER "Third Party/LevelDB")
 
 
@@ -228,7 +232,8 @@ endif()
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
 target_compile_options(leveldb PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/wd4244 /wd4267 /wd4996>
-  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>)
+  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>
+  PUBLIC $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-pthread>)
 target_compile_options(leveldb-testharness PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/wd4996>
   $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>)
