@@ -23,8 +23,6 @@ enable_testing()
 #==================================================================================================#
 # Files                                                                                            #
 #==================================================================================================#
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} include)
-
 set(HEADER_FILES_LEVELDB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/cache.h
                                      ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/comparator.h
                                      ${CMAKE_CURRENT_SOURCE_DIR}/include/leveldb/db.h
@@ -173,8 +171,8 @@ set(ALL_FILES_LEVELDB_DIR ${HEADER_FILES_LEVELDB_INCLUDE_DIR}
 #==================================================================================================#
 # Library                                                                                          #
 #==================================================================================================#
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_library(leveldb STATIC ${ALL_FILES_LEVELDB_DIR})
+target_include_directories(leveldb SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR} ${BoostSourceDir})
 add_dependencies(leveldb boost)
 target_link_libraries(leveldb ${BoostFilesystemLibs} ${BoostSystemLibs} ${JustThread_LIBRARIES})
 set_target_properties(leveldb PROPERTIES FOLDER "Third Party/LevelDB")
@@ -186,18 +184,24 @@ set_target_properties(leveldb PROPERTIES FOLDER "Third Party/LevelDB")
 if(MaidsafeTesting)
   set(SOURCE_FILES_LEVELDB_TESTHARNESS ${CMAKE_CURRENT_SOURCE_DIR}/util/testutil.cc ${CMAKE_CURRENT_SOURCE_DIR}/util/testharness.cc)
   add_library(leveldb-testharness STATIC ${SOURCE_FILES_LEVELDB_TESTHARNESS})
+  target_include_directories(leveldb-testharness SYSTEM PRIVATE ${PROJECT_SOURCE_DIR})
   target_link_libraries(leveldb-testharness leveldb)
   set_target_properties(leveldb-testharness PROPERTIES FOLDER "MaidSafe/Executables/Tests/Common/leveldb_tests")
 
   macro(leveldb_tests)
     foreach(value ${ARGN})
       get_filename_component(exe_name ${value} NAME_WE)
+      string(REGEX REPLACE "(.*)_test" "test_\\1" exe_name ${exe_name})
       ms_add_executable(${exe_name} "Tests/Common/leveldb_tests" ${value})
+      target_include_directories(${exe_name} SYSTEM PRIVATE ${PROJECT_SOURCE_DIR})
       if(WIN32)
         target_link_libraries(${exe_name} leveldb-testharness)
       else()
         target_link_libraries(${exe_name} leveldb-testharness pthread)
       endif()
+      target_compile_options(leveldb PRIVATE
+        $<$<CXX_COMPILER_ID:MSVC>:/wd4018 /wd4244 /wd4267 /wd4800 /wd4996>
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>)
     endforeach()
   endmacro()
 
@@ -222,8 +226,10 @@ if(MaidsafeTesting)
 endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
-if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4018 /wd4100 /wd4127 /wd4189 /wd4244 /wd4267 /wd4389 /wd4505 /wd4800")
-else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error -w")
-endif()
+target_compile_options(leveldb PRIVATE
+  $<$<CXX_COMPILER_ID:MSVC>:/wd4244 /wd4267 /wd4996>
+  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>)
+target_compile_options(leveldb-testharness PRIVATE
+  $<$<CXX_COMPILER_ID:MSVC>:/wd4996>
+  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>)
+target_compile_definitions(leveldb PRIVATE $<$<BOOL:${MSVC}>:UNICODE _UNICODE BOOST_ALL_NO_LIB>)

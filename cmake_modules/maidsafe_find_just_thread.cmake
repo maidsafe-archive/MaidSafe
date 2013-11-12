@@ -122,13 +122,6 @@ set(JustThread_FOUND 1 CACHE INTERNAL "" FORCE)
 get_filename_component(JustThread_LIBRARY_DIR ${JustThread_LIBRARY} PATH)
 set(JustThread_LIBRARY_DIR ${JustThread_LIBRARY_DIR} CACHE PATH "Path to just::thread library directory" FORCE)
 
-include_directories(SYSTEM ${JustThread_INCLUDE_DIR})
-if(CMAKE_INCLUDE_DIRECTORIES_BEFORE)
-  set(INCLUDE_DIRS ${JustThread_INCLUDE_DIR} ${INCLUDE_DIRS})
-else()
-  set(INCLUDE_DIRS ${INCLUDE_DIRS} ${JustThread_INCLUDE_DIR})
-endif()
-
 set(JustThread_LIBRARIES optimized ${JustThread_LIBRARY} debug ${JustThread_LIBRARY_DEBUG})
 if(UNIX AND NOT APPLE)
   set(JustThread_LIBRARIES ${JustThread_LIBRARIES} rt pthread)

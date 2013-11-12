@@ -13,6 +13,7 @@
 #==============================================================================#
 
 
+cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 project(Cryptopp)
 
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_setup.cmake)
@@ -77,6 +78,7 @@ set(CamelCaseProjectName ${CurrentCamelCaseProjectName})
 #add_executable(TESTcryptopp ${TESTcryptopp_DIR})
 
 add_library(cryptopp STATIC ${cryptopp_SOURCES} ${cryptopp_HEADERS})
+target_include_directories(cryptopp SYSTEM INTERFACE ${PROJECT_SOURCE_DIR}/.. PRIVATE ${PROJECT_SOURCE_DIR})
 set_target_properties(cryptopp PROPERTIES FOLDER "Third Party/Crypto++")
 
 
@@ -96,51 +98,68 @@ add_custom_command(TARGET cryptest
 target_link_libraries(cryptest cryptopp ${JustThread_LIBRARIES})
 #target_link_libraries(TESTcryptopp cryptopp gtest ${JustThread_LIBRARIES})
 
+set(AllStaticLibsForCurrentProject cryptopp)
+set(AllExesForCurrentProject cryptest)
+include(../../../cmake_modules/standard_flags.cmake)
+
+target_compile_definitions(cryptopp
+  PUBLIC
+    $<$<BOOL:${MSVC}>:CRYPTOPP_DISABLE_SSE2>
+    $<$<AND:$<BOOL:${UNIX}>,$<CXX_COMPILER_ID:Clang>>:CRYPTOPP_DISABLE_ASM CRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION>
+    $<$<AND:$<BOOL:${JUST_THREAD_DEADLOCK_CHECK}>,$<CONFIG:Debug>>:_JUST_THREAD_DEADLOCK_CHECK>>
+  PRIVATE
+    $<$<BOOL:${MSVC}>:_WINDOWS USE_PRECOMPILED_HEADERS WIN32 _VC80_UPGRADE=0x0710>
+    $<$<BOOL:${UNIX}>:>
+    $<$<CONFIG:Release>:NDEBUG>
+)
+
+target_compile_options(cryptopp
+  PUBLIC
+    $<$<BOOL:${MSVC}>:
+        $<$<CONFIG:Release>:/O2 /GL /MD>
+        $<$<CONFIG:Debug>:/Od /MDd /Zi> # /Oi
+        $<$<CONFIG:MinSizeRel>:/MD>
+        $<$<CONFIG:RelWithDebInfo>:/O2 /GL /MD /Zi>
+    >
+    $<$<BOOL:${UNIX}>:-std=c++11 ${LibCpp}>
+  PRIVATE
+    $<$<BOOL:${MSVC}>:/EHsc /W3 /wd4068>
+    $<$<BOOL:${UNIX}>:
+        -w -fPIC
+        $<$<CXX_COMPILER_ID:Clang>:-Wno-tautological-compare -Wno-c++11-narrowing>
+        $<$<CXX_COMPILER_ID:GNU>:-O2 -pipe -finline-functions>
+    >
+)
+
+target_compile_definitions(cryptest
+  PRIVATE
+    $<$<BOOL:${MSVC}>:WIN32 _VC80_UPGRADE=0x0710 _MBCS $<$<CONFIG:Debug>:_DEBUG>>
+    $<$<BOOL:${UNIX}>:>
+    $<$<CONFIG:Release>:NDEBUG>
+)
+
+target_compile_options(cryptest
+  PRIVATE
+    $<$<BOOL:${MSVC}>:/EHsc /W3>
+    $<$<BOOL:${UNIX}>:
+        -w -fPIC
+        $<$<CXX_COMPILER_ID:Clang>:-Wno-tautological-compare -Wno-c++11-narrowing>
+        $<$<CXX_COMPILER_ID:GNU>:-O2 -pipe -finline-functions>
+    >
+)
 
 if(UNIX)
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-    if(HAVE_LIBC++)
-      set(LibCXX "-stdlib=libc++")
-      set_target_properties(cryptest PROPERTIES LINK_FLAGS "${LibCXX} -ldl")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LibCpp} ${LibCppAbi}")
+    if(HAVE_LIBC++ OR HAVE_LIBC++ABI)
+      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -ldl")
     endif()
-    if(HAVE_LIBC++ABI)
-      set(LibCXX "-stdlib=libc++ -lc++abi")
-      set_target_properties(cryptest PROPERTIES LINK_FLAGS "${LibCXX} -ldl")
-    endif()
-    add_definitions(-DCRYPTOPP_DISABLE_ASM -DCRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION)
-    set_target_properties(cryptopp cryptest PROPERTIES
-                            COMPILE_FLAGS "-w -Wno-tautological-compare -fPIC -Wno-c++11-narrowing -std=c++11 ${LibCXX}")
-  elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    set_target_properties(cryptopp cryptest PROPERTIES COMPILE_FLAGS "-O2 -fPIC -w -pipe -finline-functions -std=c++11")
-  endif()
-  if(JUST_THREAD_DEADLOCK_CHECK)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_JUST_THREAD_DEADLOCK_CHECK")
   endif()
 elseif(MSVC)
-  add_definitions(-DCRYPTOPP_DISABLE_SSE2)
-  set_target_properties(cryptopp PROPERTIES
-                          COMPILE_FLAGS "/D_WINDOWS /DUSE_PRECOMPILED_HEADERS /DWIN32 /D_VC80_UPGRADE=0x0710 /EHsc /W3 /wd4068"
-                          STATIC_LIBRARY_FLAGS_RELEASE "/LTCG"
-                          STATIC_LIBRARY_FLAGS_RELWITHDEBINFO "/LTCG")
-  set_target_properties(cryptest PROPERTIES
-                          COMPILE_FLAGS "/D_CONSOLE /DWIN32 /D_VC80_UPGRADE=0x0710 /D_MBCS /EHsc /W3"
-                          LINK_FLAGS_RELEASE "/OPT:REF /OPT:ICF /LTCG"
-                          LINK_FLAGS_RELWITHDEBINFO "/OPT:REF /OPT:ICF /LTCG /DEBUG"
-                          LINK_FLAGS_MINSIZEREL "/LTCG")
-  set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2 /Oi /Oy /GL /DNDEBUG /GF /MD /Gy")
-  set(CMAKE_CXX_FLAGS_DEBUG "/Od /Oi /D_DEBUG /MDd /Zi")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
-  if(JUST_THREAD_DEADLOCK_CHECK)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D \"_JUST_THREAD_DEADLOCK_CHECK\"")
-  endif()
-  # Reduce compiler's heap allocation from 1000% of default to 500% to avoid errors when compiling precompiled headers
-  string(REPLACE "Zm1000" "Zm500" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
   list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/dll.cpp") # this file doesn't use precompiled headers
   list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/iterhash.cpp") # this file doesn't use precompiled headers
   list(REMOVE_ITEM cryptopp_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/pch.cpp") # this file is used to create precompiled headers
-  set_source_files_properties(${cryptopp_SOURCES} PROPERTIES
-                                COMPILE_FLAGS "/Yu\"pch.h\"")
-  set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/pch.cpp PROPERTIES
-                                COMPILE_FLAGS "/Yc\"pch.h\"")
+  set_source_files_properties(${cryptopp_SOURCES} PROPERTIES COMPILE_FLAGS "/Yu\"pch.h\"")
+  set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/pch.cpp PROPERTIES COMPILE_FLAGS "/Yc\"pch.h\"")
   target_link_libraries(cryptest odbc32.lib odbccp32.lib Ws2_32.lib)
 endif()

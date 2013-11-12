@@ -69,12 +69,12 @@ config_compiler_and_linker()  # from ${gtest_dir}/cmake/internal_utils.cmake
 # endif()
 
 # Adds Google Mock's and Google Test's header directories to the search path.
-include_directories("${gmock_SOURCE_DIR}/include"
-                    "${gmock_SOURCE_DIR}"
-                    "${gtest_SOURCE_DIR}/include"
-                    # This directory is needed to build directly from Google
-                    # Test sources.
-                    "${gtest_SOURCE_DIR}")
+# include_directories("${gmock_SOURCE_DIR}/include"
+#                     "${gmock_SOURCE_DIR}"
+#                     "${gtest_SOURCE_DIR}/include"
+#                     # This directory is needed to build directly from Google
+#                     # Test sources.
+#                     "${gtest_SOURCE_DIR}")
 
 ########################################################################
 #
@@ -85,6 +85,7 @@ include_directories("${gmock_SOURCE_DIR}/include"
 # are used for other targets, to ensure that Google Mock can be compiled by
 # a user aggressive about warnings.
 cxx_library(gmock "${cxx_strict}" src/gmock-all.cc)
+target_include_directories(gmock SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR})
 add_dependencies(gmock boost)
 add_dependencies(gtest boost)
 target_link_libraries(gmock gtest)

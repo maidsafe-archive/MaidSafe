@@ -142,13 +142,6 @@ get_filename_component(CBFS_ROOT_DIR ${Cbfs_LIBRARY_DEBUG} PATH)
 set(Cbfs_LIBRARY_DIR_DEBUG ${CBFS_ROOT_DIR} CACHE PATH "Path to Callback File System library directory" FORCE)
 set(Cbfs_LIBRARIES optimized ${Cbfs_LIBRARY} debug ${Cbfs_LIBRARY_DEBUG})
 
-include_directories(SYSTEM ${Cbfs_INCLUDE_DIR})
-if(CMAKE_INCLUDE_DIRECTORIES_BEFORE)
-  set(INCLUDE_DIRS ${Cbfs_INCLUDE_DIR} ${INCLUDE_DIRS})
-else()
-  set(INCLUDE_DIRS ${INCLUDE_DIRS} ${Cbfs_INCLUDE_DIR})
-endif()
-
 message(STATUS "Found library ${Cbfs_LIBRARY}")
 message(STATUS "Found library ${Cbfs_LIBRARY_DEBUG}")
 

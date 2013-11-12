@@ -138,7 +138,6 @@ ExternalProject_Add_Step(
 ExternalProject_Get_Property(boost source_dir)
 set(BoostSourceDir ${source_dir})
 set(BoostSourceDir ${BoostSourceDir} PARENT_SCOPE)
-include_directories(SYSTEM "${BoostSourceDir}")
 foreach(Component ${BoostComponents})
   underscores_to_camel_case(${Component} CamelCaseComponent)
   if(MSVC)
