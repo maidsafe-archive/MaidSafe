@@ -197,7 +197,7 @@ if(MaidsafeTesting)
       get_filename_component(exe_name ${value} NAME_WE)
       string(REGEX REPLACE "(.*)_test" "test_\\1" exe_name ${exe_name})
       ms_add_executable(${exe_name} "Tests/Common/leveldb_tests" ${value})
-      target_include_directories(${exe_name} SYSTEM PRIVATE ${PROJECT_SOURCE_DIR})
+      target_include_directories(${exe_name} SYSTEM PRIVATE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include)
       if(WIN32)
         target_link_libraries(${exe_name} leveldb-testharness)
       else()
@@ -205,7 +205,7 @@ if(MaidsafeTesting)
       endif()
       target_compile_options(${exe_name} PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:/wd4018 /wd4244 /wd4267 /wd4800 /wd4996>
-        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>)
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w ${LibCXX} ${LibCXXAbi} >)
     endforeach()
   endmacro()
 
@@ -233,7 +233,7 @@ include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
 target_compile_options(leveldb PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/wd4244 /wd4267 /wd4996>
   $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>
-  PUBLIC $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-pthread>)
+  PUBLIC $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-pthread ${LibCXX} ${LibCXXAbi} >)
 target_compile_options(leveldb-testharness PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/wd4996>
   $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>)
