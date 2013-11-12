@@ -21,7 +21,7 @@
 #==================================================================================================#
 
 
-cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.12.1 FATAL_ERROR)
 project(maidsafe)
 
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -33,6 +33,7 @@ include(CTest)
 set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_ERROR_DEPRECATED ON)
 set(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION ON)
+set(EXPORT_COMPILE_COMMANDS ON)
 set(HR "================================================================================")
 
 

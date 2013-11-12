@@ -13,7 +13,7 @@
 #==============================================================================#
 
 
-cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.12.1 FATAL_ERROR)
 project(Cryptopp)
 
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_setup.cmake)
@@ -120,7 +120,7 @@ target_compile_options(cryptopp
         $<$<CONFIG:MinSizeRel>:/MD>
         $<$<CONFIG:RelWithDebInfo>:/O2 /GL /MD /Zi>
     >
-    $<$<BOOL:${UNIX}>:-std=c++11 ${LibCpp}>
+    $<$<BOOL:${UNIX}>:-std=c++11 ${LibCXX}>
   PRIVATE
     $<$<BOOL:${MSVC}>:/EHsc /W3 /wd4068>
     $<$<BOOL:${UNIX}>:
@@ -148,7 +148,7 @@ target_compile_options(cryptest
 
 if(UNIX)
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LibCpp} ${LibCppAbi}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LibCXX} ${LibCXXAbi}")
     if(HAVE_LIBC++ OR HAVE_LIBC++ABI)
       set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -ldl")
     endif()
