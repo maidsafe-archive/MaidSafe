@@ -24,10 +24,13 @@
 #                                                                                                  #
 #  Only the first 2 variables should require regular maintenance, i.e. BoostVersion & BoostSHA1.   #
 #                                                                                                  #
+#  If USE_BOOST_CACHE is set, boost is downloaded, extracted and built to a directory outside of   #
+#  the MaidSafe build tree.  The chosen directory can be set in BOOST_CACHE_DIR, or if this is    #
+#  empty, an appropriate default is chosen for the given platform.                                 #
+#                                                                                                  #
 #  Variables set and cached by this module are:                                                    #
 #    BoostSourceDir (required for subsequent include_directories calls) and per-library            #
-#    variables defining the full path(s) to the release (and debug for MSVC) libraries, e.g.       #
-#    BoostDateTimeLibs, BoostFilesystemLibs.                                                       #
+#    variables defining the libraries, e.g. BoostDateTimeLibs, BoostFilesystemLibs.                #
 #                                                                                                  #
 #==================================================================================================#
 
@@ -41,13 +44,17 @@ string(REGEX REPLACE "beta\\.([0-9])$" "beta\\1" BoostFolderName ${BoostVersion}
 string(REPLACE "." "_" BoostFolderName ${BoostFolderName})
 set(BoostFolderName boost_${BoostFolderName})
 
-if(WIN32)
-  get_temp_dir()
-  set(BoostCacheDir "${TempDir}")
-elseif(APPLE)
-  set(BoostCacheDir "$ENV{HOME}/Library/Caches")
-else()
-  set(BoostCacheDir "/var/cache")
+if(USE_BOOST_CACHE)
+  if(BOOST_CACHE_DIR)
+    set(BoostCacheDir ${BOOST_CACHE_DIR})
+  elseif(WIN32)
+    get_temp_dir()
+    set(BoostCacheDir "${TempDir}")
+  elseif(APPLE)
+    set(BoostCacheDir "$ENV{HOME}/Library/Caches")
+  else()
+    set(BoostCacheDir "/var/cache")
+  endif()
 endif()
 
 if(NOT IS_DIRECTORY "${BoostCacheDir}")
@@ -56,6 +63,7 @@ else()
   set(BoostCacheDir "${BoostCacheDir}/MaidSafe")
   file(MAKE_DIRECTORY "${BoostCacheDir}")
 endif()
+
 set(BoostDownloadFolder "${BoostFolderName}_${CMAKE_CXX_COMPILER_ID}_${CMAKE_CXX_COMPILER_VERSION}")
 if(HAVE_LIBC++)
   set(BoostDownloadFolder "${BoostDownloadFolder}_LibCXX")
