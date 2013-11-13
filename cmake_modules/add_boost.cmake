@@ -171,7 +171,7 @@ foreach(Component ${BoostComponents})
                           IMPORTED_LOCATION ${BoostSourceDir}/stage/lib/libboost_${Component}-mt.a)
   endif()
   set_target_properties(boost_${Component} Boost${CamelCaseComponent} PROPERTIES
-                        LABELS Boost FOLDER "Third Party/Boost")
+                        LABELS Boost FOLDER "Third Party/Boost" EXCLUDE_FROM_ALL TRUE)
   add_dependencies(Boost${CamelCaseComponent} boost_${Component})
   set(Boost${CamelCaseComponent}Libs Boost${CamelCaseComponent})
   set(Boost${CamelCaseComponent}Libs ${Boost${CamelCaseComponent}Libs} PARENT_SCOPE)
