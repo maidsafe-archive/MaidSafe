@@ -40,7 +40,7 @@ endif()
 # ${gtest_BINARY_DIR}.
 # Language "C" is required for find_package(Threads).
 project(gtest CXX C)
-cmake_minimum_required(VERSION 2.6.2)
+cmake_minimum_required(VERSION 2.8.12.1)
 
 if (COMMAND set_up_hermetic_build)
   set_up_hermetic_build()
@@ -52,15 +52,15 @@ include(cmake/internal_utils.cmake)
 config_compiler_and_linker()  # Defined in internal_utils.cmake.
 
 # Where Google Test's .h files can be found.
-include_directories(
-  ${gtest_SOURCE_DIR}/include
-  ${gtest_SOURCE_DIR}
-  ${CMAKE_SOURCE_DIR}/src/common/include
-  ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost
-  )
+# include_directories(
+#   ${gtest_SOURCE_DIR}/include
+#   ${gtest_SOURCE_DIR}
+#   ${CMAKE_SOURCE_DIR}/src/common/include
+#   ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost
+#   )
 
 # Where Google Test's libraries can be found.
-link_directories(${gtest_BINARY_DIR}/src)
+# link_directories(${gtest_BINARY_DIR}/src)
 
 ########################################################################
 #
@@ -71,6 +71,22 @@ link_directories(${gtest_BINARY_DIR}/src)
 # are used for other targets, to ensure that gtest can be compiled by a user
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
+target_include_directories(gtest PRIVATE ${CMAKE_SOURCE_DIR}/src/common/include)
+target_include_directories(gtest SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR} ${BoostSourceDir})
+
+target_compile_definitions(gtest
+  INTERFACE
+    GTEST_DONT_DEFINE_FAIL=1
+    GTEST_DONT_DEFINE_SUCCEED=1
+    $<$<AND:$<BOOL:${UNIX}>,$<CXX_COMPILER_ID:Clang>>:GTEST_USE_OWN_TR1_TUPLE=1 _FILE_OFFSET_BITS=64>
+)
+
+# These next 2 commands are a workaround to avoid having to link maidsafe_common via a target_link_libraries call.
+# GTest depends on Common since we use log.h, but this would involve including this file from within the
+# CMakeLists.txt of Common.
+target_compile_options(gtest PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/wd4512>)
+target_compile_definitions(gtest PRIVATE $<$<BOOL:${WIN32}>:MAIDSAFE_WIN32> $<$<BOOL:${MSVC}>:BOOST_ALL_NO_LIB>)
+
 if(MSVC)
   set_target_properties(gtest PROPERTIES
                         STATIC_LIBRARY_FLAGS_RELEASE "/LTCG"

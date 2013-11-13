@@ -55,7 +55,6 @@ function(add_protoc_command BaseName ProtoRootDir ProtoRelativeDir)
   set(${BaseName}ProtoHeaders "" PARENT_SCOPE)
   set(${BaseName}Protos "" PARENT_SCOPE)
   set(GeneratedProtoRootDir ${CMAKE_BINARY_DIR}/GeneratedProtoFiles)
-  include_directories(${GeneratedProtoRootDir})
 
   # Get list of .proto files
   file(GLOB ProtoFiles RELATIVE ${ProtoRootDir} ${ProtoRootDir}/${ProtoRelativeDir}/*.proto)

@@ -55,5 +55,4 @@ ExternalProject_Add(
 ExternalProject_Get_Property(catch source_dir)
 set(CatchSourceDir ${source_dir}/include)
 set(CatchSourceDir ${CatchSourceDir} PARENT_SCOPE)
-include_directories(SYSTEM "${CatchSourceDir}")
 set_target_properties(catch PROPERTIES LABELS Catch FOLDER "Third Party/Catch")

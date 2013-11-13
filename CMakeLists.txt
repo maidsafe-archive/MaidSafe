@@ -21,7 +21,7 @@
 #==================================================================================================#
 
 
-cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.12.1 FATAL_ERROR)
 project(maidsafe)
 
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -33,6 +33,7 @@ include(CTest)
 set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_ERROR_DEPRECATED ON)
 set(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION ON)
+set(EXPORT_COMPILE_COMMANDS ON)
 set(HR "================================================================================")
 
 
@@ -68,11 +69,8 @@ set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 include(version)
 
 
-# Disable auto-linking qtmain for Windows.  This policy can be set to NEW (and the corresponding
-# explicit linking of qtmain can be removed) when the minimum CMake version becomes 2.8.11.
-if(POLICY CMP0020)
-  cmake_policy(SET CMP0020 OLD)
-endif()
+# Enable auto-linking qtmain for Windows.
+cmake_policy(SET CMP0020 NEW)
 
 
 # Force all libraries and exes to be built to the top-level build dir.
@@ -109,6 +107,7 @@ else()
   option(HAVE_LIBC++ABI "If ON, '-lc++abi' is added to the link flags" OFF)
 endif()
 option(USE_JUST_THREADS "If ON, try to find and use the just::thread library (Windows or gcc 4.7 only)" OFF)
+include(standard_flags)
 
 
 add_subdirectory(src/third_party_libs)

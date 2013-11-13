@@ -55,13 +55,8 @@
 
 # Main function - the only one designed to be called from outside this module.
 function(add_gtests TEST_TARGET)
-  get_target_property(Definitions ${TEST_TARGET} COMPILE_DEFINITIONS)
-  if(Definitions)
-    set(Definitions "${Definitions};USE_GTEST")
-  else()
-    set(Definitions "USE_GTEST")
-  endif()
-  set_target_properties(${TEST_TARGET} PROPERTIES COMPILE_DEFINITIONS "${Definitions}")
+  target_compile_definitions(${TEST_TARGET} PRIVATE USE_GTEST)
+  target_link_libraries(${TEST_TARGET} gmock gtest)
 
   if(NOT BEHAVIOURAL_TEST_TIMEOUT)
     set(BEHAVIOURAL_TEST_TIMEOUT 60)

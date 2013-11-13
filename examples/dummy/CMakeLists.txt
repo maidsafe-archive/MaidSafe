@@ -66,9 +66,6 @@ include(${MaidSafeExport})
 include(CTest)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-include_directories("${PROJECT_SOURCE_DIR}/include")
-include_directories("${PROJECT_SOURCE_DIR}/src")
-
 include(utils)
 get_target_platform()
 get_target_architecture()
@@ -98,6 +95,9 @@ add_executable(${ProjectId}
                ${RootProtos}
                ${NestedProtos}
                )
+
+target_include_directories(${ProjectId} PUBLIC "${PROJECT_SOURCE_DIR}/include" PRIVATE "${PROJECT_SOURCE_DIR}/src")
+
 # Specify dependencies.  MaidSafe libraries are prefixed 'maidsafe_'.  For details, see the contents
 # of the ${MAIDSAFE_BINARY_DIR}/CMakeExports/<MaidSafe lib name>_export.cmake files.
 target_link_libraries(${ProjectId} maidsafe_common)
@@ -109,5 +109,4 @@ target_link_libraries(${ProjectId} maidsafe_common)
 #  flags, the last one in the flags string will "win".                                             # 
 #==================================================================================================#
 include(standard_flags)
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX-")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error")
+#target_compile_options(${ProjectId} PRIVATE $<$<BOOL:${MSVC}>:/WX-> $<$<BOOL:${UNIX}>:-Wno-error>)

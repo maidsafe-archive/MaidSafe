@@ -25,11 +25,8 @@
 #==================================================================================================#
 
 
-# Disable auto-linking qtmain for Windows.  This policy can be set to NEW (and the corresponding
-# explicit linking of qtmain can be removed) when the minimum CMake version becomes 2.8.11.
-if(POLICY CMP0020)
-  cmake_policy(SET CMP0020 OLD)
-endif()
+# Enable auto-linking qtmain for Windows.
+cmake_policy(SET CMP0020 NEW)
 
 check_compiler()
 underscores_to_camel_case(${PROJECT_NAME} CamelCaseProjectName)
@@ -71,15 +68,7 @@ endif()
 
 
 set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
-include_directories("${PROJECT_SOURCE_DIR}/include")
-include_directories("${PROJECT_SOURCE_DIR}/src")
-include_directories(SYSTEM "${BoostSourceDir}")
-include_directories(SYSTEM "${CatchSourceDir}")
-include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs")  # for cryptopp
-include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/protobuf/src")
-include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/googlemock/gtest/include")
-include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/googlemock/include")
-include_directories(SYSTEM "${maidsafe_SOURCE_DIR}/src/third_party_libs/leveldb/include")
+
 
 include(check_licenses)
 include(utils)

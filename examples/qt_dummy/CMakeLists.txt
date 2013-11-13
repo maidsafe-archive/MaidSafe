@@ -66,12 +66,10 @@ enable_testing()
 include(CTest)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-include_directories("${PROJECT_SOURCE_DIR}/include")
-include_directories("${PROJECT_SOURCE_DIR}/src")
-
 include(utils)
 get_target_platform()
 get_target_architecture()
+
 
 #==================================================================================================#
 # Qt library search                                                                                #
@@ -126,6 +124,9 @@ add_executable(${ProjectId}
                ${RootProtos}
                ${NestedProtos}
                )
+
+target_include_directories(${ProjectId} PUBLIC "${PROJECT_SOURCE_DIR}/include" PRIVATE "${PROJECT_SOURCE_DIR}/src")
+
 # Specify dependencies.  MaidSafe libraries are prefixed 'maidsafe_'.  For details, see the contents
 # of the ${MAIDSAFE_BINARY_DIR}/CMakeExports/<MaidSafe lib name>_export.cmake files.
 target_link_libraries(${ProjectId} maidsafe_common Qt5::Core Qt5::Widgets)
@@ -140,7 +141,6 @@ endif()
 #  flags, the last one in the flags string will "win".                                             #
 #==================================================================================================#
 include(standard_flags)
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX-")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error")
+#target_compile_options(${ProjectId} PRIVATE $<$<BOOL:${MSVC}>:/WX-> $<$<BOOL:${UNIX}>:-Wno-error>)
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DQT_NO_DEBUG_OUTPUT -DQT_NO_WARNING_OUTPUT -DQT_NO_DEBUG_STREAM")
+target_compile_definitions(${ProjectId} PRIVATE $<$<CONFIG:Release>:QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT QT_NO_DEBUG_STREAM>)

@@ -71,7 +71,7 @@ endmacro()
 # Adds a static library with CMake Target name of "maidsafe_${LIB_OUTPUT_NAME}".
 function(ms_add_static_library LIB_OUTPUT_NAME)
   string(TOLOWER ${LIB_OUTPUT_NAME} LIB)
-  set(ALL_LIBRARIES ${ALL_LIBRARIES} maidsafe_${LIB} PARENT_SCOPE)
+  set(AllStaticLibsForCurrentProject ${AllStaticLibsForCurrentProject} maidsafe_${LIB} PARENT_SCOPE)
   add_library(maidsafe_${LIB} STATIC ${ARGN})
   set_target_properties(maidsafe_${LIB} PROPERTIES LABELS ${CamelCaseProjectName} FOLDER "MaidSafe/Libraries")
 endfunction()
@@ -79,10 +79,19 @@ endfunction()
 
 # Adds an executable with CMake Target name of "${Exe}".
 # "${FolderName}" defines the folder in which the executable appears if the
-# chosen IDE supports folders for projects.
+# chosen IDE supports folders for projects.  The exe will have the preprocessor definition
+# APPLICATION_NAME=${AppName}.  AppName is the value of ${Exe}Name if it exists, otherwise it's the
+# camel-case name of the exe.  (e.g. the exe 'test_common', will have APPLICATION_NAME=TestCommon
+# unless 'test_commonName' is set, in which case it will have APPLICATION_NAME=${test_commonName})
 function(ms_add_executable Exe FolderName)
   set(AllExesForCurrentProject ${AllExesForCurrentProject} ${Exe} PARENT_SCOPE)
   add_executable(${Exe} ${ARGN})
+  if(${Exe}Name)
+    set(AppName ${${Exe}Name})
+  else()
+    underscores_to_camel_case(${Exe} AppName)
+  endif()
+  target_compile_definitions(${Exe} PRIVATE COMPANY_NAME=MaidSafe APPLICATION_NAME=${AppName})
   set_target_properties(${Exe} PROPERTIES LABELS ${CamelCaseProjectName} FOLDER "MaidSafe/Executables/${FolderName}")
   string(REPLACE "Tests/" "" TEST_FOLDER_NAME ${FolderName})
   if(NOT ${TEST_FOLDER_NAME} STREQUAL ${FolderName})
