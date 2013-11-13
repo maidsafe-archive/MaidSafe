@@ -243,25 +243,33 @@ function(ms_copy_to_package_folder maidsafe_target)
 endfunction()
 
 
+# Gets the path to the temp directory using the same method as Boost.Filesystem:
+# http://www.boost.org/doc/libs/release/libs/filesystem/doc/reference.html#temp_directory_path
+function(get_temp_dir)
+  if(TempDir)
+    return()
+  elseif(WIN32)
+    file(TO_CMAKE_PATH "$ENV{TEMP}" WindowsTempDir)
+    set(Temp "${WindowsTempDir}")
+  else()
+    foreach(Var TMPDIR TMP TEMP TEMPDIR)
+      if(IS_DIRECTORY "$ENV{${Var}}")
+        set(Temp $ENV{${Var}})
+        break()
+      endif()
+    endforeach()
+    if(NOT TempDir AND IS_DIRECTORY "/tmp")
+      set(Temp /tmp)
+    endif()
+  endif()
+  set(TempDir "${Temp}" CACHE INTERNAL "Path to temp directory")
+endfunction()
+
+
 # Searches for and removes old test directories that may have been left in %temp%
 function(cleanup_temp_dir)
-  # Get temp dir as per http://www.boost.org/doc/libs/release/libs/filesystem/doc/reference.html#temp_directory_path
-  if(DEFINED ENV{TMPDIR})
-    set(TempDir "$ENV{TMPDIR}")
-  elseif(DEFINED ENV{TMP})
-    set(TempDir "$ENV{TMP}")
-  elseif(DEFINED ENV{TEMP})
-    set(TempDir "$ENV{TEMP}")
-  elseif(DEFINED ENV{TEMPDIR})
-    set(TempDir "$ENV{TEMPDIR}")
-  elseif(NOT WIN32)
-    set(TempDir "/tmp")
-  else()
-    return()
-  endif()
-  string(REPLACE "\\" "/" TempDir ${TempDir})
-
   # Find MaidSafe-specific directories
+  get_temp_dir()
   file(GLOB MaidSafeTempDirs ${TempDir}/MaidSafe_Test*)
   file(GLOB SigmoidTempDirs ${TempDir}/Sigmoid_Test*)
   list(APPEND MaidSafeTempDirs ${SigmoidTempDirs})
@@ -354,6 +362,7 @@ function(setup_ci_scripts)
   endif()
 endfunction()
 
+
 # Gets the target platform name
 function(get_target_platform)
   if(TargetPlatform)
@@ -389,6 +398,7 @@ function(get_target_platform)
   set(TargetPlatform "${Platform}" PARENT_SCOPE)
 endfunction()
 
+
 # Gets the target architecture
 # Copied from https://github.com/petroules/solar-cmake/blob/master/TargetArch.cmake
 # and described at http://stackoverflow.com/a/12024211/424459
@@ -399,7 +409,6 @@ endfunction()
 
 # Regarding POWER/PowerPC, just as is noted in the Qt source,
 # "There are many more known variants/revisions that we do not handle/detect."
-
 set(archdetect_c_code "
 #if defined(__arm__) || defined(__TARGET_ARCH_ARM)
 #if defined(__ARM_ARCH_7__) \\
@@ -442,9 +451,9 @@ set(archdetect_c_code "
 #error cmake_ARCH unknown
 ")
 
+
 # Set ppc_support to TRUE before including this file or ppc and ppc64
 # will be treated as invalid architectures since they are no longer supported by Apple
-
 function(get_target_architecture)
   if(TargetArchitecture)
     return()
@@ -651,6 +660,7 @@ function(set_meta_files_custom_commands OutputFile InputFile MetaFiles OutputFil
   source_group("${OutputFileSourceGroup}" FILES ${OutputFile})
   source_group("${CMakeFilesSourceGroup}" FILES ${CMAKE_CURRENT_LIST_FILE} ${InputFile} ${MetaFiles})
 endfunction()
+
 
 # Configures 'OutputFile' to provide a C++ function which returns the absolute path to 'TargetName'.
 function(add_process_location TargetName OutputFile)
