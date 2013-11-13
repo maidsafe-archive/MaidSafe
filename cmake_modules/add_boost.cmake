@@ -41,20 +41,37 @@ string(REGEX REPLACE "beta\\.([0-9])$" "beta\\1" BoostFolderName ${BoostVersion}
 string(REPLACE "." "_" BoostFolderName ${BoostFolderName})
 set(BoostFolderName boost_${BoostFolderName})
 
-get_temp_dir()
-if(NOT IS_DIRECTORY "${TempDir}")
-  set(TempDir ${CMAKE_BINARY_DIR})
+if(WIN32)
+  get_temp_dir()
+  set(BoostCacheDir "${TempDir}")
+elseif(APPLE)
+  set(BoostCacheDir "$ENV{HOME}/Library/Caches")
+else()
+  set(BoostCacheDir "/var/cache")
+endif()
+
+if(NOT IS_DIRECTORY "${BoostCacheDir}")
+  set(BoostCacheDir ${CMAKE_BINARY_DIR})
+else()
+  set(BoostCacheDir "${BoostCacheDir}/MaidSafe")
+  file(MAKE_DIRECTORY "${BoostCacheDir}")
 endif()
 set(BoostDownloadFolder "${BoostFolderName}_${CMAKE_CXX_COMPILER_ID}_${CMAKE_CXX_COMPILER_VERSION}")
+if(HAVE_LIBC++)
+  set(BoostDownloadFolder "${BoostDownloadFolder}_LibCXX")
+endif()
+if(HAVE_LIBC++ABI)
+  set(BoostDownloadFolder "${BoostDownloadFolder}_LibCXXABI")
+endif()
 string(REPLACE "." "_" BoostDownloadFolder ${BoostDownloadFolder})
-set(BoostDownloadFolder ${TempDir}/${BoostDownloadFolder})
+set(BoostDownloadFolder ${BoostCacheDir}/${BoostDownloadFolder})
 
 # Download boost if required
-if(NOT EXISTS "${TempDir}/${BoostFolderName}.tar.bz2")
-  message(STATUS "Downloading boost ${BoostVersion} to ${TempDir}")
+if(NOT EXISTS "${BoostCacheDir}/${BoostFolderName}.tar.bz2")
+  message(STATUS "Downloading boost ${BoostVersion} to ${BoostCacheDir}")
 endif()
 file(DOWNLOAD http://sourceforge.net/projects/boost/files/boost/${BoostVersion}/${BoostFolderName}.tar.bz2/download
-     ${TempDir}/${BoostFolderName}.tar.bz2
+     ${BoostCacheDir}/${BoostFolderName}.tar.bz2
      INACTIVITY_TIMEOUT 60
      TIMEOUT 600
      STATUS Status
@@ -67,7 +84,7 @@ string(FIND "${Status}" "returning early" Found)
 if(Found LESS 0 OR NOT IS_DIRECTORY "${BoostDownloadFolder}")
   message(STATUS "Extracting boost ${BoostVersion} to ${BoostDownloadFolder}")
   file(MAKE_DIRECTORY "${BoostDownloadFolder}")
-  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xfz ${TempDir}/${BoostFolderName}.tar.bz2
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xfz ${BoostCacheDir}/${BoostFolderName}.tar.bz2
                   WORKING_DIRECTORY ${BoostDownloadFolder}
                   RESULT_VARIABLE Result
                   )
@@ -198,7 +215,7 @@ ExternalProject_Add(
     LOG_INSTALL ON
     )
 
-# Copy the folders/files to the main boost source dir 
+# Copy the folders/files to the main boost source dir
 ExternalProject_Add_Step(
     boost_process
     copy_boost_process_dir
