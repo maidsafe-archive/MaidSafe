@@ -46,21 +46,28 @@ set(BoostFolderName boost_${BoostFolderName})
 
 if(USE_BOOST_CACHE)
   if(BOOST_CACHE_DIR)
-    set(BoostCacheDir ${BOOST_CACHE_DIR})
+    file(TO_CMAKE_PATH "${BOOST_CACHE_DIR}" BoostCacheDir)
   elseif(WIN32)
     get_temp_dir()
     set(BoostCacheDir "${TempDir}")
   elseif(APPLE)
     set(BoostCacheDir "$ENV{HOME}/Library/Caches")
   else()
-    set(BoostCacheDir "/var/cache")
+    set(BoostCacheDir "$ENV{HOME}/.cache")
   endif()
 endif()
 
 if(NOT IS_DIRECTORY "${BoostCacheDir}")
+  if(BOOST_CACHE_DIR)
+    set(Message "\nThe directory \"${BOOST_CACHE_DIR}\" provided in BOOST_CACHE_DIR doesn't exist.")
+    set(Message "${Message}  Falling back to default path at \"${CMAKE_BINARY_DIR}/MaidSafe\"\n")
+    message(WARNING "${Message}")
+  endif()
   set(BoostCacheDir ${CMAKE_BINARY_DIR})
 else()
-  set(BoostCacheDir "${BoostCacheDir}/MaidSafe")
+  if(NOT USE_BOOST_CACHE AND NOT BOOST_CACHE_DIR)
+    set(BoostCacheDir "${BoostCacheDir}/MaidSafe")
+  endif()
   file(MAKE_DIRECTORY "${BoostCacheDir}")
 endif()
 
@@ -70,6 +77,9 @@ if(HAVE_LIBC++)
 endif()
 if(HAVE_LIBC++ABI)
   set(BoostDownloadFolder "${BoostDownloadFolder}_LibCXXABI")
+endif()
+if(CMAKE_CL_64)
+  set(BoostDownloadFolder "${BoostDownloadFolder}_Win64")
 endif()
 string(REPLACE "." "_" BoostDownloadFolder ${BoostDownloadFolder})
 set(BoostDownloadFolder ${BoostCacheDir}/${BoostDownloadFolder})
@@ -119,9 +129,9 @@ if(NOT b2Path)
     set(b2Bootstrap "./bootstrap.sh")
   endif()
   execute_process(COMMAND ${b2Bootstrap} WORKING_DIRECTORY ${BoostSourceDir}
-                  RESULT_VARIABLE Result OUTPUT_VARIABLE Output)
+                  RESULT_VARIABLE Result OUTPUT_VARIABLE Output ERROR_VARIABLE Error)
   if(NOT Result EQUAL 0)
-    message(FATAL_ERROR "Failed running ${b2Bootstrap}:\n${Output}\n")
+    message(FATAL_ERROR "Failed running ${b2Bootstrap}:\n${Output}\n${Error}\n")
   endif()
 endif()
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${BoostSourceDir}/Build)
@@ -134,7 +144,6 @@ set(b2Args <SOURCE_DIR>/b2
            link=static
            threading=multi
            runtime-link=shared
-           --layout=tagged
            --build-dir=Build
            stage
            -d+2
@@ -142,16 +151,21 @@ set(b2Args <SOURCE_DIR>/b2
 
 # Set up platform-specific b2 (bjam) command line arguments
 if(MSVC)
+  if(MSVC11)
+    list(APPEND b2Args toolset=msvc-11.0)
+  elseif(MSVC12)
+    list(APPEND b2Args toolset=msvc-12.0)
+  endif()
   list(APPEND b2Args
-              toolset=msvc
               define=_BIND_TO_CURRENT_MFC_VERSION=1
               define=_BIND_TO_CURRENT_CRT_VERSION=1
+              --layout=versioned
               )
   if(${TargetArchitecture} STREQUAL "x86_64")
     list(APPEND b2Args address-model=64)
   endif()
 elseif(UNIX)
-  list(APPEND b2Args variant=release cxxflags=-fPIC cxxflags=-std=c++11 -sNO_BZIP2=1)
+  list(APPEND b2Args variant=release cxxflags=-fPIC cxxflags=-std=c++11 -sNO_BZIP2=1 --layout=tagged)
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     list(APPEND b2Args toolset=clang)
     if(HAVE_LIBC++)
@@ -161,7 +175,7 @@ elseif(UNIX)
     list(APPEND b2Args toolset=gcc)
   endif()
 elseif(APPLE)
-  list(APPEND b2Args toolset=clang cxxflags=-fPIC cxxflags=-std=c++11 architecture=combined address-model=32_64)
+  list(APPEND b2Args toolset=clang cxxflags=-fPIC cxxflags=-std=c++11 architecture=combined address-model=32_64 --layout=tagged)
 endif()
 
 # Get list of components
@@ -186,11 +200,17 @@ foreach(Component ${BoostComponents})
   underscores_to_camel_case(${Component} CamelCaseComponent)
   add_library(Boost${CamelCaseComponent} STATIC IMPORTED GLOBAL)
   if(MSVC)
+    if(MSVC11)
+      set(CompilerName vc110)
+    elseif(MSVC12)
+      set(CompilerName vc120)
+    endif()
+    string(REGEX MATCH "[0-9]_[0-9][0-9]" Version "${BoostFolderName}")
     set_target_properties(Boost${CamelCaseComponent} PROPERTIES
-                          IMPORTED_LOCATION_DEBUG ${BoostSourceDir}/stage/lib/libboost_${Component}-mt-gd.lib
-                          IMPORTED_LOCATION_MINSIZEREL ${BoostSourceDir}/stage/lib/libboost_${Component}-mt.lib
-                          IMPORTED_LOCATION_RELEASE ${BoostSourceDir}/stage/lib/libboost_${Component}-mt.lib
-                          IMPORTED_LOCATION_RELWITHDEBINFO ${BoostSourceDir}/stage/lib/libboost_${Component}-mt.lib)
+                          IMPORTED_LOCATION_DEBUG ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-gd-${Version}.lib
+                          IMPORTED_LOCATION_MINSIZEREL ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
+                          IMPORTED_LOCATION_RELEASE ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
+                          IMPORTED_LOCATION_RELWITHDEBINFO ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib)
   else()
     set_target_properties(Boost${CamelCaseComponent} PROPERTIES
                           IMPORTED_LOCATION ${BoostSourceDir}/stage/lib/libboost_${Component}-mt.a)
@@ -200,7 +220,9 @@ foreach(Component ${BoostComponents})
   add_dependencies(Boost${CamelCaseComponent} boost_${Component})
   set(Boost${CamelCaseComponent}Libs Boost${CamelCaseComponent})
   set(Boost${CamelCaseComponent}Libs ${Boost${CamelCaseComponent}Libs} PARENT_SCOPE)
+  list(APPEND AllBoostLibs Boost${CamelCaseComponent})
 endforeach()
+set(AllBoostLibs ${AllBoostLibs} PARENT_SCOPE)
 
 
 
