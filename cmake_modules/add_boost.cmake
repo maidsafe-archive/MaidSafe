@@ -210,10 +210,12 @@ foreach(Component ${BoostComponents})
                           IMPORTED_LOCATION_DEBUG ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-gd-${Version}.lib
                           IMPORTED_LOCATION_MINSIZEREL ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
                           IMPORTED_LOCATION_RELEASE ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
-                          IMPORTED_LOCATION_RELWITHDEBINFO ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib)
+                          IMPORTED_LOCATION_RELWITHDEBINFO ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
+                          LINKER_LANGUAGE CXX)
   else()
     set_target_properties(Boost${CamelCaseComponent} PROPERTIES
-                          IMPORTED_LOCATION ${BoostSourceDir}/stage/lib/libboost_${Component}-mt.a)
+                          IMPORTED_LOCATION ${BoostSourceDir}/stage/lib/libboost_${Component}-mt.a
+                          LINKER_LANGUAGE CXX)
   endif()
   set_target_properties(boost_${Component} Boost${CamelCaseComponent} PROPERTIES
                         LABELS Boost FOLDER "Third Party/Boost" EXCLUDE_FROM_ALL TRUE)
