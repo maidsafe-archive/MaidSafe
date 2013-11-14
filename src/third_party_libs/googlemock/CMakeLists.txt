@@ -86,8 +86,6 @@ config_compiler_and_linker()  # from ${gtest_dir}/cmake/internal_utils.cmake
 # a user aggressive about warnings.
 cxx_library(gmock "${cxx_strict}" src/gmock-all.cc)
 target_include_directories(gmock SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR})
-add_dependencies(gmock boost)
-add_dependencies(gtest boost)
 target_link_libraries(gmock gtest)
 if(MSVC)
   set_target_properties(gmock PROPERTIES

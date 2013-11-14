@@ -173,7 +173,6 @@ set(ALL_FILES_LEVELDB_DIR ${HEADER_FILES_LEVELDB_INCLUDE_DIR}
 #==================================================================================================#
 add_library(leveldb STATIC ${ALL_FILES_LEVELDB_DIR})
 target_include_directories(leveldb SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR} ${BoostSourceDir})
-add_dependencies(leveldb boost)
 if(MSVC)
   target_link_libraries(leveldb ${BoostFilesystemLibs} ${BoostSystemLibs} ${JustThread_LIBRARIES})
 else()
