@@ -33,7 +33,7 @@ if(QT_BIN_DIR)
 endif()
 set(Found TRUE)
 set(ErrorMessage "\nCould not find all required components of Qt5:\n")
-foreach(QtLib Qt5Core Qt5Concurrent Qt5Gui Qt5Widgets Qt5Network Qt5WebKit Qt5WebKitWidgets Qt5LinguistTools Qt5Svg)
+foreach(QtLib Qt5Core Qt5Concurrent Qt5Gui Qt5Multimedia Qt5MultimediaWidgets Qt5Network Qt5Qml Qt5Quick Qt5Svg Qt5WebKit Qt5WebKitWidgets Qt5Widgets Qt5LinguistTools)
   find_package(${QtLib} QUIET)
   if(${QtLib}_FOUND)
     set(ErrorMessage "${ErrorMessage}  Found ${QtLib}\n")
@@ -80,12 +80,17 @@ if(MSVC)
                         "Qt5Concurrent"
                         "Qt5Core"
                         "Qt5Gui"
+                        "Qt5Multimedia"
+                        "Qt5MultimediaQuick_p"
+                        "Qt5MultimediaWidgets"
                         "Qt5Network"
                         "Qt5Qml"
                         "Qt5Quick"
                         "Qt5QuickParticles"
                         "Qt5Svg"
                         "Qt5V8"
+                        "Qt5WebKit"
+                        "Qt5WebKitWidgets"
                         "Qt5Widgets")
 
   execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Release")
