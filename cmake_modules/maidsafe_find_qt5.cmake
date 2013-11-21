@@ -33,8 +33,8 @@ if(QT_BIN_DIR)
 endif()
 set(Found TRUE)
 set(ErrorMessage "\nCould not find all required components of Qt5:\n")
-foreach(QtLib Qt5Core Qt5Concurrent Qt5Gui Qt5Multimedia Qt5MultimediaWidgets Qt5Network Qt5Qml Qt5Quick Qt5Svg Qt5WebKit Qt5WebKitWidgets Qt5Widgets Qt5LinguistTools)
-  find_package(${QtLib} QUIET)
+foreach(QtLib ${Qt5RequiredLibs})
+  find_package(${QtLib} 5.2 QUIET)
   if(${QtLib}_FOUND)
     set(ErrorMessage "${ErrorMessage}  Found ${QtLib}\n")
   else()
@@ -44,6 +44,13 @@ foreach(QtLib Qt5Core Qt5Concurrent Qt5Gui Qt5Multimedia Qt5MultimediaWidgets Qt
 endforeach()
 
 set(AllQt5_FOUND ${Found} CACHE INTERNAL "Whether all required Qt5 modules were found or not.")
+
+list(LENGTH Qt5RequiredLibs Qt5RequiredLibsLength)
+if (Qt5RequiredLibsLength EQUAL 0)
+  set(ErrorMessage "${ErrorMessage}Qt5RequiredLibs is currently empty.")
+  set(ErrorMessage "${ErrorMessage}\nPlease set Qt5RequiredLibs in the corresponding CMakeLists.txt file to check for the required Qt Libs\n\n")
+  message(FATAL_ERROR "${ErrorMessage}")
+endif()
 
 if(NOT AllQt5_FOUND)
   if(Qt5Required)
@@ -71,27 +78,17 @@ if(MSVC)
   # file(GLOB_RECURSE QtQmlDebug "${QtQmlPath}/*d.dll")
 
   # Required Qt Libraries
-  set(REQUIRED_QT_LIBS  "d3dcompiler_46"
-                        "icudt51"
-                        "icuin51"
-                        "icuuc51"
-                        "libEGL"
-                        "libGLESv2"
-                        "Qt5Concurrent"
-                        "Qt5Core"
-                        "Qt5Gui"
-                        "Qt5Multimedia"
-                        "Qt5MultimediaQuick_p"
-                        "Qt5MultimediaWidgets"
-                        "Qt5Network"
-                        "Qt5Qml"
-                        "Qt5Quick"
-                        "Qt5QuickParticles"
-                        "Qt5Svg"
-                        "Qt5V8"
-                        "Qt5WebKit"
-                        "Qt5WebKitWidgets"
-                        "Qt5Widgets")
+  set(REQUIRED_QT_DLLS  d3dcompiler_46
+                        icudt51
+                        icuin51
+                        icuuc51
+                        libEGL
+                        libGLESv2
+                        Qt5Concurrent
+                        Qt5Core
+                        Qt5Gui
+                        Qt5Network)
+  list(APPEND REQUIRED_QT_DLLS ${Qt5RequiredAdditionalDlls})
 
   execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Release")
   execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Debug")
@@ -149,7 +146,7 @@ if(MSVC)
     endforeach()
   endfunction()
 
-  TransferQtBinDlls(REQUIRED_QT_LIBS "Release")
-  TransferQtBinDlls(REQUIRED_QT_LIBS "Debug")
+  TransferQtBinDlls(REQUIRED_QT_DLLS "Release")
+  TransferQtBinDlls(REQUIRED_QT_DLLS "Debug")
 endif()
 
