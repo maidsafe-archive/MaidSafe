@@ -116,6 +116,7 @@ void HuffmanEncoder::GenerateCodeLengths(unsigned int *codeBits, unsigned int ma
 	for (i=0; i<nCodes; i++)
 	{
 		tree[i].symbol = i;
+		tree[i].parent = 0;
 		tree[i].freq = codeCounts[i];
 	}
 	sort(tree.begin(), tree.end(), FreqLessThan());
