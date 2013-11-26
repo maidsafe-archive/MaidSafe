@@ -665,12 +665,18 @@ endfunction()
 # Configures 'OutputFile' to provide a C++ function which returns the absolute path to 'TargetName'.
 function(add_process_location TargetName OutputFile)
   underscores_to_camel_case(${TargetName} Process)
-  add_custom_command(OUTPUT ${OutputFile}
-                     COMMAND ${CMAKE_COMMAND} -DInputFile="${CMAKE_SOURCE_DIR}/tools/process_helpers/process_location.h.in"
-                                              -DOutputFile="${OutputFile}"
-                                              -DProcess=${Process}
-                                              -DProcessLocation="$<TARGET_FILE:${TargetName}>"
-                                              -P "${CMAKE_SOURCE_DIR}/tools/process_helpers/process_location.cmake"
-                     COMMENT "Generating ${OutputFile}")
+  get_filename_component(FileName "${OutputFile}" NAME)
+  set(TempPath ${CMAKE_CURRENT_BINARY_DIR}/Temp/${FileName})
+  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Temp)
+  add_custom_target(${TargetName}_location_helper
+                    ${CMAKE_COMMAND} -DInputFile="${CMAKE_SOURCE_DIR}/tools/process_helpers/process_location.h.in"
+                                     -DOutputFile="${TempPath}"
+                                     -DProcess=${Process}
+                                     -DProcessLocation="$<TARGET_FILE:${TargetName}>"
+                                     -P "${CMAKE_SOURCE_DIR}/tools/process_helpers/process_location.cmake"
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${TempPath}" "${OutputFile}"
+                    COMMENT "Generating ${OutputFile}")
+  get_target_property(Folder ${TargetName} FOLDER)
+  set_target_properties(${TargetName}_location_helper PROPERTIES LABELS ${CamelCaseProjectName} FOLDER "${Folder}")
   set_source_files_properties(${OutputFile} PROPERTIES GENERATED TRUE)
 endfunction()
