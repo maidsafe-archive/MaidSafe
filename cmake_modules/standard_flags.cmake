@@ -38,15 +38,12 @@ else()
 endif()
 
 if(MSVC)
-  set_target_properties(${AllStaticLibsForCurrentProject} PROPERTIES
-                          STATIC_LIBRARY_FLAGS_RELEASE "/LTCG"
-                          STATIC_LIBRARY_FLAGS_RELWITHDEBINFO "/LTCG")
-
-  set_target_properties(${AllExesForCurrentProject} PROPERTIES
-                          LINK_FLAGS_RELEASE "/OPT:REF /OPT:ICF /LTCG /INCREMENTAL:NO"
-                          LINK_FLAGS_DEBUG "/DEBUG"
-                          LINK_FLAGS_RELWITHDEBINFO "/OPT:REF /OPT:ICF /LTCG /INCREMENTAL:NO /DEBUG"
-                          LINK_FLAGS_MINSIZEREL "/LTCG")
+  set_property(TARGET ${AllStaticLibsForCurrentProject} APPEND_STRING PROPERTY STATIC_LIBRARY_FLAGS_RELEASE " /LTCG ")
+  set_property(TARGET ${AllStaticLibsForCurrentProject} APPEND_STRING PROPERTY STATIC_LIBRARY_FLAGS_RELWITHDEBINFO " /LTCG ")
+  set_property(TARGET ${AllExesForCurrentProject} APPEND_STRING PROPERTY LINK_FLAGS_RELEASE " /OPT:REF /OPT:ICF /LTCG /INCREMENTAL:NO ")
+  set_property(TARGET ${AllExesForCurrentProject} APPEND_STRING PROPERTY LINK_FLAGS_DEBUG " /DEBUG ")
+  set_property(TARGET ${AllExesForCurrentProject} APPEND_STRING PROPERTY LINK_FLAGS_RELWITHDEBINFO " /OPT:REF /OPT:ICF /LTCG /INCREMENTAL:NO /DEBUG ")
+  set_property(TARGET ${AllExesForCurrentProject} APPEND_STRING PROPERTY LINK_FLAGS_MINSIZEREL " /LTCG ")
 elseif(UNIX)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lpthread")
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
