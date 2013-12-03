@@ -680,7 +680,8 @@ function(add_process_location TargetName OutputFile)
                                      -P "${CMAKE_SOURCE_DIR}/tools/process_helpers/process_location.cmake"
                     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${TempPath}" "${OutputFile}"
                     COMMENT "Generating ${OutputFile}")
-  get_target_property(Folder ${TargetName} FOLDER)
-  set_target_properties(${TargetName}_location_helper PROPERTIES LABELS ${CamelCaseProjectName} FOLDER "${Folder}")
+  set_target_properties(${TargetName}_location_helper PROPERTIES
+                        LABELS ${CamelCaseProjectName}
+                        FOLDER MaidSafe/Executables/Tools/${CamelCaseProjectName})
   set_source_files_properties(${OutputFile} PROPERTIES GENERATED TRUE)
 endfunction()
