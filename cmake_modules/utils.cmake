@@ -128,8 +128,8 @@ function(add_project_experimental)
                    ${CMAKE_CURRENT_BINARY_DIR}/run_experimental_${CTEST_CONFIGURATION_TYPE}.cmake
                    @ONLY)
   endforeach()
-  if(${CamelCaseProjectName} MATCHES "Lifestuff")
-    add_custom_target(Exper${CamelCaseProjectName} COMMAND python ${maidsafe_SOURCE_DIR}/tools/run_lifestuff_experimental.py ${CMAKE_CTEST_COMMAND} $<CONFIGURATION> ${CMAKE_SOURCE_DIR}/tools/
+  if(${CamelCaseProjectName} MATCHES "Client")
+    add_custom_target(Exper${CamelCaseProjectName} COMMAND python ${maidsafe_SOURCE_DIR}/tools/run_client_experimental.py ${CMAKE_CTEST_COMMAND} $<CONFIGURATION> ${CMAKE_SOURCE_DIR}/tools/
                                                    DEPENDS All${CamelCaseProjectName}
                                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
   else()
