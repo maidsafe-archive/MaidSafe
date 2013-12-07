@@ -90,8 +90,8 @@ if(NOT EXISTS "${BoostCacheDir}/${BoostFolderName}.tar.bz2")
 endif()
 file(DOWNLOAD http://sourceforge.net/projects/boost/files/boost/${BoostVersion}/${BoostFolderName}.tar.bz2/download
      ${BoostCacheDir}/${BoostFolderName}.tar.bz2
-     INACTIVITY_TIMEOUT 60
-     TIMEOUT 600
+     #INACTIVITY_TIMEOUT 0
+     # TIMEOUT 0
      STATUS Status
      SHOW_PROGRESS
      EXPECTED_HASH SHA1=${BoostSHA1}
