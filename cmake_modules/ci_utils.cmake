@@ -231,7 +231,7 @@ endfunction()
 
 
 function(build_and_run SubProject RunAll)
-  # if(NOT ${SubProject} STREQUAL "Lifestuff")
+  # if(NOT ${SubProject} STREQUAL "Client")
   #   message("Temporary skip of All${SubProject}")
   #   return()
   # endif()
@@ -276,14 +276,14 @@ function(build_and_run SubProject RunAll)
   endif()
   set(${SubProject}RecurringBuildFailureCount ${RecurringBuildFailureCount} PARENT_SCOPE)
 
-  # teardown network with python script if it's Lifestuff
-  #if(${SubProject} STREQUAL "Lifestuff")
-  #  execute_process(COMMAND ${CTEST_SOURCE_DIRECTORY}/tools/lifestuff_killer.py
+  # teardown network with python script if it's Client
+  #if(${SubProject} STREQUAL "Client")
+  #  execute_process(COMMAND ${CTEST_SOURCE_DIRECTORY}/tools/client_killer.py
   #                  WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY})
   #endif()
 
-  # set up network with python script if it's Lifestuff
-  if(${SubProject} STREQUAL "Lifestuff")
+  # set up network with python script if it's Client
+  if(${SubProject} STREQUAL "Client")
     #message("--------------------------------------------: python ${CTEST_SOURCE_DIRECTORY}/tools/py_function.py")
     #execute_process(COMMAND python ${CTEST_SOURCE_DIRECTORY}/tools/py_function.py
     #                WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY})
@@ -301,9 +301,9 @@ function(build_and_run SubProject RunAll)
     ctest_test(INCLUDE_LABEL "${SubProject}")
   endif()
 
-  # teardown network with python script if it's Lifestuff
-  if(${SubProject} STREQUAL "Lifestuff")
-    execute_process(COMMAND ${CTEST_SOURCE_DIRECTORY}/tools/lifestuff_killer.py
+  # teardown network with python script if it's Client
+  if(${SubProject} STREQUAL "Client")
+    execute_process(COMMAND ${CTEST_SOURCE_DIRECTORY}/tools/client_killer.py
                     RESULT_VARIABLE TEARDOWN_RESULT
                     WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY})
   endif()

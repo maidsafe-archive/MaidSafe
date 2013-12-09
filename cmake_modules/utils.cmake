@@ -128,8 +128,8 @@ function(add_project_experimental)
                    ${CMAKE_CURRENT_BINARY_DIR}/run_experimental_${CTEST_CONFIGURATION_TYPE}.cmake
                    @ONLY)
   endforeach()
-  if(${CamelCaseProjectName} MATCHES "Lifestuff")
-    add_custom_target(Exper${CamelCaseProjectName} COMMAND python ${maidsafe_SOURCE_DIR}/tools/run_lifestuff_experimental.py ${CMAKE_CTEST_COMMAND} $<CONFIGURATION> ${CMAKE_SOURCE_DIR}/tools/
+  if(${CamelCaseProjectName} MATCHES "Client")
+    add_custom_target(Exper${CamelCaseProjectName} COMMAND python ${maidsafe_SOURCE_DIR}/tools/run_client_experimental.py ${CMAKE_CTEST_COMMAND} $<CONFIGURATION> ${CMAKE_SOURCE_DIR}/tools/
                                                    DEPENDS All${CamelCaseProjectName}
                                                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
   else()
@@ -680,7 +680,8 @@ function(add_process_location TargetName OutputFile)
                                      -P "${CMAKE_SOURCE_DIR}/tools/process_helpers/process_location.cmake"
                     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${TempPath}" "${OutputFile}"
                     COMMENT "Generating ${OutputFile}")
-  get_target_property(Folder ${TargetName} FOLDER)
-  set_target_properties(${TargetName}_location_helper PROPERTIES LABELS ${CamelCaseProjectName} FOLDER "${Folder}")
+  set_target_properties(${TargetName}_location_helper PROPERTIES
+                        LABELS ${CamelCaseProjectName}
+                        FOLDER MaidSafe/Executables/Tools/${CamelCaseProjectName})
   set_source_files_properties(${OutputFile} PROPERTIES GENERATED TRUE)
 endfunction()

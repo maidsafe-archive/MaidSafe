@@ -47,7 +47,7 @@ set(SubModules
       nfs
       vault
       drive
-      lifestuff)
+      client)
 # Set all submodules' source dir before calling add_subdirectory to avoid
 # having to run CMake twice in a clean build tree.
 foreach(SubModule ${SubModules})
@@ -90,8 +90,7 @@ get_target_architecture()
 if(UNIX)
   find_file(CleanCoverageFile clean_coverage.cmake cmake_modules)
   add_custom_target(CleanCoverage COMMAND ${CMAKE_COMMAND} -DSearchDir=${CMAKE_BINARY_DIR} -P ${CleanCoverageFile})
-  option(COVERAGE "If ON, targets will be built with coverage flags included." OFF)
-  set(MaidsafeCoverage ${COVERAGE})
+  option(Coverage "If ON, targets will be built with coverage flags included." OFF)
 endif()
 
 
@@ -135,10 +134,10 @@ endif()
 message("${HR}")
 
 if(UNIX)
-  if(MaidsafeCoverage)
+  if(Coverage)
     message(STATUS "Coverage ON")
   else()
-    message(STATUS "Coverage OFF.  To enable, re-run CMake with -DCOVERAGE=ON")
+    message(STATUS "Coverage OFF.  To enable, re-run CMake with -DCoverage=ON")
   endif()
 endif()
 

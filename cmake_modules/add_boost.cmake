@@ -90,8 +90,8 @@ if(NOT EXISTS "${BoostCacheDir}/${BoostFolderName}.tar.bz2")
 endif()
 file(DOWNLOAD http://sourceforge.net/projects/boost/files/boost/${BoostVersion}/${BoostFolderName}.tar.bz2/download
      ${BoostCacheDir}/${BoostFolderName}.tar.bz2
-     INACTIVITY_TIMEOUT 60
-     TIMEOUT 600
+     #INACTIVITY_TIMEOUT 0
+     # TIMEOUT 0
      STATUS Status
      SHOW_PROGRESS
      EXPECTED_HASH SHA1=${BoostSHA1}
@@ -221,6 +221,11 @@ foreach(Component ${BoostComponents})
                         LABELS Boost FOLDER "Third Party/Boost" EXCLUDE_FROM_ALL TRUE)
   add_dependencies(Boost${CamelCaseComponent} boost_${Component})
   set(Boost${CamelCaseComponent}Libs Boost${CamelCaseComponent})
+  if(APPLE AND "${Component}" STREQUAL "locale")
+    set(Boost${CamelCaseComponent}Libs Boost${CamelCaseComponent} iconv)
+  else()
+    set(Boost${CamelCaseComponent}Libs Boost${CamelCaseComponent})
+  endif()
   set(Boost${CamelCaseComponent}Libs ${Boost${CamelCaseComponent}Libs} PARENT_SCOPE)
   list(APPEND AllBoostLibs Boost${CamelCaseComponent})
 endforeach()

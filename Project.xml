@@ -3,7 +3,6 @@
   </SubProject>
   <SubProject name="Private">
     <Dependency name="Common"/>
-    <Dependency name="Passport"/>
   </SubProject>
   <SubProject name="Passport">
     <Dependency name="Common"/>
@@ -52,7 +51,7 @@
     <Dependency name="Routing"/>
     <Dependency name="Nfs"/>
   </SubProject>
-  <SubProject name="Lifestuff">
+  <SubProject name="Client">
     <Dependency name="Common"/>
     <Dependency name="Private"/>
     <Dependency name="Passport"/>
