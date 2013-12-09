@@ -33,7 +33,7 @@ if(HAVE_LIBC++ABI)
 endif()
 
 if(Coverage)
-  set(CoverageFlags "-pg -fprofile-arcs -ftest-coverage")
+  set(CoverageFlags -pg -fprofile-arcs -ftest-coverage)
 else()
   set(CoverageFlags)
 endif()
