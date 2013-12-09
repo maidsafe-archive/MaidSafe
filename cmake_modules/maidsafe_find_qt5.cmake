@@ -19,7 +19,30 @@
 #  use of the MaidSafe Software.                                                                   #
 #                                                                                                  #
 #==================================================================================================#
+#                                                                                                  #
+#  Finds and sets up Qt5+ as dependency.                                                           #
+#                                                                                                  #
+#  Variables required by this module are:                                                          #
+#    Qt5RequiredLibs - List of Qt5 Libs needed.                                                    #
+#      example: set(Qt5RequiredLibs Qt5Core Qt5Gui Qt5Widgets)                                     #
+#                                                                                                  #
+#  Variables set and cached by this module are:                                                    #
+#    Qt5TargetLibs - Formatted Qt5 Target Link libs                                                #
+#      example: target_link_libraries(my_project ${Qt5TargetLibs})                                 #
+#                                                                                                  #
+#==================================================================================================#
 
+# Required Qt version
+set(Qt5RequiredVersion 5.2.0)
+
+# Check for valid input variables
+list(LENGTH Qt5RequiredLibs Qt5RequiredLibsLength)
+if (Qt5RequiredLibsLength EQUAL 0)
+  set(ErrorMessage "${ErrorMessage}Qt5RequiredLibs is currently empty.")
+  set(ErrorMessage "${ErrorMessage}\nThis variable needs to be set for this module")
+  set(ErrorMessage "${ErrorMessage}\nPlease check maidsafe_find_qt5.cmake for example specification.\n\n")
+  message(FATAL_ERROR "${ErrorMessage}")
+endif()
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -31,34 +54,39 @@ set(CMAKE_AUTOMOC ON)
 if(QT_BIN_DIR)
   set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT_BIN_DIR}/..)
 endif()
+unset(Qt5TargetLibs)
 set(Found TRUE)
-set(ErrorMessage "\nCould not find all required components of Qt5:\n")
-foreach(QtLib Qt5Core Qt5Concurrent Qt5Gui Qt5Multimedia Qt5MultimediaWidgets Qt5Network Qt5Qml Qt5Quick Qt5Svg Qt5WebKit Qt5WebKitWidgets Qt5Widgets Qt5LinguistTools)
-  find_package(${QtLib} QUIET)
+set(ErrorMessage "\nCould not find all required components of Qt${Qt5RequiredVersion}:\n")
+foreach(QtLib ${Qt5RequiredLibs})
+  find_package(${QtLib} ${Qt5RequiredVersion} QUIET)
   if(${QtLib}_FOUND)
     set(ErrorMessage "${ErrorMessage}  Found ${QtLib}\n")
+    if (NOT ${QtLib} STREQUAL "Qt5LinguistTools")
+      string(REPLACE "Qt5" "Qt5::" QtLib ${QtLib})
+      list(APPEND Qt5TargetLibs "${QtLib}")
+    endif()
   else()
     set(Found FALSE)
     set(ErrorMessage "${ErrorMessage}  Did not find ${QtLib}\n")
   endif()
 endforeach()
 
+# Verify if all required libs are found
 set(AllQt5_FOUND ${Found} CACHE INTERNAL "Whether all required Qt5 modules were found or not.")
-
 if(NOT AllQt5_FOUND)
   if(Qt5Required)
     set(ErrorMessage "${ErrorMessage}QT_BIN_DIR is currently set to \"${QT_BIN_DIR}\"")
-    set(ErrorMessage "${ErrorMessage}\nIf Qt5 is not installed, see\n   https://github.com/maidsafe/MaidSafe/wiki/Installing-Prerequisites-and-Optional-Components#installing-qt-5\n")
-    set(ErrorMessage "${ErrorMessage}If Qt5 is already installed, run:\n")
-    set(ErrorMessage "${ErrorMessage}cmake . -DQT_BIN_DIR=\"<Path to Qt5 bin directory>\"\n")
-    set(ErrorMessage "${ErrorMessage}e.g.\ncmake . -DQT_BIN_DIR=\"C:\\Qt\\Qt5.1.0\\5.1.0\\msvc2012_64\\bin\"\n\n")
+    set(ErrorMessage "${ErrorMessage}\nIf Qt${Qt5RequiredVersion} is not installed, see\n   https://github.com/maidsafe/MaidSafe/wiki/Installing-Prerequisites-and-Optional-Components#installing-qt-5\n")
+    set(ErrorMessage "${ErrorMessage}If Qt${Qt5RequiredVersion} is already installed, run:\n")
+    set(ErrorMessage "${ErrorMessage}cmake . -DQT_BIN_DIR=\"<Path to Qt${Qt5RequiredVersion} bin directory>\"\n")
+    set(ErrorMessage "${ErrorMessage}e.g.\ncmake . -DQT_BIN_DIR=\"C:\\Qt\\Qt${Qt5RequiredVersion}\\${Qt5RequiredVersion}\\msvc2012_64\\bin\"\n\n")
     message(FATAL_ERROR "${ErrorMessage}")
   else()
     return()
   endif()
 endif()
 
-# Copy dlls to binary directory
+# Windows - Copy required dlls to binary directory
 if(MSVC)
   # Image format plugins
   file(TO_CMAKE_PATH "${QT_BIN_DIR}/../plugins" QtPluginsPath)
@@ -68,30 +96,15 @@ if(MSVC)
   # QML Platforms dll's
   file(TO_CMAKE_PATH "${QT_BIN_DIR}/../qml" QtQmlPath)
   file(GLOB_RECURSE QtQmlCollection "${QtQmlPath}/*[^.pdb]")
-  # file(GLOB_RECURSE QtQmlDebug "${QtQmlPath}/*d.dll")
 
   # Required Qt Libraries
-  set(REQUIRED_QT_LIBS  "d3dcompiler_46"
-                        "icudt51"
-                        "icuin51"
-                        "icuuc51"
-                        "libEGL"
-                        "libGLESv2"
-                        "Qt5Concurrent"
-                        "Qt5Core"
-                        "Qt5Gui"
-                        "Qt5Multimedia"
-                        "Qt5MultimediaQuick_p"
-                        "Qt5MultimediaWidgets"
-                        "Qt5Network"
-                        "Qt5Qml"
-                        "Qt5Quick"
-                        "Qt5QuickParticles"
-                        "Qt5Svg"
-                        "Qt5V8"
-                        "Qt5WebKit"
-                        "Qt5WebKitWidgets"
-                        "Qt5Widgets")
+  set(REQUIRED_QT_DLLS  d3dcompiler_46
+                        icudt51
+                        icuin51
+                        icuuc51
+                        libEGL
+                        libGLESv2)
+  list(APPEND REQUIRED_QT_DLLS ${Qt5RequiredLibs})
 
   execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Release")
   execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Debug")
@@ -139,17 +152,19 @@ if(MSVC)
   # Qt Bin Dll's
   function(TransferQtBinDlls QtDlls BuildType)
     foreach(QtDll ${${QtDlls}})
-      set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/${BuildType}")
-      if (${BuildType} STREQUAL "Debug" AND ${QtDll} MATCHES "^(Qt|lib)")
-        set(FORMATTED_NAME "${QtDll}d")
-      else()
-        set(FORMATTED_NAME "${QtDll}")
+      if (NOT ${QtDll} STREQUAL "Qt5LinguistTools")
+        set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/${BuildType}")
+        if (${BuildType} STREQUAL "Debug" AND ${QtDll} MATCHES "^(Qt|lib)")
+          set(FORMATTED_NAME "${QtDll}d")
+        else()
+          set(FORMATTED_NAME "${QtDll}")
+        endif()
+        file(COPY "${QT_BIN_DIR}/${FORMATTED_NAME}.dll" DESTINATION ${OUTPUT_PATH})
       endif()
-      file(COPY "${QT_BIN_DIR}/${FORMATTED_NAME}.dll" DESTINATION ${OUTPUT_PATH})
     endforeach()
   endfunction()
 
-  TransferQtBinDlls(REQUIRED_QT_LIBS "Release")
-  TransferQtBinDlls(REQUIRED_QT_LIBS "Debug")
+  TransferQtBinDlls(REQUIRED_QT_DLLS "Release")
+  TransferQtBinDlls(REQUIRED_QT_DLLS "Debug")
 endif()
 
