@@ -53,14 +53,8 @@ unset(Cbfs_LIBRARIES CACHE)
 unset(Cbfs_KEY CACHE)
 set(Cbfs_FOUND FALSE CACHE INTERNAL "")
 
-# Allow user to explicitly avoid using CBFS
-macro(not_using_cbfs)
-  message(STATUS "Not using Callback File System.")
-  return()
-endmacro()
-
 if(DONT_USE_CBFS)
-  not_using_cbfs()
+  return()
 endif()
 
 # If DONT_USE_CBFS=FALSE, assume CBFS is a requirement
@@ -111,7 +105,7 @@ if(NOT Cbfs_LIBRARY)
   if(CbfsRequired)
     fatal_find_error("CBFS LIBRARY")
   else()
-    not_using_cbfs()
+    return()
   endif()
 endif()
 
@@ -121,7 +115,7 @@ if(NOT Cbfs_LIBRARY_DEBUG)
   if(CbfsRequired)
     fatal_find_error("CBFS DEBUG LIBRARY")
   else()
-    not_using_cbfs()
+    return()
   endif()
 endif()
 
@@ -131,7 +125,7 @@ if(NOT Cbfs_INCLUDE_DIR)
   if(CbfsRequired)
     fatal_find_error("CbFS.h")
   else()
-    not_using_cbfs()
+    return()
   endif()
 endif()
 
