@@ -228,6 +228,15 @@ foreach(Component ${BoostComponents})
   list(APPEND AllBoostLibs Boost${CamelCaseComponent})
 endforeach()
 set(AllBoostLibs ${AllBoostLibs} PARENT_SCOPE)
+add_dependencies(boost_chrono boost_system)
+add_dependencies(boost_coroutine boost_context boost_system)
+add_dependencies(boost_filesystem boost_system)
+add_dependencies(boost_graph boost_regex)
+add_dependencies(boost_locale boost_system)
+add_dependencies(boost_log boost_chrono boost_date_time boost_filesystem boost_thread)
+add_dependencies(boost_thread boost_chrono)
+add_dependencies(boost_timer boost_chrono)
+add_dependencies(boost_wave boost_chrono boost_date_time boost_filesystem boost_thread)
 
 
 

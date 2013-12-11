@@ -72,7 +72,6 @@ set(UnitTimeout 1)
 # Main function - the only one designed to be called from outside this module.
 function(add_catch_tests TestTarget)
   target_compile_definitions(${TestTarget} PRIVATE USE_CATCH)
-  target_compile_options(${TestTarget} PRIVATE $<$<CXX_COMPILER_ID:Clang>:-Wno-empty-body>)
   get_target_property(SourceFiles ${TestTarget} SOURCES)
   foreach(SourceFile ${SourceFiles})
     parse_file(${SourceFile} ${TestTarget})

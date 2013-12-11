@@ -80,6 +80,10 @@ check_licenses()
 file(WRITE ${PROJECT_BINARY_DIR}/CTestCustom.cmake "\n")
 add_coverage_exclude(\\\\.pb\\\\.)
 add_coverage_exclude(tests/)
+add_coverage_exclude(boost/)
+add_coverage_exclude(catch/)
+add_coverage_exclude(src/third_party_libs/)
+add_coverage_exclude(GeneratedProtoFiles/)
 add_coverage_exclude(main\\\\.cc)
 
 
