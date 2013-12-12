@@ -12,7 +12,10 @@
 #==================================================================================================#
 
 
-message("${HR}\nConfiguring third party projects\n--------------------------------")
+get_branch(Branch)
+set(Msg "Configuring third party projects on ${Branch} branch of super-project")
+string(REGEX REPLACE . "-" Underscore ${Msg})
+message("${HR}\n${Msg}\n${Underscore}")
 
 
 include(add_boost)

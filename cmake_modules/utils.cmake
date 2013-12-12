@@ -665,23 +665,15 @@ function(set_meta_files_custom_commands OutputFile InputFile MetaFiles OutputFil
   source_group("${CMakeFilesSourceGroup}" FILES ${CMAKE_CURRENT_LIST_FILE} ${InputFile} ${MetaFiles})
 endfunction()
 
-
-# Configures 'OutputFile' to provide a C++ function which returns the absolute path to 'TargetName'.
-function(add_process_location TargetName OutputFile)
-  underscores_to_camel_case(${TargetName} Process)
-  get_filename_component(FileName "${OutputFile}" NAME)
-  set(TempPath ${CMAKE_CURRENT_BINARY_DIR}/Temp/${FileName})
-  file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Temp)
-  add_custom_target(${TargetName}_location_helper
-                    ${CMAKE_COMMAND} -DInputFile="${CMAKE_SOURCE_DIR}/tools/process_helpers/process_location.h.in"
-                                     -DOutputFile="${TempPath}"
-                                     -DProcess=${Process}
-                                     -DProcessLocation="$<TARGET_FILE:${TargetName}>"
-                                     -P "${CMAKE_SOURCE_DIR}/tools/process_helpers/process_location.cmake"
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${TempPath}" "${OutputFile}"
-                    COMMENT "Generating ${OutputFile}")
-  set_target_properties(${TargetName}_location_helper PROPERTIES
-                        LABELS ${CamelCaseProjectName}
-                        FOLDER MaidSafe/Executables/Tools/${CamelCaseProjectName})
-  set_source_files_properties(${OutputFile} PROPERTIES GENERATED TRUE)
+function(get_branch BranchName)
+  execute_process(COMMAND "${Git_EXECUTABLE}" rev-parse --abbrev-ref HEAD
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                  RESULT_VARIABLE Result
+                  OUTPUT_VARIABLE Output
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(Result EQUAL 0)
+    set(${BranchName} "'${Output}'" PARENT_SCOPE)
+  else()
+    set(${BranchName} "unknown" PARENT_SCOPE)
+  endif()
 endfunction()

@@ -31,9 +31,11 @@ cmake_policy(SET CMP0020 NEW)
 check_compiler()
 underscores_to_camel_case(${PROJECT_NAME} CamelCaseProjectName)
 
-string(REGEX REPLACE . "-" UNDERSCORE ${CamelCaseProjectName})
 if(NOT PROJECT_NAME STREQUAL Cryptopp AND NOT PROJECT_NAME STREQUAL leveldb AND NOT PROJECT_NAME STREQUAL network_viewer)
-  message("${HR}\nConfiguring MaidSafe ${CamelCaseProjectName} project\n--------------------${UNDERSCORE}---------")
+  get_branch(Branch)
+  set(Msg "Configuring MaidSafe ${CamelCaseProjectName} project on ${Branch} branch")
+  string(REGEX REPLACE . "-" Underscore ${Msg})
+  message("${HR}\n${Msg}\n${Underscore}")
 endif()
 
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
