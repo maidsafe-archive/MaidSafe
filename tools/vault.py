@@ -78,9 +78,9 @@ def SetupBootstraps(num, user_id):
     proc.kill()
     return False
   proc.kill()
-  RunNetwork(num, data[1], user_id)
-  print("Wait 2 secs for network")
-  time.sleep(2)
+  RunNetwork(num)
+  print("Wait 5 secs for network")
+  time.sleep(5)
   return True
 
 def SaveKeys(peer):
@@ -92,36 +92,37 @@ def SaveKeys(peer):
 def StoreChunk(key_index, chunk_index):
   prog = utils.GetProg('vault_key_helper')
   subprocess.call([prog, '-l1', '-k', str(key_index),
-                  '--peer=' + utils.GetIp() + ':5483',
                   '--chunk_index=' + str(chunk_index)],
                   shell = False, stdout = None, stderr = None)
 
 def FetchChunk(key_index, chunk_index):
   prog = utils.GetProg('vault_key_helper')
   subprocess.call([prog, '-l2', '-k', str(key_index),
-                  '--peer=' + utils.GetIp() + ':5483',
                   '--chunk_index=' + str(chunk_index)],
                   shell = False, stdout = None, stderr = None)
 
 def DeleteChunk(key_index, chunk_index):
   prog = utils.GetProg('vault_key_helper')
   subprocess.call([prog, '-l3', '-k', str(key_index),
-                  '--peer=' + utils.GetIp() + ':5483',
                   '--chunk_index=' + str(chunk_index)],
                   shell = False, stdout = None, stderr = None)
 
 def TestStore(num, index):
   prog = utils.GetProg('vault_key_helper')
-  subprocess.call([prog, '-lt', '-k', str(index),
-                  '--peer=' + utils.GetIp() + ':5483',
-                  '--chunk_set_count=' + str(num)],
-                  shell = False, stdout = None, stderr = None)
-  raw_input("Press any key to continue")
+  proc = subprocess.Popen([prog, '-lt', '-k', str(index),
+                          '--chunk_set_count=' + str(num)],
+                          shell = False, stdout = PIPE, stderr = None)
+  if utils.TimeOut(utils.LookingFor, (proc, 'Stored chunk', 50, num,),
+                   timeout_duration=60*num, default=False):
+    print 'test succeeded'
+  else:
+    print 'test failed'
+  proc.kill
+  lifestuff_killer.KillVaultKeyHelper()
 
 def TestStoreWithDelete(num, index):
   prog = utils.GetProg('vault_key_helper')
   subprocess.call([prog, '-lw', '-k', str(index),
-                  '--peer=' + utils.GetIp() + ':5483',
                   '--chunk_set_count=' + str(num)],
                   shell = False, stdout = None, stderr = None)
   raw_input("Press any key to continue")
@@ -161,29 +162,19 @@ def preexec_function():
     # signal handler SIG_IGN.
     signal.signal(signal.SIGINT, signal.SIG_IGN)
 
-def work(number, ip_address, user_id):
-  prog = utils.GetProg('lifestuff_vault')
-  if user_id == None:
-    return subprocess.Popen([prog, '--peer=' + ip_address.lstrip() + ':5483',
-                            '--disable_ctrl_c=true',
-                            '--identity_index=' + str(number),
-                            '--chunk_path=.cs' + str(number), '--start'],
-                            preexec_fn = preexec_function,
-                            shell = False, stdout = None, stderr = None)
-  else:
-    return subprocess.Popen([prog,
-                            '--peer=' + ip_address.lstrip() + ':5483',
-                            '--disable_ctrl_c=true',
-                            '--identity_index=' + str(number),
-                            '--chunk_path=.cs' + str(number),
-                            '--usr_id=' + user_id, '--start'],
-                            preexec_fn = preexec_function,
-                            shell = False, stdout = None, stderr = None)
+def work(number):
+  prog = utils.GetProg('vault')
+  return subprocess.Popen([prog, '--disable_ctrl_c=true',
+                          '--identity_index=' + str(number),
+                          '--chunk_path=.cs' + str(number)],
+                          preexec_fn = preexec_function,
+                          shell = False, stdout = None, stderr = None)
 
-def RunNetwork(number_of_vaults, ip_address, user_id):
+
+def RunNetwork(number_of_vaults):
   for vault in range(4, number_of_vaults):
-    processes[vault]= work(vault, ip_address, user_id)
-    time.sleep(2)
+    processes[vault]= work(vault)
+    time.sleep(1)
 
 def SignalHandler(signal, frame):
   print("Exiting churn ")
@@ -221,7 +212,7 @@ def KillProc(selected_index):
   selected_stop.kill()
 
 def SetUpNextNode(endpoint, index, user_id):
-  prog = utils.GetProg('lifestuff_vault')
+  prog = utils.GetProg('vault')
   if user_id == None:
     return subprocess.Popen([prog,
                             '--peer=' + endpoint.lstrip(),
@@ -253,7 +244,7 @@ def SanityCheck(num, user_id):
 
 def PrintVaultMenu():
   utils.ClearScreen()
-  procs = utils.CountProcs('lifestuff_vault')
+  procs = utils.CountProcs('vault')
   print(str(procs) + " Vaults running on this machine")
   print ("================================")
   print ("MaidSafe Quality Assurance Suite | Vault Actions")
@@ -314,7 +305,7 @@ def StartVaultsWithGivenBootstrap():
 
 def VaultMenu():
   option = 'a'
-  utils.ClearScreen()
+  utils.ResetScreen()
   while(option != 'm'):
     procs = PrintVaultMenu()
     option = raw_input("Please select an option (m for main QA menu): ").lower()

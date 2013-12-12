@@ -36,11 +36,12 @@ except ImportError:
   print "Website : http://code.google.com/p/psutil/"
   sys.exit(1)
 
-PROC = "lifestuff_"
+PROC_vault = "vault"
+PROC_vault_key_helper = "vault_key_helper"
 
-def KillLifeStuff():
+def KillProcess(proc_name):
   for proc in psutil.process_iter():
-    if proc.name.find(PROC) >= 0:
+    if proc.name.find(proc_name) >= 0:
       print "Killing process:", proc.name
       try:
         if platform.system() == "Windows":
@@ -50,9 +51,15 @@ def KillLifeStuff():
       except:
         print "Could not kill all instances"
 
+def KillVaultKeyHelper():
+  KillProcess(PROC_vault_key_helper)
+
+def KillLifeStuff():
+  KillProcess(PROC_vault)
+
 def Exists():
   for proc in psutil.process_iter():
-    if proc.name.find(PROC) >= 0:
+    if proc.name.find(PROC_vault) >= 0:
       print "Failed to kill process:", proc.name
       return -1;
     print "No lifestuff processes running (now)"
