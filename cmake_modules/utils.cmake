@@ -664,3 +664,16 @@ function(set_meta_files_custom_commands OutputFile InputFile MetaFiles OutputFil
   source_group("${OutputFileSourceGroup}" FILES ${OutputFile})
   source_group("${CMakeFilesSourceGroup}" FILES ${CMAKE_CURRENT_LIST_FILE} ${InputFile} ${MetaFiles})
 endfunction()
+
+function(get_branch BranchName)
+  execute_process(COMMAND "${Git_EXECUTABLE}" rev-parse --abbrev-ref HEAD
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                  RESULT_VARIABLE Result
+                  OUTPUT_VARIABLE Output
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(Result EQUAL 0)
+    set(${BranchName} "'${Output}'" PARENT_SCOPE)
+  else()
+    set(${BranchName} "unknown" PARENT_SCOPE)
+  endif()
+endfunction()
