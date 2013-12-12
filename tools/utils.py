@@ -44,8 +44,47 @@ all = { 'Common' : 'common', 'Rudp' : 'rudp', 'Routing' : 'routing',
         'Drive' : 'drive', 'Lifestuff' : 'lifestuff' }
 
 
+def TimeOut(func, args=(), kwargs={}, timeout_duration=10, default=None):
+  """This function will spawn a thread and run the given function
+  using the args, kwargs and return the given default value if the
+  timeout_duration is exceeded.
+  """ 
+  import threading
+  class InterruptableThread(threading.Thread):
+    def __init__(self):
+      threading.Thread.__init__(self)
+      self.result = default
+    def run(self):
+      self.result = func(*args, **kwargs)
+  it = InterruptableThread()
+  it.start()
+  it.join(timeout_duration)
+  return it.result
+#  if it.isAlive():
+#    try:
+#      it._Thread__stop()
+#    except:
+#      print(str(it.getName()) + ' could not be terminated')
+#  return result
+
+def LookingFor(proc, keyword, line_limit, required_repeated_time):
+  i = 0
+  repeated_time = 0
+  while i < (line_limit * required_repeated_time):
+    line = proc.stdout.readline()
+    print line
+    if line.find(keyword) != -1:
+      repeated_time = repeated_time + 1
+      if repeated_time == required_repeated_time:
+        return True
+    i = i + 1
+  return False
+
 def ClearScreen():
   os.system( [ 'clear', 'cls' ][ platform.system() == 'Windows' ] )
+
+def ResetScreen():
+  os.system( [ 'reset', 'cls' ][ platform.system() == 'Windows' ] )
 
 
 def CppLint():
