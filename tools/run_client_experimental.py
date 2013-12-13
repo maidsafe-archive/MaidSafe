@@ -30,53 +30,53 @@ import subprocess
 import sys
 
 # MaidSafe imports
-import client_environment
-import utils
+#import client_environment
+#import utils
 
-def main():
-  if len(sys.argv) != 4:
-    print("Wrong number of parameters for the test")
-    return -1
+#def main():
+#  if len(sys.argv) != 4:
+#    print("Wrong number of parameters for the test")
+#    return -1
 
-  ctest_command = sys.argv[1]
-  ctest_configuration = sys.argv[2]
-  tools_path = sys.argv[3]
+#  ctest_command = sys.argv[1]
+#  ctest_configuration = sys.argv[2]
+#  tools_path = sys.argv[3]
 
-  proc_count = utils.CountProcs("lifestuff")
-  if proc_count > 0:
-    print "lifestuf processes running"
-    return -1
+#  proc_count = utils.CountProcs("lifestuff")
+#  if proc_count > 0:
+#    print "lifestuf processes running"
+#    return -1
 
 #  retcode = subprocess.call([sys.executable, os.path.join(tools_path, "client_environment.py")])
 #  if retcode != 0:
 #    print("Failed executing lifestuff_killer.py")
 #    return retcode
-  retcode = client_environment.ParameterBasedStartup(None, None, None, None, None, None)
-  if retcode != 0:
-    print "Failed to set up environment"
-    return -1
+#  retcode = client_environment.ParameterBasedStartup(None, None, None, None, None, None)
+#  if retcode != 0:
+#    print "Failed to set up environment"
+#    return -1
 
-  execution_array = [ctest_command,
-                     '-C', ctest_configuration,
-                     '-M', 'Experimental',
-                     '-L', 'Lifestuff',
-                     '-T', 'Start',
-                     '-T', 'Build',
-                     '--build-noclean',
-                     '-T', 'Test',
-                     '-T', 'Coverage',
-                     '-T', 'Submit']
-  retcode = subprocess.call(execution_array)
-  if retcode != 0:
-    print "result of ctest execution: ", retcode
+#  execution_array = [ctest_command,
+#                     '-C', ctest_configuration,
+#                     '-M', 'Experimental',
+#                     '-L', 'Lifestuff',
+#                     '-T', 'Start',
+#                     '-T', 'Build',
+#                     '--build-noclean',
+#                     '-T', 'Test',
+#                     '-T', 'Coverage',
+#                     '-T', 'Submit']
+#  retcode = subprocess.call(execution_array)
+#  if retcode != 0:
+#    print "result of ctest execution: ", retcode
 
-  retcode = subprocess.call([sys.executable, os.path.join(tools_path, "lifestuff_killer.py")])
-  if retcode != 0:
-    print("Failed executing lifestuff_killer.py")
-    return retcode
+#  retcode = subprocess.call([sys.executable, os.path.join(tools_path, "lifestuff_killer.py")])
+#  if retcode != 0:
+#    print("Failed executing lifestuff_killer.py")
+#    return retcode
 
-  return retcode
+#  return retcode
 
-if __name__ == "__main__":
-  sys.exit(main())
+#if __name__ == "__main__":
+#  sys.exit(main())
 
