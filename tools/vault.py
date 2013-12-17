@@ -114,18 +114,24 @@ def TestStore(num, index):
                           shell = False, stdout = PIPE, stderr = None)
   if utils.TimeOut(utils.LookingFor, (proc, 'Stored chunk', 50, num,),
                    timeout_duration=60*num, default=False):
-    print 'test succeeded'
+    print 'test with store succeeded'
   else:
-    print 'test failed'
+    print 'test with store failed'
   proc.kill
   lifestuff_killer.KillVaultKeyHelper()
 
 def TestStoreWithDelete(num, index):
   prog = utils.GetProg('vault_key_helper')
-  subprocess.call([prog, '-lw', '-k', str(index),
-                  '--chunk_set_count=' + str(num)],
-                  shell = False, stdout = None, stderr = None)
-  raw_input("Press any key to continue")
+  proc = subprocess.Popen([prog, '-lw', '-k', str(index),
+                          '--chunk_set_count=' + str(num)],
+                          shell = False, stdout = PIPE, stderr = None)
+  if utils.TimeOut(utils.LookingFor, (proc, 'Delete chunk', 100, num,),
+                   timeout_duration=60*num, default=False):
+    print 'test with delete succeeded'
+  else:
+    print 'test with delete failed'
+  proc.kill
+  lifestuff_killer.KillVaultKeyHelper()
 
 def TestProlonged(key_index, chunk_index):
   StoreChunk(key_index, chunk_index)
