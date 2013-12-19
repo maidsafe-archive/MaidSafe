@@ -66,8 +66,15 @@ endforeach()
 
 
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
+
 include(version)
 
+# Set Maidsafe Testing to OFF if package build defined.
+if(PACKAGE_BUILD)
+  set(MaidsafeTesting OFF)
+else()
+  set(MaidsafeTesting ON)
+endif()
 
 # Enable auto-linking qtmain for Windows.
 cmake_policy(SET CMP0020 NEW)
