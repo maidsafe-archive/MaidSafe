@@ -79,8 +79,8 @@ def SetupBootstraps(num, user_id):
     proc.kill()
     return False
   proc.kill()
-  print("Wait 10 secs for bootstrap nodes disappear from routingtable")
-  time.sleep(10)
+  print("Wait 5 secs for bootstrap nodes disappear from routingtable")
+  time.sleep(5)
   RunNetwork(num)
   print("Wait 5 secs for network")
   time.sleep(5)
