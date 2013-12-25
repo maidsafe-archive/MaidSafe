@@ -67,8 +67,8 @@ include(CTest)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 include(utils)
-get_target_platform()
-get_target_architecture()
+ms_get_target_platform()
+ms_get_target_architecture()
 
 
 #==================================================================================================#
@@ -80,10 +80,10 @@ get_target_architecture()
 include(add_protoc_command)
 #set(ProtobufRootDir ${PROJECT_SOURCE_DIR}/src)
 #set(ProtobufRelDir "")
-#add_protoc_command(Root "${ProtobufRootDir}" "${ProtobufRelDir}")
+#ms_add_protoc_command(Root "${ProtobufRootDir}" "${ProtobufRelDir}")
 
 #set(ProtobufRelDir "nested")
-#add_protoc_command(Nested "${ProtobufRootDir}" "${ProtobufRelDir}")
+#ms_add_protoc_command(Nested "${ProtobufRootDir}" "${ProtobufRelDir}")
 
 
 #==================================================================================================#

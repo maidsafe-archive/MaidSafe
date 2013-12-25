@@ -55,7 +55,7 @@
 #  Usage                                                                                           #
 #  =====                                                                                           #
 #  For a test target named test_vault, the module is invoked in a CMake file by calling:           #
-#    add_catch_tests(test_vault)                                                                   #
+#    ms_add_catch_tests(test_vault)                                                                #
 #                                                                                                  #
 #  To run e.g. all behavioural tests in Debug mode, from the build dir run:                        #
 #    ctest -C Debug -L behavioural                                                                 #
@@ -70,11 +70,11 @@ set(UnitTimeout 1)
 
 
 # Main function - the only one designed to be called from outside this module.
-function(add_catch_tests TestTarget)
+function(ms_add_catch_tests TestTarget)
   target_compile_definitions(${TestTarget} PRIVATE USE_CATCH)
   get_target_property(SourceFiles ${TestTarget} SOURCES)
   foreach(SourceFile ${SourceFiles})
-    parse_file(${SourceFile} ${TestTarget})
+    ms_parse_file(${SourceFile} ${TestTarget})
   endforeach()
   set(AllCatchTests ${AllCatchTests} PARENT_SCOPE)
   set(HiddenCatchTests ${HiddenCatchTests} PARENT_SCOPE)
@@ -82,14 +82,14 @@ endfunction()
 
 
 # Worker function
-function(parse_file SourceFile TestTarget)
+function(ms_parse_file SourceFile TestTarget)
   if(NOT EXISTS ${SourceFile})
     return()
   endif()
   file(STRINGS ${SourceFile} Contents NEWLINE_CONSUME)
 
-  # Remove block comments and full single line comments
-  string(REGEX REPLACE "/\\*.*\\*/" "" Contents "${Contents}")
+  # Remove block comments and *full line* comments (leave partial line comments)
+  ms_remove_block_comments(Contents)
   string(REGEX REPLACE "\n[ \t]*//+[^\n]+" "\n" Contents "${Contents}")
 
   # Find definition of test names

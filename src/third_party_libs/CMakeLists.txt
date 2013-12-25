@@ -12,7 +12,7 @@
 #==================================================================================================#
 
 
-get_branch(Branch)
+ms_get_branch(Branch)
 set(Msg "Configuring third party projects on ${Branch} branch of super-project")
 string(REGEX REPLACE . "-" Underscore ${Msg})
 message("${HR}\n${Msg}\n${Underscore}")

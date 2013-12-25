@@ -28,11 +28,11 @@
 # Enable auto-linking qtmain for Windows.
 cmake_policy(SET CMP0020 NEW)
 
-check_compiler()
-underscores_to_camel_case(${PROJECT_NAME} CamelCaseProjectName)
+ms_check_compiler()
+ms_underscores_to_camel_case(${PROJECT_NAME} CamelCaseProjectName)
 
 if(NOT PROJECT_NAME STREQUAL Cryptopp AND NOT PROJECT_NAME STREQUAL leveldb AND NOT PROJECT_NAME STREQUAL network_viewer)
-  get_branch(Branch)
+  ms_get_branch(Branch)
   set(Msg "Configuring MaidSafe ${CamelCaseProjectName} project on ${Branch} branch")
   string(REGEX REPLACE . "-" Underscore ${Msg})
   message("${HR}\n${Msg}\n${Underscore}")
@@ -75,22 +75,22 @@ set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 include(check_licenses)
 include(utils)
 include(add_catch_tests)
-check_licenses()
+ms_check_licenses()
 
 
 # Create CTestCustom.cmake to avoid inclusion of coverage results from test files, protocol buffer files and main.cc files
 file(WRITE ${PROJECT_BINARY_DIR}/CTestCustom.cmake "\n")
-add_coverage_exclude(\\\\.pb\\\\.)
-add_coverage_exclude(tests/)
-add_coverage_exclude(boost/)
-add_coverage_exclude(catch/)
-add_coverage_exclude(src/third_party_libs/)
-add_coverage_exclude(GeneratedProtoFiles/)
-add_coverage_exclude(main\\\\.cc)
+ms_add_coverage_exclude(\\\\.pb\\\\.)
+ms_add_coverage_exclude(tests/)
+ms_add_coverage_exclude(boost/)
+ms_add_coverage_exclude(catch/)
+ms_add_coverage_exclude(src/third_party_libs/)
+ms_add_coverage_exclude(GeneratedProtoFiles/)
+ms_add_coverage_exclude(main\\\\.cc)
 
 
 # Avoid running MemCheck on Style Check tests
-add_memcheck_ignore(${CamelCaseProjectName}StyleCheck)
+ms_add_memcheck_ignore(${CamelCaseProjectName}StyleCheck)
 
 
 # All other libraries search

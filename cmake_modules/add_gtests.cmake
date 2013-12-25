@@ -20,7 +20,7 @@
 #                                                                                                  #
 #==================================================================================================#
 #                                                                                                  #
-#  For a test target named test_stuff, the module is invoked by calling ADD_GTESTS(test_stuff)     #
+#  For a test target named TESTstuff, the module is invoked by calling ms_add_gtests(TESTstuff)    #
 #                                                                                                  #
 #  This module adds individual gtests by parsing the tests files at a very basic level (e.g.       #
 #  there is no support for namespaces).  It also currently doesn't support all gtest options       #
@@ -54,7 +54,7 @@
 
 
 # Main function - the only one designed to be called from outside this module.
-function(add_gtests TEST_TARGET)
+function(ms_add_gtests TEST_TARGET)
   target_compile_definitions(${TEST_TARGET} PRIVATE USE_GTEST)
   target_link_libraries(${TEST_TARGET} gmock gtest)
 
@@ -244,14 +244,9 @@ endfunction()
 function(add_gtest_registered_typed_tests GTEST_SOURCE_FILE TEST_TARGET)
   set(TEST_EXECUTABLE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TEST_TARGET}${TEST_POSTFIX})
   file(STRINGS ${GTEST_SOURCE_FILE} FILE_AS_STRING NEWLINE_CONSUME)
-  # Remove single-line comments
+  # Remove single-line comments and block comments
   string(REGEX REPLACE "//[^\n]*\n" "" FILE_AS_STRING "${FILE_AS_STRING}")
-  # Remove block comments
-  string(ASCII 2 CMAKE_BEGIN_BLOCK_COMMENT)
-  string(ASCII 3 CMAKE_END_BLOCK_COMMENT)
-  string(REGEX REPLACE "/\\*" "${CMAKE_BEGIN_BLOCK_COMMENT}" FILE_AS_STRING "${FILE_AS_STRING}")
-  string(REGEX REPLACE "\\*/" "${CMAKE_END_BLOCK_COMMENT}" FILE_AS_STRING "${FILE_AS_STRING}")
-  string(REGEX REPLACE "${CMAKE_BEGIN_BLOCK_COMMENT}[^${CMAKE_END_BLOCK_COMMENT}]*${CMAKE_END_BLOCK_COMMENT}" "" FILE_AS_STRING "${FILE_AS_STRING}")
+  ms_remove_block_comments(FILE_AS_STRING)
 
   string(REGEX MATCHALL "REGISTER_TYPED_TEST_CASE_P[.\n]*[^;]*" REGISTEREDS ${FILE_AS_STRING})
   if(NOT REGISTEREDS)

@@ -87,9 +87,9 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 # Include helper functions, check compiler version, and get target platform details
 include(utils)
-check_compiler()
-get_target_platform()
-get_target_architecture()
+ms_check_compiler()
+ms_get_target_platform()
+ms_get_target_architecture()
 
 
 # Adds a target 'CleanCoverage' on Unix.  When this target is built, it removes
@@ -154,13 +154,19 @@ message(STATUS "To include only functional GTests,       cmake . -DMAIDSAFE_TEST
 message("${HR}")
 
 
-tidy_ctest_custom()
-cleanup_temp_dir()
-rename_outdated_built_exes()
+# Tidy CTestCustom.cmake
+file(STRINGS ${CMAKE_BINARY_DIR}/CTestCustom.cmake CTestCustomContents)
+list(REMOVE_DUPLICATES CTestCustomContents)
+list(SORT CTestCustomContents)
+string(REPLACE ";" "\n" CTestCustomContents "${CTestCustomContents}")
+file(WRITE ${CMAKE_BINARY_DIR}/CTestCustom.cmake "${CTestCustomContents}\n")
+
+ms_cleanup_temp_dir()
+ms_rename_outdated_built_exes()
 
 
 unset(MAKECOMMAND CACHE)
-setup_ci_scripts()
+ms_setup_ci_scripts()
 unset(QA_BUILD CACHE)
 
 

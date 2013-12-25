@@ -28,7 +28,7 @@
 include(add_protoc_command)
 
 
-function(check_compiler)
+function(ms_check_compiler)
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "17")  # i.e for MSVC < Visual Studio 11
       message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of Visual Studio less than 11.")
@@ -44,18 +44,19 @@ function(check_compiler)
   endif()
 endfunction()
 
+
 # Creates variables as a result of globbing the given directory and corresponding "includes" dir.
 # Example usage:
-# > glob_dir(DataHolder ${PROJECT_SOURCE_DIR}/src/maidsafe/vault/data_holder "Data Holder\\\\")
+# > ms_glob_dir(DataHolder ${PROJECT_SOURCE_DIR}/src/maidsafe/vault/data_holder "Data Holder\\\\")
 # Available variables are ${DataHolderApi}, ${DataHolderSources}, ${DataHolderHeaders},
 # ${DataHolderProtos} and ${DataHolderAllFiles}.  ${DataHolderProtos} contains the contents of
 # ${DataHolderProtoSources}, ${DataHolderProtoHeaders} and all .proto files.
-macro(glob_dir BaseName Dir SourceGroupName)
+macro(ms_glob_dir BaseName Dir SourceGroupName)
   string(REPLACE "${PROJECT_SOURCE_DIR}/src" "${PROJECT_SOURCE_DIR}/include" ApiDir ${Dir})
   file(GLOB ${BaseName}Api ${ApiDir}/*.h)
   set(ProtoRootDir ${PROJECT_SOURCE_DIR}/src)
   string(REPLACE "${ProtoRootDir}" "" ProtoRelativeDir "${Dir}")
-  add_protoc_command(${BaseName} "${ProtoRootDir}" "${ProtoRelativeDir}")
+  ms_add_protoc_command(${BaseName} "${ProtoRootDir}" "${ProtoRelativeDir}")
   file(GLOB ${BaseName}Sources ${Dir}/*.cc)
   file(GLOB ${BaseName}Headers ${Dir}/*.h)
   set(${BaseName}AllFiles ${${BaseName}Api} ${${BaseName}Sources} ${${BaseName}Headers} ${${BaseName}Protos})
@@ -68,12 +69,18 @@ macro(glob_dir BaseName Dir SourceGroupName)
 endmacro()
 
 
-# Adds a static library with CMake Target name of "maidsafe_${LIB_OUTPUT_NAME}".
-function(ms_add_static_library LIB_OUTPUT_NAME)
-  string(TOLOWER ${LIB_OUTPUT_NAME} LIB)
-  set(AllStaticLibsForCurrentProject ${AllStaticLibsForCurrentProject} maidsafe_${LIB} PARENT_SCOPE)
-  add_library(maidsafe_${LIB} STATIC ${ARGN})
-  set_target_properties(maidsafe_${LIB} PROPERTIES LABELS ${CamelCaseProjectName} FOLDER "MaidSafe/Libraries")
+# Adds a static library with CMake Target name of "${Lib}".
+function(ms_add_static_library Lib)
+  string(REGEX MATCH "^maidsafe_[a-z]" Found "${Lib}")
+  string(TOLOWER ${Lib} LibLowerCase)
+  if(NOT Found OR NOT "${Lib}" STREQUAL "${LibLowerCase}")
+    set(Msg "\nYou have called ms_add_static_library with lib name of \"${Lib}\".")
+    set(Msg "${Msg}  MaidSafe lib names should be lowercase starting with \"maidsafe_\".\n")
+    message(AUTHOR_WARNING "${Msg}")
+  endif()
+  set(AllStaticLibsForCurrentProject ${AllStaticLibsForCurrentProject} ${Lib} PARENT_SCOPE)
+  add_library(${Lib} STATIC ${ARGN})
+  set_target_properties(${Lib} PROPERTIES LABELS ${CamelCaseProjectName} FOLDER "MaidSafe/Libraries")
 endfunction()
 
 
@@ -89,7 +96,7 @@ function(ms_add_executable Exe FolderName)
   if(${Exe}Name)
     set(AppName ${${Exe}Name})
   else()
-    underscores_to_camel_case(${Exe} AppName)
+    ms_underscores_to_camel_case(${Exe} AppName)
   endif()
   target_compile_definitions(${Exe} PRIVATE COMPANY_NAME=MaidSafe APPLICATION_NAME=${AppName})
   set_target_properties(${Exe} PROPERTIES LABELS ${CamelCaseProjectName} FOLDER "MaidSafe/Executables/${FolderName}")
@@ -100,7 +107,7 @@ function(ms_add_executable Exe FolderName)
 endfunction()
 
 
-function(add_style_test)
+function(ms_add_style_test)
   if(NOT MaidsafeTesting)
     return()
   endif()
@@ -120,7 +127,8 @@ function(add_style_test)
 endfunction()
 
 
-function(add_project_experimental)
+# Adds two targets to the current project; AllXXX and ExperXXX where XXX is the project name. 
+function(ms_add_project_experimental)
   add_custom_target(All${CamelCaseProjectName} DEPENDS ${AllExesForCurrentProject})
   set_target_properties(All${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/All")
   foreach(CTEST_CONFIGURATION_TYPE ${CMAKE_CONFIGURATION_TYPES} ${CMAKE_BUILD_TYPE})
@@ -139,7 +147,7 @@ function(add_project_experimental)
 endfunction()
 
 
-function(test_summary_output)
+function(ms_test_summary_output)
   list(LENGTH ALL_GTESTS GtestCount)
   list(LENGTH AllCatchTests AllCatchTestsCount)
   list(LENGTH HiddenCatchTests HiddenCatchTestsCount)
@@ -149,17 +157,17 @@ function(test_summary_output)
 endfunction()
 
 
-function(add_coverage_exclude Regex)
+function(ms_add_coverage_exclude Regex)
   file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_COVERAGE_EXCLUDE \${CTEST_CUSTOM_COVERAGE_EXCLUDE} \"${Regex}\")\n")
 endfunction()
 
 
-function(add_memcheck_ignore TestName)
+function(ms_add_memcheck_ignore TestName)
   file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_MEMCHECK_IGNORE \${CTEST_CUSTOM_MEMCHECK_IGNORE} \"${TestName}\")\n")
 endfunction()
 
 
-function(underscores_to_camel_case VarIn VarOut)
+function(ms_underscores_to_camel_case VarIn VarOut)
   string(REPLACE "_" ";" Pieces ${VarIn})
   foreach(Part ${Pieces})
     string(SUBSTRING ${Part} 0 1 Initial)
@@ -171,20 +179,10 @@ function(underscores_to_camel_case VarIn VarOut)
 endfunction()
 
 
-# Tidy CTestCustom.cmake
-function(tidy_ctest_custom)
-  file(STRINGS ${CMAKE_BINARY_DIR}/CTestCustom.cmake CTestCustomContents)
-  list(REMOVE_DUPLICATES CTestCustomContents)
-  list(SORT CTestCustomContents)
-  string(REPLACE ";" "\n" CTestCustomContents "${CTestCustomContents}")
-  file(WRITE ${CMAKE_BINARY_DIR}/CTestCustom.cmake "${CTestCustomContents}\n")
-endfunction()
-
-
 # Moves executable files found within the build tree which don't match current target filenames to
 # a directory named 'old' in the build tree root.  This avoids accidentally running outdated
 # executables in the case of renaming a CMake Target.
-function(rename_outdated_built_exes)
+function(ms_rename_outdated_built_exes)
   if(NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
     return()
   endif()
@@ -234,18 +232,9 @@ function(rename_outdated_built_exes)
 endfunction()
 
 
-# Copies executable to <current build dir>/package/bin/<config type>/ for use by the package tool
-function(ms_copy_to_package_folder maidsafe_target)
-  add_custom_command(TARGET ${maidsafe_target}
-                       POST_BUILD
-                       COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${maidsafe_target}>
-                         ${CMAKE_BINARY_DIR}/package/bin/$<CONFIGURATION>/$<TARGET_FILE_NAME:${maidsafe_target}>)
-endfunction()
-
-
 # Gets the path to the temp directory using the same method as Boost.Filesystem:
 # http://www.boost.org/doc/libs/release/libs/filesystem/doc/reference.html#temp_directory_path
-function(get_temp_dir)
+function(ms_get_temp_dir)
   if(TempDir)
     return()
   elseif(WIN32)
@@ -267,9 +256,9 @@ endfunction()
 
 
 # Searches for and removes old test directories that may have been left in %temp%
-function(cleanup_temp_dir)
+function(ms_cleanup_temp_dir)
   # Find MaidSafe-specific directories
-  get_temp_dir()
+  ms_get_temp_dir()
   file(GLOB MaidSafeTempDirs ${TempDir}/MaidSafe_Test*)
   file(GLOB SigmoidTempDirs ${TempDir}/Sigmoid_Test*)
   list(APPEND MaidSafeTempDirs ${SigmoidTempDirs})
@@ -306,7 +295,7 @@ function(cleanup_temp_dir)
 endfunction()
 
 
-function(get_command_line_args)
+function(ms_get_command_line_args)
   get_cmake_property(CacheVars CACHE_VARIABLES)
   foreach(CacheVar ${CacheVars})
     get_property(CacheVarHelpString CACHE ${CacheVar} PROPERTY HELPSTRING)
@@ -321,7 +310,7 @@ function(get_command_line_args)
       set(CMakeArgs ${CMakeArgs} "-D${CacheVar}${CacheVarType}=${${CacheVar}}")
     endif()
   endforeach()
-  if (USE_BOOST_CACHE)
+  if(USE_BOOST_CACHE)
     set(CMakeArgs ${CMakeArgs} "-DUSE_BOOST_CACHE=ON")
   endif()
   if(USE_JUST_THREADS)
@@ -332,9 +321,9 @@ endfunction()
 
 
 # Set up CI test scripts
-function(setup_ci_scripts)
+function(ms_setup_ci_scripts)
   if(NOT RUNNING_AS_CTEST_SCRIPT)
-    get_command_line_args()
+    ms_get_command_line_args()
     include(${CMAKE_SOURCE_DIR}/cmake_modules/maidsafe_find_git.cmake)
     find_program(HostnameCommand NAMES hostname)
     execute_process(COMMAND ${HostnameCommand} OUTPUT_VARIABLE Hostname OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -368,7 +357,7 @@ endfunction()
 
 
 # Gets the target platform name
-function(get_target_platform)
+function(ms_get_target_platform)
   if(TargetPlatform)
     return()
   endif()
@@ -406,59 +395,10 @@ endfunction()
 # Gets the target architecture
 # Copied from https://github.com/petroules/solar-cmake/blob/master/TargetArch.cmake
 # and described at http://stackoverflow.com/a/12024211/424459
-
-# Based on the Qt 5 processor detection code, so should be very accurate
-# https://qt.gitorious.org/qt/qtbase/blobs/master/src/corelib/global/qprocessordetection.h
-# Currently handles arm (v5, v6, v7), x86 (32/64), ia64, and ppc (32/64)
-
-# Regarding POWER/PowerPC, just as is noted in the Qt source,
-# "There are many more known variants/revisions that we do not handle/detect."
-set(archdetect_c_code "
-#if defined(__arm__) || defined(__TARGET_ARCH_ARM)
-#if defined(__ARM_ARCH_7__) \\
-|| defined(__ARM_ARCH_7A__) \\
-|| defined(__ARM_ARCH_7R__) \\
-|| defined(__ARM_ARCH_7M__) \\
-|| (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 7)
-#error cmake_ARCH armv7
-#elif defined(__ARM_ARCH_6__) \\
-|| defined(__ARM_ARCH_6J__) \\
-|| defined(__ARM_ARCH_6T2__) \\
-|| defined(__ARM_ARCH_6Z__) \\
-|| defined(__ARM_ARCH_6K__) \\
-|| defined(__ARM_ARCH_6ZK__) \\
-|| defined(__ARM_ARCH_6M__) \\
-|| (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 6)
-#error cmake_ARCH armv6
-#elif defined(__ARM_ARCH_5TEJ__) \\
-|| (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 5)
-#error cmake_ARCH armv5
-#else
-#error cmake_ARCH arm
-#endif
-#elif defined(__i386) || defined(__i386__) || defined(_M_IX86)
-#error cmake_ARCH i386
-#elif defined(__x86_64) || defined(__x86_64__) || defined(__amd64) || defined(_M_X64)
-#error cmake_ARCH x86_64
-#elif defined(__ia64) || defined(__ia64__) || defined(_M_IA64)
-#error cmake_ARCH ia64
-#elif defined(__ppc__) || defined(__ppc) || defined(__powerpc__) \\
-|| defined(_ARCH_COM) || defined(_ARCH_PWR) || defined(_ARCH_PPC) \\
-|| defined(_M_MPPC) || defined(_M_PPC)
-#if defined(__ppc64__) || defined(__powerpc64__) || defined(__64BIT__)
-#error cmake_ARCH ppc64
-#else
-#error cmake_ARCH ppc
-#endif
-#endif
-
-#error cmake_ARCH unknown
-")
-
-
+#
 # Set ppc_support to TRUE before including this file or ppc and ppc64
 # will be treated as invalid architectures since they are no longer supported by Apple
-function(get_target_architecture)
+function(ms_get_target_architecture)
   if(TargetArchitecture)
     return()
   endif()
@@ -506,6 +446,53 @@ function(get_target_architecture)
     endif()
   else()
 
+    # Based on the Qt 5 processor detection code, so should be very accurate
+    # https://qt.gitorious.org/qt/qtbase/blobs/master/src/corelib/global/qprocessordetection.h
+    # Currently handles arm (v5, v6, v7), x86 (32/64), ia64, and ppc (32/64)
+    #
+    # Regarding POWER/PowerPC, just as is noted in the Qt source,
+    # "There are many more known variants/revisions that we do not handle/detect."
+    set(archdetect_c_code "
+    #if defined(__arm__) || defined(__TARGET_ARCH_ARM)
+    #if defined(__ARM_ARCH_7__) \\
+    || defined(__ARM_ARCH_7A__) \\
+    || defined(__ARM_ARCH_7R__) \\
+    || defined(__ARM_ARCH_7M__) \\
+    || (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 7)
+    #error cmake_ARCH armv7
+    #elif defined(__ARM_ARCH_6__) \\
+    || defined(__ARM_ARCH_6J__) \\
+    || defined(__ARM_ARCH_6T2__) \\
+    || defined(__ARM_ARCH_6Z__) \\
+    || defined(__ARM_ARCH_6K__) \\
+    || defined(__ARM_ARCH_6ZK__) \\
+    || defined(__ARM_ARCH_6M__) \\
+    || (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 6)
+    #error cmake_ARCH armv6
+    #elif defined(__ARM_ARCH_5TEJ__) \\
+    || (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 5)
+    #error cmake_ARCH armv5
+    #else
+    #error cmake_ARCH arm
+    #endif
+    #elif defined(__i386) || defined(__i386__) || defined(_M_IX86)
+    #error cmake_ARCH i386
+    #elif defined(__x86_64) || defined(__x86_64__) || defined(__amd64) || defined(_M_X64)
+    #error cmake_ARCH x86_64
+    #elif defined(__ia64) || defined(__ia64__) || defined(_M_IA64)
+    #error cmake_ARCH ia64
+    #elif defined(__ppc__) || defined(__ppc) || defined(__powerpc__) \\
+    || defined(_ARCH_COM) || defined(_ARCH_PWR) || defined(_ARCH_PPC) \\
+    || defined(_M_MPPC) || defined(_M_PPC)
+    #if defined(__ppc64__) || defined(__powerpc64__) || defined(__64BIT__)
+    #error cmake_ARCH ppc64
+    #else
+    #error cmake_ARCH ppc
+    #endif
+    #endif
+    
+    #error cmake_ARCH unknown
+    ")
     file(WRITE "${CMAKE_BINARY_DIR}/arch.c" "${archdetect_c_code}")
     enable_language(C)
 
@@ -543,7 +530,7 @@ endfunction()
 
 
 # Gets all dependencies for the given Target
-function(get_dependencies Target OptimizedDeps DebugDeps UseImported)
+function(ms_get_dependencies Target OptimizedDeps DebugDeps UseImported)
   # Recursively get all dependencies
   macro(detail_recursive_get_dependencies Target Var)
     if(TARGET ${Target} AND NOT GotDependsFor${Target})
@@ -623,7 +610,7 @@ endfunction()
 
 # Sets up the custom commands needed by the 'configure_meta_files.cmake' for
 # auto-generating Message typedefs and boost::variants of these.
-function(set_meta_files_custom_commands OutputFile InputFile MetaFiles OutputFileSourceGroup CMakeFilesSourceGroup)
+function(ms_set_meta_files_custom_commands OutputFile InputFile MetaFiles OutputFileSourceGroup CMakeFilesSourceGroup)
   set(IntermediateDir "${CMAKE_CURRENT_BINARY_DIR}/copied_message_types")
   # An apparent bug in CMake means that file(READ...) can only be done from within
   # CMAKE_CURRENT_BINARY_DIR.  Hence message_types.meta files are copied here to allow
@@ -665,7 +652,8 @@ function(set_meta_files_custom_commands OutputFile InputFile MetaFiles OutputFil
   source_group("${CMakeFilesSourceGroup}" FILES ${CMAKE_CURRENT_LIST_FILE} ${InputFile} ${MetaFiles})
 endfunction()
 
-function(get_branch BranchName)
+
+function(ms_get_branch BranchName)
   execute_process(COMMAND "${Git_EXECUTABLE}" rev-parse --abbrev-ref HEAD
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                   RESULT_VARIABLE Result
@@ -677,3 +665,16 @@ function(get_branch BranchName)
     set(${BranchName} "unknown" PARENT_SCOPE)
   endif()
 endfunction()
+
+
+# This removes the contents between all C++ block comments (i.e. /* ... */) for a C++ file whose
+# contents have been read into '${CppCode}'.
+function(ms_remove_block_comments CppCode)
+  string(ASCII 2 CMakeBeginBlockComment)
+  string(ASCII 3 CMakeEndBlockComment)
+  string(REGEX REPLACE "/\\*" "${CMakeBeginBlockComment}" ${CppCode} "${${CppCode}}")
+  string(REGEX REPLACE "\\*/" "${CMakeEndBlockComment}" ${CppCode} "${${CppCode}}")
+  string(REGEX REPLACE "${CMakeBeginBlockComment}[^${CMakeEndBlockComment}]*${CMakeEndBlockComment}" "" ${CppCode} "${${CppCode}}")
+  set(${CppCode} "${${CppCode}}" PARENT_SCOPE)
+endfunction()
+

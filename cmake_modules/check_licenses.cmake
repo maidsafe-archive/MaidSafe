@@ -33,7 +33,7 @@ set(BaseURL http://www.maidsafe.net/licenses)
 
 
 
-function(get_file Filename)
+function(ms_get_file Filename)
   set(DownloadedFile ${CMAKE_BINARY_DIR}/${Filename}.txt)
   if(EXISTS ${DownloadedFile})
     # Download a fresh copy of the file each day
@@ -73,7 +73,7 @@ endfunction()
 
 
 
-function(check_licenses)
+function(ms_check_licenses)
   string(REGEX MATCH "third_party_libs" ThirdPartyLib "${CMAKE_CURRENT_SOURCE_DIR}")
   string(REGEX MATCH "routing/tools/network_viewer" NetworkViewer "${CMAKE_CURRENT_SOURCE_DIR}")
   if(ThirdPartyLib OR NetworkViewer)
@@ -81,7 +81,7 @@ function(check_licenses)
   endif()
 
   foreach(File CONTRIBUTOR COPYING LICENSE)
-    get_file(${File})
+    ms_get_file(${File})
     if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${File})
       message(AUTHOR_WARNING "\nThis repository should contain \"${File}\" in its root, identical to ${BaseURL}/${File}.txt\n")
     else()

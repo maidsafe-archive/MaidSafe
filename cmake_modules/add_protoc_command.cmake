@@ -50,7 +50,7 @@
 #==================================================================================================#
 
 
-function(add_protoc_command BaseName ProtoRootDir ProtoRelativeDir)
+function(ms_add_protoc_command BaseName ProtoRootDir ProtoRelativeDir)
   set(${BaseName}ProtoSources "" PARENT_SCOPE)
   set(${BaseName}ProtoHeaders "" PARENT_SCOPE)
   set(${BaseName}Protos "" PARENT_SCOPE)
