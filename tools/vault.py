@@ -64,7 +64,8 @@ def SetupBootstraps(num, user_id):
       data = re.split(r':', line)
       ep = data[2].split()
       processes[2] = SetUpNextNode(data[1] + ':' + ep[0], 2, user_id)
-      processes[3] = SetUpNextNode(data[1] + ':' + ep[0], 3, user_id)
+      time.sleep(1)
+      processes[3] = work(3)
       if processes[2] and processes[3]:
         time.sleep(2) # allow node to bootstrap
         break
@@ -78,16 +79,28 @@ def SetupBootstraps(num, user_id):
     proc.kill()
     return False
   proc.kill()
+  print("Wait 5 secs for bootstrap nodes disappear from routingtable")
+  time.sleep(5)
   RunNetwork(num)
   print("Wait 5 secs for network")
   time.sleep(5)
   return True
 
-def SaveKeys(peer):
+def SaveKeys(peer, keys_path, client_index, num_of_keys):
+  result = -1
   prog = utils.GetProg('vault_key_helper')
-  return subprocess.call([prog, '--log_routing Info', '--log_nfs Info', '--log_vault Info',
-                          '-ls', '--peer=' + peer + ':5483'],
-                         shell = False, stdout = None, stderr = None)
+  proc = subprocess.Popen([prog, '-ls', '-k', str(client_index),
+                          '--keys_path', keys_path, '--peer=' + peer + ':5483'],
+                          shell = False, stdout = PIPE, stderr = None)
+  if utils.TimeOut(utils.LookingFor, (proc, 'PublicPmidKey stored and verified', 50, num_of_keys,),
+                   timeout_duration=5*num_of_keys, default=False):
+    print 'keys successfully stored to network'
+    result = 0
+  else:
+    print 'failure in storing keys to network'
+  proc.kill
+  lifestuff_killer.KillVaultKeyHelper()
+  return result
 
 def StoreChunk(key_index, chunk_index):
   prog = utils.GetProg('vault_key_helper')
@@ -224,8 +237,7 @@ def SetUpNextNode(endpoint, index, user_id):
                             '--peer=' + endpoint.lstrip(),
                             '--disable_ctrl_c=true',
                             '--identity_index=' + str(index),
-                            '--chunk_path=.cs' + str(index),
-                            '--start'],
+                            '--chunk_path=.cs' + str(index)],
                             preexec_fn = preexec_function,
                             shell = False, stdout = None, stderr = None)
   else:
@@ -234,8 +246,7 @@ def SetUpNextNode(endpoint, index, user_id):
                             '--disable_ctrl_c=true',
                             '--identity_index=' + str(index),
                             '--chunk_path=.cs' + str(index),
-                            '--usr_id=' + user_id,
-                            '--start'],
+                            '--usr_id=' + user_id],
                             preexec_fn = preexec_function,
                             shell = False, stdout = None, stderr = None)
 
@@ -304,7 +315,10 @@ def StartVaultsWithGivenBootstrap():
   print prog
   CreateChunkStores(number)
   subprocess.call([prog, '-c', '-n', str(int(number) + 3)])
-  if SaveKeys(ip) == 0:
+  keys_path = raw_input("Please input the absolute/relative path to the keys_file: ")
+  index = GetPositiveNumber("Please input the key_index to be used as client: ")
+  num_keys = GetPositiveNumber("Please input how many keys in the keys_file: ")
+  if SaveKeys(utils.GetIp(), keys_path, index, num_keys) == 0:
     RunNetwork(int(number) + 3, ip, None)
   else:
     raw_input("Could not store keys, giving up! (press any key)")
@@ -334,7 +348,10 @@ def VaultMenu():
       chunk_index = GetPositiveNumber("Please input the chunk_index to be used as data: ")
       TestProlonged(key_index, chunk_index)
     elif (option == "6"):
-      SaveKeys(utils.GetIp())
+      keys_path = raw_input("Please input the absolute/relative path to the keys_file: ")
+      index = GetPositiveNumber("Please input the key_index to be used as client: ")
+      num_keys = GetPositiveNumber("Please input how many keys in the keys_file: ")
+      SaveKeys(utils.GetIp(), keys_path, index, num_keys)
     elif (option == "7"):
       churn_rate = GetPositiveNumber("Please input rate (%% churn per minute): ")
       Churn(churn_rate)
