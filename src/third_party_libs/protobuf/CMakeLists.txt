@@ -43,7 +43,7 @@ target_compile_options(protobuf
     >
     $<$<BOOL:${UNIX}>:-std=c++11 ${LibCXX}>
   PRIVATE
-    $<$<BOOL:${MSVC}>:/W3 /wd4244 /wd4267 /wd4800 /wd4996>
+    $<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4244 /wd4267 /wd4800 /wd4996>
     $<$<BOOL:${UNIX}>:-w>
 )
 
