@@ -226,6 +226,9 @@ if(MaidsafeTesting)
   if(NOT MSVC)
     leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/c_test.c)
   endif()
+  target_compile_options(leveldb-testharness PRIVATE
+  $<$<CXX_COMPILER_ID:MSVC>:/wd4996>
+  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>)
 endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
@@ -233,7 +236,4 @@ target_compile_options(leveldb PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/wd4244 /wd4267 /wd4996>
   $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>
   PUBLIC $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-pthread ${LibCXX} ${LibCXXAbi} >)
-target_compile_options(leveldb-testharness PRIVATE
-  $<$<CXX_COMPILER_ID:MSVC>:/wd4996>
-  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>)
 target_compile_definitions(leveldb PRIVATE $<$<BOOL:${MSVC}>:UNICODE _UNICODE BOOST_ALL_NO_LIB>)
