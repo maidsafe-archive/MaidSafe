@@ -143,9 +143,8 @@ message(STATUS "Found library ${Cbfs_LIBRARY_DEBUG}")
 if(CBFS_KEY)
   if(EXISTS ${CBFS_KEY})  # User set CBFS_KEY to path to key file
     file(READ ${CBFS_KEY} Cbfs_KEY)
-    set(Cbfs_KEY ${Cbfs_KEY} CACHE INTERNAL "")
   else()  # User set CBFS_KEY to value of key
-    set(Cbfs_KEY ${CBFS_KEY} CACHE INTERNAL "")
+    set(Cbfs_KEY ${CBFS_KEY})
   endif()
 else()
   # Use MaidSafe's key
@@ -201,7 +200,6 @@ else()
   endif()
   # Read in the file contents
   file(READ ${LicenseFile} Cbfs_KEY)
-  set(Cbfs_KEY ${Cbfs_KEY} CACHE INTERNAL "")
 endif()
 
 set(Cbfs_FOUND TRUE CACHE INTERNAL "")
