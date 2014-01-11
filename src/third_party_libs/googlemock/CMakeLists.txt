@@ -85,7 +85,7 @@ config_compiler_and_linker()  # from ${gtest_dir}/cmake/internal_utils.cmake
 # are used for other targets, to ensure that Google Mock can be compiled by
 # a user aggressive about warnings.
 cxx_library(gmock "${cxx_strict}" src/gmock-all.cc)
-target_include_directories(gmock SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR})
+ms_target_include_system_dirs(gmock PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR})
 target_link_libraries(gmock gtest)
 if(MSVC)
   set_target_properties(gmock PROPERTIES

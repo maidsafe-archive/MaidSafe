@@ -171,7 +171,7 @@ unset(QA_BUILD CACHE)
 
 
 # Convenience feature - adds all CMake related files to folder in VS IDE
-if(MSVC)
+if(MSVC OR XCODE)
   set(RootFiles ${CMAKE_SOURCE_DIR}/CI.cmake.in
                 ${CMAKE_SOURCE_DIR}/CMakeLists.txt
                 ${CMAKE_SOURCE_DIR}/CTestConfig.cmake

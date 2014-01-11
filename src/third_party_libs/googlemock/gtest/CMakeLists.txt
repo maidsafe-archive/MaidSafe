@@ -72,7 +72,7 @@ config_compiler_and_linker()  # Defined in internal_utils.cmake.
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 target_include_directories(gtest PRIVATE ${CMAKE_SOURCE_DIR}/src/common/include)
-target_include_directories(gtest SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR} ${BoostSourceDir})
+ms_target_include_system_dirs(gtest PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR} ${BoostSourceDir})
 
 target_compile_definitions(gtest
   INTERFACE

@@ -18,7 +18,7 @@ set(TESTS ${PROTOC_TESTS_SOURCES} ${PROTOC_TESTS_HEADERS})
 list(REMOVE_ITEM PROTOBUF_DIR ${PROTOC_DIR} ${TESTS})
 
 add_library(protobuf ${PROTOBUF_DIR})
-target_include_directories(protobuf SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/src)
+ms_target_include_system_dirs(protobuf PUBLIC ${PROJECT_SOURCE_DIR}/src)
 
 add_executable(protoc ${PROTOC_DIR})
 set_target_properties(protobuf protoc PROPERTIES FOLDER "Third Party/Google Protocol Buffers")

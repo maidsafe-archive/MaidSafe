@@ -107,6 +107,20 @@ function(ms_add_executable Exe FolderName)
 endfunction()
 
 
+# Workaround for the Xcode's missing ability to pass -isystem to the compiler.
+function(ms_target_include_system_dirs Target Scope)
+  if(XCODE)
+    foreach(IncludeDir ${ARGN})
+      if(EXISTS ${IncludeDir})
+        target_compile_options(${Target} ${Scope} -isystem${IncludeDir})
+      endif()
+    endforeach()
+  else()
+    target_include_directories(${Target} SYSTEM ${Scope} ${ARGN})
+  endif()
+endfunction()
+                                     
+                                     
 function(ms_add_style_test)
   if(NOT MaidsafeTesting)
     return()

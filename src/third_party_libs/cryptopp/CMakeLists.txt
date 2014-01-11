@@ -78,7 +78,7 @@ set(CamelCaseProjectName ${CurrentCamelCaseProjectName})
 #add_executable(TESTcryptopp ${TESTcryptopp_DIR})
 
 add_library(cryptopp STATIC ${cryptopp_SOURCES} ${cryptopp_HEADERS})
-target_include_directories(cryptopp SYSTEM INTERFACE ${PROJECT_SOURCE_DIR}/.. PRIVATE ${PROJECT_SOURCE_DIR})
+ms_target_include_system_dirs(cryptopp INTERFACE ${PROJECT_SOURCE_DIR}/.. PRIVATE ${PROJECT_SOURCE_DIR})
 set_target_properties(cryptopp PROPERTIES FOLDER "Third Party/Crypto++")
 
 
