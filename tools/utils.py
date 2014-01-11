@@ -72,7 +72,7 @@ def LookingFor(proc, keyword, line_limit, required_repeated_time):
   repeated_time = 0
   while i < (line_limit * required_repeated_time):
     line = proc.stdout.readline()
-    print line
+    print line.strip("\r\n")
     if line.find(keyword) != -1:
       repeated_time = repeated_time + 1
       if repeated_time == required_repeated_time:
