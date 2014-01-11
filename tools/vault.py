@@ -59,15 +59,16 @@ def SetupBootstraps(num, user_id):
   timeout = 300000
   while i < line_limit and time_delta < datetime.timedelta(seconds=timeout):
     line = proc.stdout.readline()
-    print line
+    print line.strip("\r\n")
     if line.find('Endpoints') != -1:
       data = re.split(r':', line)
       ep = data[2].split()
-      processes[2] = SetUpNextNode(data[1] + ':' + ep[0], 2, user_id)
+      processes[2] = SetUpNextNode(data[1] + ':' + ep[0], 2)
       time.sleep(1)
       processes[3] = work(3)
       if processes[2] and processes[3]:
-        time.sleep(2) # allow node to bootstrap
+        print("Wait 5 secs for bootstrap")
+        time.sleep(5)
         break
       else:
         proc.kill()
@@ -79,8 +80,8 @@ def SetupBootstraps(num, user_id):
     proc.kill()
     return False
   proc.kill()
-  print("Wait 5 secs for bootstrap nodes disappear from routingtable")
-  time.sleep(5)
+  print("Wait 10 secs for bootstrap nodes disappear from routingtable")
+  time.sleep(10)
   RunNetwork(num)
   print("Wait 5 secs for network")
   time.sleep(5)
@@ -183,16 +184,20 @@ def preexec_function():
 
 def work(number):
   prog = utils.GetProg('vault')
-  return subprocess.Popen([prog, '--disable_ctrl_c=true',
+  log_file = open('vault_' + str(number) + '.txt', 'w')
+  return subprocess.Popen([prog, '--log_no_async', 'true',
+                          '--log_vault', 'V', '--log_nfs', 'V', '--log_*', 'E',
+                          '--disable_ctrl_c=true',
                           '--identity_index=' + str(number),
                           '--chunk_path=.cs' + str(number)],
                           preexec_fn = preexec_function,
-                          shell = False, stdout = None, stderr = None)
+                          shell = False, stdout = log_file, stderr = log_file)
 
 
 def RunNetwork(number_of_vaults):
   for vault in range(4, number_of_vaults):
     processes[vault]= work(vault)
+    print('Vault ' + str(vault) + ' is starting up ... ')
     time.sleep(1)
 
 def SignalHandler(signal, frame):
@@ -230,25 +235,18 @@ def KillProc(selected_index):
   selected_stop = processes.pop(selected_index)
   selected_stop.kill()
 
-def SetUpNextNode(endpoint, index, user_id):
+def SetUpNextNode(endpoint, index):
   prog = utils.GetProg('vault')
-  if user_id == None:
-    return subprocess.Popen([prog,
-                            '--peer=' + endpoint.lstrip(),
-                            '--disable_ctrl_c=true',
-                            '--identity_index=' + str(index),
-                            '--chunk_path=.cs' + str(index)],
-                            preexec_fn = preexec_function,
-                            shell = False, stdout = None, stderr = None)
-  else:
-    return subprocess.Popen([prog,
-                            '--peer=' + endpoint.lstrip(),
-                            '--disable_ctrl_c=true',
-                            '--identity_index=' + str(index),
-                            '--chunk_path=.cs' + str(index),
-                            '--usr_id=' + user_id],
-                            preexec_fn = preexec_function,
-                            shell = False, stdout = None, stderr = None)
+  log_file = open('vault_' + str(index) + '.txt', 'w')
+  return subprocess.Popen([prog, '--log_no_async', 'true',
+                          '--log_vault', 'V', '--log_nfs', 'V', '--log_*', 'E',
+                          '--peer=' + endpoint.lstrip(),
+                          '--disable_ctrl_c=true',
+                          '--identity_index=' + str(index),
+                          '--chunk_path=.cs' + str(index)],
+                          preexec_fn = preexec_function,
+                          shell = False, stdout = log_file, stderr = log_file)
+
 
 def SanityCheck(num, user_id):
   pid = SetupBootstraps(num, user_id)
