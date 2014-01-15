@@ -255,6 +255,6 @@ target_compile_options(leveldb
     $<$<CXX_COMPILER_ID:MSVC>:/wd4018 /wd4244 /wd4267 /wd4996>
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>
   PUBLIC
-    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-pthread ${LibCXX} ${LibCXXAbi}>)
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-std=c++11 -pthread ${LibCXX} ${LibCXXAbi}>)
 
 target_compile_definitions(leveldb PRIVATE $<$<BOOL:${MSVC}>:UNICODE _UNICODE BOOST_ALL_NO_LIB>)
