@@ -5,12 +5,15 @@
 #include "db/db_iter.h"
 
 #include "db/filename.h"
+#include "db/db_impl.h"
 #include "db/dbformat.h"
 #include "leveldb/env.h"
 #include "leveldb/iterator.h"
 #include "port/port.h"
 #include "util/logging.h"
 #include "util/mutexlock.h"
+#include "util/random.h"
+#include <cstdint>
 
 namespace leveldb {
 
@@ -46,15 +49,16 @@ class DBIter: public Iterator {
     kReverse
   };
 
-  DBIter(const std::string* dbname, Env* env,
-         const Comparator* cmp, Iterator* iter, SequenceNumber s)
-      : dbname_(dbname),
-        env_(env),
+  DBIter(DBImpl* db, const Comparator* cmp, Iterator* iter, SequenceNumber s,
+         uint32_t seed)
+      : db_(db),
         user_comparator_(cmp),
         iter_(iter),
         sequence_(s),
         direction_(kForward),
-        valid_(false) {
+        valid_(false),
+        rnd_(seed),
+        bytes_counter_(RandomPeriod()) {
   }
   virtual ~DBIter() {
     delete iter_;
@@ -100,8 +104,12 @@ class DBIter: public Iterator {
     }
   }
 
-  const std::string* const dbname_;
-  Env* const env_;
+  // Pick next gap with average value of config::kReadBytesPeriod.
+  intmax_t RandomPeriod() {
+    return rnd_.Uniform(2*config::kReadBytesPeriod);
+  }
+
+  DBImpl* db_;
   const Comparator* const user_comparator_;
   Iterator* const iter_;
   SequenceNumber const sequence_;
@@ -112,13 +120,23 @@ class DBIter: public Iterator {
   Direction direction_;
   bool valid_;
 
+  Random rnd_;
+  intmax_t bytes_counter_;
+
   // No copying allowed
   DBIter(const DBIter&);
   void operator=(const DBIter&);
 };
 
 inline bool DBIter::ParseKey(ParsedInternalKey* ikey) {
-  if (!ParseInternalKey(iter_->key(), ikey)) {
+  Slice k = iter_->key();
+  size_t n = k.size() + iter_->value().size();
+  bytes_counter_ -= n;
+  while (bytes_counter_ < 0) {
+    bytes_counter_ += RandomPeriod();
+    db_->RecordReadSample(k);
+  }
+  if (!ParseInternalKey(k, ikey)) {
     status_ = Status::Corruption("corrupted internal key in DBIter");
     return false;
   } else {
@@ -144,12 +162,13 @@ void DBIter::Next() {
       saved_key_.clear();
       return;
     }
+    // saved_key_ already contains the key to skip past.
+  } else {
+    // Store in saved_key_ the current key so we skip it below.
+    SaveKey(ExtractUserKey(iter_->key()), &saved_key_);
   }
 
-  // Temporarily use saved_key_ as storage for key to skip.
-  std::string* skip = &saved_key_;
-  SaveKey(ExtractUserKey(iter_->key()), skip);
-  FindNextUserEntry(true, skip);
+  FindNextUserEntry(true, &saved_key_);
 }
 
 void DBIter::FindNextUserEntry(bool skipping, std::string* skip) {
@@ -288,12 +307,12 @@ void DBIter::SeekToLast() {
 }  // anonymous namespace
 
 Iterator* NewDBIterator(
-    const std::string* dbname,
-    Env* env,
+    DBImpl* db,
     const Comparator* user_key_comparator,
     Iterator* internal_iter,
-    const SequenceNumber& sequence) {
-  return new DBIter(dbname, env, user_key_comparator, internal_iter, sequence);
+    SequenceNumber sequence,
+    uint32_t seed) {
+  return new DBIter(db, user_key_comparator, internal_iter, sequence, seed);
 }
 
 }  // namespace leveldb

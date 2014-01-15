@@ -188,37 +188,48 @@ if(MaidsafeTesting)
   set(SOURCE_FILES_LEVELDB_TESTHARNESS ${CMAKE_CURRENT_SOURCE_DIR}/util/testutil.cc ${CMAKE_CURRENT_SOURCE_DIR}/util/testharness.cc)
   add_library(leveldb-testharness STATIC ${SOURCE_FILES_LEVELDB_TESTHARNESS})
   ms_target_include_system_dirs(leveldb-testharness PRIVATE ${PROJECT_SOURCE_DIR})
-  target_link_libraries(leveldb-testharness leveldb)
-  set_target_properties(leveldb-testharness PROPERTIES FOLDER "MaidSafe/Executables/Tests/Common/leveldb_tests")
+  if(WIN32)
+    target_link_libraries(leveldb-testharness leveldb)
+  else()
+    target_link_libraries(leveldb-testharness leveldb pthread)
+  endif()
+  target_compile_options(leveldb-testharness
+    PRIVATE
+      $<$<CXX_COMPILER_ID:MSVC>:/wd4996>
+      $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>)
+  set_target_properties(leveldb-testharness PROPERTIES FOLDER "MaidSafe/Executables/Tests/Common/LevelDB Tests")
 
   macro(leveldb_tests)
     foreach(value ${ARGN})
       get_filename_component(exe_name ${value} NAME_WE)
-      string(REGEX REPLACE "(.*)_test" "test_\\1" exe_name ${exe_name})
-      ms_add_executable(${exe_name} "Tests/Common/leveldb_tests" ${value})
+      string(REGEX REPLACE "(.*)_test" "test_leveldb_\\1" exe_name ${exe_name})
+      ms_add_executable(${exe_name} "Tests/Common/LevelDB Tests" ${value})
       ms_target_include_system_dirs(${exe_name} PRIVATE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include)
-      if(WIN32)
-        target_link_libraries(${exe_name} leveldb-testharness)
-      else()
-        target_link_libraries(${exe_name} leveldb-testharness pthread)
-      endif()
-      target_compile_options(${exe_name} PRIVATE
-        $<$<CXX_COMPILER_ID:MSVC>:/wd4018 /wd4244 /wd4267 /wd4800 /wd4996>
-        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w ${LibCXX} ${LibCXXAbi} >)
+      target_link_libraries(${exe_name} leveldb-testharness)
+      target_compile_options(${exe_name}
+        PRIVATE
+          $<$<CXX_COMPILER_ID:MSVC>:/wd4018 /wd4244 /wd4267 /wd4800 /wd4996>
+          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w ${LibCXX} ${LibCXXAbi}>)
+      list(APPEND AllTests ${exe_name})
     endforeach()
   endmacro()
 
-  leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/db_bench.cc
+  leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/autocompact_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/corruption_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/db_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/dbformat_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/db/filename_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/log_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/skiplist_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/version_edit_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/version_set_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/write_batch_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/issues/issue178_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/issues/issue200_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/table/filter_block_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/table/table_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/util/arena_test.cc
+                ${CMAKE_CURRENT_SOURCE_DIR}/util/bloom_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/util/cache_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/util/coding_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/util/crc32c_test.cc
@@ -226,14 +237,24 @@ if(MaidsafeTesting)
   if(NOT MSVC)
     leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/c_test.c)
   endif()
-  target_compile_options(leveldb-testharness PRIVATE
-  $<$<CXX_COMPILER_ID:MSVC>:/wd4996>
-  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>)
+
+  ms_add_executable(leveldb_benchmark "Tools/Common" ${CMAKE_CURRENT_SOURCE_DIR}/db/db_bench.cc)
+  ms_target_include_system_dirs(leveldb_benchmark PRIVATE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include)
+  target_link_libraries(leveldb_benchmark leveldb-testharness)
+  target_compile_options(leveldb_benchmark
+    PRIVATE
+      $<$<CXX_COMPILER_ID:MSVC>:/wd4018 /wd4244 /wd4267 /wd4800 /wd4996>
+      $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w ${LibCXX} ${LibCXXAbi}>)
+
+  set(AllLeveldbTests ${AllTests} CACHE INTERNAL "Full list of LevelDB tests.")
 endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
-target_compile_options(leveldb PRIVATE
-  $<$<CXX_COMPILER_ID:MSVC>:/wd4244 /wd4267 /wd4996>
-  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>
-  PUBLIC $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-pthread ${LibCXX} ${LibCXXAbi} >)
+target_compile_options(leveldb
+  PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/wd4018 /wd4244 /wd4267 /wd4996>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>
+  PUBLIC
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-pthread ${LibCXX} ${LibCXXAbi}>)
+
 target_compile_definitions(leveldb PRIVATE $<$<BOOL:${MSVC}>:UNICODE _UNICODE BOOST_ALL_NO_LIB>)
