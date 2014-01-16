@@ -23,7 +23,7 @@ The steps to set up a scratch project are:
 
 ### Creating a Qt UI Project which Uses MaidSafe Libraries
 
-Similar to the "dummy" project, The "qt_dummy" project is set up to include and link to the MaidSafe libraries and Qt 5.1 Libraries.  You can copy this qt_dummy directory anywhere and, as long as you provide the path to the build root of the MaidSafe super-project and Qt bin directory, it will work as a standalone scratch project.
+Similar to the "dummy" project, The "qt_dummy" project is set up to include and link to the MaidSafe libraries and Qt 5.1 Libraries.  You can copy this qt_dummy directory anywhere and as long as you provide the path to the build root of the MaidSafe super-project and Qt bin directory, it will work as a standalone scratch project.
 
 The included [CMakeLists.txt][qt_cmakelists] contains several comment blocks explaining the various sections.
 
