@@ -1,5 +1,8 @@
 <Project name="MaidSafe">
+  <SubProject name="ThirdParty">
+  </SubProject>
   <SubProject name="Common">
+    <Dependency name="ThirdParty"/>
   </SubProject>
   <SubProject name="Private">
     <Dependency name="Common"/>

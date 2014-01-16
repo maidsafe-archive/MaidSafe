@@ -28,6 +28,7 @@ set(CTEST_DROP_SITE "dash.maidsafe.net")
 set(CTEST_DROP_LOCATION "/submit.php?project=MaidSafe")
 set(CTEST_DROP_SITE_CDASH TRUE)
 set(CTEST_PROJECT_SUBPROJECTS
+    ThirdParty
     Common
     Private
     Passport
