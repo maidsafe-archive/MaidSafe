@@ -2,7 +2,7 @@
 
 The super-project provides an ['examples' folder][examples].  Currently this only contains a dummy project with nothing more than a "Hello World" type example.  The intention is to add further small exemplars, but in the meantime the dummy project is an excellent way to try out existing MaidSafe libraries.
 
-The dummy project is set up to include and link to the MaidSafe libraries and their dependencies.  You can copy this dummy directory anywhere and, as long as you provide the path to the build root of the MaidSafe super-project, it will work as a standalone scratch project.
+The dummy project is set up to include and link to the MaidSafe libraries and their dependencies.  You can copy this dummy directory anywhere and as long as you provide the path to the build root of the MaidSafe super-project, it will work as a standalone scratch project.
 
 The included [CMakeLists.txt][cmakelists] contains several comment blocks explaining the various sections.
 
