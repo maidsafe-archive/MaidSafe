@@ -202,6 +202,7 @@ if(MaidsafeTesting)
   macro(leveldb_tests)
     foreach(value ${ARGN})
       get_filename_component(exe_name ${value} NAME_WE)
+      get_filename_component(Extension ${value} EXT)
       string(REGEX REPLACE "(.*)_test" "test_leveldb_\\1" exe_name ${exe_name})
       ms_add_executable(${exe_name} "Tests/Common/LevelDB Tests" ${value})
       ms_target_include_system_dirs(${exe_name} PRIVATE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include)
@@ -209,7 +210,7 @@ if(MaidsafeTesting)
       target_compile_options(${exe_name}
         PRIVATE
           $<$<CXX_COMPILER_ID:MSVC>:/wd4018 /wd4244 /wd4267 /wd4800 /wd4996>
-          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w ${LibCXX} ${LibCXXAbi}>)
+          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w $<$<STREQUAL:"${Extension}",".cc">:-std=c++11> ${LibCXX} ${LibCXXAbi}>)
       list(APPEND AllTests ${exe_name})
     endforeach()
   endmacro()
@@ -244,7 +245,7 @@ if(MaidsafeTesting)
   target_compile_options(leveldb_benchmark
     PRIVATE
       $<$<CXX_COMPILER_ID:MSVC>:/wd4018 /wd4244 /wd4267 /wd4800 /wd4996>
-      $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w ${LibCXX} ${LibCXXAbi}>)
+      $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w -std=c++11 ${LibCXX} ${LibCXXAbi}>)
 
   set(AllLeveldbTests ${AllTests} CACHE INTERNAL "Full list of LevelDB tests.")
 endif()
@@ -253,8 +254,8 @@ include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
 target_compile_options(leveldb
   PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/wd4018 /wd4244 /wd4267 /wd4996>
-    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w -std=c++11>
   PUBLIC
-    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-std=c++11 -pthread ${LibCXX} ${LibCXXAbi}>)
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-pthread ${LibCXX} ${LibCXXAbi}>)
 
 target_compile_definitions(leveldb PRIVATE $<$<BOOL:${MSVC}>:UNICODE _UNICODE BOOST_ALL_NO_LIB>)
