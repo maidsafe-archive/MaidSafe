@@ -210,7 +210,7 @@ if(MaidsafeTesting)
       target_compile_options(${exe_name}
         PRIVATE
           $<$<CXX_COMPILER_ID:MSVC>:/wd4018 /wd4244 /wd4267 /wd4800 /wd4996>
-          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w $<$<STREQUAL:"${Extension}",".cc">:-std=c++11> ${LibCXX} ${LibCXXAbi}>)
+          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w $<$<STREQUAL:"${Extension}",".cc">:-std=c++11> ${LibCXX}>)
       list(APPEND AllTests ${exe_name})
     endforeach()
   endmacro()
