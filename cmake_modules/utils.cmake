@@ -397,9 +397,14 @@ function(ms_get_target_platform)
   elseif(UNIX)
     if(APPLE)
       # See http://en.wikipedia.org/wiki/Darwin_%28operating_system%29
-      if(CMAKE_SYSTEM_VERSION VERSION_EQUAL 12 OR CMAKE_SYSTEM_VERSION VERSION_GREATER 12 AND CMAKE_SYSTEM_VERSION VERSION_LESS 13)
+      if(CMAKE_SYSTEM_VERSION VERSION_LESS 12)
+        set(Platform Unsupported)
+      elseif(CMAKE_SYSTEM_VERSION VERSION_LESS 13)
         # OS X v10.8 "Mountain Lion"
         set(Platform OSX10.8)
+      elseif(CMAKE_SYSTEM_VERSION VERSION_LESS 14)
+        # OS X v10.9 "Mavericks"
+        set(Platform OSX10.9)
       else()
         set(Platform Unsupported)
       endif()
