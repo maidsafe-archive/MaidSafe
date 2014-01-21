@@ -37,21 +37,22 @@
 #    CBFS_ROOT_DIR and DONT_USE_CBFS                                                               #
 #                                                                                                  #
 #  Variables set and cached by this module are:                                                    #
-#    Cbfs_INCLUDE_DIR, Cbfs_LIBRARY_DIR, Cbfs_LIBRARY_DIR_DEBUG, Cbfs_LIBRARY,                     #
-#    Cbfs_LIBRARY_DEBUG, Cbfs_LIBRARIES, Cbfs_KEY and Cbfs_FOUND                                   #
+#    CbfsIncludeDir, CbfsLibraries, CbfsCab, CbfsInstaller and CbfsFound.                          #
+#                                                                                                  #
+#  Variables set and NOT cached by this module are:                                                #
+#    CbfsKey.                                                                                      #
 #                                                                                                  #
 #==================================================================================================#
 
 
 # Always retry to find CBFS in case user has provided a new location
-unset(Cbfs_INCLUDE_DIR CACHE)
-unset(Cbfs_LIBRARY_DIR CACHE)
-unset(Cbfs_LIBRARY_DIR_DEBUG CACHE)
-unset(Cbfs_LIBRARY CACHE)
-unset(Cbfs_LIBRARY_DEBUG CACHE)
-unset(Cbfs_LIBRARIES CACHE)
-unset(Cbfs_KEY CACHE)
-set(Cbfs_FOUND FALSE CACHE INTERNAL "")
+unset(CbfsIncludeDir CACHE)
+unset(CbfsLibrary CACHE)
+unset(CbfsLibraryDebug CACHE)
+unset(CbfsLibraries CACHE)
+unset(CbfsCab CACHE)
+unset(CbfsInstaller CACHE)
+set(CbfsFound FALSE CACHE INTERNAL "")
 
 if(DONT_USE_CBFS)
   return()
@@ -82,13 +83,13 @@ endif()
 
 # Prepare to find CBFS libs and headers
 if(CMAKE_CL_64)
-  set(CBFS_LIBPATH_SUFFIX "SourceCode/CallbackFS/CPP/x64/Release" "SourceCode/CBFS/CPP/x64/Release" "CPP/VC2008/64bit/static_runtime(MT)")
-  set(CBFS_LIBPATH_SUFFIX_DEBUG "SourceCode/CallbackFS/CPP/x64/Debug" "SourceCode/CBFS/CPP/x64/Debug" "CPP/VC2008/64bit/static_runtime(MT)")
-  set(CBFS_INCPATH_SUFFIX "SourceCode/CallbackFS/CPP" "SourceCode/CBFS/CPP" "CPP/VC2008/64bit/static_runtime(MT)")
+  set(CbfsLibPathSuffix "SourceCode/CallbackFS/CPP/x64/Release" "SourceCode/CBFS/CPP/x64/Release")
+  set(CbfsLibPathSuffixDebug "SourceCode/CallbackFS/CPP/x64/Debug" "SourceCode/CBFS/CPP/x64/Debug")
+  set(CbfsIncludePathSuffix "SourceCode/CallbackFS/CPP" "SourceCode/CBFS/CPP")
 else()
-  set(CBFS_LIBPATH_SUFFIX "SourceCode/CallbackFS/CPP/Release" "SourceCode/CBFS/CPP/Release" "CPP/VC2008/32bit/static_runtime(MT)")
-  set(CBFS_LIBPATH_SUFFIX_DEBUG "SourceCode/CallbackFS/CPP/Debug" "SourceCode/CBFS/CPP/Debug" "CPP/VC2008/32bit/static_runtime(MT)")
-  set(CBFS_INCPATH_SUFFIX "SourceCode/CallbackFS/CPP" "SourceCode/CBFS/CPP" "CPP/VC2008/32bit/static_runtime(MT)")
+  set(CbfsLibPathSuffix "SourceCode/CallbackFS/CPP/Release" "SourceCode/CBFS/CPP/Release")
+  set(CbfsLibPathSuffixDebug "SourceCode/CallbackFS/CPP/Debug" "SourceCode/CBFS/CPP/Debug")
+  set(CbfsIncludePathSuffix "SourceCode/CallbackFS/CPP" "SourceCode/CBFS/CPP")
 endif()
 
 function(fatal_find_error MissingComponent)
@@ -100,8 +101,8 @@ function(fatal_find_error MissingComponent)
 endfunction()
 
 # Find CBFS Release lib
-find_library(Cbfs_LIBRARY NAMES cbfs PATHS ${CBFS_ROOT_DIR} PATH_SUFFIXES ${CBFS_LIBPATH_SUFFIX} NO_DEFAULT_PATH)
-if(NOT Cbfs_LIBRARY)
+find_library(CbfsLibrary NAMES cbfs PATHS ${CBFS_ROOT_DIR} PATH_SUFFIXES ${CbfsLibPathSuffix} NO_DEFAULT_PATH)
+if(NOT CbfsLibrary)
   if(CbfsRequired)
     fatal_find_error("CBFS LIBRARY")
   else()
@@ -110,8 +111,8 @@ if(NOT Cbfs_LIBRARY)
 endif()
 
 # Find CBFS Debug lib
-find_library(Cbfs_LIBRARY_DEBUG NAMES cbfs PATHS ${CBFS_ROOT_DIR} PATH_SUFFIXES ${CBFS_LIBPATH_SUFFIX_DEBUG} NO_DEFAULT_PATH)
-if(NOT Cbfs_LIBRARY_DEBUG)
+find_library(CbfsLibraryDebug NAMES cbfs PATHS ${CBFS_ROOT_DIR} PATH_SUFFIXES ${CbfsLibPathSuffixDebug} NO_DEFAULT_PATH)
+if(NOT CbfsLibraryDebug)
   if(CbfsRequired)
     fatal_find_error("CBFS DEBUG LIBRARY")
   else()
@@ -119,9 +120,11 @@ if(NOT Cbfs_LIBRARY_DEBUG)
   endif()
 endif()
 
+set(CbfsLibraries optimized ${CbfsLibrary} debug ${CbfsLibraryDebug} CACHE STRING "Path to CBFS Debug and Release libraries.")
+
 # Find CBFS header
-find_path(Cbfs_INCLUDE_DIR CbFS.h PATHS ${CBFS_ROOT_DIR} PATH_SUFFIXES ${CBFS_INCPATH_SUFFIX} NO_DEFAULT_PATH)
-if(NOT Cbfs_INCLUDE_DIR)
+find_path(CbfsIncludeDir CbFS.h PATHS ${CBFS_ROOT_DIR} PATH_SUFFIXES ${CbfsIncludePathSuffix} NO_DEFAULT_PATH)
+if(NOT CbfsIncludeDir)
   if(CbfsRequired)
     fatal_find_error("CbFS.h")
   else()
@@ -129,22 +132,41 @@ if(NOT Cbfs_INCLUDE_DIR)
   endif()
 endif()
 
-# Set CBFS variables and include header path
-get_filename_component(CBFS_ROOT_DIR ${Cbfs_LIBRARY} PATH)
-set(Cbfs_LIBRARY_DIR ${CBFS_ROOT_DIR} CACHE PATH "Path to Callback File System library directory" FORCE)
-get_filename_component(CBFS_ROOT_DIR ${Cbfs_LIBRARY_DEBUG} PATH)
-set(Cbfs_LIBRARY_DIR_DEBUG ${CBFS_ROOT_DIR} CACHE PATH "Path to Callback File System library directory" FORCE)
-set(Cbfs_LIBRARIES optimized ${Cbfs_LIBRARY} debug ${Cbfs_LIBRARY_DEBUG})
+# Find CBFS cab file
+find_file(CbfsCab NAMES cbfs.cab PATHS ${CBFS_ROOT_DIR}/Drivers NO_DEFAULT_PATH)
+if(NOT CbfsCab)
+  if(CbfsRequired)
+    fatal_find_error("CBFS CABINET FILE")
+  else()
+    return()
+  endif()
+endif()
 
-message(STATUS "Found library ${Cbfs_LIBRARY}")
-message(STATUS "Found library ${Cbfs_LIBRARY_DEBUG}")
+# Find CBFS installer
+if(CMAKE_CL_64)
+  find_file(CbfsInstaller NAMES cbfsinst.dll PATHS ${CBFS_ROOT_DIR}/HelperDLLs/Installer/64bit/x64 NO_DEFAULT_PATH)
+else()
+  find_file(CbfsInstaller NAMES cbfsinst.dll PATHS ${CBFS_ROOT_DIR}/HelperDLLs/Installer/32bit NO_DEFAULT_PATH)
+endif()
+if(NOT CbfsInstaller)
+  if(CbfsRequired)
+    fatal_find_error("CBFS INSTALLER DLL")
+  else()
+    return()
+  endif()
+endif()
+
+message(STATUS "Found library ${CbfsLibrary}")
+message(STATUS "Found library ${CbfsLibraryDebug}")
+message(STATUS "Found cabinet file ${CbfsCab}")
+message(STATUS "Found installer library ${CbfsInstaller}")
 
 # Find licence key
 if(CBFS_KEY)
   if(EXISTS ${CBFS_KEY})  # User set CBFS_KEY to path to key file
-    file(READ ${CBFS_KEY} Cbfs_KEY)
+    file(READ ${CBFS_KEY} CbfsKey)
   else()  # User set CBFS_KEY to value of key
-    set(Cbfs_KEY ${CBFS_KEY})
+    set(CbfsKey ${CBFS_KEY})
   endif()
 else()
   # Use MaidSafe's key
@@ -199,7 +221,7 @@ else()
     endif()
   endif()
   # Read in the file contents
-  file(READ ${LicenseFile} Cbfs_KEY)
+  file(READ ${LicenseFile} CbfsKey)
 endif()
 
-set(Cbfs_FOUND TRUE CACHE INTERNAL "")
+set(CbfsFound TRUE CACHE INTERNAL "")
