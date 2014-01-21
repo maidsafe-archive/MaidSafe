@@ -37,7 +37,7 @@ namespace leveldb {
 namespace port {
 
 Mutex::Mutex() :
-    cs_(NULL) {
+    cs_(nullptr) {
   assert(!cs_);
   cs_ = static_cast<void *>(new CRITICAL_SECTION());
   ::InitializeCriticalSection(static_cast<CRITICAL_SECTION *>(cs_));

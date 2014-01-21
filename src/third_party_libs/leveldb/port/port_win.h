@@ -31,17 +31,13 @@
 #ifndef STORAGE_LEVELDB_PORT_PORT_WIN_H_
 #define STORAGE_LEVELDB_PORT_PORT_WIN_H_
 
-#ifdef _MSC_VER
 #define snprintf _snprintf
 #define close _close
 #define fread_unlocked _fread_nolock
-#endif
 
 #include <string>
+
 #include <stdint.h>
-#ifdef SNAPPY
-#include "snappy/snappy.h"
-#endif
 
 namespace leveldb {
 namespace port {
@@ -122,7 +118,7 @@ class AtomicPointer {
  private:
   void * rep_;
  public:
-  AtomicPointer() : rep_(NULL) { }
+  AtomicPointer() : rep_(nullptr) { }
   explicit AtomicPointer(void* v); 
   void* Acquire_Load() const;
 
