@@ -380,7 +380,7 @@ function(ms_setup_ci_scripts)
 endfunction()
 
 
-# Gets the target platform name
+# Gets and caches the target platform name
 function(ms_get_target_platform)
   if(TargetPlatform)
     return()
@@ -417,11 +417,11 @@ function(ms_get_target_platform)
       set(Platform Linux)
     endif()
   endif()
-  set(TargetPlatform "${Platform}" PARENT_SCOPE)
+  set(TargetPlatform "${Platform}" CACHE INTERNAL "")
 endfunction()
 
 
-# Gets the target architecture
+# Gets and caches the target architecture
 # Copied from https://github.com/petroules/solar-cmake/blob/master/TargetArch.cmake
 # and described at http://stackoverflow.com/a/12024211/424459
 #
@@ -554,7 +554,7 @@ function(ms_get_target_architecture)
     endif()
   endif()
 
-  set(TargetArchitecture "${ARCH}" PARENT_SCOPE)
+  set(TargetArchitecture "${ARCH}" CACHE INTERNAL "")
 endfunction()
 
 
