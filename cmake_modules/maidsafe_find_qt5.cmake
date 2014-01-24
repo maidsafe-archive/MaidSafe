@@ -26,9 +26,12 @@
 #    Qt5RequiredLibs - List of Qt5 Libs needed.                                                    #
 #      example: set(Qt5RequiredLibs Qt5Core Qt5Gui Qt5Widgets)                                     #
 #                                                                                                  #
-#  Variables set and cached by this module are:                                                    #
+#  Variables set by this module are:                                                               #
 #    Qt5TargetLibs - Formatted Qt5 Target Link libs                                                #
 #      example: target_link_libraries(my_project ${Qt5TargetLibs})                                 #
+#                                                                                                  #
+#    Qt5AllLibsPathsDebug & Qt5AllLibsPathsRelease - Full path to all libs in Qt5TargetLibs and    #
+#    all of their non-system dependencies.                                                         #
 #                                                                                                  #
 #==================================================================================================#
 
@@ -37,7 +40,7 @@ set(Qt5RequiredVersion 5.2.0)
 
 # Check for valid input variables
 list(LENGTH Qt5RequiredLibs Qt5RequiredLibsLength)
-if (Qt5RequiredLibsLength EQUAL 0)
+if(Qt5RequiredLibsLength EQUAL 0)
   set(ErrorMessage "${ErrorMessage}Qt5RequiredLibs is currently empty.")
   set(ErrorMessage "${ErrorMessage}\nThis variable needs to be set for this module")
   set(ErrorMessage "${ErrorMessage}\nPlease check maidsafe_find_qt5.cmake for example specification.\n\n")
@@ -55,13 +58,15 @@ if(QT_BIN_DIR)
   set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT_BIN_DIR}/..)
 endif()
 unset(Qt5TargetLibs)
+unset(Qt5AllLibsPathsRelease)
+unset(Qt5AllLibsPathsDebug)
 set(Found TRUE)
 set(ErrorMessage "\nCould not find all required components of Qt${Qt5RequiredVersion}:\n")
 foreach(QtLib ${Qt5RequiredLibs})
   find_package(${QtLib} ${Qt5RequiredVersion} QUIET)
   if(${QtLib}_FOUND)
     set(ErrorMessage "${ErrorMessage}  Found ${QtLib}\n")
-    if (NOT ${QtLib} STREQUAL "Qt5LinguistTools")
+    if(NOT ${QtLib} STREQUAL "Qt5LinguistTools")
       string(REPLACE "Qt5" "Qt5::" QtLib ${QtLib})
       list(APPEND Qt5TargetLibs "${QtLib}")
     endif()
@@ -86,6 +91,31 @@ if(NOT AllQt5_FOUND)
   endif()
 endif()
 
+# Get list of prerequisites for each required Qt library
+include(GetPrerequisites)
+file(TO_CMAKE_PATH "${QT_BIN_DIR}" QtBinDir)
+foreach(QtLib ${Qt5TargetLibs})
+  foreach(BuildType Release Debug)
+    string(TOUPPER ${BuildType} BuildTypeUpperCase)
+    get_target_property(${QtLib}Location${BuildType} ${QtLib} LOCATION_${BuildTypeUpperCase})
+    list(APPEND Qt5AllLibsPaths${BuildType} "${${QtLib}Location${BuildType}}")
+    if(NOT ${QtLib}Location${BuildType}Dependencies)
+      get_prerequisites(${${QtLib}Location${BuildType}} ${QtLib}Location${BuildType}Dependencies 1 1 ${CMAKE_BINARY_DIR} "")
+      set(${QtLib}Location${BuildType}Dependencies ${${QtLib}Location${BuildType}Dependencies} CACHE INTERNAL "")
+    endif()
+    foreach(Dependency ${${QtLib}Location${BuildType}Dependencies})
+      # Ensure the dependency is in the QT_BIN_DIR
+      get_filename_component(Directory "${Dependency}" DIRECTORY)
+      if(Directory)
+        message(FATAL_ERROR "This function can only handle Qt dependencies which are in its own bin dir.  Refactor the function.")
+      endif()
+      list(APPEND Qt5AllLibsPaths${BuildType} "${QtBinDir}/${Dependency}")
+    endforeach()
+  endforeach()
+endforeach()
+list(REMOVE_DUPLICATES Qt5AllLibsPathsRelease)
+list(REMOVE_DUPLICATES Qt5AllLibsPathsDebug)
+
 # Windows - Copy required dlls to binary directory
 if(MSVC)
   # Image format plugins
@@ -98,28 +128,28 @@ if(MSVC)
   file(GLOB_RECURSE QtQmlCollection "${QtQmlPath}/*[^.pdb]")
 
   # Required Qt Libraries
-  set(REQUIRED_QT_DLLS  d3dcompiler_46
-                        icudt51
-                        icuin51
-                        icuuc51
-                        libEGL
-                        libGLESv2)
+  set(REQUIRED_QT_DLLS d3dcompiler_46
+                       icudt51
+                       icuin51
+                       icuuc51
+                       libEGL
+                       libGLESv2)
   list(APPEND REQUIRED_QT_DLLS ${Qt5RequiredLibs})
 
   execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Release")
   execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Debug")
 
-  # Qt Plugins Dll's
+  # Qt Plugins DLLs
   function(TransferPluginDlls QtDlls BuildType)
     foreach(QtDll ${${QtDlls}})
       get_filename_component(DirPath "${QtDll}" PATH)
       get_filename_component(DirName "${DirPath}" NAME)
-      if (${DirName} STREQUAL "platforms")
-        set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/${BuildType}")
+      if(${DirName} STREQUAL "platforms")
+        set(OutputPath "${CMAKE_BINARY_DIR}/${BuildType}")
       else()
-        set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/${BuildType}/plugins")
+        set(OutputPath "${CMAKE_BINARY_DIR}/${BuildType}/plugins")
       endif()
-      string(REPLACE "${QtPluginsPath}" "${OUTPUT_PATH}" DestPath ${QtDll})
+      string(REPLACE "${QtPluginsPath}" "${OutputPath}" DestPath ${QtDll})
       get_filename_component(DestPath "${DestPath}" PATH)
       file(COPY ${QtDll} DESTINATION ${DestPath})
     endforeach()
@@ -131,15 +161,15 @@ if(MSVC)
   # Qt Qml dependencies
   function(TransferQMLDependencies QmlFiles BuildType)
     foreach(QmlFile ${${QmlFiles}})
-      set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/${BuildType}/qml")
-      string(REPLACE "${QtQmlPath}" "${OUTPUT_PATH}" DestPath ${QmlFile})
+      set(OutputPath "${CMAKE_BINARY_DIR}/${BuildType}/qml")
+      string(REPLACE "${QtQmlPath}" "${OutputPath}" DestPath ${QmlFile})
       get_filename_component(DestPath "${DestPath}" PATH)
-      if (${BuildType} STREQUAL "Debug")
-        if (NOT ${QmlFile} MATCHES "[^d].dll$")
+      if(${BuildType} STREQUAL "Debug")
+        if(NOT ${QmlFile} MATCHES "[^d].dll$")
           file(COPY ${QmlFile} DESTINATION ${DestPath})
         endif()
       else()
-        if (NOT ${QmlFile} MATCHES "d.dll$")
+        if(NOT ${QmlFile} MATCHES "d.dll$")
           file(COPY ${QmlFile} DESTINATION ${DestPath})
         endif()
       endif()
@@ -149,22 +179,17 @@ if(MSVC)
   TransferQMLDependencies(QtQmlCollection "Release")
   TransferQMLDependencies(QtQmlCollection "Debug")
 
-  # Qt Bin Dll's
-  function(TransferQtBinDlls QtDlls BuildType)
+  # Qt Bin DLLs
+  function(TransferQtBinDlls QtDlls)
+    string(REGEX MATCH Release ReleaseBuild ${QtDlls})
+    string(REGEX MATCH Debug DebugBuild ${QtDlls})
+    set(BuildType ${ReleaseBuild}${DebugBuild})
     foreach(QtDll ${${QtDlls}})
-      if (NOT ${QtDll} STREQUAL "Qt5LinguistTools")
-        set(OUTPUT_PATH "${CMAKE_BINARY_DIR}/${BuildType}")
-        if (${BuildType} STREQUAL "Debug" AND ${QtDll} MATCHES "^(Qt|lib)")
-          set(FORMATTED_NAME "${QtDll}d")
-        else()
-          set(FORMATTED_NAME "${QtDll}")
-        endif()
-        file(COPY "${QT_BIN_DIR}/${FORMATTED_NAME}.dll" DESTINATION ${OUTPUT_PATH})
-      endif()
+      file(COPY "${QtDll}" DESTINATION "${CMAKE_BINARY_DIR}/${BuildType}")
     endforeach()
   endfunction()
 
-  TransferQtBinDlls(REQUIRED_QT_DLLS "Release")
-  TransferQtBinDlls(REQUIRED_QT_DLLS "Debug")
+  TransferQtBinDlls(Qt5AllLibsPathsRelease)
+  TransferQtBinDlls(Qt5AllLibsPathsDebug)
 endif()
 

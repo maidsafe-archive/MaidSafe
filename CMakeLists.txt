@@ -76,9 +76,6 @@ else()
   set(MaidsafeTesting ON)
 endif()
 
-# Enable auto-linking qtmain for Windows.
-cmake_policy(SET CMP0020 NEW)
-
 
 # Force all libraries and exes to be built to the top-level build dir.
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
