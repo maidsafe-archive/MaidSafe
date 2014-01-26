@@ -117,9 +117,6 @@ foreach(QtLib ${Qt5TargetLibs})
 endforeach()
 list(REMOVE_DUPLICATES Qt5AllLibsPathsRelease)
 list(REMOVE_DUPLICATES Qt5AllLibsPathsDebug)
-foreach(C ${Qt5AllLibsPathsRelease})
-message("c - ${C}")
-endforeach()
 
 # Windows - Copy required dlls to binary directory
 if(MSVC)
