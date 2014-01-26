@@ -98,18 +98,23 @@ foreach(QtLib ${Qt5TargetLibs})
   foreach(BuildType Release Debug)
     string(TOUPPER ${BuildType} BuildTypeUpperCase)
     get_target_property(${QtLib}Location${BuildType} ${QtLib} LOCATION_${BuildTypeUpperCase})
+    get_filename_component(${QtLib}Location${BuildType} "${${QtLib}Location${BuildType}}" REALPATH)
     list(APPEND Qt5AllLibsPaths${BuildType} "${${QtLib}Location${BuildType}}")
     if(NOT ${QtLib}Location${BuildType}Dependencies)
       get_prerequisites(${${QtLib}Location${BuildType}} ${QtLib}Location${BuildType}Dependencies 1 1 ${CMAKE_BINARY_DIR} "")
       set(${QtLib}Location${BuildType}Dependencies ${${QtLib}Location${BuildType}Dependencies} CACHE INTERNAL "")
     endif()
     foreach(Dependency ${${QtLib}Location${BuildType}Dependencies})
-      # Ensure the dependency is in the QT_BIN_DIR
       get_filename_component(Directory "${Dependency}" DIRECTORY)
       if(Directory)
-        message(FATAL_ERROR "This function can only handle Qt dependencies which are in its own bin dir.  Refactor the function.")
+        # For Windows, ensure the dependency is in the QT_BIN_DIR
+        if(WIN32)
+          message(FATAL_ERROR "This function can only handle Qt dependencies which are in its own bin dir.  Refactor the function.")
+        endif()
+        list(APPEND Qt5AllLibsPaths${BuildType} "${Dependency}")
+      else()
+        list(APPEND Qt5AllLibsPaths${BuildType} "${QtBinDir}/${Dependency}")
       endif()
-      list(APPEND Qt5AllLibsPaths${BuildType} "${QtBinDir}/${Dependency}")
     endforeach()
   endforeach()
 endforeach()
@@ -126,15 +131,6 @@ if(MSVC)
   # QML Platforms dll's
   file(TO_CMAKE_PATH "${QT_BIN_DIR}/../qml" QtQmlPath)
   file(GLOB_RECURSE QtQmlCollection "${QtQmlPath}/*[^.pdb]")
-
-  # Required Qt Libraries
-  set(REQUIRED_QT_DLLS d3dcompiler_46
-                       icudt51
-                       icuin51
-                       icuuc51
-                       libEGL
-                       libGLESv2)
-  list(APPEND REQUIRED_QT_DLLS ${Qt5RequiredLibs})
 
   execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Release")
   execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/Debug")
