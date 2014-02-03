@@ -1,7 +1,7 @@
 #!/bin/bash
 
 exe=vault
-vault_count=40
+vault_count=37
 
 echo "Setting up $vault_count vaults..."
 i=4
