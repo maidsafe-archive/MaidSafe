@@ -4,7 +4,7 @@ Step 1 :
 
 Step 2 :
 ./vault --log_* G --peer <paste endpoint info here> --identity_index 2 &>vault_2.txt
-(such as ./vault --log_* G --peer 192.168.0.109:12427 --identity_index 2 &>vault_2.txt)
+(such as ./vault --log_* G --identity_index 2 --peer 192.168.0.109:12427 &>vault_2.txt)
 
 Step 3 :
 ./vault --log_* G --identity_index 3 &>vault_3.txt
