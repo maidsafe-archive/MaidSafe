@@ -26,7 +26,6 @@ public class NetworkViewer extends JComponent {
     private Rectangle mouseRect = new Rectangle();
     private boolean selecting = false;
 
-
     public static void main(String[] args) throws Exception {
         EventQueue.invokeLater(new Runnable() {
             @Override
@@ -51,7 +50,7 @@ public class NetworkViewer extends JComponent {
             int x = WIDTH / 2 + 20 + ((i - 2) % 6) * 300;
             int y = HEIGHT / 2 + 10 + ((i - 2) / 6) * 150;
             Point p = new Point(x, y);
-            nodes.add(new Node(p, WIDTH, HEIGHT, Color.LIGHT_GRAY, kind));
+            nodes.add(new Node(p, WIDTH, HEIGHT, Color.LIGHT_GRAY, kind, i));
             String log_file = BuildDirectory + "vault_" + i + ".txt";
             readers.add(new LogReader(nodes.get(nodes.size() - 1), log_file));
         }
@@ -192,21 +191,7 @@ public class NetworkViewer extends JComponent {
                         Content parsed_content;
                         parsed_content = parseContent(lines[i]);
                         if (parsed_content.valid) {
-//                            n.persona = parsed_content.persona;
-                            if (parsed_content.persona == Persona.PmidNode) {
-                                n.color = new Color(199, 219, 234);
-                                n.kind = Kind.Rounded;
-                            } else if (parsed_content.persona == Persona.DataManager) {
-                                n.color = new Color(249, 246, 138);
-                                n.kind = Kind.Square;
-                            } else if (parsed_content.persona == Persona.MaidManager) {
-                                n.color = new Color(249, 185, 194);
-                                n.kind = Kind.Circular;
-                            } else if (parsed_content.persona == Persona.None) {
-                                n.color = new Color(213, 242, 160);
-                                n.kind = Kind.Circular;
-                            }
-
+                            n.updatePersona(parsed_content.persona);
                             g.setColor(parsed_content.color);
                             for (int k = 0; k <= (parsed_content.content.length() / LINEWIDTH); k++) {
                                 Math.min(k, k);
@@ -222,6 +207,7 @@ public class NetworkViewer extends JComponent {
                 }
                 txt_br.close();
             } catch (Exception e) {
+                n.updatePersona(Persona.Down);
                 System.out.println(e.getMessage());
             }
         }
@@ -241,17 +227,17 @@ public class NetworkViewer extends JComponent {
                     if (input.contains("PmidNode")) {
                         if (input.contains("storing")) {  // storing chunk
                             String[] splits = input.split("with");
-                            content = new Content(new Color(14, 76, 114), splits[0], Persona.PmidNode);
+                            content = new Content(MaidsafeColor.Info.color, splits[0], Persona.PmidNode);
                         } else {  // deleting chunk
-                            content = new Content(new Color(188, 23, 102), input, Persona.PmidNode);
+                            content = new Content(MaidsafeColor.Warning.color, input, Persona.PmidNode);
                         }
                     } else if (input.contains("DataManager")) {  // increase/decrease subscribers
-                        content = new Content(new Color(102, 102, 102), input, Persona.DataManager);
+                        content = new Content(MaidsafeColor.Verbose.color, input, Persona.DataManager);
                     } else if (input.contains("MaidManager")) {
                         if (input.contains("blocked DeleteRequest of chunk")) {
-                        content = new Content(new Color(193, 39, 45), input, Persona.MaidManager);
+                        content = new Content(MaidsafeColor.Error.color, input, Persona.MaidManager);
                         } else {  // increase/decrease count
-                            content = new Content(new Color(102, 102, 102), input, Persona.MaidManager);
+                            content = new Content(MaidsafeColor.Verbose.color, input, Persona.MaidManager);
                         }
                     }
                 }
@@ -274,6 +260,9 @@ public class NetworkViewer extends JComponent {
             mousePt = e.getPoint();
             if (e.isShiftDown()) {
                 Node.selectToggle(nodes, mousePt);
+            } else if (e.isPopupTrigger()) {
+                Node.selectOne(nodes, mousePt);
+                showPopup(e);
             } else if (Node.selectOne(nodes, mousePt)) {
                 selecting = false;
             } else {
@@ -281,6 +270,10 @@ public class NetworkViewer extends JComponent {
                 selecting = true;
             }
             e.getComponent().repaint();
+        }
+        
+        private void showPopup(MouseEvent e) {
+            control.popup.show(e.getComponent(), e.getX(), e.getY());
         }
 
     }
@@ -313,22 +306,89 @@ public class NetworkViewer extends JComponent {
         return control;
     }
 
+    private class StartVaultAction extends AbstractAction {
+        public StartVaultAction(String name) {
+            super(name);
+        }
+        public void actionPerformed(ActionEvent e) {
+            List<Node> selected = new ArrayList<Node>();
+            Node.getSelected(nodes, selected);
+            String index = Integer.toString(selected.get(0).index);
+            String exec_cmd = BuildDirectory + "vault --log_* G --identity_index " + index;
+            System.out.println(exec_cmd);
+            try {
+                ProcessBuilder pb = new ProcessBuilder(BuildDirectory + "vault",
+                       "--log_*", "G", "--identity_index", index);
+                pb.redirectOutput(new File(BuildDirectory + "vault_" + index + ".txt"));
+                pb.redirectError(new File(BuildDirectory + "vault_" + index + ".txt"));
+                pb.start();
+            } catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
+            repaint();
+        }
+    }
+    
+    private class StopVaultAction extends AbstractAction {
+        public StopVaultAction(String name) {
+            super(name);
+        }
+        public void actionPerformed(ActionEvent e) {
+            List<Node> selected = new ArrayList<Node>();
+            Node.getSelected(nodes, selected);
+            String log_file = BuildDirectory + "vault_" + selected.get(0).index + ".txt";
+            String exec_cmd = "vault --log_* G --identity_index " + selected.get(0).index;
+            try {
+                Process p = Runtime.getRuntime().exec("ps -aux");
+                p.waitFor();
+                BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                String line = "";
+                String thread = "";
+                while (((line = b.readLine()) != null) && (thread.equals(""))) {
+                  if (line.contains(exec_cmd)) {
+                      String[] splits = line.split("  ");
+                      thread = splits[1].trim();
+                  }
+                }
+                Runtime.getRuntime().exec("kill -9 " + thread);
+                Runtime.getRuntime().exec("rm " + log_file);
+            } catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
+            repaint();
+        }
+    }
+
     private class ControlPanel extends JToolBar {
+        private Action start = new StartVaultAction("Start");
+        private Action stop = new StopVaultAction("Stop");
+        private JPopupMenu popup = new JPopupMenu();
 
         ControlPanel() {
             this.setLayout(new FlowLayout(FlowLayout.LEFT));
             this.setBackground(Color.lightGray);
-        } 
+            popup.add(new JMenuItem(start));
+            popup.add(new JMenuItem(stop));
+        }        
     }
     
     private enum Kind {
-
         Circular, Rounded, Square;
     }
     
     private enum Persona {
+        None, MaidManager, DataManager, PmidManager, PmidNode, Down;
+    }
 
-        None, MaidManager, DataManager, PmidManager, PmidNode;
+    public enum MaidsafeColor {
+        MaidManager (new Color(249, 185, 194)), DataManager (new Color(249, 246, 138)),
+        PmidManager (Color.BLACK), PmidNode (new Color(199, 219, 234)), None (new Color(213, 242, 160)),
+        Verbose (new Color(102, 102, 102)), Info (new Color(14, 76, 114)),
+        Warning (new Color(188, 23, 102)), Error (new Color(193, 39, 45));
+        private Color color;
+        private MaidsafeColor(Color color) {
+            this.color = color;
+        }
     }
 
     private static class Edge {
@@ -352,6 +412,7 @@ public class NetworkViewer extends JComponent {
     private static class Node {
         public Color color;
         public Kind kind;
+        public int index;
 
         private Point p;
         private int width;
@@ -362,12 +423,14 @@ public class NetworkViewer extends JComponent {
         /**
          * Construct a new node.
          */
-        public Node(Point p, int width, int height, Color color, Kind kind) {
+        public Node(Point p, int width, int height,
+                    Color color, Kind kind, int index) {
             this.p = p;
             this.width = width;
             this.height = height;
             this.color = color;
             this.kind = kind;
+            this.index = index;
             setBoundary(b);
         }
 
@@ -376,6 +439,26 @@ public class NetworkViewer extends JComponent {
          */
         private void setBoundary(Rectangle b) {
             b.setBounds(p.x - (width / 2), p.y - (height / 2), width, height);
+        }
+
+        public void updatePersona(Persona persona) {
+            switch (persona) {
+                case MaidManager:
+                    color = MaidsafeColor.MaidManager.color; kind = Kind.Circular;
+                    break;
+                case DataManager:
+                    color = MaidsafeColor.DataManager.color; kind = Kind.Square;
+                    break;
+                case PmidNode:
+                    color = MaidsafeColor.PmidNode.color; kind = Kind.Rounded;
+                    break;
+                case None:
+                    color = MaidsafeColor.None.color; kind = Kind.Circular;
+                    break;
+                default:
+                    color = Color.LIGHT_GRAY; kind = Kind.Circular;
+                    break;
+            }
         }
 
         /**
