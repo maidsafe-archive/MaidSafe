@@ -9,6 +9,7 @@ import javax.swing.*;
 
 
 public class NetworkViewer extends JComponent {
+    private static final String BuildDirectory = "/home/maidsafe/MaidSafe-Open/build/";
     private static final int WIDE = 1800;
     private static final int HIGH = 900;
     private static final int WIDTH = 220;
@@ -51,11 +52,11 @@ public class NetworkViewer extends JComponent {
             int y = HEIGHT / 2 + 10 + ((i - 2) / 6) * 150;
             Point p = new Point(x, y);
             nodes.add(new Node(p, WIDTH, HEIGHT, Color.LIGHT_GRAY, kind));
-            String log_file = "/home/maidsafe/MaidSafe-Open/build/vault_" + i + ".txt";
+            String log_file = BuildDirectory + "vault_" + i + ".txt";
             readers.add(new LogReader(nodes.get(nodes.size() - 1), log_file));
         }
-        no_display.LoadKeyList("/home/maidsafe/MaidSafe-Open/build/key_list.txt");
-        no_display.LoadList("/home/maidsafe/MaidSafe-Open/build/no_display_list.txt");
+        no_display.LoadKeyList(BuildDirectory + "key_list.txt");
+        no_display.LoadList(BuildDirectory + "no_display_list.txt");
         new javax.swing.Timer(1000, taskPerformer).start();  //milliseconds
     }
     
