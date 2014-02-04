@@ -99,6 +99,10 @@ public class NetworkViewer extends JComponent {
             no_display_list_ = new ArrayList<String>();
         }
         
+        void Clear() {
+            no_display_list_.clear();
+        }
+        
         void LoadKeyList(String file_path) {
             try {
                 BufferedReader txt_br = null;
@@ -356,6 +360,9 @@ public class NetworkViewer extends JComponent {
                             generate_chunk.waitFor();
                             text_panel.Append("Preconditions setup completed");
                             Thread.sleep(3000);
+                            no_display.Clear();
+                            no_display.LoadKeyList(BuildDirectory + "key_list.txt");
+                            no_display.LoadList(BuildDirectory + "no_display_list.txt");
                             text_panel.Hide();
                         } catch (Exception exception) {
                             System.out.println(exception.getMessage());
