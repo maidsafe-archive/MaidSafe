@@ -17,6 +17,7 @@ public class NetworkViewer extends JComponent {
     private static final int LINEWIDTH = 37;
     private static final Random rnd = new Random();
     private ControlPanel control = new ControlPanel();
+    private TextPanel text_panel = new TextPanel();
     private Kind kind = Kind.Circular;
     private List<Node> nodes = new ArrayList<Node>();
     private List<Edge> edges = new ArrayList<Edge>();
@@ -327,6 +328,154 @@ public class NetworkViewer extends JComponent {
         return control;
     }
 
+    private class PreConditionsAction extends AbstractAction {
+        public PreConditionsAction(String name) {
+            super(name);
+        }
+        public void actionPerformed(ActionEvent e) {
+            try {
+                text_panel.Display();
+                text_panel.Append("Generating keys ... ");
+                
+                 Runnable r = new Runnable() {
+                     public void run() {
+                         try {
+                            Process generate_keys = Runtime.getRuntime().exec(BuildDirectory + "vault_key_helper -cp -n 40");
+                            BufferedReader b = new BufferedReader(new InputStreamReader(generate_keys.getInputStream()));
+                            String line = "";
+                            while ((line = b.readLine()) != null) {
+                              text_panel.Append(line);
+                            }
+
+                            ProcessBuilder pb = new ProcessBuilder(BuildDirectory + "vault_key_helper", "-lp");
+                            pb.redirectOutput(new File(BuildDirectory + "key_list.txt"));
+                            pb.start();
+                            text_panel.Append("Generating chunks ... ");
+                            Process generate_chunk = Runtime.getRuntime().exec(BuildDirectory + "vault_key_helper -g --chunk_set_count 5");
+                            generate_chunk.waitFor();
+                            text_panel.Append("Preconditions setup completed");
+                            Thread.sleep(3000);
+                            text_panel.Hide();
+                        } catch (Exception exception) {
+                            System.out.println(exception.getMessage());
+                        }
+                     }
+                 };
+
+                 new Thread(r).start();
+            } catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
+            repaint();
+        }
+    }
+    
+    private class BootstrapNetworkAction extends AbstractAction {
+        public BootstrapNetworkAction(String name) {
+            super(name);
+        }
+        public void actionPerformed(ActionEvent e) {
+            try {
+                text_panel.Display();
+                text_panel.Append("Bootstraping ... ");
+                
+                 Runnable r = new Runnable() {
+                     public void run() {
+                         try {
+                            Process p = Runtime.getRuntime().exec(BuildDirectory + "vault_key_helper -b");
+                            BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                            String line = "";
+                            String endpoint_info = "";
+                            while ((line = b.readLine()) != null) {
+                              text_panel.Append(line);
+                              if (line.contains("Endpoints")) {
+                                  String[] splits = line.split(" ", -1);
+                                  endpoint_info = splits[1].trim();
+                                  break;
+                              }
+                            }
+                            text_panel.Append("starting vault 2");
+                            ProcessBuilder pb_vault2 = new ProcessBuilder(BuildDirectory + "vault",
+                                   "--log_*", "G", "--identity_index", "2", "--peer", endpoint_info);
+                            pb_vault2.redirectOutput(new File(BuildDirectory + "vault_2.txt"));
+                            pb_vault2.redirectError(new File(BuildDirectory + "vault_2.txt"));
+                            pb_vault2.start();
+                            Thread.sleep(1000);
+                            text_panel.Append("starting vault 3");
+                            ProcessBuilder pb_vault3 = new ProcessBuilder(BuildDirectory + "vault",
+                                   "--log_*", "G", "--identity_index", "3");
+                            pb_vault3.redirectOutput(new File(BuildDirectory + "vault_3.txt"));
+                            pb_vault3.redirectError(new File(BuildDirectory + "vault_3.txt"));
+                            pb_vault3.start();
+                            Thread.sleep(5000);
+                            text_panel.Append("destroying bootstraps");
+                            p.destroy();
+                            Thread.sleep(5000);
+
+                            for (int i = 4; i < 38; i++) {
+                                text_panel.Append("starting vault " + i + " ...");
+                                String log_file = BuildDirectory + "vault_" + i + ".txt";
+                                ProcessBuilder pb = new ProcessBuilder(BuildDirectory + "vault",
+                                       "--log_*", "G", "--identity_index", Integer.toString(i));
+                                pb.redirectOutput(new File(log_file));
+                                pb.redirectError(new File(log_file));
+                                pb.start();
+                                Thread.sleep(1000);
+                            }
+                            text_panel.Append("Network setup completed");
+                            Thread.sleep(5000);
+                            text_panel.Hide();
+                        } catch (Exception exception) {
+                            System.out.println(exception.getMessage());
+                        }
+                     }
+                 };
+
+                 new Thread(r).start();
+            } catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
+            repaint();
+        }
+    }
+    
+    private class ShutDownNetworkAction extends AbstractAction {
+        public ShutDownNetworkAction(String name) {
+            super(name);
+        }
+        public void actionPerformed(ActionEvent e) {
+            try {
+                text_panel.Display();
+                text_panel.Append("Shutdown network, terminating vaults ... ");
+                
+                 Runnable r = new Runnable() {
+                     public void run() {
+                         try {
+                            Runtime.getRuntime().exec("killall -vw -s SIGINT vault");
+                            Thread.sleep(5000);
+                            text_panel.Append("Cleaning up resources ... ");
+                            Runtime.getRuntime().exec("rm -rf " + BuildDirectory + "????-????-????-????" );
+                            for (int i = 2; i < 38; ++i) {
+                                Runtime.getRuntime().exec("rm -rf /tmp/vault_chunks/vault_" + i);
+                                Runtime.getRuntime().exec("mv " + BuildDirectory + "vault_"+ i + ".txt " + BuildDirectory + "logs/");
+                            }
+                            text_panel.Append("Network shutdown completed");
+                            Thread.sleep(5000);
+                            text_panel.Hide();
+                        } catch (Exception exception) {
+                            System.out.println(exception.getMessage());
+                        }
+                     }
+                 };
+
+                 new Thread(r).start();
+            } catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
+            repaint();
+        }
+    }
+    
     private class StartVaultAction extends AbstractAction {
         public StartVaultAction(String name) {
             super(name);
@@ -335,8 +484,6 @@ public class NetworkViewer extends JComponent {
             List<Node> selected = new ArrayList<Node>();
             Node.getSelected(nodes, selected);
             String index = Integer.toString(selected.get(0).index);
-            String exec_cmd = BuildDirectory + "vault --log_* G --identity_index " + index;
-            System.out.println(exec_cmd);
             try {
                 ProcessBuilder pb = new ProcessBuilder(BuildDirectory + "vault",
                        "--log_*", "G", "--identity_index", index);
@@ -379,8 +526,56 @@ public class NetworkViewer extends JComponent {
             repaint();
         }
     }
-
+    
+    private class TextPanel extends JFrame {
+        private JTextArea output;
+        private JScrollPane scrollPane;
+        private String newline = "\n";
+    
+        TextPanel() {
+            super("Output");
+            Container popup_container = createContentPane();
+            popup_container.setEnabled(true);
+            this.add(popup_container, BorderLayout.CENTER);
+            this.setLocationByPlatform(true);
+            this.pack();
+            this.setAutoRequestFocus(true);
+            new javax.swing.Timer(500, rePainter).start();  //milliseconds
+        }
+        public void Append(String txt) {
+            output.append(txt + newline);
+            output.setCaretPosition(output.getDocument().getLength());
+        }
+        public void Display() {
+            this.setVisible(true);
+            this.toFront();
+        }
+        public void Hide() {
+            output.setText("");
+            this.setVisible(false);
+            this.toBack();
+        }
+        private Container createContentPane() {
+            JPanel contentPane = new JPanel(new BorderLayout());
+            contentPane.setOpaque(true);
+            output = new JTextArea(10, 50);
+            output.setEditable(false);
+            scrollPane = new JScrollPane(output);
+            contentPane.add(scrollPane, BorderLayout.CENTER);
+            return contentPane;
+        }
+        ActionListener rePainter = new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent evt) {
+            repaint();
+          }
+        };
+    }
+    
     private class ControlPanel extends JToolBar {
+        private Action preconditions = new PreConditionsAction("PreConditions");
+        private Action bootstrap_network = new BootstrapNetworkAction("Bootstrap Network");
+        private Action shut_down_network = new ShutDownNetworkAction("Shutdown Network");
         private Action start = new StartVaultAction("Start");
         private Action stop = new StopVaultAction("Stop");
         private JPopupMenu popup = new JPopupMenu();
@@ -388,6 +583,9 @@ public class NetworkViewer extends JComponent {
         ControlPanel() {
             this.setLayout(new FlowLayout(FlowLayout.LEFT));
             this.setBackground(Color.lightGray);
+            this.add(new JButton(preconditions));
+            this.add(new JButton(bootstrap_network));
+            this.add(new JButton(shut_down_network));
             popup.add(new JMenuItem(start));
             popup.add(new JMenuItem(stop));
         }        
