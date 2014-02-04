@@ -21,7 +21,7 @@ public class NetworkViewer extends JComponent {
     private List<Node> nodes = new ArrayList<Node>();
     private List<Edge> edges = new ArrayList<Edge>();
     private static final NoDisplay no_display = new NoDisplay();
-    private List<LogReader> readers = new ArrayList<LogReader>();
+    private List<Vault> vaults = new ArrayList<Vault>();
     private Point mousePt = new Point(WIDE / 2, HIGH / 2);
     private Rectangle mouseRect = new Rectangle();
     private boolean selecting = false;
@@ -52,7 +52,7 @@ public class NetworkViewer extends JComponent {
             Point p = new Point(x, y);
             nodes.add(new Node(p, WIDTH, HEIGHT, Color.LIGHT_GRAY, kind, i));
             String log_file = BuildDirectory + "vault_" + i + ".txt";
-            readers.add(new LogReader(nodes.get(nodes.size() - 1), log_file));
+            vaults.add(new Vault(nodes.get(nodes.size() - 1), log_file));
         }
         no_display.LoadKeyList(BuildDirectory + "key_list.txt");
         no_display.LoadList(BuildDirectory + "no_display_list.txt");
@@ -82,8 +82,8 @@ public class NetworkViewer extends JComponent {
         for (Node n : nodes) {
             n.draw(g);
         }
-        for (LogReader reader : readers) {
-            reader.draw(g);
+        for (Vault vault : vaults) {
+            vault.draw(g);
         }
         if (selecting) {
             g.setColor(Color.darkGray);
@@ -141,7 +141,7 @@ public class NetworkViewer extends JComponent {
         ArrayList<String> no_display_list_;
     }
 
-    private static class LogReader {
+    private static class Vault {
         private Node n;
         private String log_file_path;
 
@@ -153,6 +153,7 @@ public class NetworkViewer extends JComponent {
             
             public Content() {
                 this.valid = false;
+                this.persona = Persona.Down;
             }
 
             public Content(Color color, String content) {
@@ -170,7 +171,7 @@ public class NetworkViewer extends JComponent {
             }
         }
 
-        public LogReader(Node n, String log_file_path) {
+        public Vault(Node n, String log_file_path) {
             this.n = n;
             this.log_file_path = log_file_path;
         }
@@ -191,7 +192,7 @@ public class NetworkViewer extends JComponent {
                         Content parsed_content;
                         parsed_content = parseContent(lines[i]);
                         if (parsed_content.valid) {
-                            n.updatePersona(parsed_content.persona);
+                            updatePersona(parsed_content.persona);
                             g.setColor(parsed_content.color);
                             for (int k = 0; k <= (parsed_content.content.length() / LINEWIDTH); k++) {
                                 Math.min(k, k);
@@ -207,8 +208,28 @@ public class NetworkViewer extends JComponent {
                 }
                 txt_br.close();
             } catch (Exception e) {
-                n.updatePersona(Persona.Down);
+                updatePersona(Persona.Down);
                 System.out.println(e.getMessage());
+            }
+        }
+        
+        private void updatePersona(Persona persona) {
+            switch (persona) {
+                case MaidManager:
+                    n.color = MaidsafeColor.MaidManager.color; n.kind = Kind.Circular;
+                    break;
+                case DataManager:
+                    n.color = MaidsafeColor.DataManager.color; n.kind = Kind.Square;
+                    break;
+                case PmidNode:
+                    n.color = MaidsafeColor.PmidNode.color; n.kind = Kind.Rounded;
+                    break;
+                case None:
+                    n.color = MaidsafeColor.None.color; n.kind = Kind.Circular;
+                    break;
+                default:
+                    n.color = Color.LIGHT_GRAY; n.kind = Kind.Circular;
+                    break;
             }
         }
         
@@ -346,7 +367,7 @@ public class NetworkViewer extends JComponent {
                 String thread = "";
                 while (((line = b.readLine()) != null) && (thread.equals(""))) {
                   if (line.contains(exec_cmd)) {
-                      String[] splits = line.split("  ");
+                      String[] splits = line.split(" ", -1);
                       thread = splits[1].trim();
                   }
                 }
@@ -439,26 +460,6 @@ public class NetworkViewer extends JComponent {
          */
         private void setBoundary(Rectangle b) {
             b.setBounds(p.x - (width / 2), p.y - (height / 2), width, height);
-        }
-
-        public void updatePersona(Persona persona) {
-            switch (persona) {
-                case MaidManager:
-                    color = MaidsafeColor.MaidManager.color; kind = Kind.Circular;
-                    break;
-                case DataManager:
-                    color = MaidsafeColor.DataManager.color; kind = Kind.Square;
-                    break;
-                case PmidNode:
-                    color = MaidsafeColor.PmidNode.color; kind = Kind.Rounded;
-                    break;
-                case None:
-                    color = MaidsafeColor.None.color; kind = Kind.Circular;
-                    break;
-                default:
-                    color = Color.LIGHT_GRAY; kind = Kind.Circular;
-                    break;
-            }
         }
 
         /**
