@@ -1,18 +1,18 @@
 Step 1 :
-ensure the BuildDirectory in NetworkViewer.java has been set to the proper directory holding :
+java -jar "VaultsNetworkViewer.jar" <BuildPath>
+when BuildPath show be your build directory holding :
 vault, vault_key_helper and no_display_list.txt
+such as : java -jar "VaultsNetworkViewer.jar" /home/maidsafe/MaidSafe-Open/build/
 
 Step 2 :
-start the java program
-
-Step 3 :
 if first time running on the machine, click the PreConditions button to generate keys and chunks
 
-Step 4 :
+Step 3 :
 click the Bootstrap Network button to setup a network from bootstrap
 
-Step 5 :
-when running tests in other terminals, the viewer will visualize what's happening among the vaults
+During the test :
+following the test scenario in the document Visualized_Vaults_Network_Test_Scenario.xls
+the viewer will visualize what's happening among the vaults during the procedure
 
 Final :
 click the Shutdown Network button to stop Vaults and clean up the resouce.

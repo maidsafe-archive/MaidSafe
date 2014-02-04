@@ -9,7 +9,7 @@ import javax.swing.*;
 
 
 public class NetworkViewer extends JComponent {
-    private static final String BuildDirectory = "/home/maidsafe/MaidSafe-Open/build/";
+    private static String BuildDirectory;
     private static final int WIDE = 1800;
     private static final int HIGH = 900;
     private static final int WIDTH = 220;
@@ -28,6 +28,7 @@ public class NetworkViewer extends JComponent {
     private boolean selecting = false;
 
     public static void main(String[] args) throws Exception {
+        BuildDirectory = args[0];
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -210,7 +211,7 @@ public class NetworkViewer extends JComponent {
                 txt_br.close();
             } catch (Exception e) {
                 updatePersona(Persona.Down);
-                System.out.println(e.getMessage());
+                // System.out.println(e.getMessage());
             }
         }
         
