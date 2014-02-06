@@ -477,14 +477,14 @@ public class NetworkViewer extends JComponent {
                             }
                             text_panel.Append("starting vault 2");
                             ProcessBuilder pb_vault2 = new ProcessBuilder(BuildDirectory + "vault",
-                                   "--log_*", "G", "--identity_index", "2", "--peer", endpoint_info);
+                                   "--identity_index", "2", "--peer", endpoint_info);
                             pb_vault2.redirectOutput(new File(BuildDirectory + "vault_2.txt"));
                             pb_vault2.redirectError(new File(BuildDirectory + "vault_2.txt"));
                             pb_vault2.start();
                             Thread.sleep(1000);
                             text_panel.Append("starting vault 3");
                             ProcessBuilder pb_vault3 = new ProcessBuilder(BuildDirectory + "vault",
-                                   "--log_*", "G", "--identity_index", "3");
+                                   "--identity_index", "3");
                             pb_vault3.redirectOutput(new File(BuildDirectory + "vault_3.txt"));
                             pb_vault3.redirectError(new File(BuildDirectory + "vault_3.txt"));
                             pb_vault3.start();
@@ -497,7 +497,7 @@ public class NetworkViewer extends JComponent {
                                 text_panel.Append("starting vault " + i + " ...");
                                 String log_file = BuildDirectory + "vault_" + i + ".txt";
                                 ProcessBuilder pb = new ProcessBuilder(BuildDirectory + "vault",
-                                       "--log_*", "G", "--identity_index", Integer.toString(i));
+                                       "--identity_index", Integer.toString(i));
                                 pb.redirectOutput(new File(log_file));
                                 pb.redirectError(new File(log_file));
                                 pb.start();
@@ -567,7 +567,7 @@ public class NetworkViewer extends JComponent {
             String index = Integer.toString(selected.get(0).index);
             try {
                 ProcessBuilder pb = new ProcessBuilder(BuildDirectory + "vault",
-                       "--log_*", "G", "--identity_index", index);
+                       "--identity_index", index);
                 pb.redirectOutput(new File(BuildDirectory + "vault_" + index + ".txt"));
                 pb.redirectError(new File(BuildDirectory + "vault_" + index + ".txt"));
                 pb.start();
@@ -586,7 +586,7 @@ public class NetworkViewer extends JComponent {
             List<Node> selected = new ArrayList<Node>();
             Node.getSelected(nodes, selected);
             String log_file = BuildDirectory + "vault_" + selected.get(0).index + ".txt";
-            String exec_cmd = "vault --log_* G --identity_index " + selected.get(0).index;
+            String exec_cmd = "vault --identity_index " + selected.get(0).index;
             try {
                 Process p = Runtime.getRuntime().exec("ps -aux");
                 p.waitFor();
