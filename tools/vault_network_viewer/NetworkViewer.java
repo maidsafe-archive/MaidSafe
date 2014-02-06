@@ -15,13 +15,13 @@ public class NetworkViewer extends JComponent {
     private static final int WIDTH = 220;
     private static final int HEIGHT = 120;
     private static final int LINEWIDTH = 37;
-    private static final Random rnd = new Random();
     private ControlPanel control = new ControlPanel();
     private TextPanel text_panel = new TextPanel();
     private Kind kind = Kind.Circular;
     private List<Node> nodes = new ArrayList<Node>();
     private List<Edge> edges = new ArrayList<Edge>();
     private static final NoDisplay no_display = new NoDisplay();
+    private static final Display display = new Display();
     private List<Vault> vaults = new ArrayList<Vault>();
     private Point mousePt = new Point(WIDE / 2, HIGH / 2);
     private Rectangle mouseRect = new Rectangle();
@@ -58,6 +58,7 @@ public class NetworkViewer extends JComponent {
         }
         no_display.LoadKeyList(BuildDirectory + "key_list.txt");
         no_display.LoadList(BuildDirectory + "no_display_list.txt");
+        display.LoadList(BuildDirectory + "display_list.txt");
         new javax.swing.Timer(1000, taskPerformer).start();  //milliseconds
     }
     
@@ -147,35 +148,137 @@ public class NetworkViewer extends JComponent {
         ArrayList<String> no_display_list_;
     }
 
+    private static class Content {
+        public Color color;
+        public String content;
+        public Boolean valid;
+        public Persona persona;
+
+        public Content() {
+            this.valid = false;
+            this.persona = Persona.Down;
+        }
+
+        public Content(Color color, String content) {
+            this.color = color;
+            this.content = content;
+            this.valid = true;
+            this.persona = Persona.None;
+        }
+
+        public Content(Color color, String content, Persona persona) {
+            this.color = color;
+            this.content = content;
+            this.valid = true;
+            this.persona = persona;
+        }
+
+        public Content(Content content) {
+            this.color = content.color;
+            this.content = content.content;
+            this.valid = true;
+            this.persona = content.persona;
+        }
+
+        public Content Clone() {
+            Content clone = new Content(this.color, this.content, this.persona);
+            return clone;
+        }
+    }
+    
+    private static class Display {
+        ArrayList<DisplayPhrase> display_list_;
+
+        private class DisplayPhrase {
+            public Content content;
+            public Boolean has_exception;
+
+            public DisplayPhrase(String phrase) {
+                String[] splits = phrase.split("><");
+                if (splits[0].equalsIgnoreCase("NoException")) {
+                    this.has_exception = false;
+                } else {
+                    this.has_exception = true;
+                }
+                Persona persona = Persona.valueOf(splits[1]);
+                LogLevel log_level = LogLevel.valueOf(splits[2]);
+                Color color = Color.BLACK;
+
+                switch (log_level) {
+                    case Error:
+                        color = MaidsafeColor.Error.color;
+                        break;
+                    case Warning:
+                        color = MaidsafeColor.Warning.color;
+                        break;
+                    case Info:
+                        color = MaidsafeColor.Info.color;
+                        break;
+                    case Verbose:
+                        color = MaidsafeColor.Verbose.color;
+                        break;
+                    case None:
+                        color = Color.BLACK;
+                        break;
+                    default:
+                        break;
+                }
+                this.content = new Content(color, splits[3], persona);
+
+            }
+            
+            Boolean IsPhrase(String phrase) {
+                if (phrase.contains(content.content)) {
+                    if (has_exception) {
+                        if (!no_display.CanDisplay(phrase)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        }        
+
+        Display() {
+            display_list_ = new ArrayList<DisplayPhrase>();
+        }
+        
+        void LoadList(String file_path) {
+            try {
+                BufferedReader txt_br = null;
+                txt_br = new BufferedReader(new FileReader(file_path));
+                String sCurrentLine;
+                while ((sCurrentLine = txt_br.readLine()) != null) {
+                    display_list_.add(new DisplayPhrase(sCurrentLine));
+                }
+            } catch (Exception e)
+            {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        Content ParsePhrase(String input) {
+            Content content = new Content();
+            try {
+                String[] string_splits = input.split("]");
+                input = string_splits[1].trim();
+            } catch (Exception e) {
+            }
+            for (DisplayPhrase display_phrase : display_list_) {
+                if (display_phrase.IsPhrase(input)) {
+                    content = display_phrase.content.Clone();
+                    content.content = input;
+                    return content;
+                }
+            }
+            return content;
+        }
+    }
+    
     private static class Vault {
         private Node n;
         private String log_file_path;
-
-        private class Content {
-            public Color color;
-            public String content;
-            public Boolean valid;
-            public Persona persona;
-            
-            public Content() {
-                this.valid = false;
-                this.persona = Persona.Down;
-            }
-
-            public Content(Color color, String content) {
-                this.color = color;
-                this.content = content;
-                this.valid = true;
-                this.persona = Persona.None;
-            }
-            
-            public Content(Color color, String content, Persona persona) {
-                this.color = color;
-                this.content = content;
-                this.valid = true;
-                this.persona = persona;
-            }
-        }
 
         public Vault(Node n, String log_file_path) {
             this.n = n;
@@ -195,8 +298,7 @@ public class NetworkViewer extends JComponent {
                     String lines[] = sContent.split("\\r?\\n");
                     int j = 0;
                     for (int i = 0; i < lines.length; i++) {
-                        Content parsed_content;
-                        parsed_content = parseContent(lines[i]);
+                        Content parsed_content = display.ParsePhrase(lines[i]);
                         if (parsed_content.valid) {
                             updatePersona(parsed_content.persona);
                             g.setColor(parsed_content.color);
@@ -227,6 +329,9 @@ public class NetworkViewer extends JComponent {
                 case DataManager:
                     n.color = MaidsafeColor.DataManager.color; n.kind = Kind.Square;
                     break;
+                case PmidManager:
+                    n.color = MaidsafeColor.PmidManager.color; n.kind = Kind.Square;
+                    break;
                 case PmidNode:
                     n.color = MaidsafeColor.PmidNode.color; n.kind = Kind.Rounded;
                     break;
@@ -238,39 +343,7 @@ public class NetworkViewer extends JComponent {
                     break;
             }
         }
-        
-        private Content parseContent(String input) {
-            Content content = new Content();
-            if (input.contains("Vault running as")) {
-                content = new Content(Color.BLACK, input);
-            } else {
-                try {
-                    String[] string_splits = input.split("]");
-                    input = string_splits[1].trim();
-                } catch (Exception e) {
-                    return content;
-                }
-                if (no_display.CanDisplay(input)) {
-                    if (input.contains("PmidNode")) {
-                        if (input.contains("storing")) {  // storing chunk
-                            String[] splits = input.split("with");
-                            content = new Content(MaidsafeColor.Info.color, splits[0], Persona.PmidNode);
-                        } else {  // deleting chunk
-                            content = new Content(MaidsafeColor.Warning.color, input, Persona.PmidNode);
-                        }
-                    } else if (input.contains("DataManager")) {  // increase/decrease subscribers
-                        content = new Content(MaidsafeColor.Verbose.color, input, Persona.DataManager);
-                    } else if (input.contains("MaidManager")) {
-                        if (input.contains("blocked DeleteRequest of chunk")) {
-                        content = new Content(MaidsafeColor.Error.color, input, Persona.MaidManager);
-                        } else {  // increase/decrease count
-                            content = new Content(MaidsafeColor.Verbose.color, input, Persona.MaidManager);
-                        }
-                    }
-                }
-            }
-            return content;
-        }
+
     }
 
     private class MouseHandler extends MouseAdapter {
@@ -359,8 +432,8 @@ public class NetworkViewer extends JComponent {
                             Process generate_chunk = Runtime.getRuntime().exec(BuildDirectory + "vault_key_helper -g --chunk_set_count 5");
                             generate_chunk.waitFor();
                             text_panel.Append("Preconditions setup completed");
-                            Thread.sleep(3000);
                             no_display.Clear();
+                            Thread.sleep(3000);
                             no_display.LoadKeyList(BuildDirectory + "key_list.txt");
                             no_display.LoadList(BuildDirectory + "no_display_list.txt");
                             text_panel.Hide();
@@ -607,9 +680,13 @@ public class NetworkViewer extends JComponent {
         None, MaidManager, DataManager, PmidManager, PmidNode, Down;
     }
 
+    private enum LogLevel {
+        None, Verbose, Info, Warning, Error;
+    }
+
     public enum MaidsafeColor {
         MaidManager (new Color(249, 185, 194)), DataManager (new Color(249, 246, 138)),
-        PmidManager (Color.BLACK), PmidNode (new Color(199, 219, 234)), None (new Color(213, 242, 160)),
+        PmidManager (new Color(213, 242, 160)), PmidNode (new Color(199, 219, 234)), None (new Color(213, 242, 160)),
         Verbose (new Color(102, 102, 102)), Info (new Color(14, 76, 114)),
         Warning (new Color(188, 23, 102)), Error (new Color(193, 39, 45));
         private Color color;
