@@ -47,7 +47,8 @@ set(SubModules
       nfs
       vault
       drive
-      client)
+      client
+      api)
 # Set all submodules' source dir before calling add_subdirectory to avoid
 # having to run CMake twice in a clean build tree.
 foreach(SubModule ${SubModules})
