@@ -4,6 +4,8 @@ HasException><MaidManager><Verbose><MaidManager increase count to
 NoException><MaidManager><Error><MaidManager blocked DeleteRequest of chunk
 NoException><DataManager><Verbose><DataManager decrease subscribers to
 HasException><DataManager><Verbose><DataManager increase subscribers to
+NoException><DataManager><Info><DataManager re-put chunk
+NoException><DataManager><Verbose><DataManager marking node
 NoException><PmidManager><Warning><PmidManager dropping pmid_node
 NoException><PmidManager><Info><PmidManager joining pmid_node
 HasException><PmidNode><Info><PmidNode storing chunk
