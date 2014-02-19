@@ -64,15 +64,15 @@ def TimeOut(func, args=(), kwargs={}, timeout_duration=10, default=None):
 #    try:
 #      it._Thread__stop()
 #    except:
-#      print(str(it.getName()) + ' could not be terminated')
+#      print(str(it.getName()) + " could not be terminated")
 #  return result
 
 def LookingFor(proc, keyword, line_limit, required_repeated_time):
   i = 0
   repeated_time = 0
   while i < (line_limit * required_repeated_time):
-    line = proc.stdout.readline()
-    print line.strip("\r\n")
+    line = str(proc.stdout.readline(), encoding='utf8')
+    print(line.strip("\r\n"))
     if line.find(keyword) != -1:
       repeated_time = repeated_time + 1
       if repeated_time == required_repeated_time:
@@ -96,8 +96,11 @@ def CppLint():
 def CountProcs(name):
   num = 0
   for proc in psutil.process_iter():
-    if proc.name.find(name) >= 0:
-       num = num + 1
+    try:
+      if proc.name.find(name) >= 0:
+         num = num + 1
+    except:
+      pass
   return num
 
 
@@ -141,9 +144,9 @@ def GetProg(prog):
 def CheckCurDirIsBuildDir():
   if FindFile('lifestuff_python_api', os.path.join(os.curdir), ('.so','.pyd')) != None:
     return True
-  print 'The current working directory does not contain lifestuff_python_api'
+  print("The current working directory does not contain lifestuff_python_api")
   if not YesNo('Do you want to build lifestuff_python_api in this directory?'):
-    print "You need to run this script from a build directory."
+    print("You need to run this script from a build directory.")
     return False
 
   build_type = ''
@@ -179,11 +182,11 @@ def BuildType():
 def GetLib():
   option = ''
   while option.lower() not in all.values() and option != 'q':
-    print ('Libraries available')
-    print ('-------------------')
+    print("Libraries available")
+    print("-------------------")
     for key, value in all.iteritems():
-      print (key)
-    print ('-------------------')
+      print(key)
+    print("-------------------")
     option = raw_input('please type library name (q to exit): ')
   return option
 
