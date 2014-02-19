@@ -49,7 +49,7 @@ def KillProcess(proc_name):
         else:
           proc.kill()
     except:
-      print("exception raised")
+      pass
 
 def KillVaultKeyHelper():
   KillProcess(PROC_vault_key_helper)
@@ -64,7 +64,7 @@ def Exists():
         print("Failed to kill process: " + proc.name)
         return -1;
     except:
-      print("exception raised")
+      pass
   print("No lifestuff processes running (now)")
   return 0
 

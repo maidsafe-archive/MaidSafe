@@ -100,7 +100,7 @@ def CountProcs(name):
       if proc.name.find(name) >= 0:
          num = num + 1
     except:
-      print("exception raised")
+      pass
   return num
 
 
