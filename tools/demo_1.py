@@ -56,7 +56,7 @@ def SetupBootstraps(num):
   time_delta = datetime.datetime.now() - t_start
   timeout = 300000
   while i < line_limit and time_delta < datetime.timedelta(seconds=timeout):
-    line = str(proc.stdout.readline(), encoding='utf8')
+    line = str(proc.stdout.readline())
     print(line)
     if line.find("Endpoints") != -1:
       data = re.split(r':', line)
@@ -77,6 +77,7 @@ def SetupBootstraps(num):
     proc.kill()
     return False
   proc.kill()
+  lifestuff_killer.KillVaultKeyHelper()
   print("Wait 10 secs for bootstrap nodes disappear from routingtable")
   time.sleep(10)
   return True
@@ -113,7 +114,7 @@ def RemoveChunkStores(num):
 
 
 def RunBootstrapAndVaultSetup():
-  num = 36
+  num = 38
   RemoveChunkStores(num)
   pid = SetupBootstraps(num)
   if pid == False:
@@ -140,12 +141,13 @@ def PrintVaultMenu():
 
 
 def VaultMenu():
-  option = 'a'
+  option = 1
   utils.ResetScreen()
   RunBootstrapAndVaultSetup()
-  while(option != 'm'):
+  while(option != 0):
     procs = PrintVaultMenu()
-    option = input("Vault Network with 36 nodes established up (m for quit): ").lower()
+    option = input("Vault Network with 36 nodes established up (0 for quit): ")
+    option = int(option)
   lifestuff_killer.KillLifeStuff()
   processes.clear()
 
