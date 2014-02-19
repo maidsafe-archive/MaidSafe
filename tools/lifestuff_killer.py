@@ -31,9 +31,9 @@ import sys
 try:
   import psutil
 except ImportError:
-  print "please install psutil 'pip install psutil'"
-  print "or 'easy_install psutil'"
-  print "Website : http://code.google.com/p/psutil/"
+  print("please install psutil 'pip install psutil'")
+  print("or 'easy_install psutil'")
+  print("Website : http://code.google.com/p/psutil/")
   sys.exit(1)
 
 PROC_vault = "vault"
@@ -41,15 +41,15 @@ PROC_vault_key_helper = "vault_key_helper"
 
 def KillProcess(proc_name):
   for proc in psutil.process_iter():
-    if proc.name.find(proc_name) >= 0:
-      print "Killing process:", proc.name
-      try:
+    try:
+      if proc.name.find(proc_name) >= 0:
+        print("Killing process: " + proc.name)
         if platform.system() == "Windows":
           proc.terminate()
         else:
           proc.kill()
-      except:
-        print "Could not kill all instances"
+    except:
+      print("exception raised")
 
 def KillVaultKeyHelper():
   KillProcess(PROC_vault_key_helper)
@@ -59,11 +59,14 @@ def KillLifeStuff():
 
 def Exists():
   for proc in psutil.process_iter():
-    if proc.name.find(PROC_vault) >= 0:
-      print "Failed to kill process:", proc.name
-      return -1;
-    print "No lifestuff processes running (now)"
-    return 0
+    try:
+      if proc.name.find(PROC_vault) >= 0:
+        print("Failed to kill process: " + proc.name)
+        return -1;
+    except:
+      print("exception raised")
+  print("No lifestuff processes running (now)")
+  return 0
 
 def RunKilling():
   KillLifeStuff()

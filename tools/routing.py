@@ -119,7 +119,7 @@ def SetupRoutingNodes(peer, num_vaults, num_clients):
     if i >= num_vaults:
       p_nodes[i] = AddRoutingObject(peer, (num_of_bootstraps + num_of_vaults) + (i - num_vaults))
     if p_nodes[i] == -1:
-      print 'Failed to add routing object ' + str(i + num_of_bootstraps) + ' !'
+      print("Failed to add routing object " + str(i + num_of_bootstraps) + " !")
       #TODO cleanup the previous opened nodes
       return -1
     i = i + 1
@@ -132,7 +132,7 @@ def StopNodes(p_nodes):
     p_node.stdin.write('exit' + '\n')
   sleep(1)
   if p_node.poll() == None:
-    print "Failed to stop a node!"
+    print("Failed to stop a node!")
   return 0    
 
 
@@ -205,7 +205,7 @@ def SendGroup(p_nodes, p, source, target):
   # TODO: detailed check if respondents are really expected
   if SearchKeyWordLine(p, 'Received response', 5) == -1:
     return -1
-  print "\tGroupt msg sent successfully"
+  print("\tGroupt msg sent successfully")
   return 0
 
 
@@ -235,12 +235,12 @@ def JAV1(peer):
 #  print("Running Routing Sanity Check JAV1 Test, please wait ....")
   p_v = AddRoutingObject(peer, 2)
   if p_v == -1:
-    print 'Failed to add routing object!'
+    print("Failed to add routing object!")
     return -1
   p_v.stdin.write('exit' + '\n')
   sleep(2)
   if p_v.poll() == None:
-    print "Failed to stop node 2!"
+    print("Failed to stop node 2!")
     return -1
   return 0
 
@@ -249,7 +249,7 @@ def JAV2(peer):
 #  print("Running Routing Sanity Check JAV2 Test, please wait ....")
   p_v = AddRoutingObject(peer, 8)
   if p_v == -1:
-    print 'Failed to add routing object!'
+    print("Failed to add routing object!")
     return -1
   result = 0
   if SendDirectMsg(-1, p_v, 8, 1, 1024) == -1:
@@ -258,7 +258,7 @@ def JAV2(peer):
   p_v.stdin.write('exit' + '\n')
   sleep(2)
   if p_v.poll() == None:
-    print "Failed to stop node 2!"
+    print("Failed to stop node 2!")
     return -1
 
   return result
@@ -276,7 +276,7 @@ def P1(p_nodes):
       return -1
     duration = duration + result
     i = i - 1
-  print('\tAverage transmission time of 1 MB data from vault to vault is : ' + str(duration / num_iteration))
+  print("\tAverage transmission time of 1 MB data from vault to vault is : " + str(duration / num_iteration))
 
   duration = 0
   for i in range(num_iteration): # client to vault
@@ -285,7 +285,7 @@ def P1(p_nodes):
     if result == -1:
       return -1
     duration = duration + result
-  print('\tAverage transmission time of 1 MB data from client to vault is : ' + str(duration / num_iteration))
+  print("\tAverage transmission time of 1 MB data from client to vault is : " + str(duration / num_iteration))
   return 0
 
 
@@ -295,21 +295,21 @@ def JAC1(peer):
   p_c = AddRoutingObject(peer, client_index)
   result = 0
   if p_c == -1:
-    print 'Failed to add routing object!'
+    print("Failed to add routing object!")
     return -1
   if SendDirectMsg(-1, p_c, client_index, client_index, 1024) != -1:
-    print 'Client shall not be able to send to itself'
+    print("Client shall not be able to send to itself")
     result = -1
 
   if SendDirectMsg(-1, p_c, client_index, 5, 1024) == -1:
-    print 'Client failed to send to vault 5'
+    print("Client failed to send to vault 5")
     result = -1
   if CheckClientNodeIsNotInRoutingTable(p_c) == -1:
     result = -1
   p_c.stdin.write('exit' + '\n')
   sleep(2)
   if p_c.poll() == None:
-    print ("Failed to stop node " + str(client_index) + " !")
+    print("Failed to stop node " + str(client_index) + " !")
     return -1
   return result
 
@@ -321,11 +321,11 @@ def JAC2(peer, p_nodes):
   p_nodes[v_drop].stdin.write('exit' + '\n')
   sleep(1)
   if p_nodes[v_drop].poll() == None:
-    print "Failed to stop a node!"
+    print("Failed to stop a node!")
   # join the node back
   p_nodes[v_drop] = AddRoutingObject(peer, v_drop)
   if p_nodes[v_drop] == -1:
-    print "Failed to join the dropped node back!"
+    print("Failed to join the dropped node back!")
     return -1
   # check routing table
   result = 0
@@ -366,38 +366,38 @@ def SanityCheck():
   p_bs = [items[1], items[2]]
 
   if JAV1(peer) == 0:
-    print 'Join a vault  : PASSED\n'
+    print("Join a vault  : PASSED\n")
   else:
-    print 'Join a vault  : FAILED\n'
+    print("Join a vault  : FAILED\n")
 
   if JAV2(peer) == 0:
-    print 'Join a vault and send message  : PASSED\n'
+    print("Join a vault and send message  : PASSED\n")
   else:
-    print 'Join a vault and send message  : FAILED\n'
+    print("Join a vault and send message  : FAILED\n")
 
   p_vaults = SetupRoutingNodes(peer, num_of_vaults, 0)
   if JAC1(peer) == 0:
-    print 'Join a client and send a message : PASSED\n'
+    print("Join a client and send a message : PASSED\n")
   else:
-    print 'Join a client and send a message  : FAILED\n'
+    print("Join a client and send a message  : FAILED\n")
 
   p_clients = SetupRoutingNodes(peer, 0, num_of_clients)
   p_nodes = p_bs + p_vaults + p_clients
 
   if SGM1(p_nodes) == 0:
-    print 'Test group messages  : PASSED\n'
+    print("Test group messages  : PASSED\n")
   else:
-    print 'Test group messages  : FAILED\n'
+    print("Test group messages  : FAILED\n")
 
   if P1(p_nodes) == 0:
-    print 'Performance Test (send large msg multiple times)  : PASSED\n'
+    print("Performance Test (send large msg multiple times)  : PASSED\n")
   else:
-    print 'Performance Test (send large msg multiple times)  : FAILED\n'
+    print("Performance Test (send large msg multiple times)  : FAILED\n")
 
   if JAC2(peer, p_nodes) == 0:
-    print 'Check no client in routing table  : PASSED\n'
+    print("Check no client in routing table  : PASSED\n")
   else:
-    print 'Check no client in routing tables : FAILED\n'
+    print("Check no client in routing tables : FAILED\n")
 
   StopNodes(p_nodes)
   utils.ClearScreen()
@@ -439,16 +439,16 @@ def MsgSendingMenu():
   option = 'a'
   while(option != 'm'):
     utils.ClearScreen()
-    print ("================================")
-    print ("MaidSafe Quality Assurance Suite | routing Actions | Msg Sending")
-    print ("================================")
-    print ("1: Sending a Direct Msg to Random")
-    print ("2: Sending a Direct Msg to Target")
-    print ("3: Sending Direct Msg to Random Target infinitely (type x to stop)")
-    print ("4: Sending a Group Msg to Random Group")
-    print ("5: Sending a Group Msg to Target Group")
-    print ("6: Sending Group Msg to Random Group infinitely (type x to stop)")
-    print ("7: Checking Routing Table Size")
+    print("================================")
+    print("MaidSafe Quality Assurance Suite | routing Actions | Msg Sending")
+    print("================================")
+    print("1: Sending a Direct Msg to Random")
+    print("2: Sending a Direct Msg to Target")
+    print("3: Sending Direct Msg to Random Target infinitely (type x to stop)")
+    print("4: Sending a Group Msg to Random Group")
+    print("5: Sending a Group Msg to Target Group")
+    print("6: Sending Group Msg to Random Group infinitely (type x to stop)")
+    print("7: Checking Routing Table Size")
 
     option = raw_input("Please select an option (m for main QA menu): ").lower()
     if (option == "1"):
@@ -479,9 +479,9 @@ def MsgSendingMenu():
         SendGroup(p_nodes, -1, source, -1)
     if (option == "7"):
       if CheckRoutingTableSize(p_nodes) == -1:
-        print 'Routing table size check  : FAILED\n'
+        print("Routing table size check  : FAILED\n")
       else:
-        print 'Routing table size check  : PASSED\n'
+        print("Routing table size check  : PASSED\n")
 
   StopNodes(p_nodes)
   utils.ClearScreen()
@@ -495,17 +495,17 @@ def RoutingMenu():
     utils.ClearScreen()
     procs = utils.CountProcs('lifestuff_vault')
     print(str(procs) + " Vaults running on this machine")
-    print ("================================")
-    print ("MaidSafe Quality Assurance Suite | routing Actions")
-    print ("================================")
-    print ("1: Routing Sanity Checks (10 minutes average)")
+    print("================================")
+    print("MaidSafe Quality Assurance Suite | routing Actions")
+    print("================================")
+    print("1: Routing Sanity Checks (10 minutes average)")
     if procs == 0:
-      print ("2: Connect nodes to remote network")
+      print("2: Connect nodes to remote network")
     else:
-      print ("3: Feature Checks")
-      print ("4: Kill all routing nodes on this machine")
-      print ("5: Random churn on this machine, rate (% churn per minute) (not yet implemented)")
-      print ("6: Msg Send Menu")
+      print("3: Feature Checks")
+      print("4: Kill all routing nodes on this machine")
+      print("5: Random churn on this machine, rate (% churn per minute) (not yet implemented)")
+      print("6: Msg Send Menu")
     option = raw_input("Please select an option (m for main QA menu): ").lower()
     if (option == "1"):
       SanityCheck()

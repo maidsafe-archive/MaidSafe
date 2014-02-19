@@ -48,7 +48,6 @@ stop_churn = 'd'
 def SetupBootstraps(num, user_id):
   print("Setting up keys ... ")
   prog = utils.GetProg('vault_key_helper')
-  print prog;
   proc = subprocess.Popen([prog, '-c', '-b', '-n', str(num + 6)],
                           shell = False, stdout = PIPE, stderr = None)
   print("Started bootstrap with PID " + str(proc.pid))
@@ -58,9 +57,9 @@ def SetupBootstraps(num, user_id):
   time_delta = datetime.datetime.now() - t_start
   timeout = 300000
   while i < line_limit and time_delta < datetime.timedelta(seconds=timeout):
-    line = proc.stdout.readline()
-    print line.strip("\r\n")
-    if line.find('Endpoints') != -1:
+    line = str(proc.stdout.readline(), encoding='utf8')
+    print(line)
+    if line.find("Endpoints") != -1:
       data = re.split(r':', line)
       ep = data[2].split()
       processes[2] = SetUpNextNode(data[1] + ':' + ep[0], 2)
@@ -76,7 +75,6 @@ def SetupBootstraps(num, user_id):
     i = i + 1
     time_delta = datetime.datetime.now() - t_start
   if i == line_limit or time_delta >= datetime.timedelta(seconds=timeout):
-    print "Failed to get endpoint (timeout ??)"
     proc.kill()
     return False
   proc.kill()
@@ -95,10 +93,10 @@ def SaveKeys(peer, keys_path, client_index, num_of_keys):
                           shell = False, stdout = PIPE, stderr = None)
   if utils.TimeOut(utils.LookingFor, (proc, 'PublicPmidKey stored and verified', 50, num_of_keys,),
                    timeout_duration=5*num_of_keys, default=False):
-    print 'keys successfully stored to network'
+    print("keys successfully stored to network")
     result = 0
   else:
-    print 'failure in storing keys to network'
+    print("failure in storing keys to network")
   proc.kill
   lifestuff_killer.KillVaultKeyHelper()
   return result
@@ -128,9 +126,9 @@ def TestStore(num, index):
                           shell = False, stdout = PIPE, stderr = None)
   if utils.TimeOut(utils.LookingFor, (proc, 'Stored chunk', 50, num,),
                    timeout_duration=60*num, default=False):
-    print 'test with store succeeded'
+    print("test with store succeeded")
   else:
-    print 'test with store failed'
+    print("test with store failed")
   proc.kill
   lifestuff_killer.KillVaultKeyHelper()
 
@@ -141,9 +139,9 @@ def TestStoreWithDelete(num, index):
                           shell = False, stdout = PIPE, stderr = None)
   if utils.TimeOut(utils.LookingFor, (proc, 'Delete chunk', 100, num,),
                    timeout_duration=60*num, default=False):
-    print 'test with delete succeeded'
+    print("test with delete succeeded")
   else:
-    print 'test with delete failed'
+    print("test with delete failed")
   proc.kill
   lifestuff_killer.KillVaultKeyHelper()
 
@@ -160,7 +158,6 @@ def SetUpKeys(num):
   print("Setting up keys ... ")
   prog = utils.GetProg('vault_key_helper')
   CreateChunkStores(num)
-  print prog;
   return subprocess.call([prog, '-c', '-n', str(num) ],
                          shell = False, stdout = None, stderr = None)
 
@@ -190,14 +187,13 @@ def work(number):
                           '--disable_ctrl_c=true',
                           '--identity_index=' + str(number),
                           '--chunk_path=.cs' + str(number)],
-                          preexec_fn = preexec_function,
                           shell = False, stdout = log_file, stderr = log_file)
 
 
 def RunNetwork(number_of_vaults):
   for vault in range(4, number_of_vaults):
     processes[vault]= work(vault)
-    print('Vault ' + str(vault) + ' is starting up ... ')
+    print("Vault " + str(vault) + " is starting up ... ")
     time.sleep(1)
 
 def SignalHandler(signal, frame):
@@ -244,7 +240,6 @@ def SetUpNextNode(endpoint, index):
                           '--disable_ctrl_c=true',
                           '--identity_index=' + str(index),
                           '--chunk_path=.cs' + str(index)],
-                          preexec_fn = preexec_function,
                           shell = False, stdout = log_file, stderr = log_file)
 
 
@@ -279,7 +274,7 @@ def PrintVaultMenu():
 def RunBootstrapAndVaultSetup():
   num = 0
   while 12 > num:
-    number = raw_input("Please input number of vaults to run (minimum and default 12): ")
+    number = input("Please input number of vaults to run (minimum and default 12): ")
     if number == "":
       num = 12
     elif not number.isdigit():
@@ -303,30 +298,31 @@ def ValidOption(procs, option):
 def GetPositiveNumber(message):
   number = 0
   while number < 1:
-    number = raw_input(message)
-  return int(number)
+    number = input(message)
+    number = int(number)
+  return number
 
 def StartVaultsWithGivenBootstrap():
   number = GetPositiveNumber("Please input number of vaults to run: ")
-  ip = raw_input("Please input ip address of bootstrap machine: ")
+  ip = input("Please input ip address of bootstrap machine: ")
   prog = utils.GetProg('vault_key_helper')
-  print prog
+  print(prog)
   CreateChunkStores(number)
   subprocess.call([prog, '-c', '-n', str(int(number) + 3)])
-  keys_path = raw_input("Please input the absolute/relative path to the keys_file: ")
+  keys_path = input("Please input the absolute/relative path to the keys_file: ")
   index = GetPositiveNumber("Please input the key_index to be used as client: ")
   num_keys = GetPositiveNumber("Please input how many keys in the keys_file: ")
   if SaveKeys(utils.GetIp(), keys_path, index, num_keys) == 0:
     RunNetwork(int(number) + 3, ip, None)
   else:
-    raw_input("Could not store keys, giving up! (press any key)")
+    input("Could not store keys, giving up! (press any key)")
 
 def VaultMenu():
   option = 'a'
   utils.ResetScreen()
   while(option != 'm'):
     procs = PrintVaultMenu()
-    option = raw_input("Please select an option (m for main QA menu): ").lower()
+    option = input("Please select an option (m for main QA menu): ").lower()
     if not ValidOption(procs, option):
       continue
     if option == "1":
@@ -346,7 +342,7 @@ def VaultMenu():
       chunk_index = GetPositiveNumber("Please input the chunk_index to be used as data: ")
       TestProlonged(key_index, chunk_index)
     elif (option == "6"):
-      keys_path = raw_input("Please input the absolute/relative path to the keys_file: ")
+      keys_path = input("Please input the absolute/relative path to the keys_file: ")
       index = GetPositiveNumber("Please input the key_index to be used as client: ")
       num_keys = GetPositiveNumber("Please input how many keys in the keys_file: ")
       SaveKeys(utils.GetIp(), keys_path, index, num_keys)
@@ -357,7 +353,7 @@ def VaultMenu():
       lifestuff_killer.KillLifeStuff()
       processes.clear()
 
-  utils.ClearScreen()
+#  utils.ClearScreen()
 
 def main():
   print("This is the suite of QA anaysis info for vaults")
