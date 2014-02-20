@@ -140,6 +140,17 @@ if(NOT CbfsInstaller)
   show_error_message_and_exit("CBFS INSTALLER DLL")
 endif()
 
+# Get version of CBFS
+file(STRINGS "${CbfsIncludeDir}/../dotNet/AssemblyInfo.cpp" CbfsVersionLine REGEX "AssemblyVersionAttribute")
+string(REGEX MATCH "\"4." VersionFour "${CbfsVersionLine}")
+string(REGEX MATCH "\"5." VersionFive "${CbfsVersionLine}")
+if(VersionFour)
+  set(CbfsVersion 4)
+elseif(VersionFive)
+  set(CbfsVersion 5)
+endif()
+
+message(STATUS "Found Callback Filesystem version ${CbfsVersion}")
 message(STATUS "Found library ${CbfsLibrary}")
 message(STATUS "Found library ${CbfsLibraryDebug}")
 message(STATUS "Found cabinet file ${CbfsCab}")
@@ -154,8 +165,12 @@ if(CBFS_KEY)
   endif()
 else()
   # Use MaidSafe's key
-  set(LicenseFile ${CMAKE_BINARY_DIR}/MaidSafe-Drive-Private/eldos_licence_key.txt)
-  set(ExpectedSHA512 82b34a9ad0112a7c498fb266ee97191aef460fbe6502766180382edb0ef90063977489a5659009212fa67ea2d5edf7ef6f00caa19a6fdca9fb3ca059a22e7b54)
+  set(LicenseFile ${CMAKE_BINARY_DIR}/MaidSafe-Drive-Private/eldos_licence_key_v${CbfsVersion}.txt)
+  if(${CbfsVersion} EQUAL 4)
+    set(ExpectedSHA512 e2de4a324268710fe780cd9c80841ce6c6d916411345001f9d06dfe3d0dc049e4df613acdaccb9b89232aa3654714985ed7245f93cf2c97c6060889291db0906)
+  elseif(${CbfsVersion} EQUAL 5)
+    set(ExpectedSHA512 82b34a9ad0112a7c498fb266ee97191aef460fbe6502766180382edb0ef90063977489a5659009212fa67ea2d5edf7ef6f00caa19a6fdca9fb3ca059a22e7b54)
+  endif()
   if(NOT EXISTS ${LicenseFile})
     # Clone MaidSafe-Drive-Private
     execute_process(COMMAND ${Git_EXECUTABLE} clone git@github.com:maidsafe/MaidSafe-Drive-Private.git
