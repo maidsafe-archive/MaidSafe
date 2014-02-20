@@ -26,10 +26,10 @@
 #==================================================================================================#
 
 
-set(CONTRIBUTOR_SHA1 d784aed1244b46dc713fd56e443709d3e3f74e98)
-set(COPYING_SHA1 83d6bdeba338394c5e260b658944913f1b86a435)
-set(LICENSE_SHA1 3015a93968e4c5898d9f3ee33b52b9396f58c498)
-set(BaseURL http://www.maidsafe.net/licenses)
+set(CONTRIBUTOR_SHA1 3b84057fcdf973545740f563e8b88f8d23138ea3)
+set(COPYING_SHA1 8624bcdae55baeef00cd11d5dfcfa60f68710a02)
+set(LICENSE_SHA1 881acf26e7ead794a31309f0da1e350095dc839c)
+set(BaseURL http://maidsafe.net/licenses)
 
 
 
@@ -44,8 +44,7 @@ function(ms_get_file Filename)
       file(REMOVE ${DownloadedFile})
     else()
       # If the existing copy matches the SHA1, we're done.  Otherwise delete it and download again.
-      file(STRINGS ${DownloadedFile} Contents NEWLINE_CONSUME)
-      string(SHA1 CopySHA1 "${Contents}")
+      file(SHA1 "${DownloadedFile}" CopySHA1)
       if("${CopySHA1}" STREQUAL "${${Filename}_SHA1}")
         return()
       else()
@@ -63,8 +62,7 @@ function(ms_get_file Filename)
   endif()
 
   if(EXISTS ${DownloadedFile})
-    file(STRINGS ${DownloadedFile} Contents NEWLINE_CONSUME)
-    string(SHA1 CopySHA1 "${Contents}")
+    file(SHA1 "${DownloadedFile}" CopySHA1)
     if(NOT "${CopySHA1}" STREQUAL "${${Filename}_SHA1}")
       message(AUTHOR_WARNING "\n${BaseURL}/${File}.txt SHA1 not as expected.\n")
     endif()
@@ -85,8 +83,7 @@ function(ms_check_licenses)
     if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${File})
       message(AUTHOR_WARNING "\nThis repository should contain \"${File}\" in its root, identical to ${BaseURL}/${File}.txt\n")
     else()
-      file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/${File} Contents NEWLINE_CONSUME)
-      string(SHA1 FileSHA1 "${Contents}")
+      file(SHA1 "${CMAKE_CURRENT_SOURCE_DIR}/${File}" FileSHA1)
       if(NOT "${FileSHA1}" STREQUAL "${${File}_SHA1}")
         message(AUTHOR_WARNING "\n${CMAKE_CURRENT_SOURCE_DIR}/${File} SHA1 not as expected.\n")
       endif()
