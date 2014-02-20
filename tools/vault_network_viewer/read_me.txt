@@ -1,6 +1,6 @@
 Step 1 :
 java -jar "VaultsNetworkViewer.jar" <BuildPath>
-when BuildPath show be your build directory holding :
+where BuildPath shall be your build directory(absolute path) holding :
 vault, vault_key_helper and no_display_list.txt
 such as : java -jar "VaultsNetworkViewer.jar" /home/maidsafe/MaidSafe-Open/build/
 

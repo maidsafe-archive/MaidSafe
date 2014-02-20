@@ -28,8 +28,8 @@
 
 set(CONTRIBUTOR_SHA1 d784aed1244b46dc713fd56e443709d3e3f74e98)
 set(COPYING_SHA1 83d6bdeba338394c5e260b658944913f1b86a435)
-set(LICENSE_SHA1 3015a93968e4c5898d9f3ee33b52b9396f58c498)
-set(BaseURL http://www.maidsafe.net/licenses)
+set(LICENSE_SHA1 8085a72a68312ed412a8acee09e8367ec3df9885)
+set(BaseURL http://maidsafe.net/licenses)
 
 
 
@@ -46,6 +46,7 @@ function(ms_get_file Filename)
       # If the existing copy matches the SHA1, we're done.  Otherwise delete it and download again.
       file(STRINGS ${DownloadedFile} Contents NEWLINE_CONSUME)
       string(SHA1 CopySHA1 "${Contents}")
+      file(SHA1 "${DownloadedFile}" CopySHA1)
       if("${CopySHA1}" STREQUAL "${${Filename}_SHA1}")
         return()
       else()
