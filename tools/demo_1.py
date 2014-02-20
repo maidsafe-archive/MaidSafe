@@ -131,6 +131,19 @@ def RunBootstrapAndVaultSetup():
   time.sleep(5)
   return True
 
+def SaveKeys():
+  num_of_keys = 44
+  prog = utils.GetProg('vault_key_helper')
+  proc = subprocess.Popen([prog, '-ls', '-k', 10],
+                          shell = False, stdout = PIPE, stderr = None)
+  if utils.TimeOut(utils.LookingFor, (proc, 'PublicPmidKey stored and verified', 50, num_of_keys,),
+                   timeout_duration=5*num_of_keys, default=False):
+    print("keys successfully stored to network")
+    result = 0
+  else:
+    print("failure in storing keys to network")
+  proc.kill
+  lifestuff_killer.KillVaultKeyHelper()
 
 def PrintVaultMenu():
   utils.ClearScreen()
@@ -144,6 +157,7 @@ def VaultMenu():
   option = 1
   utils.ResetScreen()
   RunBootstrapAndVaultSetup()
+  SaveKeys()
   while(option != 0):
     procs = PrintVaultMenu()
     option = input("Vault Network with 36 nodes established up (0 for quit): ")
