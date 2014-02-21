@@ -2,6 +2,8 @@ NoException><None><None><Vault running as
 NoException><MaidManager><Verbose><MaidManager decrease count to
 HasException><MaidManager><Verbose><MaidManager increase count to
 NoException><MaidManager><Error><MaidManager blocked DeleteRequest of chunk
+NoException><MaidManager><Info><MaidManager transfer account
+NoException><MaidManager><Info><MaidManager HandleAccountTransfer
 NoException><DataManager><Verbose><DataManager decrease subscribers to
 HasException><DataManager><Verbose><DataManager increase subscribers to
 NoException><DataManager><Info><DataManager re-put chunk
