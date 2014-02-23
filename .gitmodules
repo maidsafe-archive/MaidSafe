@@ -1,3 +1,6 @@
+[submodule "src/api"]
+	path = src/api
+	url = git@github.com:maidsafe/MaidSafe-API
 [submodule "src/common"]
 	path = src/common
 	url = git@github.com:maidsafe/MaidSafe-Common
@@ -7,6 +10,9 @@
 [submodule "src/encrypt"]
 	path = src/encrypt
 	url = git@github.com:maidsafe/MaidSafe-Encrypt
+[submodule "src/nfs"]
+	path = src/nfs
+	url = git@github.com:maidsafe/MaidSafe-Network-Filesystem
 [submodule "src/passport"]
 	path = src/passport
 	url = git@github.com:maidsafe/MaidSafe-Passport
@@ -16,12 +22,9 @@
 [submodule "src/rudp"]
 	path = src/rudp
 	url = git@github.com:maidsafe/MaidSafe-RUDP
-[submodule "src/nfs"]
-	path = src/nfs
-	url = git@github.com:maidsafe/MaidSafe-Network-Filesystem
 [submodule "src/vault"]
 	path = src/vault
 	url = git@github.com:maidsafe/MaidSafe-Vault
-[submodule "src/api"]
-	path = src/api
-	url = git@github.com:maidsafe/MaidSafe-API
+[submodule "src/vault_manager"]
+	path = src/vault_manager
+	url = git@github.com:maidsafe/MaidSafe-Vault-Manager
