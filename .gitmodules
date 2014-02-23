@@ -1,6 +1,3 @@
-[submodule "src/client"]
-	path = src/client
-	url = git@github.com:maidsafe/Client
 [submodule "src/common"]
 	path = src/common
 	url = git@github.com:maidsafe/MaidSafe-Common
@@ -13,9 +10,6 @@
 [submodule "src/passport"]
 	path = src/passport
 	url = git@github.com:maidsafe/MaidSafe-Passport
-[submodule "src/private"]
-	path = src/private
-	url = git@github.com:maidsafe/MaidSafe-Private
 [submodule "src/routing"]
 	path = src/routing
 	url = git@github.com:maidsafe/MaidSafe-Routing
