@@ -4,34 +4,26 @@
   <SubProject name="Common">
     <Dependency name="ThirdParty"/>
   </SubProject>
-  <SubProject name="Private">
-    <Dependency name="Common"/>
-  </SubProject>
   <SubProject name="Passport">
     <Dependency name="Common"/>
-    <Dependency name="Private"/>
   </SubProject>
   <SubProject name="Rudp">
     <Dependency name="Common"/>
-    <Dependency name="Private"/>
     <Dependency name="Passport"/>
   </SubProject>
   <SubProject name="Routing">
     <Dependency name="Common"/>
-    <Dependency name="Private"/>
     <Dependency name="Passport"/>
     <Dependency name="Rudp"/>
   </SubProject>
   <SubProject name="Nfs">
     <Dependency name="Common"/>
-    <Dependency name="Private"/>
     <Dependency name="Passport"/>
     <Dependency name="Rudp"/>
     <Dependency name="Routing"/>
   </SubProject>
   <SubProject name="Encrypt">
     <Dependency name="Common"/>
-    <Dependency name="Private"/>
     <Dependency name="Passport"/>
     <Dependency name="Rudp"/>
     <Dependency name="Routing"/>
@@ -39,7 +31,6 @@
   </SubProject>
   <SubProject name="Drive">
     <Dependency name="Common"/>
-    <Dependency name="Private"/>
     <Dependency name="Passport"/>
     <Dependency name="Rudp"/>
     <Dependency name="Routing"/>
@@ -48,15 +39,18 @@
   </SubProject>
   <SubProject name="Vault">
     <Dependency name="Common"/>
-    <Dependency name="Private"/>
     <Dependency name="Passport"/>
     <Dependency name="Rudp"/>
     <Dependency name="Routing"/>
     <Dependency name="Nfs"/>
   </SubProject>
-  <SubProject name="Client">
+  <SubProject name="Vault-Manager">
     <Dependency name="Common"/>
-    <Dependency name="Private"/>
+    <Dependency name="Passport"/>
+    <Dependency name="Rudp"/>
+  </SubProject>
+  <SubProject name="API">
+    <Dependency name="Common"/>
     <Dependency name="Passport"/>
     <Dependency name="Rudp"/>
     <Dependency name="Routing"/>

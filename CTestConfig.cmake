@@ -30,7 +30,6 @@ set(CTEST_DROP_SITE_CDASH TRUE)
 set(CTEST_PROJECT_SUBPROJECTS
     ThirdParty
     Common
-    Private
     Passport
     Rudp
     Routing
@@ -38,5 +37,6 @@ set(CTEST_PROJECT_SUBPROJECTS
     Encrypt
     Drive
     Vault
-    Client
+    Vault-Manager
+    API
     )
