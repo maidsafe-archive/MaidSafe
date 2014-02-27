@@ -37,6 +37,6 @@ set(CTEST_PROJECT_SUBPROJECTS
     Encrypt
     Drive
     Vault
-    Vault-Manager
-    API
+#    Vault-Manager
+#    API
     )
