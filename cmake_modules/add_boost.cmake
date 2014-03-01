@@ -301,4 +301,4 @@ ExternalProject_Add_Step(
     DEPENDERS configure
     )
 set_target_properties(boost_process PROPERTIES LABELS Boost FOLDER "Third Party/Boost")
-add_dependencies(boost_process boost)
+add_dependencies(boost_process boost_system)
