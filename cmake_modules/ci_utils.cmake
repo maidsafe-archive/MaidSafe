@@ -251,10 +251,12 @@ function(build_and_run SubProject RunAll)
   ctest_configure(OPTIONS "${ExtraConfigureArgs}")
   ctest_read_custom_files(${CMAKE_CURRENT_BINARY_DIR})
 
+  # build
   message("Building ${SubProject}")
   set(CTEST_BUILD_TARGET "All${SubProject}")
-
-  # build
+  if(PathOfMake)
+    set(CTEST_BUILD_COMMAND "${PathOfMake} -k ${CTEST_BUILD_TARGET}")
+  endif()
   ctest_build(RETURN_VALUE BuildResult)
   if(BuildResult EQUAL 0)
     set(RecurringBuildFailureCount 0)
