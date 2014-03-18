@@ -34,6 +34,7 @@
 #                                                                                                  #
 #==================================================================================================#
 
+
 set(BoostVersion 1.55.0)
 set(BoostSHA1 cef9a0cc7084b1d639e06cd3bc34e4251524c840)
 
@@ -133,6 +134,13 @@ if(NOT b2Path)
   endif()
 endif()
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${BoostSourceDir}/Build)
+
+# Apply patched files
+if(NOT "${BoostVersion}" STREQUAL "1.55.0")
+  message(FATAL_ERROR "Remove patched files from the source tree and delete corresponding 'configure_file' commands in this 'add_boost' CMake file.")
+endif()
+configure_file(patches/boost_1_55/boost/atomic/detail/cas128strong.hpp ${BoostSourceDir}/boost/atomic/detail/cas128strong.hpp COPYONLY)
+configure_file(patches/boost_1_55/boost/atomic/detail/gcc-atomic.hpp ${BoostSourceDir}/boost/atomic/detail/gcc-atomic.hpp COPYONLY)
 
 # Expose BoostSourceDir to parent scope
 set(BoostSourceDir ${BoostSourceDir} PARENT_SCOPE)
