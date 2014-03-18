@@ -141,6 +141,8 @@ if(NOT "${BoostVersion}" STREQUAL "1.55.0")
 endif()
 configure_file(patches/boost_1_55/boost/atomic/detail/cas128strong.hpp ${BoostSourceDir}/boost/atomic/detail/cas128strong.hpp COPYONLY)
 configure_file(patches/boost_1_55/boost/atomic/detail/gcc-atomic.hpp ${BoostSourceDir}/boost/atomic/detail/gcc-atomic.hpp COPYONLY)
+configure_file(patches/boost_1_55/boost/intrusive/detail/has_member_function_callable_with.hpp ${BoostSourceDir}/boost/intrusive/detail/has_member_function_callable_with.hpp COPYONLY)
+configure_file(patches/boost_1_55/boost/signals2/detail/variadic_slot_invoker.hpp ${BoostSourceDir}/boost/signals2/detail/variadic_slot_invoker.hpp COPYONLY)
 
 # Expose BoostSourceDir to parent scope
 set(BoostSourceDir ${BoostSourceDir} PARENT_SCOPE)
