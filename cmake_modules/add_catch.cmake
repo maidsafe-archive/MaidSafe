@@ -27,6 +27,14 @@
 #                                                                                                  #
 #==================================================================================================#
 
+
+# Need patch to disable MSVC warning.  Git requires Unix-style line endings in patch, but converts
+# Unix to Windows line endings by default when committing, so to work around this failing, use
+# configure_file to force Unix line endings.
+set(CatchPatch ${CMAKE_BINARY_DIR}/catch.patch)
+configure_file(patches/catch/catch.patch ${CatchPatch} NEWLINE_STYLE UNIX)
+
+
 # Set up build steps
 include(ExternalProject)
 ExternalProject_Add(
@@ -35,7 +43,7 @@ ExternalProject_Add(
     GIT_REPOSITORY https://github.com/philsquared/Catch.git
     TIMEOUT 10
     UPDATE_COMMAND ${GIT_EXECUTABLE} pull
-    #PATCH_COMMAND ${GIT_EXECUTABLE} checkout . && ${GIT_EXECUTABLE} apply ${CatchPatch}
+    PATCH_COMMAND ${GIT_EXECUTABLE} checkout . && ${GIT_EXECUTABLE} apply ${CatchPatch}
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
