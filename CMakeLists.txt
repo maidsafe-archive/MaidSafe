@@ -99,6 +99,13 @@ if(UNIX)
 endif()
 
 
+# Add build types for the Address, Memory, Thread and Undefined Behaviour Sanitizers
+include(find_asan)
+include(find_msan)
+include(find_tsan)
+include(find_ubsan)
+
+
 include(maidsafe_find_just_thread)
 include(maidsafe_find_python)
 include(maidsafe_find_git)
