@@ -37,9 +37,15 @@ include(CheckCCompilerFlag)
 #set(CMAKE_REQUIRED_FLAGS "-Werror -fthread-sanitizer") # Also needs to be a link flag for test to pass
 #check_c_compiler_flag("-fthread-sanitizer" HAVE_FLAG_THREAD_SANITIZER)
 
-set(CMAKE_REQUIRED_FLAGS "-Werror -fsanitize=thread -fPIC -pie") # Also needs to be a link flag for test to pass
+set(CMAKE_REQUIRED_FLAGS "-Werror -fsanitize=thread") # Also needs to be a link flag for test to pass
 check_c_compiler_flag("-fsanitize=thread" HAVE_FLAG_SANITIZE_THREAD)
 unset(CMAKE_REQUIRED_FLAGS)
+
+if(NOT HAVE_FLAG_SANITIZE_THREAD)
+  set(CMAKE_REQUIRED_FLAGS "-Werror -fsanitize=thread -fPIC -pie") # Also needs to be a link flag for test to pass
+  check_c_compiler_flag("-fsanitize=thread" HAVE_FLAG_SANITIZE_THREAD_NEEDS_PIC_PIE)
+  unset(CMAKE_REQUIRED_FLAGS)
+endif()
 
 # A special test that uses threads seems to not be necessary. tsan
 # symbols are used even in just int main() { return 0; }
@@ -47,6 +53,9 @@ unset(CMAKE_REQUIRED_FLAGS)
 
 if(HAVE_FLAG_SANITIZE_THREAD)
   # Clang 3.2+ use this version
+  set(THREAD_SANITIZER_FLAG "-fsanitize=thread")
+elseif(HAVE_FLAG_SANITIZE_THREAD_NEEDS_PIC_PIE)
+  # GCC 4.8+ use this version
   set(THREAD_SANITIZER_FLAG "-fsanitize=thread")
 elseif(HAVE_FLAG_THREAD_SANITIZER)
   # Older deprecated flag for TSan

@@ -43,7 +43,7 @@ include(CheckCXXSourceRuns)
 # Set -Werror to catch "argument unused during compilation" warnings
 set(CMAKE_REQUIRED_FLAGS "-Werror")
 check_cxx_compiler_flag("-fsanitize=undefined" HAVE_FLAG_SANITIZE_UNDEFINED)
-check_cxx_compiler_flag("-fcatch-undefined-behavior" HAVE_FLAG_CATCH_UNDEFINED_BEHAVIOR)
+#check_cxx_compiler_flag("-fcatch-undefined-behavior" HAVE_FLAG_CATCH_UNDEFINED_BEHAVIOR)
 if(HAVE_FLAG_SANITIZE_UNDEFINED)
   set(UNDEFINED_BEHAVIOR_SANITIZER_FLAG "-fsanitize=undefined")
 elseif(HAVE_FLAG_CATCH_UNDEFINED_BEHAVIOR)
@@ -104,10 +104,10 @@ if(NOT HAVE_UNDEFINED_BEHAVIOR_SANITIZER)
 endif()
 
 
-set(CMAKE_C_FLAGS_UBSAN "-O0 -g ${UNDEFINED_BEHAVIOR_SANITIZER_FLAG} -fno-omit-frame-pointer"
+set(CMAKE_C_FLAGS_UBSAN "${UNDEFINED_BEHAVIOR_SANITIZER_FLAG}"
     CACHE STRING "Flags used by the C compiler during UBSan builds."
     FORCE)
-set(CMAKE_CXX_FLAGS_UBSAN "-O0 -g ${UNDEFINED_BEHAVIOR_SANITIZER_FLAG} -fno-omit-frame-pointer"
+set(CMAKE_CXX_FLAGS_UBSAN "${UNDEFINED_BEHAVIOR_SANITIZER_FLAG}"
     CACHE STRING "Flags used by the C++ compiler during UBSan builds."
     FORCE)
 set(CMAKE_EXE_LINKER_FLAGS_UBSAN "${UNDEFINED_BEHAVIOR_SANITIZER_FLAG}"
