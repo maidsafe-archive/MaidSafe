@@ -104,6 +104,7 @@ include(find_asan)
 include(find_msan)
 include(find_tsan)
 include(find_ubsan)
+include(find_stack_protector_strong)
 
 
 include(maidsafe_find_just_thread)

@@ -54,9 +54,11 @@ endif()
 if(HAVE_FLAG_SANITIZE_THREAD)
   # Clang 3.2+ use this version
   set(THREAD_SANITIZER_FLAG "-fsanitize=thread")
+  set(THREAD_SANITIZER_FLAG_EXE "-fsanitize=thread")
 elseif(HAVE_FLAG_SANITIZE_THREAD_NEEDS_PIC_PIE)
   # GCC 4.8+ use this version
-  set(THREAD_SANITIZER_FLAG "-fsanitize=thread")
+  set(THREAD_SANITIZER_FLAG "-fsanitize=thread -fPIC")
+  set(THREAD_SANITIZER_FLAG_EXE "-fsanitize=thread -pie")
 elseif(HAVE_FLAG_THREAD_SANITIZER)
   # Older deprecated flag for TSan
   set(THREAD_SANITIZER_FLAG_FLAG "-fthread-sanitizer")
@@ -67,14 +69,14 @@ endif()
 
 set(HAVE_THREAD_SANITIZER TRUE)
 
-set(CMAKE_C_FLAGS_TSAN "-O1 -g ${THREAD_SANITIZER_FLAG} -fno-omit-frame-pointer -fPIC"
+set(CMAKE_C_FLAGS_TSAN "-O1 -g ${THREAD_SANITIZER_FLAG} -fno-omit-frame-pointer"
     CACHE STRING "Flags used by the C compiler during TSan builds."
     FORCE
     )
-set(CMAKE_CXX_FLAGS_TSAN "-O1 -g ${THREAD_SANITIZER_FLAG} -fno-omit-frame-pointer -fPIC"
+set(CMAKE_CXX_FLAGS_TSAN "-O1 -g ${THREAD_SANITIZER_FLAG} -fno-omit-frame-pointer"
     CACHE STRING "Flags used by the C++ compiler during TSan builds."
     FORCE)
-set(CMAKE_EXE_LINKER_FLAGS_TSAN "${THREAD_SANITIZER_FLAG} -pie"
+set(CMAKE_EXE_LINKER_FLAGS_TSAN "${THREAD_SANITIZER_FLAG_EXE}"
     CACHE STRING "Flags used for linking binaries during TSan builds."
     FORCE)
 set(CMAKE_SHARED_LINKER_FLAGS_TSAN "${THREAD_SANITIZER_FLAG}"
