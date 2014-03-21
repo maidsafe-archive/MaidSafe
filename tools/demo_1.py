@@ -134,7 +134,7 @@ def RunBootstrapAndVaultSetup():
 def SaveKeys():
   num_of_keys = 44
   prog = utils.GetProg('vault_key_helper')
-  proc = subprocess.Popen([prog, '-ls', '-k', 10],
+  proc = subprocess.Popen([prog, '-ls', '-k', str(10)],
                           shell = False, stdout = PIPE, stderr = None)
   if utils.TimeOut(utils.LookingFor, (proc, 'PublicPmidKey stored and verified', 50, num_of_keys,),
                    timeout_duration=5*num_of_keys, default=False):
