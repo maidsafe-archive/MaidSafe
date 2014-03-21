@@ -1,5 +1,13 @@
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+# protoc segfaults if compiled with ubsan
+set(NO_UBSAN TRUE)
+# ned 2014-03-21: The above line works for protobuf, but has no effect on protoc which
+#                 still gains the -fsanitize=undefined. I've wasted enough time on this
+#                 so I'm pressing ahead with the below hack
+if(HAVE_UNDEFINED_BEHAVIOR_SANITIZER)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize=undefined")
+endif()
 
 project(Protobuf)
 
