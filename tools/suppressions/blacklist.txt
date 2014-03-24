@@ -17,24 +17,30 @@
 
 #### Compile time filters for ubsan ####
 
-# The well known ubsan failure in libstdc++ extant for years :)
-# Line 96:24: runtime error: load of value 4294967221, which is not a valid value for type 'std::_Ios_Fmtflags'
-fun:_Ios_Fmtflags
+## The well known ubsan failure in libstdc++ extant for years :)
 
-# Cryptopp likes to use unaligned reads and writes for speed. Safe on Intel.
+# Line 96:24: runtime error: load of value 4294967221, which is not a valid value for type 'std::_Ios_Fmtflags'
+fun:*_Ios_Fmtflags*
+
+
+## Cryptopp likes to use unaligned reads and writes for speed. Safe on Intel.
+
 # Line 392:2: runtime error: load of misaligned address 0x000004084291 for type 'word32' (aka 'unsigned int'), which requires 4 byte alignment
-src:src/third_party_libs/cryptopp/rijndael.cpp
+src:*/src/third_party_libs/cryptopp/rijndael.cpp
 # Line 938:3: runtime error: store to misaligned address 0x0000043b0985 for type 'unsigned int', which requires 4 byte alignment
-src:src/third_party_libs/cryptopp/misc.h
+src:*/src/third_party_libs/cryptopp/misc.h
 # Line 26:5: runtime error: store to misaligned address 0x0000043b0985 for type 'word64' (aka 'unsigned long long'), which requires 8 byte alignment
-src:src/third_party_libs/cryptopp/misc.cpp
+src:*/src/third_party_libs/cryptopp/misc.cpp
+# Line 134:10: runtime error: load of misaligned address 0x7fec4c70c00f for type 'const word32' (aka 'const unsigned int'), which requires 4 byte alignment
+src:*/src/third_party_libs/cryptopp/crc.cpp
+
 
 
 # boost/any.hpp:259:16: runtime error: downcast of address 0x000004392e70 which does not point to an object of type 'any::holder<int>'
-fun:any_cast
+fun:*any_cast*
 
 # boost/lexical_cast.hpp:1625:43: runtime error: downcast of address 0x7fbb4fffbce8 which does not point to an object of type 'buffer_t' (aka 'parser_buf<std::basic_streambuf<char, char_traits<char> >, char>')
-fun:shl_input_streamable
+fun:*shl_input_streamable*
 
 
 

@@ -24,6 +24,12 @@
 #                                                                                                  #
 #==================================================================================================#
 
+# It seems we are being included twice sometimes
+if(STANDARD_FLAGS_INCLUDED)
+  return()
+else()
+  set(STANDARD_FLAGS_INCLUDED TRUE)
+endif()
 
 if(HAVE_LIBC++)
   set(LibCXX "-stdlib=libc++")
@@ -48,6 +54,12 @@ elseif(HAVE_UNDEFINED_BEHAVIOR_SANITIZER AND HAVE_FLAG_SANITIZE_BLACKLIST)
   message(STATUS "Undefined behaviour sanitiser is enabled. Use -DNO_UBSAN=TRUE to prevent.")
 else()
   message(STATUS "Undefined behaviour sanitiser not available in this compiler.")
+endif()
+
+# Needs to come after everything else
+if(HAVE_FLAG_SANITIZE_BLACKLIST)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SANITIZE_BLACKLIST_FLAG}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SANITIZE_BLACKLIST_FLAG}")
 endif()
 
 if(MSVC)

@@ -36,8 +36,5 @@ if(NOT HAVE_FLAG_SANITIZE_BLACKLIST)
   return()
 endif()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SANITIZE_BLACKLIST_FLAG}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SANITIZE_BLACKLIST_FLAG}")
-
 # 2014-03-24 ned: How do I get changes to the blacklist to reinvoke cmake config?
 #add_dependencies(${CMAKE_PROJECT_NAME} "${CMAKE_SOURCE_DIR}/tools/suppressions/blacklist.txt")
