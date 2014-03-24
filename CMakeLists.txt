@@ -100,6 +100,7 @@ endif()
 
 
 # Add build types for the Address, Memory, Thread and Undefined Behaviour Sanitizers
+include(find_sanitize_blacklist)
 include(find_asan)
 include(find_msan)
 include(find_tsan)

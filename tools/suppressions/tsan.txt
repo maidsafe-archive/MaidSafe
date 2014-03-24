@@ -1,0 +1,15 @@
+# Boost exception_ptr uses atomics not recognised by tsan
+race:boost/exception/detail/exception_ptr.hpp
+race:boost/exception/exception.hpp
+race:void std::swap<boost::exception_detail::clone_base const*>
+
+# Boost shared_ptr uses atomics not recognised by tsan
+race:boost/smart_ptr/detail/shared_count.hpp
+
+# Known false positives in libstdc++
+#race:shared_ptr
+#race:std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_add_ref_lock()
+#race:std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release()
+#race:std::enable_shared_from_this<*>::shared_from_this()
+race:include/c++/*/bits/shared_ptr_base.h
+race:include/c++/*/bits/shared_ptr.h
