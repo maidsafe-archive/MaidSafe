@@ -16,5 +16,5 @@ race:include/c++/*/bits/shared_ptr.h
 # Benign write by two threads to same memory without lock
 # Caused by test framework reusing same encryption key for two threads instead of making copy
 # /home/ned/MaidSafe/src/rudp/src/maidsafe/rudp/tests/test_utils.cc:303 
-race:maidsafe::rudp::test::Node::Bootstrap(std::vector<boost::asio::ip::basic_endpoint<boost::asio::ip::udp>, std::allocator<boost::asio::ip::basic_endpoint<boost::asio::ip::udp> > > const&, maidsafe::NodeId&, boost::asio::ip::basic_endpoint<boost::asio::ip::udp>)
+#####race:maidsafe::rudp::test::Node::Bootstrap(std::vector<boost::asio::ip::basic_endpoint<boost::asio::ip::udp>, std::allocator<boost::asio::ip::basic_endpoint<boost::asio::ip::udp> > > const&, maidsafe::NodeId&, boost::asio::ip::basic_endpoint<boost::asio::ip::udp>)
 
