@@ -12,9 +12,9 @@ race:include/c++/*/bits/shared_ptr.h
 
 
 
-# 2014-03-24 ned
-# Benign write by two threads to same memory without lock
-# Caused by test framework reusing same encryption key for two threads instead of making copy
-# /home/ned/MaidSafe/src/rudp/src/maidsafe/rudp/tests/test_utils.cc:303 
-#####race:maidsafe::rudp::test::Node::Bootstrap(std::vector<boost::asio::ip::basic_endpoint<boost::asio::ip::udp>, std::allocator<boost::asio::ip::basic_endpoint<boost::asio::ip::udp> > > const&, maidsafe::NodeId&, boost::asio::ip::basic_endpoint<boost::asio::ip::udp>)
-
+# 2014-03-28 ned: There is a race here when checking on_connection_lost_ for
+#                 validity as LocalFunctorReplacement<OnConnectionLost>::
+#                 ~LocalFunctorReplacement() resets the slot without a mutex.
+#                 I have suppressed this race as it is benign.
+# /home/ned/MaidSafe/src/rudp/src/maidsafe/rudp/transport.cc:475
+race:maidsafe::rudp::detail::Transport::DoRemoveConnection(std::shared_ptr<maidsafe::rudp::detail::Connection>, bool)
