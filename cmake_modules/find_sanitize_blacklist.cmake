@@ -41,6 +41,4 @@ if(HAVE_FLAG_SANITIZE_BLACKLIST)
       ${CMAKE_COMMAND} -DBlacklistFile="${BlacklistFile}"
                        -DBlacklistFileHash=${Hash}
                        -P "${CMAKE_SOURCE_DIR}/tools/suppressions/blacklist_check.cmake")
-  # Add a variable to make it easy to include this target in subsequent target_link_libraries calls.
-  set(CheckSanitizerBlacklistTarget check_sanitizer_blacklist)
 endif()
