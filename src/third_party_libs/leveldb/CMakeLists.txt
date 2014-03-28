@@ -178,6 +178,9 @@ if(MSVC)
 else()
   target_link_libraries(leveldb ${BoostFilesystemLibs} ${BoostSystemLibs} ${JustThread_LIBRARIES} -lpthread)
 endif()
+if(TARGET check_sanitizer_blacklist)
+  add_dependencies(leveldb check_sanitizer_blacklist)
+endif()
 set_target_properties(leveldb PROPERTIES FOLDER "Third Party/LevelDB")
 
 

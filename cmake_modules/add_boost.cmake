@@ -172,6 +172,8 @@ if(MSVC)
   if(${TargetArchitecture} STREQUAL "x86_64")
     list(APPEND b2Args address-model=64)
   endif()
+elseif(APPLE)
+  list(APPEND b2Args variant=release toolset=clang cxxflags=-fPIC cxxflags=-std=c++11 architecture=combined address-model=32_64 --layout=tagged)
 elseif(UNIX)
   list(APPEND b2Args variant=release cxxflags=-fPIC cxxflags=-std=c++11 -sNO_BZIP2=1 --layout=tagged)
   # Need to configure the toolset based on whatever CMAKE_C_COMPILER is
@@ -184,8 +186,6 @@ elseif(UNIX)
     endif()
   elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
   endif()
-elseif(APPLE)
-  list(APPEND b2Args toolset=clang cxxflags=-fPIC cxxflags=-std=c++11 architecture=combined address-model=32_64 --layout=tagged)
 endif()
 
 # Get list of components

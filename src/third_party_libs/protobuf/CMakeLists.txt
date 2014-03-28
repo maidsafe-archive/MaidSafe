@@ -67,6 +67,9 @@ target_compile_options(protoc
 )
 
 target_link_libraries(protobuf ${JustThread_LIBRARIES})
+if(TARGET check_sanitizer_blacklist)
+  add_dependencies(protobuf check_sanitizer_blacklist)
+endif()
 target_link_libraries(protoc protobuf)
 if(UNIX)
   target_link_libraries(protoc -lpthread)
