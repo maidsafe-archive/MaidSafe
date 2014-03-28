@@ -32,7 +32,7 @@ unset(CMAKE_REQUIRED_FLAGS)
 if(HAVE_FLAG_SANITIZE_BLACKLIST)
   # Add PP def which changes with the contents of the blacklist file to force recompilation if required.
   file(MD5 "${BlacklistFile}" Hash)
-  set(SANITIZE_BLACKLIST_FLAG "-fsanitize-blacklist=${BlacklistFile} -D${Hash}")
+  set(SANITIZE_BLACKLIST_FLAG "-fsanitize-blacklist=${BlacklistFile} -DSANITIZE_BLACKLIST_MD5=${Hash}")
 
   # Add a target which when built checks the current contents of the blacklist file against the contents
   # when CMake was last run.  If they don't match, targets which depend on this one will fail to build
