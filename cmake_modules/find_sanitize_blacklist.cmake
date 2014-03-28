@@ -25,16 +25,22 @@
 include(CheckCCompilerFlag)
 
 set(CMAKE_REQUIRED_FLAGS "-Werror")
-check_c_compiler_flag("-fsanitize-blacklist=${CMAKE_SOURCE_DIR}/tools/suppressions/blacklist.txt" HAVE_FLAG_SANITIZE_BLACKLIST)
+set(BlacklistFile "${CMAKE_SOURCE_DIR}/tools/suppressions/blacklist.txt")
+check_c_compiler_flag("-fsanitize-blacklist=${BlacklistFile}" HAVE_FLAG_SANITIZE_BLACKLIST)
 unset(CMAKE_REQUIRED_FLAGS)
 
 if(HAVE_FLAG_SANITIZE_BLACKLIST)
-  set(SANITIZE_BLACKLIST_FLAG "-fsanitize-blacklist=${CMAKE_SOURCE_DIR}/tools/suppressions/blacklist.txt")
-endif()
+  # Add PP def which changes with the contents of the blacklist file to force recompilation if required.
+  file(MD5 "${BlacklistFile}" Hash)
+  set(SANITIZE_BLACKLIST_FLAG "-fsanitize-blacklist=${BlacklistFile} -D${Hash}")
 
-if(NOT HAVE_FLAG_SANITIZE_BLACKLIST)
-  return()
+  # Add a target which when built checks the current contents of the blacklist file against the contents
+  # when CMake was last run.  If they don't match, targets which depend on this one will fail to build
+  # until CMake is rerun.
+  add_custom_target(check_sanitizer_blacklist ALL
+      ${CMAKE_COMMAND} -DBlacklistFile="${BlacklistFile}"
+                       -DBlacklistFileHash=${Hash}
+                       -P "${CMAKE_SOURCE_DIR}/tools/suppressions/blacklist_check.cmake")
+  # Add a variable to make it easy to include this target in subsequent target_link_libraries calls.
+  set(CheckSanitizerBlacklistTarget check_sanitizer_blacklist)
 endif()
-
-# 2014-03-24 ned: How do I get changes to the blacklist to reinvoke cmake config?
-#add_dependencies(${CMAKE_PROJECT_NAME} "${CMAKE_SOURCE_DIR}/tools/suppressions/blacklist.txt")

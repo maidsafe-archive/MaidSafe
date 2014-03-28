@@ -66,7 +66,7 @@ target_compile_options(protoc
     $<$<BOOL:${UNIX}>:-w>
 )
 
-target_link_libraries(protobuf ${JustThread_LIBRARIES})
+target_link_libraries(protobuf ${JustThread_LIBRARIES} ${CheckSanitizerBlacklistTarget})
 target_link_libraries(protoc protobuf)
 if(UNIX)
   target_link_libraries(protoc -lpthread)

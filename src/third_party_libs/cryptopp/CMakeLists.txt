@@ -78,6 +78,10 @@ set(CamelCaseProjectName ${CurrentCamelCaseProjectName})
 #add_executable(TESTcryptopp ${TESTcryptopp_DIR})
 
 add_library(cryptopp STATIC ${cryptopp_SOURCES} ${cryptopp_HEADERS})
+if(CheckSanitizerBlacklistTarget)
+  target_link_libraries(cryptopp ${CheckSanitizerBlacklistTarget})
+endif()
+
 ms_target_include_system_dirs(cryptopp INTERFACE ${PROJECT_SOURCE_DIR}/.. PRIVATE ${PROJECT_SOURCE_DIR})
 if(JustThread_FOUND)
   ms_target_include_system_dirs(cryptopp PUBLIC ${JustThread_INCLUDE_DIR})

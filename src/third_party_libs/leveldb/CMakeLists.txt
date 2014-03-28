@@ -174,9 +174,9 @@ set(ALL_FILES_LEVELDB_DIR ${HEADER_FILES_LEVELDB_INCLUDE_DIR}
 add_library(leveldb STATIC ${ALL_FILES_LEVELDB_DIR})
 ms_target_include_system_dirs(leveldb PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR} ${BoostSourceDir})
 if(MSVC)
-  target_link_libraries(leveldb ${BoostFilesystemLibs} ${BoostSystemLibs} ${JustThread_LIBRARIES})
+  target_link_libraries(leveldb ${BoostFilesystemLibs} ${BoostSystemLibs} ${JustThread_LIBRARIES} ${CheckSanitizerBlacklistTarget})
 else()
-  target_link_libraries(leveldb ${BoostFilesystemLibs} ${BoostSystemLibs} ${JustThread_LIBRARIES} -lpthread)
+  target_link_libraries(leveldb ${BoostFilesystemLibs} ${BoostSystemLibs} ${JustThread_LIBRARIES} ${CheckSanitizerBlacklistTarget} -lpthread)
 endif()
 set_target_properties(leveldb PROPERTIES FOLDER "Third Party/LevelDB")
 
