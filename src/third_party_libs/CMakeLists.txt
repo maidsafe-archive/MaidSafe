@@ -19,7 +19,7 @@ message("${HR}\n${Msg}\n${Underscore}")
 
 
 include(add_boost)
-include(add_catch)
+add_subdirectory(catch/projects/CMake)
 add_subdirectory(cryptopp)
 add_subdirectory(googlemock)
 add_subdirectory(protobuf)
