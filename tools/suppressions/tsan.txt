@@ -1,3 +1,8 @@
+# Don't forget to set TSAN_OPTIONS like this before running unit tests!
+#
+# export TSAN_OPTIONS="suppressions=/home/ned/MaidSafe/tools/suppressions/tsan.txt history_size=7 external_symbolizer_path=/usr/bin/llvm-symbolizer-3.4"
+
+
 # Boost exception_ptr uses atomics not recognised by tsan
 race:boost/exception/detail/exception_ptr.hpp
 race:boost/exception/exception.hpp
