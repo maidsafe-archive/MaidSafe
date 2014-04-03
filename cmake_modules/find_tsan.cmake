@@ -69,11 +69,11 @@ endif()
 
 set(HAVE_THREAD_SANITIZER TRUE)
 
-set(CMAKE_C_FLAGS_TSAN "-O1 -g ${THREAD_SANITIZER_FLAG} -fno-omit-frame-pointer"
+set(CMAKE_C_FLAGS_TSAN "-O1 -g ${THREAD_SANITIZER_FLAG} -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline"
     CACHE STRING "Flags used by the C compiler during TSan builds."
     FORCE
     )
-set(CMAKE_CXX_FLAGS_TSAN "-O1 -g ${THREAD_SANITIZER_FLAG} -fno-omit-frame-pointer"
+set(CMAKE_CXX_FLAGS_TSAN "-O1 -g ${THREAD_SANITIZER_FLAG} -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline"
     CACHE STRING "Flags used by the C++ compiler during TSan builds."
     FORCE)
 set(CMAKE_EXE_LINKER_FLAGS_TSAN "${THREAD_SANITIZER_FLAG_EXE}"

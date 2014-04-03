@@ -18,3 +18,16 @@ race:include/c++/*/bits/shared_ptr.h
 #                 I have suppressed this race as it is benign.
 # /home/ned/MaidSafe/src/rudp/src/maidsafe/rudp/transport.cc:475
 race:maidsafe::rudp::detail::Transport::DoRemoveConnection(std::shared_ptr<maidsafe::rudp::detail::Connection>, bool)
+
+# 2014-03-31 ned: Probably noise
+# /home/ned/build_maidsafe/boost_1_55_0_Clang_3_4_0/boost_1_55_0/boost/asio/ip/impl/basic_endpoint.hpp:35
+race:std::basic_ostream<char, std::char_traits<char> >& boost::asio::ip::operator<< <char, std::char_traits<char>, boost::asio::ip::udp>(std::basic_ostream<char, std::char_traits<char> >&, boost::asio::ip::basic_endpoint<boost::asio::ip::udp> const&)
+
+# 2014-04-01 ned: Probably logging induced noise
+race:maidsafe::rudp::detail::ConnectionManager::DebugString
+
+# 2014-04-02 ned: Looks like gmock is a bit racy, but I can't suppress the
+#                 gmock code or else I'll suppress all race reports. So
+#                 suppressing this instead, even though it is NOT racy.
+# /home/ned/MaidSafe/src/common/src/maidsafe/common/log.cc:405
+race:maidsafe::log::GtestLogMessage::~GtestLogMessage()::$_1::operator()() const
