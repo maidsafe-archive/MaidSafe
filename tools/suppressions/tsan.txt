@@ -36,3 +36,6 @@ race:maidsafe::rudp::detail::ConnectionManager::DebugString
 #                 suppressing this instead, even though it is NOT racy.
 # /home/ned/MaidSafe/src/common/src/maidsafe/common/log.cc:405
 race:maidsafe::log::GtestLogMessage::~GtestLogMessage()::$_1::operator()() const
+
+# 2014-04-04 ned: Ignore this race in libstdc++
+race:std::ctype<char>::do_widen(char const*, char const*, char*) const
