@@ -39,3 +39,7 @@ race:maidsafe::log::GtestLogMessage::~GtestLogMessage()::$_1::operator()() const
 
 # 2014-04-04 ned: Ignore this race in libstdc++
 race:std::ctype<char>::do_widen(char const*, char const*, char*) const
+
+# 2014-04-07 ned: Logging induced noise
+# /home/qa1/MaidSafe-Testing/MaidSafe/src/rudp/src/maidsafe/rudp/managed_connections.cc:792
+race:maidsafe::rudp::ManagedConnections::DebugString() const
