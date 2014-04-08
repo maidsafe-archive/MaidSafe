@@ -23,7 +23,14 @@ file(GLOB_RECURSE PROTOC_TESTS_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobu
 file(GLOB_RECURSE PROTOC_TESTS_HEADERS "${PROJECT_SOURCE_DIR}/src/google/protobuf/tests/*.h")
 set(TESTS ${PROTOC_TESTS_SOURCES} ${PROTOC_TESTS_HEADERS})
 
-list(REMOVE_ITEM PROTOBUF_DIR ${PROTOC_DIR} ${TESTS})
+# Only useful if zlib is found and linked, otherwise generates "no symbols" linker warnings
+list(REMOVE_ITEM PROTOBUF_DIR ${PROTOC_DIR} ${TESTS}
+     "${PROJECT_SOURCE_DIR}/src/google/protobuf/io/gzip_stream.cc"
+     "${PROJECT_SOURCE_DIR}/src/google/protobuf/io/gzip_stream.h")
+if(NOT WIN32)
+  # Only contains code used on Windows
+  list(REMOVE_ITEM PROTOBUF_DIR "${PROJECT_SOURCE_DIR}/src/google/protobuf/stubs/once.cc")
+endif()
 
 add_library(protobuf ${PROTOBUF_DIR})
 ms_target_include_system_dirs(protobuf PUBLIC ${PROJECT_SOURCE_DIR}/src)
