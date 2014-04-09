@@ -2456,9 +2456,9 @@ def CheckSpacing(filename, clean_lines, linenum, nesting_state, error):
   # an initializer list, for instance), you should have spaces before your
   # braces. And since you should never have braces at the beginning of a line,
   # this is an easy test.
-  if Search(r'[^ ({]{', line):
-    error(filename, linenum, 'whitespace/braces', 5,
-          'Missing space before {')
+#  if Search(r'[^ ({]{', line):
+#    error(filename, linenum, 'whitespace/braces', 5,
+#          'Missing space before {')
 
   # Make sure '} else {' has spaces.
   if Search(r'}else', line):
@@ -2635,18 +2635,18 @@ def CheckBraces(filename, clean_lines, linenum, error):
   # Braces shouldn't be followed by a ; unless they're defining a struct
   # or initializing an array.
   # We can't tell in general, but we can for some common cases.
-  prevlinenum = linenum
-  while True:
-    (prevline, prevlinenum) = GetPreviousNonBlankLine(clean_lines, prevlinenum)
-    if Match(r'\s+{.*}\s*;', line) and not prevline.count(';'):
-      line = prevline + line
-    else:
-      break
-  if (Search(r'{.*}\s*;', line) and
-      line.count('{') == line.count('}') and
-      not Search(r'struct|class|enum|\s*=\s*{', line)):
-    error(filename, linenum, 'readability/braces', 4,
-          "You don't need a ; after a }")
+#  prevlinenum = linenum
+#  while True:
+#    (prevline, prevlinenum) = GetPreviousNonBlankLine(clean_lines, prevlinenum)
+#    if Match(r'\s+{.*}\s*;', line) and not prevline.count(';'):
+#      line = prevline + line
+#    else:
+#      break
+#  if (Search(r'{.*}\s*;', line) and
+#      line.count('{') == line.count('}') and
+#      not Search(r'struct|class|enum|\s*=\s*{', line)):
+#    error(filename, linenum, 'readability/braces', 4,
+#          "You don't need a ; after a }")
 
 
 def CheckEmptyLoopBody(filename, clean_lines, linenum, error):
