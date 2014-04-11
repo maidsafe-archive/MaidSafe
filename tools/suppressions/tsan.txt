@@ -18,13 +18,6 @@ race:include/c++/*/future
 
 
 
-# 2014-03-28 ned: There is a race here when checking on_connection_lost_ for
-#                 validity as LocalFunctorReplacement<OnConnectionLost>::
-#                 ~LocalFunctorReplacement() resets the slot without a mutex.
-#                 I have suppressed this race as it is benign.
-# /home/ned/MaidSafe/src/rudp/src/maidsafe/rudp/transport.cc:475
-race:maidsafe::rudp::detail::Transport::DoRemoveConnection(std::shared_ptr<maidsafe::rudp::detail::Connection>, bool)
-
 # 2014-03-31 ned: Probably noise
 # /home/ned/build_maidsafe/boost_1_55_0_Clang_3_4_0/boost_1_55_0/boost/asio/ip/impl/basic_endpoint.hpp:35
 race:std::basic_ostream<char, std::char_traits<char> >& boost::asio::ip::operator<< <char, std::char_traits<char>, boost::asio::ip::udp>(std::basic_ostream<char, std::char_traits<char> >&, boost::asio::ip::basic_endpoint<boost::asio::ip::udp> const&)
