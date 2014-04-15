@@ -43,6 +43,8 @@ include(CheckCXXSourceRuns)
 # Set -Werror to catch "argument unused during compilation" warnings
 set(CMAKE_REQUIRED_FLAGS "-Werror")
 check_cxx_compiler_flag("-fsanitize=undefined" HAVE_FLAG_SANITIZE_UNDEFINED)
+# Ignore misalignment (libcrypto++ does a lot of this)
+check_cxx_compiler_flag("-fno-sanitize=alignment" HAVE_FLAG_NO_SANITIZE_ALIGNMENT)
 #check_cxx_compiler_flag("-fcatch-undefined-behavior" HAVE_FLAG_CATCH_UNDEFINED_BEHAVIOR)
 if(HAVE_FLAG_SANITIZE_UNDEFINED)
   set(UNDEFINED_BEHAVIOR_SANITIZER_FLAG "-fsanitize=undefined")
@@ -103,6 +105,28 @@ if(NOT HAVE_UNDEFINED_BEHAVIOR_SANITIZER)
   return()
 endif()
 
+if(HAVE_FLAG_NO_SANITIZE_ALIGNMENT)
+  # On x86/x64 libcrypto++ does lots of unaligned accesses for speed, it generates
+  # a ton of noise some of which cant't be blacklisted, so disable.
+  check_cxx_source_runs(
+  "
+  int main(int argc, const char* argv[])
+  {
+  #if defined(__i386) || defined(__i386__) || defined(_M_IX86)
+      /* I am x86 */
+  #elif defined(__x86_64) || defined(__x86_64__) || defined(__amd64) || defined(_M_X64)
+      /* I am x64 */
+  #else
+  #error I am neither x86 nor x64
+  #endif
+      return 0;
+  }
+  "
+    HAVE_X86_OR_X64_TARGET)
+  if(HAVE_X86_OR_X64_TARGET)
+    set(UNDEFINED_BEHAVIOR_SANITIZER_FLAG "${UNDEFINED_BEHAVIOR_SANITIZER_FLAG} -fno-sanitize=alignment")
+  endif()
+endif()
 
 set(CMAKE_C_FLAGS_UBSAN "${UNDEFINED_BEHAVIOR_SANITIZER_FLAG}"
     CACHE STRING "Flags used by the C compiler during UBSan builds."
