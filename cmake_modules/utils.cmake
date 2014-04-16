@@ -155,13 +155,7 @@ function(ms_add_project_experimental)
                    ${CMAKE_CURRENT_BINARY_DIR}/run_experimental_${CTEST_CONFIGURATION_TYPE}.cmake
                    @ONLY)
   endforeach()
-  if(${CamelCaseProjectName} MATCHES "Client")
-    add_custom_target(Exper${CamelCaseProjectName} COMMAND python ${maidsafe_SOURCE_DIR}/tools/run_client_experimental.py ${CMAKE_CTEST_COMMAND} $<CONFIGURATION> ${CMAKE_SOURCE_DIR}/tools/
-                                                   DEPENDS All${CamelCaseProjectName}
-                                                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-  else()
-    add_custom_target(Exper${CamelCaseProjectName} COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION> -S ${CMAKE_CURRENT_BINARY_DIR}/run_experimental_$<CONFIGURATION>.cmake -V)
-  endif()
+  add_custom_target(Exper${CamelCaseProjectName} COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION> -S ${CMAKE_CURRENT_BINARY_DIR}/run_experimental_$<CONFIGURATION>.cmake -V)
   set_target_properties(Exper${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/Experimentals")
 endfunction()
 

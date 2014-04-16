@@ -220,13 +220,13 @@ function(report_build_result Result)
   if(${Result} STREQUAL "false")
     message(WARNING "\n#################################### ${SubProject} failed during build ####################################\n")
   endif()
-  execute_process(COMMAND ${CTEST_PYTHON_EXECUTABLE} ci_build_reporter.py "${MachineType}" "k${MachineBuildType}" "${Result}" "${SubProject}" "${${SubProject}NewCommitLogAuthor}"
-                  WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
-                  RESULT_VARIABLE ResultVar
-                  OUTPUT_VARIABLE OutputVar)
-  if(NOT ${ResultVar} EQUAL 0)
-    message(WARNING "${SubProject} failed running \"${CTEST_PYTHON_EXECUTABLE} ci_build_reporter.py \"${MachineType}\" \"k${MachineBuildType}\" \"${Result}\" \"${SubProject}\" \"${${SubProject}NewCommitLogAuthor}\"\"\n\n${OutputVar}")
-  endif()
+#   execute_process(COMMAND ${CTEST_PYTHON_EXECUTABLE} ci_build_reporter.py "${MachineType}" "k${MachineBuildType}" "${Result}" "${SubProject}" "${${SubProject}NewCommitLogAuthor}"
+#                   WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}/tools"
+#                   RESULT_VARIABLE ResultVar
+#                   OUTPUT_VARIABLE OutputVar)
+#   if(NOT ${ResultVar} EQUAL 0)
+#     message(WARNING "${SubProject} failed running \"${CTEST_PYTHON_EXECUTABLE} ci_build_reporter.py \"${MachineType}\" \"k${MachineBuildType}\" \"${Result}\" \"${SubProject}\" \"${${SubProject}NewCommitLogAuthor}\"\"\n\n${OutputVar}")
+#   endif()
 endfunction()
 
 
@@ -272,25 +272,6 @@ function(build_and_run SubProject RunAll)
     endif()
   endif()
   set(${SubProject}RecurringBuildFailureCount ${RecurringBuildFailureCount} PARENT_SCOPE)
-
-  # teardown network with python script if it's Client
-  #if(${SubProject} STREQUAL "Client")
-  #  execute_process(COMMAND ${CTEST_SOURCE_DIRECTORY}/tools/client_killer.py
-  #                  WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY})
-  #endif()
-
-  # set up network with python script if it's Client
-  if(${SubProject} STREQUAL "Client")
-    #message("--------------------------------------------: python ${CTEST_SOURCE_DIRECTORY}/tools/py_function.py")
-    #execute_process(COMMAND python ${CTEST_SOURCE_DIRECTORY}/tools/py_function.py
-    #                WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY})
-    #                #RESULT_VARIABLE SetupResult)
-    #                #OUTPUT_VARIABLE SetupOutput)
-    #message("++++++++++++++++++++++++++++++++++++++++++++: ${SetupOutput}")
-    #if(SetupResult EQUAL 0)
-    #  message(FATAL_ERROR "Error running set up")
-    #endif()
-  endif()
 
   if(RecurringBuildFailureCount EQUAL 0)
     # runs only tests that have a LABELS property matching "${SubProject}"

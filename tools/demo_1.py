@@ -34,12 +34,11 @@ from multiprocessing import Process, Pool
 import multiprocessing
 import utils
 import re
-import psutil
 import time
 import datetime
 import random
 import shutil
-import lifestuff_killer
+import vault_killer
 
 processes = {}
 
@@ -77,7 +76,7 @@ def SetupBootstraps(num):
     proc.kill()
     return False
   proc.kill()
-  lifestuff_killer.KillVaultKeyHelper()
+  vault_killer.KillVaultKeyHelper()
   print("Wait 10 secs for bootstrap nodes disappear from routingtable")
   time.sleep(10)
   return True
@@ -143,7 +142,7 @@ def SaveKeys():
   else:
     print("failure in storing keys to network")
   proc.kill
-  lifestuff_killer.KillVaultKeyHelper()
+  vault_killer.KillVaultKeyHelper()
 
 def PrintVaultMenu():
   utils.ClearScreen()
@@ -162,7 +161,7 @@ def VaultMenu():
     procs = PrintVaultMenu()
     option = input("Vault Network with 36 nodes established up (0 for quit): ")
     option = int(option)
-  lifestuff_killer.KillLifeStuff()
+  vault_killer.KillLifeStuff()
   processes.clear()
 
 def main():

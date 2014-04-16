@@ -34,7 +34,7 @@ import subprocess
 import multiprocessing
 
 # MaidSafe imports
-import lifestuff_killer
+import vault_killer
 
 
 all = { 'Common' : 'common', 'Rudp' : 'rudp', 'Routing' : 'routing',

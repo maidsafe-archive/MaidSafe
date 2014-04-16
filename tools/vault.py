@@ -39,7 +39,7 @@ import time
 import datetime
 import random
 import shutil
-import lifestuff_killer
+import vault_killer
 
 processes = {}
 stop_churn = 'd'
@@ -98,7 +98,7 @@ def SaveKeys(peer, keys_path, client_index, num_of_keys):
   else:
     print("failure in storing keys to network")
   proc.kill
-  lifestuff_killer.KillVaultKeyHelper()
+  vault_killer.KillVaultKeyHelper()
   return result
 
 def StoreChunk(key_index, chunk_index):
@@ -130,7 +130,7 @@ def TestStore(num, index):
   else:
     print("test with store failed")
   proc.kill
-  lifestuff_killer.KillVaultKeyHelper()
+  vault_killer.KillVaultKeyHelper()
 
 def TestStoreWithDelete(num, index):
   prog = utils.GetProg('vault_key_helper')
@@ -143,7 +143,7 @@ def TestStoreWithDelete(num, index):
   else:
     print("test with delete failed")
   proc.kill
-  lifestuff_killer.KillVaultKeyHelper()
+  vault_killer.KillVaultKeyHelper()
 
 def TestProlonged(key_index, chunk_index):
   StoreChunk(key_index, chunk_index)
@@ -350,7 +350,7 @@ def VaultMenu():
       churn_rate = GetPositiveNumber("Please input rate (%% churn per minute): ")
       Churn(churn_rate)
     elif (option == "8"):
-      lifestuff_killer.KillLifeStuff()
+      vault_killer.KillLifeStuff()
       processes.clear()
 
 #  utils.ClearScreen()
