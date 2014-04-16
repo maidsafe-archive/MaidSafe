@@ -1,0 +1,124 @@
+[section FAQ]
+
+[section Why does the parent process hang if a pipe is used to redirect a child's output stream?]
+
+The following program doesn't work as expected - the parent process never exits:
+
+    #include <boost/process.hpp>
+    #include <boost/iostreams/device/file_descriptor.hpp>
+    #include <boost/iostreams/stream.hpp>
+    #include <iostream>
+
+    using namespace boost::process;
+    using namespace boost::process::initializers;
+    using namespace boost::iostreams;
+
+    int main()
+    {
+        boost::process::pipe p = create_pipe();
+        file_descriptor_sink sink(p.sink, close_handle);
+        execute(
+            run_exe("/bin/echo"),
+            set_cmd_line("echo hello"),
+            bind_stdout(sink)
+        );
+        file_descriptor_source source(p.source, close_handle);
+        stream<file_descriptor_source> is(source);
+        std::string s;
+        while (is >> s)
+            std::cout << s << std::endl;
+    }
+
+The program gets stuck in the `while`-loop as the write-end of the pipe is never closed. It is closed by the child process when it exits. But it is never closed in the parent process. *sink* has been initialized with *close_handle*. But as the destructor isn't called before the `while`-loop, the handle hasn't been closed yet.
+
+The program can be fixed by introducing another scope:
+
+    #include <boost/process.hpp>
+    #include <boost/iostreams/device/file_descriptor.hpp>
+    #include <boost/iostreams/stream.hpp>
+    #include <iostream>
+
+    using namespace boost::process;
+    using namespace boost::process::initializers;
+    using namespace boost::iostreams;
+
+    int main()
+    {
+        boost::process::pipe p = create_pipe();
+        {
+            file_descriptor_sink sink(p.sink, close_handle);
+            execute(
+                run_exe("/bin/echo"),
+                set_cmd_line("echo hello"),
+                bind_stdout(sink)
+            );
+        }
+        file_descriptor_source source(p.source, close_handle);
+        stream<file_descriptor_source> is(source);
+        std::string s;
+        while (is >> s)
+            std::cout << s << std::endl;
+    }
+
+The destructor of *sink* will now be called before the `while`-loop. As there is no other write-end open anymore when the child process exits, the `while`-loop sees an end-of-file and can finish.
+
+[endsect]
+
+[section Why can executing /bin/ls make a parent process seem to hang?]
+
+If you run the following program on Linux, it sometimes doesn't seem to exit:
+
+    #include <boost/process.hpp>
+
+    using namespace boost::process;
+    using namespace boost::process::initializers;
+
+    int main()
+    {
+        execute(run_exe("/bin/ls"));
+    }
+
+Don't let yourself get fooled! When */bin/ls* is executed, it runs in a different process. It's unknown whether your program or */bin/ls* exits first. If */bin/ls* exits first, you see this:
+
+[pre
+boris@linux:\/> .\/test
+afile anotherfile
+boris@linux:\/> _
+]
+
+If your program exits first, you see this though:
+
+[pre
+boris@linux:\/> .\/test
+boris@linux:\/> afile anotherfile
+_
+]
+
+It seems as if the program hangs as there is no prompt. And when you press `ENTER`, a new line with a prompt appears. But your program did exit. It's just that */bin/ls* printed the filenames after the prompt when your program had already exited. And that's what pushes your input cursor to the next line where a prompt seems to be missing.
+
+You could "fix" the program by waiting for the child process to exit:
+
+    #include <boost/process.hpp>
+
+    using namespace boost::process;
+    using namespace boost::process::initializers;
+
+    int main()
+    {
+        child c = execute(run_exe("/bin/ls"));
+        wait_for_exit(c);
+    }
+
+Now it's guaranteed that */bin/ls* prints the filenames before your program exits and before you see the prompt again.
+
+[endsect]
+
+[section Is Boost.Process thread-safe?]
+
+No, Boost.Process is not thread-safe.
+
+Please note that even if you don't share Boost.Process objects between threads, you can run into problems. For example, file descriptors on POSIX and handles on Windows are global per process. If `boost::process::execute` is called in multiple threads, it is possible that file descriptors or handles are inherited by a child process which shouldn't inherit them. If these are ends of a pipe and another process expects that these ends are closed but a process accidently inherited them and doesn't even know he got the ends which should be closed, another process might wait forever for an end-of-file. While on POSIX an initializer like `boost::process::initializers::close_fds` could be used to close file descriptors, accidental "leaking" can't be prevented on Windows. This scenario can be avoided if for example always only one thread calls `boost::process::execute`.
+
+[endsect]
+
+[endsect]

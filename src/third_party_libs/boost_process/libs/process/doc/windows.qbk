@@ -1,0 +1,33 @@
+[section Windows specifics]
+
+[section Setting wShowWindow]
+
+Use the initializer [classref boost::process::initializers::show_window show_window] to set the member variable `wShowWindow` in [@http://msdn.microsoft.com/en-us/library/windows/desktop/ms686331(v=vs.85).aspx `STARTUPINFO`]:
+
+[import ../example/windows.cpp]
+[show_window]
+
+[endsect]
+
+[section Unicode]
+
+Boost.Process supports Unicode on Windows. If the macro [macroref UNICODE] or `_UNICODE` is defined, the Unicode version of  [@http://msdn.microsoft.com/en-us/library/windows/desktop/ms682425(v=vs.85).aspx `CreateProcess`] is used:
+
+[import ../example/windows_unicode.cpp]
+[unicode]
+
+[endsect]
+
+[section Arbitrary extensions]
+
+On Windows [classref boost::process::executor executor] calls [@http://msdn.microsoft.com/en-us/library/windows/desktop/ms682425(v=vs.85).aspx `CreateProcess`] to start a program. Boost.Process provides three generic initializers to run any code before `CreateProcess` is called, afterwards if `CreateProcess` failed and afterwards if `CreateProcess` succeeded: [funcref boost::process::initializers::on_CreateProcess_setup on_CreateProcess_setup], [funcref boost::process::initializers::on_CreateProcess_error on_CreateProcess_error] and [funcref boost::process::initializers::on_CreateProcess_success on_CreateProcess_success]. These initializers can be used to arbitrarily extend Boost.Process:
+
+[create_process]
+
+The example sets the member variable `dwFlags` in `STARTUPINFO` to *STARTF_RUNFULLSCREEN*. If `CreateProcess` fails, the system error is written to the standard error stream.
+
+[note Boost.Process guarantees to call initializers in the order they are passed to `execute`. The order is important if several initializers try to set the same member variables in the `executor`. The initializers provided by Boost.Process have been designed to work correctly no matter which order they are used in. You only have to be careful if you use the generic initializers [funcref boost::process::initializers::on_CreateProcess_setup on_CreateProcess_setup], [funcref boost::process::initializers::on_CreateProcess_error on_CreateProcess_error] and [funcref boost::process::initializers::on_CreateProcess_success on_CreateProcess_success].]
+
+[endsect]
+
+[endsect]

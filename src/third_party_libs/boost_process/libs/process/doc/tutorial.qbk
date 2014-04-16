@@ -1,0 +1,219 @@
+[section Tutorial]
+
+[section Header files]
+
+Boost.Process is a header-only library. It comes with a convenience header file which is the only one you need to include to make use of all library features:
+
+    #include <boost/process.hpp>
+
+All examples in this tutorial assume this header file is included.
+
+[note The header file [headerref boost/process/mitigate.hpp] is not included by [headerref boost/process.hpp]. It contains helpers to mitigate platform differences. As these helpers can have subtle side effects, [headerref boost/process/mitigate.hpp] must be included explicitly.]
+
+[endsect]
+
+[section Namespaces]
+
+Most definitions can be found in one namespace:
+
+    boost::process
+
+For example, the most important function [funcref boost::process::execute execute] to start a program is defined in `boost::process`.
+
+There is a second namespace used by Boost.Process:
+
+    boost::process::initializers
+
+This namespace is used for initializers. Initializers are the parameters passed to [funcref boost::process::execute execute]. As you commonly use initializers provided by Boost.Process, you need to use this namespace, too.
+
+[endsect]
+
+[section Starting a program]
+
+The function Boost.Process provides to start a program is [funcref boost::process::execute execute]. You need to pass at least one initializer as a parameter. Think of initializers as named parameters. With the initializer [classref boost::process::initializers::run_exe run_exe] you refer to the program you want to start:
+
+[import ../example/execute.cpp]
+[execute]
+
+[classref boost::process::initializers::run_exe run_exe] expects an exact filename. For instance, you can't leave out the file extension. [classref boost::process::initializers::run_exe run_exe] does not automatically search for a program either. In the example above Boost.Process expects to find *test.exe* in the current work directory.
+
+You can refer to programs in other directories with an absolute or relative path. It is also possible to use [classref boost::filesystem::path]:
+
+[execute_path]
+
+Boost.Process provides two utility functions to lookup executables: Call [funcref boost::process::search_path search_path] if you want to find an executable in the directories of the environment variable PATH. Or call [funcref boost::process::shell_path shell_path] for the system's shell.
+
+[endsect]
+
+[section Cleaning up resources]
+
+If you have a long-running program starting other programs with [funcref boost::process::execute execute], you want to be careful cleaning up resources. Resources are for example entries in the system's process table on POSIX and handlers to child processes on Windows.
+
+The only reliable cross-platform solution to clean up resources is to call [funcref boost::process::wait_for_exit wait_for_exit]:
+
+[import ../example/cleanup.cpp]
+[cleanup]
+
+[funcref boost::process::wait_for_exit wait_for_exit] is a blocking function. The function returns when the child process exits. Calling [funcref boost::process::wait_for_exit wait_for_exit] guarantees that all resources are cleaned up.
+
+There are other platform-specific solutions to clean up resources. Boost.Process provides the macros [macroref BOOST_POSIX_API] and [macroref BOOST_WINDOWS_API] if you need to distinguish between platforms. On POSIX you can call [@http://pubs.opengroup.org/onlinepubs/009604599/functions/signal.html `signal`] for example to ignore SIGCHLD:
+
+[cleanup_posix]
+
+If SIGCHLD is ignored, a child process isn't added to the system's process table. There is no need then to call [funcref boost::process::wait_for_exit wait_for_exit]. It is important to ignore SIGCHLD before the child process exits though. For instance, call `signal` before you call [funcref boost::process::execute execute] as in the example above.
+
+[cleanup_windows]
+
+On Windows [classref boost::process::child child] is a movable but non-copyable type. The destructor closes handles to the child process when the instance of [classref boost::process::child child] goes out of scope. On Windows it's not strictly required to call [funcref boost::process::wait_for_exit wait_for_exit] to clean up resources.
+
+[endsect]
+
+[section Handling errors]
+
+Boost.Process provides two initializers to detect errors. Use [classref boost::process::initializers::set_on_error set_on_error] if you want [funcref boost::process::execute execute] to return an error:
+
+[import ../example/error_handling.cpp]
+[set_on_error]
+
+Use [classref boost::process::initializers::throw_on_error throw_on_error] if you want [funcref boost::process::execute execute] to throw an exception:
+
+[throw_on_error]
+
+The type of the exception thrown by [classref boost::process::initializers::throw_on_error throw_on_error] is [classref boost::system::system_error].
+
+[note On POSIX [classref boost::process::initializers::set_on_error set_on_error] and [classref boost::process::initializers::throw_on_error throw_on_error] detect a failed call to [@http://pubs.opengroup.org/onlinepubs/009695399/functions/fork.html `fork`] and [@http://pubs.opengroup.org/onlinepubs/009604499/functions/exec.html `execve`]. If `execve` fails the initializers send *errno* through a pipe from the child to the parent process. The pipe is automatically closed no matter whether `execve` succeeds or fails.]
+
+[endsect]
+
+[section Setting command line arguments]
+
+Use the initializer [classref boost::process::initializers::set_args set_args] to set command line arguments:
+
+[import ../example/args.cpp]
+[args]
+
+If [classref boost::process::initializers::set_args set_args] is used, [classref boost::process::initializers::run_exe run_exe] may be omitted. The first command line argument must then refer to the program to start.
+
+Alternatively use the initializer [classref boost::process::initializers::set_cmd_line set_cmd_line] to set the command line:
+
+[import ../example/cmd_line.cpp]
+[cmd_line]
+
+You can use [classref boost::process::initializers::set_cmd_line set_cmd_line] to set a command line like you would if you started the program in the shell. Just like in the shell you must start the command line with the name of the program.
+
+You must not omit [classref boost::process::initializers::run_exe run_exe] if you use [classref boost::process::initializers::set_cmd_line set_cmd_line].
+
+[note If you don't use [classref boost::process::initializers::set_args set_args] or [classref boost::process::initializers::set_cmd_line set_cmd_line] the path you pass to [classref boost::process::initializers::run_exe run_exe] is forwarded as the only argument to a program. That is the argument which is accessible through `argv[0]` (assuming `argv` is the name of the parameter in `main`).]
+
+[endsect]
+
+[section Starting in a specific work directory]
+
+Use the initializer [classref boost::process::initializers::start_in_dir start_in_dir] to set the work directory:
+
+[import ../example/work_dir.cpp]
+[work_dir]
+
+[classref boost::process::initializers::start_in_dir start_in_dir] also supports [classref boost::filesystem::path].
+
+For portability reasons you want to use an absolute path with [classref boost::process::initializers::run_exe run_exe] if you set the work directory with [classref boost::process::initializers::start_in_dir start_in_dir]:
+
+[work_dir_abs]
+
+On Windows a relative path is relative to the work directory of the parent process. On POSIX a relative path is relative to the work directory set with [classref boost::process::initializers::start_in_dir start_in_dir] as the directory is changed before the program starts.
+
+[tip Use an absolute path with [classref boost::process::initializers::run_exe run_exe] if you set the work directory with [classref boost::process::initializers::start_in_dir start_in_dir] to avoid portability problems.]
+
+[endsect]
+
+[section Inheriting environment variables]
+
+Boost.Process provides the initializer [classref boost::process::initializers::inherit_env inherit_env] to inherit environment variables:
+
+[import ../example/env.cpp]
+[inherit_env]
+
+While [classref boost::process::initializers::inherit_env inherit_env] is required on POSIX, environment variables are also inherited without this initializer on Windows as on Windows environment variables are inherited by default.
+
+If you want to set environment variables for the child process explicitly, use the initializer [classref boost::process::initializers::set_env set_env].
+
+[endsect]
+
+[section Setting up standard streams]
+
+Boost.Process provides the initializers [classref boost::process::initializers::bind_stdin bind_stdin], [classref boost::process::initializers::bind_stdout bind_stdout] and [classref boost::process::initializers::bind_stderr bind_stderr] to setup standard streams. They are based on the classes [classref boost::iostreams::file_descriptor_source] and [classref boost::iostreams::file_descriptor_sink] from Boost.Iostreams:
+
+[import ../example/streams.cpp]
+[stdout]
+
+In the example above the standard output stream of the child process is bound to a file. All data written by the child process to the standard output stream is written to *stdout.txt*. Have a look at the [@boost:/libs/iostreams/index.html Boost.Iostreams documentation] to find out what other devices you can use with [classref boost::iostreams::file_descriptor_source] and [classref boost::iostreams::file_descriptor_sink].
+
+[note If you don't bind a stream with one of the initializers it depends on the platform where the streams are bound to. On Windows the streams are bound to the console by default. On POSIX the streams are inherited from the parent process and are bound to whatever they are bound to in the parent process.]
+
+If you want to close streams for a child process, use [classref boost::process::initializers::close_stdin close_stdin], [classref boost::process::initializers::close_stdout close_stdout] and [classref boost::process::initializers::close_stderr close_stderr]:
+
+[close_in_err]
+
+For POSIX Boost.Process also provides [classref boost::process::initializers::close_fd close_fd] to close a single file descriptor, [classref boost::process::initializers::close_fds close_fds] to close multiple file descriptors and [classref boost::process::initializers::close_fds_if close_fds_if] to close all file descriptors a predicate returns `true` for.
+
+[endsect]
+
+[section Synchronous I/O]
+
+Boost.Process provides the function [funcref boost::process::create_pipe create_pipe] to create an anonymous pipe. A parent and child process can use the pipe to send and receive data:
+
+[import ../example/sync_io.cpp]
+[sync_io]
+
+In the example above the standard output stream of the child process is bound to the write-end of the pipe. The read-end is used by the parent process to receive data. The class [classref boost::iostreams::stream] is another class provided by Boost.Iostreams to wrap file descriptor sources or sinks.
+
+[note There is a [@https://svn.boost.org/trac/boost/ticket/6576 Boost.Iostreams bug] on Windows in all versions up to 1.50.0. If you read from a [classref boost::iostreams::file_descriptor_source] which has been initialized with the read-end of a pipe, and the write-end of the pipe has been closed, an exception is thrown.]
+
+[endsect]
+
+[section Asynchronous I/O]
+
+With the help of [@boost:/libs/asio/index.html Boost.Asio] it's possible to send and receive data between parent and child processes asynchronously. On Windows a named pipe must be used though as Windows doesn't support asynchronous I/O with anonymous pipes. That's why [funcref boost::process::create_pipe create_pipe] can't be used for asynchronous I/O - at least not on Windows. The following example expects that a function called `create_async_pipe` has been defined which returns a pipe on all platforms supporting asynchronous I/O:
+
+[import ../example/async_io.cpp]
+[async_io]
+
+For asynchronous I/O Boost.Asio must be used. Boost.Asio provides the I/O objects [classref boost::asio::windows::stream_handle] on Windows and [classref boost::asio::posix::stream_descriptor] on POSIX which can be initialized with a read- or write-end of a pipe. Once the I/O objects have been created it's possible to use the asynchronous operations Boost.Asio provides.
+
+[note [headerref boost/process/mitigate.hpp] provides a typedef [classref boost::process::pipe_end] for the two Boost.Asio types.]
+
+[note There is a [@https://svn.boost.org/trac/boost/ticket/6576 Boost.Iostreams bug] on Windows in all versions up to 1.50.0. If you read from a [classref boost::iostreams::file_descriptor_source] which has been initialized with the read-end of a pipe, and the write-end of the pipe has been closed, an exception is thrown.]
+
+[note Please note that `create_async_pipe` is not provided by Boost.Process. First, the concept of an asynchronous pipe is artificial and only introduced for Boost.Process. Platforms distinguish between anonymous and named pipes. Secondly, there are too many options to define a named pipe - that's the only pipe supporting asynchronous I/O on Windows - that it's not an easy exercise to create a platform-independent `create_named_pipe` function.]
+
+[endsect]
+
+[section Waiting for a program to exit]
+
+Call [funcref boost::process::wait_for_exit wait_for_exit] to wait for a program to exit:
+
+[import ../example/wait.cpp]
+[sync]
+
+On Windows [funcref boost::process::wait_for_exit wait_for_exit] returns the exit code of the program as a `DWORD`. On POSIX the function returns the status of the program as an `int`. `DWORD` is defined as `unsigned long`. While both are numeric integer types, you must use the macro [@http://pubs.opengroup.org/onlinepubs/009695399/functions/wait.html `WEXITSTATUS`] to get the exit code on POSIX.
+
+[note [headerref boost/process/mitigate.hpp] defines a macro [macroref BOOST_PROCESS_EXITSTATUS] which works like `WEXITSTATUS` on POSIX and casts to `int` on Windows. You can use this macro to get the exit code as an `int` on all platforms.]
+
+[funcref boost::process::wait_for_exit wait_for_exit] is a blocking function. If you want to wait asynchronously, use Boost.Process together with [@boost:/libs/asio/index.html Boost.Asio]:
+
+[async]
+
+[endsect]
+
+[section Terminating a program]
+
+Call [funcref boost::process::terminate terminate] to close a program:
+
+[import ../example/terminate.cpp]
+[terminate]
+
+[funcref boost::process::terminate terminate] closes a program immediately and forcefully. It is a last resort function as it doesn't give the program to be closed any chance to clean up resources. For instance, if the program is in the middle of writing data to a file, [funcref boost::process::terminate terminate] can leave that data in an undefined state.
+
+[endsect]
+
+[endsect]

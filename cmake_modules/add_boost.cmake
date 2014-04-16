@@ -275,9 +275,7 @@ add_dependencies(boost_wave boost_chrono boost_date_time boost_filesystem boost_
 ExternalProject_Add(
     boost_process
     PREFIX ${CMAKE_BINARY_DIR}/boost_process
-    URL http://www.highscore.de/boost/process0.5/process.zip
-    URL_HASH SHA1=281e8575e3593797c94f0230e40c2f0dc49923aa
-    TIMEOUT 30
+    DOWNLOAD_COMMAND ""
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     BUILD_IN_SOURCE ON
@@ -294,25 +292,22 @@ ExternalProject_Add(
 ExternalProject_Add_Step(
     boost_process
     copy_boost_process_dir
-    COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/boost/process ${BoostSourceDir}/boost/process
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost_process/boost/process ${BoostSourceDir}/boost/process
     COMMENT "Copying Boost.Process boost dir..."
-    DEPENDEES download
     DEPENDERS configure
     )
 ExternalProject_Add_Step(
     boost_process
     copy_boost_process_hpp
-    COMMAND ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/boost/process.hpp ${BoostSourceDir}/boost
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost_process/boost/process.hpp ${BoostSourceDir}/boost
     COMMENT "Copying Boost.Process header..."
-    DEPENDEES download
     DEPENDERS configure
     )
 ExternalProject_Add_Step(
     boost_process
     copy_libs_process_dir
-    COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/libs/process ${BoostSourceDir}/libs/process
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost_process/libs/process ${BoostSourceDir}/libs/process
     COMMENT "Copying Boost.Process libs dir..."
-    DEPENDEES download
     DEPENDERS configure
     )
 set_target_properties(boost_process PROPERTIES LABELS Boost FOLDER "Third Party/Boost")
