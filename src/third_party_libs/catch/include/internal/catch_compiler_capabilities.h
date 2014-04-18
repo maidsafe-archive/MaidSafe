@@ -12,11 +12,11 @@
 
 #ifdef __clang__
 
-#if __has_feature(cxx_nullptr)
+//#if __has_feature(cxx_nullptr)
 
 #define CATCH_CONFIG_CPP11_NULLPTR
 
-#endif
+//#endif
 
 #endif // __clang__
 
@@ -109,10 +109,10 @@
 
 // noexcept support:
 #ifdef CATCH_CPP11_OR_GREATER
-#  if (__has_feature(cxx_noexcept))
+//#  if (__has_feature(cxx_noexcept))
 #    define CATCH_NOEXCEPT noexcept
 #    define CATCH_NOEXCEPT_IS(x) noexcept(x)
-#  endif
+//#  endif
 #endif
 #ifndef CATCH_NO_EXCEPT
 #  define CATCH_NOEXCEPT throw()
