@@ -22,12 +22,18 @@
 #                                                                                                  #
 #  Module used to run CI on all submodules of MaidSafe/MaidSafe                                    #
 #                                                                                                  #
-#  Example usage: From MaidSafe build dir, run 'ctest -S CI_Continuous_Release.cmake'              #
+#  By default, all test types other than Experimental run against 'next' branch for the super-     #
+#  project and all submodules.  To change them all to run against a different branch, set the      #
+#  variable BRANCH using '-D' command line argument.                                               #
+#                                                                                                  #
+#  Example usage: From MaidSafe build dir, run:                                                    #
+#    ctest -S CI_Continuous_Release.cmake                                                          #
+#    ctest -S CI_Nightly_Debug.cmake -DBRANCH=master                                               #
 #                                                                                                  #
 #==================================================================================================#
 
 
-set(ScriptVersion 14)
+set(ScriptVersion 15)
 include(${CTEST_SOURCE_DIRECTORY}/CTestConfig.cmake)
 include(${CTEST_SOURCE_DIRECTORY}/cmake_modules/ci_utils.cmake)
 
@@ -81,20 +87,13 @@ endforeach()
 # Prepare for tests                                                                                #
 #==================================================================================================#
 set(RunAll ON)
-if(DashboardModel STREQUAL "Experimental")
-elseif(DashboardModel STREQUAL "Continuous")
+if(NOT DashboardModel STREQUAL "Experimental")
   ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
-  set(TestBranch next)
-  message("Checking out super project to '${TestBranch}'")
-  checkout_to_branch(${CTEST_SOURCE_DIRECTORY} ${TestBranch})
-elseif(DashboardModel STREQUAL "Nightly")
-  ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
-  set(TestBranch next)
-  message("Checking out super project to '${TestBranch}'")
-  checkout_to_branch(${CTEST_SOURCE_DIRECTORY} ${TestBranch})
-elseif(DashboardModel STREQUAL "Weekly")
-  ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
-  set(TestBranch next)
+  if(BRANCH)
+    set(TestBranch "${BRANCH}")
+  else()
+    set(TestBranch next)
+  endif()
   message("Checking out super project to '${TestBranch}'")
   checkout_to_branch(${CTEST_SOURCE_DIRECTORY} ${TestBranch})
 endif()
