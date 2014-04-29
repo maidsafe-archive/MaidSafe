@@ -45,9 +45,8 @@ set(SubModules
       encrypt
       nfs
       vault
-#      vault_manager
+      vault_manager
       drive
-#      client
       api)
 # Set all submodules' source dir before calling add_subdirectory to avoid
 # having to run CMake twice in a clean build tree.

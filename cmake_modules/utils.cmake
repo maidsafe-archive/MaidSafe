@@ -80,7 +80,7 @@ function(ms_add_static_library Lib)
   endif()
   set(AllStaticLibsForCurrentProject ${AllStaticLibsForCurrentProject} ${Lib} PARENT_SCOPE)
   add_library(${Lib} STATIC ${ARGN})
-  set_target_properties(${Lib} PROPERTIES LABELS ${CamelCaseProjectName} FOLDER "MaidSafe/Libraries")
+  set_target_properties(${Lib} PROPERTIES LABELS ${CamelCaseProjectName} FOLDER "MaidSafe/Libraries/${CamelCaseProjectName}")
 endfunction()
 
 
