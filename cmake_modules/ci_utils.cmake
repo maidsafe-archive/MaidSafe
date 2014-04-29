@@ -244,9 +244,11 @@ function(build_and_run SubProject RunAll)
   endif()
 
   # add coverage flags
-  if(DashboardModel STREQUAL "Experimental" AND NOT WIN32)
+  if(DashboardModel STREQUAL "Experimental" OR DashboardModel STREQUAL "Nightly" AND NOT WIN32)
     set(ExtraConfigureArgs "${ExtraConfigureArgs};-DCOVERAGE=ON")
     set(CTEST_COVERAGE_COMMAND /usr/bin/gcov)
+      ctest_coverage()
+      ctest_submit(RETRY_COUNT 3 RETRY_DELAY 5)
   endif()
   ctest_configure(OPTIONS "${ExtraConfigureArgs}")
   ctest_read_custom_files(${CMAKE_CURRENT_BINARY_DIR})
