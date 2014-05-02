@@ -25,7 +25,7 @@
 #  Only the first 2 variables should require regular maintenance, i.e. BoostVersion & BoostSHA1.   #
 #                                                                                                  #
 #  If USE_BOOST_CACHE is set, boost is downloaded, extracted and built to a directory outside of   #
-#  the MaidSafe build tree.  The chosen directory can be set in BOOST_CACHE_DIR, or if this is    #
+#  the MaidSafe build tree.  The chosen directory can be set in BOOST_CACHE_DIR, or if this is     #
 #  empty, an appropriate default is chosen for the given platform.                                 #
 #                                                                                                  #
 #  Variables set and cached by this module are:                                                    #
