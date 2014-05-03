@@ -155,7 +155,9 @@ else()
   string(REGEX MATCH "Version 5\\." VersionFive "${CbfsVersionLine}")
 endif()
 
-if(NOT VersionFive)
+if(VersionFive)
+  set(CbfsVersion 5)
+else()
   message(FATAL_ERROR "Failed to find Callback File System Version 5.")
 endif()
 
