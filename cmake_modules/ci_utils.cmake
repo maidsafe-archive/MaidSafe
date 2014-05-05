@@ -244,7 +244,7 @@ function(build_and_run SubProject RunAll)
   endif()
 
   # add coverage flags
-  if(DashboardModel STREQUAL "Experimental" AND NOT WIN32)
+  if(DashboardModel STREQUAL "Experimental" OR DashboardModel STREQUAL "Nightly" AND NOT WIN32)
     set(ExtraConfigureArgs "${ExtraConfigureArgs};-DCOVERAGE=ON")
     set(CTEST_COVERAGE_COMMAND /usr/bin/gcov)
   endif()
