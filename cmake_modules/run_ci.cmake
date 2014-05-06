@@ -20,7 +20,7 @@
 #                                                                                                  #
 #==================================================================================================#
 #                                                                                                  #
-#  Module used to run CI on all submodules of MaidSafe/MaidSafe                                    #
+#  Module used to run Continuous Integration tests on all submodules of MaidSafe.                  #
 #                                                                                                  #
 #  By default, all test types other than Experimental run against 'next' branch for the super-     #
 #  project and all submodules.  To change them all to run against a different branch, set the      #
