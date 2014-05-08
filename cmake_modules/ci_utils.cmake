@@ -244,7 +244,7 @@ function(build_and_run SubProject RunAll)
   endif()
 
   # add coverage flags
-  if(DashboardModel STREQUAL "Experimental" OR DashboardModel STREQUAL "Nightly" AND NOT WIN32)
+  if(DashboardModel STREQUAL "Experimental" OR DashboardModel STREQUAL "Continuous" AND NOT WIN32)
     set(ExtraConfigureArgs "${ExtraConfigureArgs};-DCOVERAGE=ON")
     set(CTEST_COVERAGE_COMMAND /usr/bin/gcov)
   endif()
@@ -278,6 +278,8 @@ function(build_and_run SubProject RunAll)
     message("Testing ${SubProject}")
     ctest_test(INCLUDE_LABEL "${SubProject}")
   endif()
+
+  ctest_coverage()
 
   # teardown network with python script if it's Client
   if(${SubProject} STREQUAL "Client")
