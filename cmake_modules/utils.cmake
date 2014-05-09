@@ -352,7 +352,24 @@ endfunction()
 
 # Set up CI test scripts
 function(ms_setup_ci_scripts)
-  if(NOT RUNNING_AS_CTEST_SCRIPT)
+  if(RUNNING_AS_CTEST_SCRIPT)
+    return()
+  endif()
+  if(NOT EXISTS "${CMAKE_BINARY_DIR}/ContinuousIntegration")
+    message(STATUS "Cloning git@github.com:maidsafe/ContinuousIntegration")
+    execute_process(COMMAND ${Git_EXECUTABLE} clone git@github.com:maidsafe/ContinuousIntegration
+                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                    RESULT_VARIABLE ResultVar
+                    ERROR_FILE ${CMAKE_BINARY_DIR}/clone_ci_error.txt)
+    if(ResultVar EQUAL 0)
+      file(REMOVE ${CMAKE_BINARY_DIR}/clone_ci_error.txt)
+    else()
+      set(Msg "Failed to clone ContinuousIntegration.  CI test scripts will be unavailable.")
+      set(Msg "${Msg}  See clone_ci_error.txt in the current directory for details of the attempt.")
+      message(STATUS "${Msg}")
+    endif()
+  endif()
+  if(EXISTS "${CMAKE_BINARY_DIR}/ContinuousIntegration")
     ms_get_command_line_args()
     include(${CMAKE_SOURCE_DIR}/cmake_modules/maidsafe_find_git.cmake)
     find_program(HostnameCommand NAMES hostname)

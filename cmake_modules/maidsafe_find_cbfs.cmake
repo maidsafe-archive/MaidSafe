@@ -69,7 +69,9 @@ endif()
 # If user defined CBFS_ROOT_DIR, assume CBFS is a requirement
 if(CBFS_ROOT_DIR)
   set(CbfsRequired ON)
-  set(CBFS_ROOT_DIR ${CBFS_ROOT_DIR} CACHE PATH "Path to Callback File System library directory" FORCE)
+  # Leave the helpstring as the default to allow the 'ms_get_command_line_args' function in utils.cmake
+  # to identify this as a command line arg.
+  set(CBFS_ROOT_DIR ${CBFS_ROOT_DIR} CACHE PATH "No help, variable specified on the command line." FORCE)
 else()
   set(CbfsRequired ${CbfsRequired})
   set(CBFS_ROOT_DIR
