@@ -19,6 +19,20 @@
 #  use of the MaidSafe Software.                                                                   #
 #                                                                                                  #
 #==================================================================================================#
+#                                                                                                  #
+#  Script used to run Continuous Integration tests on all submodules of MaidSafe.                  #
+#                                                                                                  #
+@Documentation@#
+#                                                                                                  #
+#  By default, all test types other than Experimental run against 'next' branch for the super-     #
+#  project and all submodules.  To change them all to run against a different branch, set the      #
+#  variable BRANCH using '-D' command line argument.                                               #
+#                                                                                                  #
+#  Example usage: From MaidSafe build dir, run:                                                    #
+#    ctest -S CI_Continuous_Release.cmake                                                          #
+#    ctest -S CI_Nightly_Debug.cmake -DBRANCH=master                                               #
+#                                                                                                  #
+#==================================================================================================#
 
 
 set(DashboardModel @DashType@)
@@ -43,4 +57,4 @@ set(CTEST_SOURCE_DIRECTORY @CMAKE_SOURCE_DIR@)
 set(CTEST_BINARY_DIRECTORY @CMAKE_BINARY_DIR@/build_CI_@DashType@_@TestConfType@)
 set(ExtraConfigureArgs "@CMakeArgs@;-DRUNNING_AS_CTEST_SCRIPT=TRUE;-DWEEKLY=@IsWeekly@")
 
-include(@CMAKE_SOURCE_DIR@/cmake_modules/run_ci.cmake)
+include(@CMAKE_BINARY_DIR@/ContinuousIntegration/run_ci.cmake)

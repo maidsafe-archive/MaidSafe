@@ -29,6 +29,23 @@ include(add_protoc_command)
 
 
 function(ms_check_compiler)
+  # If the path to the CMAKE_CXX_COMPILER doesn't change, CMake doesn't detect a version change
+  # in the compiler.  We cache the output of running the compiler with '--version' and check
+  # on each subsequent configure that the output is identical.  Note, with MSVC the command
+  # fails ('--version' is an unrecognised arg), but still outputs the comiler version.
+  execute_process(COMMAND ${CMAKE_CXX_COMPILER} --version
+                  OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
+  string(REPLACE "\n" ";" CombinedOutput "${OutputVar}${ErrorVar}")
+  if(CheckCompilerVersion)
+    if(NOT "${CheckCompilerVersion}" STREQUAL "${CombinedOutput}")
+      set(Msg "\n\nThe C++ compiler \"${CMAKE_CXX_COMPILER}\" has changed since the previous run of CMake.")
+      set(Msg "${Msg}  This requires a clean build folder, so either delete all contents from this")
+      set(Msg "${Msg}  folder, or create a new one and run CMake from there.\n\n")
+      message(FATAL_ERROR "${Msg}")
+    endif()
+  else()
+    set(CheckCompilerVersion "${CombinedOutput}" CACHE INTERNAL "")
+  endif()
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "18")  # i.e for MSVC < Visual Studio 12
       message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of Visual Studio less than 12.")
@@ -335,7 +352,24 @@ endfunction()
 
 # Set up CI test scripts
 function(ms_setup_ci_scripts)
-  if(NOT RUNNING_AS_CTEST_SCRIPT)
+  if(RUNNING_AS_CTEST_SCRIPT)
+    return()
+  endif()
+  if(NOT EXISTS "${CMAKE_BINARY_DIR}/ContinuousIntegration")
+    message(STATUS "Cloning git@github.com:maidsafe/ContinuousIntegration")
+    execute_process(COMMAND ${Git_EXECUTABLE} clone git@github.com:maidsafe/ContinuousIntegration
+                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                    RESULT_VARIABLE ResultVar
+                    ERROR_FILE ${CMAKE_BINARY_DIR}/clone_ci_error.txt)
+    if(ResultVar EQUAL 0)
+      file(REMOVE ${CMAKE_BINARY_DIR}/clone_ci_error.txt)
+    else()
+      set(Msg "Failed to clone ContinuousIntegration.  CI test scripts will be unavailable.")
+      set(Msg "${Msg}  See clone_ci_error.txt in the current directory for details of the attempt.")
+      message(STATUS "${Msg}")
+    endif()
+  endif()
+  if(EXISTS "${CMAKE_BINARY_DIR}/ContinuousIntegration")
     ms_get_command_line_args()
     include(${CMAKE_SOURCE_DIR}/cmake_modules/maidsafe_find_git.cmake)
     find_program(HostnameCommand NAMES hostname)
@@ -362,11 +396,14 @@ function(ms_setup_ci_scripts)
     endif()
     foreach(TestConfType Debug Release)
       foreach(DashType Experimental Continuous Nightly Weekly)
-	if(${DashType} STREQUAL Weekly)
-	  set(IsWeekly ON)
-	else()
-	  set(IsWeekly OFF)
-	endif()
+        if(${DashType} STREQUAL Weekly)
+          set(IsWeekly ON)
+        else()
+          set(IsWeekly OFF)
+        endif()
+        string(SUBSTRING "#  This script runs the ${DashType} tests on all submodules of MaidSafe in ${TestConfType} mode.                                                                       "
+               0 99 Documentation)
+        file(REMOVE ${CMAKE_BINARY_DIR}/CI_${DashType}_${TestConfType}.cmake)
         configure_file(${CMAKE_SOURCE_DIR}/CI.cmake.in ${CMAKE_BINARY_DIR}/CI_${DashType}_${TestConfType}.cmake ESCAPE_QUOTES)
       endforeach()
     endforeach()

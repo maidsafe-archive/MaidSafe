@@ -44,7 +44,9 @@ endif()
 
 
 if(GIT_ROOT_DIR)
-  set(GIT_ROOT_DIR ${GIT_ROOT_DIR} CACHE PATH "Path to Git directory" FORCE)
+  # Leave the helpstring as the default to allow the 'ms_get_command_line_args' function in utils.cmake
+  # to identify this as a command line arg.
+  set(GIT_ROOT_DIR ${GIT_ROOT_DIR} CACHE PATH "No help, variable specified on the command line." FORCE)
 else()
   set(GIT_ROOT_DIR
           "C:/Program Files/Git"

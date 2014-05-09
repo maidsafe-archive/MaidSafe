@@ -22,7 +22,7 @@
 #                                                                                                  #
 #  Module used to locate Filesystem in Userspace (FUSE) lib and header.                            #
 #                                                                                                  #
-#  Settable variables to aid with finding CBFS are:                                                #
+#  Settable variables to aid with finding FUSE are:                                                #
 #    ADD_FUSE_INCLUDE_DIR                                                                          #
 #                                                                                                  #
 #  Variables set and cached by this module are:                                                    #

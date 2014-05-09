@@ -52,7 +52,9 @@ endif()
 message("${HR}")
 
 if(JUST_THREAD_ROOT_DIR)
-  set(JUST_THREAD_ROOT_DIR ${JUST_THREAD_ROOT_DIR} CACHE PATH "Path to just::thread root directory" FORCE)
+  # Leave the helpstring as the default to allow the 'ms_get_command_line_args' function in utils.cmake
+  # to identify this as a command line arg.
+  set(JUST_THREAD_ROOT_DIR ${JUST_THREAD_ROOT_DIR} CACHE PATH "No help, variable specified on the command line." FORCE)
 else()
   set(JUST_THREAD_ROOT_DIR
         "C:/Program Files/JustSoftwareSolutions/JustThread"
