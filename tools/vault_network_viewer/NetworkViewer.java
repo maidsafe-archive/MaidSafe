@@ -261,9 +261,10 @@ public class NetworkViewer extends JComponent {
         Content ParsePhrase(String input) {
             Content content = new Content();
             try {
-                String[] string_splits = input.split("]");
-                input = string_splits[1].trim();
+                String[] string_splits = input.split(",");
+                input = string_splits[7].trim();
             } catch (Exception e) {
+                return content;
             }
             for (DisplayPhrase display_phrase : display_list_) {
                 if (display_phrase.IsPhrase(input)) {
@@ -324,16 +325,19 @@ public class NetworkViewer extends JComponent {
         private void updatePersona(Persona persona) {
             switch (persona) {
                 case MaidManager:
-                    n.color = MaidsafeColor.MaidManager.color; n.kind = Kind.Circular;
+                    n.color = MaidsafeColor.MaidManager.color; n.kind = Kind.Rounded;
                     break;
                 case DataManager:
-                    n.color = MaidsafeColor.DataManager.color; n.kind = Kind.Square;
+                    n.color = MaidsafeColor.DataManager.color; n.kind = Kind.Circular;
                     break;
                 case PmidManager:
                     n.color = MaidsafeColor.PmidManager.color; n.kind = Kind.Square;
                     break;
                 case PmidNode:
                     n.color = MaidsafeColor.PmidNode.color; n.kind = Kind.Rounded;
+                    break;
+                case VersionHandler:
+                    n.color = MaidsafeColor.VersionHandler.color; n.kind = Kind.Square;
                     break;
                 case None:
                     n.color = MaidsafeColor.None.color; n.kind = Kind.Circular;
@@ -477,6 +481,7 @@ public class NetworkViewer extends JComponent {
                             }
                             text_panel.Append("starting vault 2");
                             ProcessBuilder pb_vault2 = new ProcessBuilder(BuildDirectory + "vault",
+//                                   "--log_rudp", "V", "--log_routing", "V", "--log_nfs", "V", "--log_vault", "V", "--log_*", "E",
                                    "--identity_index", "2", "--peer", endpoint_info);
                             pb_vault2.redirectOutput(new File(BuildDirectory + "vault_2.txt"));
                             pb_vault2.redirectError(new File(BuildDirectory + "vault_2.txt"));
@@ -484,7 +489,8 @@ public class NetworkViewer extends JComponent {
                             Thread.sleep(1000);
                             text_panel.Append("starting vault 3");
                             ProcessBuilder pb_vault3 = new ProcessBuilder(BuildDirectory + "vault",
-                                   "--identity_index", "3");
+//                                    "--log_rudp", "V", "--log_routing", "V", "--log_nfs", "V", "--log_vault", "V", "--log_*", "E",
+                                    "--identity_index", "3");
                             pb_vault3.redirectOutput(new File(BuildDirectory + "vault_3.txt"));
                             pb_vault3.redirectError(new File(BuildDirectory + "vault_3.txt"));
                             pb_vault3.start();
@@ -497,6 +503,7 @@ public class NetworkViewer extends JComponent {
                                 text_panel.Append("starting vault " + i + " ...");
                                 String log_file = BuildDirectory + "vault_" + i + ".txt";
                                 ProcessBuilder pb = new ProcessBuilder(BuildDirectory + "vault",
+//                                       "--log_rudp", "V", "--log_routing", "V", "--log_nfs", "V", "--log_vault", "V", "--log_*", "E",
                                        "--identity_index", Integer.toString(i));
                                 pb.redirectOutput(new File(log_file));
                                 pb.redirectError(new File(log_file));
@@ -567,7 +574,8 @@ public class NetworkViewer extends JComponent {
             String index = Integer.toString(selected.get(0).index);
             try {
                 ProcessBuilder pb = new ProcessBuilder(BuildDirectory + "vault",
-                       "--identity_index", index);
+//                       "--log_nfs" , "V", "--log_vault" , "V", "--log_*" , "E",
+                        "--identity_index", index);
                 pb.redirectOutput(new File(BuildDirectory + "vault_" + index + ".txt"));
                 pb.redirectError(new File(BuildDirectory + "vault_" + index + ".txt"));
                 pb.start();
@@ -677,7 +685,7 @@ public class NetworkViewer extends JComponent {
     }
     
     private enum Persona {
-        None, MaidManager, DataManager, PmidManager, PmidNode, Down;
+        None, MaidManager, DataManager, PmidManager, PmidNode, VersionHandler, Down;
     }
 
     private enum LogLevel {
@@ -686,7 +694,8 @@ public class NetworkViewer extends JComponent {
 
     public enum MaidsafeColor {
         MaidManager (new Color(249, 185, 194)), DataManager (new Color(249, 246, 138)),
-        PmidManager (new Color(213, 242, 160)), PmidNode (new Color(199, 219, 234)), None (new Color(213, 242, 160)),
+        PmidManager (new Color(213, 242, 160)), PmidNode (new Color(199, 219, 234)),
+        VersionHandler (new Color(249, 185, 194)), None (new Color(213, 242, 160)),
         Verbose (new Color(102, 102, 102)), Info (new Color(14, 76, 114)),
         Warning (new Color(188, 23, 102)), Error (new Color(193, 39, 45));
         private Color color;
