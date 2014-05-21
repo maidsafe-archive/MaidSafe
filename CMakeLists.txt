@@ -21,7 +21,11 @@
 #==================================================================================================#
 
 
-cmake_minimum_required(VERSION 2.8.12.1 FATAL_ERROR)
+if(APPLE)
+  cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
+else()
+  cmake_minimum_required(VERSION 2.8.12.1 FATAL_ERROR)
+endif()
 project(maidsafe)
 
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
