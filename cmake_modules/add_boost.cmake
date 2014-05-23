@@ -45,6 +45,7 @@ string(REGEX REPLACE "beta\\.([0-9])$" "beta\\1" BoostFolderName ${BoostVersion}
 string(REPLACE "." "_" BoostFolderName ${BoostFolderName})
 set(BoostFolderName boost_${BoostFolderName})
 
+# If user wants to use a cache copy of Boost, get the path to this location.
 if(USE_BOOST_CACHE)
   if(BOOST_CACHE_DIR)
     file(TO_CMAKE_PATH "${BOOST_CACHE_DIR}" BoostCacheDir)
@@ -58,6 +59,7 @@ if(USE_BOOST_CACHE)
   endif()
 endif()
 
+# If the cache directory doesn't exist, fall back to use the build root.
 if(NOT IS_DIRECTORY "${BoostCacheDir}")
   if(BOOST_CACHE_DIR)
     set(Message "\nThe directory \"${BOOST_CACHE_DIR}\" provided in BOOST_CACHE_DIR doesn't exist.")
@@ -72,25 +74,48 @@ else()
   file(MAKE_DIRECTORY "${BoostCacheDir}")
 endif()
 
-set(BoostDownloadFolder "${BoostFolderName}_${CMAKE_CXX_COMPILER_ID}_${CMAKE_CXX_COMPILER_VERSION}")
+# Set up the full path to the source directory
+set(BoostSourceDir "${BoostFolderName}_${CMAKE_CXX_COMPILER_ID}_${CMAKE_CXX_COMPILER_VERSION}")
 if(HAVE_LIBC++)
-  set(BoostDownloadFolder "${BoostDownloadFolder}_LibCXX")
+  set(BoostSourceDir "${BoostSourceDir}_LibCXX")
 endif()
 if(HAVE_LIBC++ABI)
-  set(BoostDownloadFolder "${BoostDownloadFolder}_LibCXXABI")
+  set(BoostSourceDir "${BoostSourceDir}_LibCXXABI")
 endif()
 if(CMAKE_CL_64)
-  set(BoostDownloadFolder "${BoostDownloadFolder}_Win64")
+  set(BoostSourceDir "${BoostSourceDir}_Win64")
 endif()
-string(REPLACE "." "_" BoostDownloadFolder ${BoostDownloadFolder})
-set(BoostDownloadFolder ${BoostCacheDir}/${BoostDownloadFolder})
+string(REPLACE "." "_" BoostSourceDir ${BoostSourceDir})
+set(BoostSourceDir "${BoostCacheDir}/${BoostSourceDir}")
+
+# Check the full path to the source directory is not too long for Windows.  File paths must be less
+# than MAX_PATH which is 260.  The current longest relative path Boost tries to create is:
+# Build\boost\bin.v2\libs\program_options\build\fd41f4c7d882e24faa6837508d6e5384\libboost_program_options-vc120-mt-gd-1_55.lib.rsp
+# which along with a leading separator is 129 chars in length.  This gives a maximum path available
+# for 'BoostSourceDir' as 130 chars.
+if(WIN32)
+  get_filename_component(BoostSourceDirName "${BoostSourceDir}" NAME)
+  string(LENGTH "/${BoostSourceDirName}" BoostSourceDirNameLengthWithSeparator)
+  math(EXPR AvailableLength 130-${BoostSourceDirNameLengthWithSeparator})
+  string(LENGTH "${BoostSourceDir}" BoostSourceDirLength)
+  if(${BoostSourceDirLength} GREATER 130)
+    set(Msg "\n\nThe path to boost's source is too long to handle all the files which will ")
+    set(Msg "${Msg}be created when boost is built.  To avoid this, set the CMake variable ")
+    set(Msg "${Msg}USE_BOOST_CACHE to ON and set the variable BOOST_CACHE_DIR to a path ")
+    set(Msg "${Msg}which is at most ${AvailableLength} characters long.  For example:\n")
+    set(Msg "${Msg}  mkdir C:\\maidsafe_boost\n")
+    set(Msg "${Msg}  cmake . -DUSE_BOOST_CACHE=ON -DBOOST_CACHE_DIR=C:\\maidsafe_boost\n\n")
+    message(FATAL_ERROR "${Msg}")
+  endif()
+endif()
 
 # Download boost if required
-if(NOT EXISTS "${BoostCacheDir}/${BoostFolderName}.tar.bz2")
+set(ZipFilePath "${BoostCacheDir}/${BoostFolderName}.tar.bz2")
+if(NOT EXISTS ${ZipFilePath})
   message(STATUS "Downloading boost ${BoostVersion} to ${BoostCacheDir}")
 endif()
 file(DOWNLOAD http://sourceforge.net/projects/boost/files/boost/${BoostVersion}/${BoostFolderName}.tar.bz2/download
-     ${BoostCacheDir}/${BoostFolderName}.tar.bz2
+     ${ZipFilePath}
      STATUS Status
      SHOW_PROGRESS
      EXPECTED_HASH SHA1=${BoostSHA1}
@@ -98,24 +123,31 @@ file(DOWNLOAD http://sourceforge.net/projects/boost/files/boost/${BoostVersion}/
 
 # Extract boost if required
 string(FIND "${Status}" "returning early" Found)
-if(Found LESS 0 OR NOT IS_DIRECTORY "${BoostDownloadFolder}")
-  message(STATUS "Extracting boost ${BoostVersion} to ${BoostDownloadFolder}")
-  file(MAKE_DIRECTORY "${BoostDownloadFolder}")
-  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xfz ${BoostCacheDir}/${BoostFolderName}.tar.bz2
-                  WORKING_DIRECTORY ${BoostDownloadFolder}
+if(Found LESS 0 OR NOT IS_DIRECTORY "${BoostSourceDir}")
+  set(BoostExtractFolder "${BoostCacheDir}/boost_unzip")
+  file(REMOVE_RECURSE ${BoostExtractFolder})
+  file(MAKE_DIRECTORY ${BoostExtractFolder})
+  file(COPY ${ZipFilePath} DESTINATION ${BoostExtractFolder})
+  message(STATUS "Extracting boost ${BoostVersion} to ${BoostExtractFolder}")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xfz ${BoostFolderName}.tar.bz2
+                  WORKING_DIRECTORY ${BoostExtractFolder}
                   RESULT_VARIABLE Result
                   )
   if(NOT Result EQUAL 0)
-    message(FATAL_ERROR "Failed extracting boost ${BoostVersion} to ${BoostDownloadFolder}")
+    message(FATAL_ERROR "Failed extracting boost ${BoostVersion} to ${BoostExtractFolder}")
   endif()
+  file(REMOVE ${BoostExtractFolder}/${BoostFolderName}.tar.bz2)
+
+  # Get the path to the extracted folder
+  file(GLOB ExtractedDir "${BoostExtractFolder}/*")
+  list(LENGTH ExtractedDir n)
+  if(NOT n EQUAL 1 OR NOT IS_DIRECTORY ${ExtractedDir})
+    message(FATAL_ERROR "Failed extracting boost ${BoostVersion} to ${BoostExtractFolder}")
+  endif()
+  file(RENAME ${ExtractedDir} ${BoostSourceDir})
+  file(REMOVE_RECURSE ${BoostExtractFolder})
 endif()
 
-# Get the path to the extracted folder
-file(GLOB BoostSourceDir "${BoostDownloadFolder}/*")
-list(LENGTH BoostSourceDir n)
-if(NOT n EQUAL 1 OR NOT IS_DIRECTORY "${BoostSourceDir}")
-  message(FATAL_ERROR "Failed extracting boost ${BoostVersion} to ${BoostDownloadFolder}")
-endif()
 
 # Build b2 (bjam) if required
 unset(b2Path CACHE)
@@ -155,6 +187,7 @@ set(b2Args <SOURCE_DIR>/b2
            --build-dir=Build
            stage
            -d+2
+           --hash
            )
 
 # Set up platform-specific b2 (bjam) command line arguments
