@@ -21,7 +21,31 @@
 #==================================================================================================#
 
 
-cmake_minimum_required(VERSION 2.8.12.1 FATAL_ERROR)
+if(APPLE)
+  cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
+else()
+  cmake_minimum_required(VERSION 2.8.12.1 FATAL_ERROR)
+endif()
+
+if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
+  set(Msg "\n\nThis project doesn't allow \"in-source builds\".\nYou must run CMake from a folder outside")
+  set(Msg "${Msg} the root of this project.\nFor more details about configuring the project see\n")
+  if(WIN32)
+    set(Msg "${Msg}https://github.com/maidsafe/MaidSafe/wiki/Build-Instructions-for-Windows")
+  elseif(APPLE)
+    set(Msg "${Msg}https://github.com/maidsafe/MaidSafe/wiki/Build-Instructions-for-OS-X")
+  else()
+    set(Msg "${Msg}https://github.com/maidsafe/MaidSafe/wiki/Build-Instructions-for-Linux")
+  endif()
+  message(WARNING "${Msg}\n\n")
+  message(STATUS "Cancelling CMake and cleaning up source tree...")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory "${CMAKE_BINARY_DIR}/CMakeFiles")
+  # This next call should cause CMake to crash.  We should remove this dirty hack if CMake becomes
+  # able to be cancelled in a clean way (i.e. doesn't leave behind files/folders).
+  math(EXPR Crash 0/0)
+  message(FATAL_ERROR "CMake should have crashed - this is a failsafe in case the call used to trigger the crash gets fixed.")
+endif()
+
 project(maidsafe)
 
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
@@ -46,9 +70,8 @@ set(SubModules
       encrypt
       nfs
       vault
-#      vault_manager
+      vault_manager
       drive
-#      client
       api)
 # Set all submodules' source dir before calling add_subdirectory to avoid
 # having to run CMake twice in a clean build tree.
@@ -121,6 +144,7 @@ else()
   option(HAVE_LIBC++ABI "If ON, '-lc++abi' is added to the link flags" OFF)
 endif()
 option(USE_BOOST_CACHE "If ON, try to download, extract and build boost to a single cache directory for all MaidSafe clones" OFF)
+option(BOOST_DISABLE_ASSERTS "If ON, all BOOST_ASSERTs are disabled" ON)
 option(USE_JUST_THREADS "If ON, try to find and use the just::thread library (Windows or gcc 4.7 only)" OFF)
 include(standard_flags)
 
