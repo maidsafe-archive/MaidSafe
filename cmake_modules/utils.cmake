@@ -28,6 +28,42 @@
 include(add_protoc_command)
 
 
+# Oddly cmake is fairly limited in standard platform defines
+function(extra_platforms)
+  if(UNIX AND NOT APPLE)
+    if(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
+      set(LINUX TRUE)
+    elseif(CMAKE_SYSTEM_NAME MATCHES "kFreeBSD.*")
+      set(BSD TRUE)
+      set(FREEBSD TRUE)
+    elseif(CMAKE_SYSTEM_NAME MATCHES "kNetBSD.*|NetBSD.*")
+      set(BSD TRUE)
+      set(NETBSD TRUE)
+    elseif(CMAKE_SYSTEM_NAME MATCHES "kOpenBSD.*|OpenBSD.*")
+      set(BSD TRUE)
+      set(OPENBSD TRUE)
+    elseif(CMAKE_SYSTEM_NAME MATCHES ".*GNU.*")
+      set(GNU TRUE)
+    elseif(CMAKE_SYSTEM_NAME MATCHES ".*BSDI.*")
+      set(BSDI TRUE)
+    elseif(CMAKE_SYSTEM_NAME MATCHES "DragonFly.*|FreeBSD")
+      set(BSD TRUE)
+      set(FREEBSD TRUE)
+    elseif(CMAKE_SYSTEM_NAME MATCHES "SYSV5.*")
+      set(SYSV5 TRUE)
+    elseif(CMAKE_SYSTEM_NAME MATCHES "Solaris.*")
+      set(SOLARIS TRUE)
+    elseif(CMAKE_SYSTEM_NAME MATCHES "HP-UX.*")
+      set(HPUX TRUE)
+    elseif(CMAKE_SYSTEM_NAME MATCHES "AIX.*")
+      set(AIX TRUE)
+    elseif(CMAKE_SYSTEM_NAME MATCHES "Minix.*")
+      set(MINIX TRUE)
+    endif()
+  endif()
+endfunction()
+
+
 function(ms_check_compiler)
   # If the path to the CMAKE_CXX_COMPILER doesn't change, CMake doesn't detect a version change
   # in the compiler.  We cache the output of running the compiler with '--version' and check
