@@ -1,0 +1,12 @@
+diff --git a/gtest/include/gtest/internal/gtest-port.h a/gtest/include/gtest/internal/gtest-port.h
+--- a/gtest/include/gtest/internal/gtest-port.h
++++ b/gtest/include/gtest/internal/gtest-port.h
+@@ -232,6 +232,8 @@
+ # ifdef ANDROID
+ #  define GTEST_OS_LINUX_ANDROID 1
+ # endif  // ANDROID
++#elif defined __FreeBSD__
++# define GTEST_OS_LINUX 1
+ #elif defined __MVS__
+ # define GTEST_OS_ZOS 1
+ #elif defined(__sun) && defined(__SVR4)

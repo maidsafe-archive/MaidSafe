@@ -25,6 +25,10 @@ add_subdirectory(googlemock)
 add_subdirectory(protobuf)
 add_subdirectory(leveldb)
 
+# Patch googlemock to work on FreeBSD
+if(BSD)
+  execute_process(COMMAND patch -p1 < ../patches/googlemock/freebsd_support.patch WORKING_DIRECTORY googlemock ERROR_QUIET)
+endif()
 
 # Add third party tests
 if(MaidsafeTesting)
