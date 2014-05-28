@@ -17,6 +17,16 @@ set(Msg "Configuring third party projects on ${Branch} branch of super-project")
 string(REGEX REPLACE . "-" Underscore ${Msg})
 message("${HR}\n${Msg}\n${Underscore}")
 
+# Patch googlemock to work on FreeBSD
+if(BSD)
+  message("Patching googlemock to run on FreeBSD ...")
+  execute_process(COMMAND patch -N -p1
+                  INPUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches/googlemock/freebsd_support.patch
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/googlemock
+                  RESULT_VARIABLE patch_output)
+  message("  Patch output: ${patch_output}")
+endif()
+
 
 include(add_boost)
 add_subdirectory(catch/projects/CMake)
@@ -25,10 +35,6 @@ add_subdirectory(googlemock)
 add_subdirectory(protobuf)
 add_subdirectory(leveldb)
 
-# Patch googlemock to work on FreeBSD
-if(BSD)
-  execute_process(COMMAND patch -p1 < ../patches/googlemock/freebsd_support.patch WORKING_DIRECTORY googlemock ERROR_QUIET)
-endif()
 
 # Add third party tests
 if(MaidsafeTesting)
