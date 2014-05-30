@@ -50,7 +50,7 @@ if(APPLE)
 elseif(BSD)
   # FreeBSD 10 and later has fuse built in as standard, but headers may not be installed
   find_library(Fuse_LIBRARY libfuse.so)
-  find_path(Fuse_INCLUDE_DIR fuse.h PATHS "/usr/local/include/fuse" ${ADD_FUSE_INCLUDE_DIR} NO_DEFAULT_PATH)
+  find_path(Fuse_INCLUDE_DIR fuse/fuse.h PATHS "/usr/local/include" ${ADD_FUSE_INCLUDE_DIR} NO_DEFAULT_PATH)
   if(NOT Fuse_INCLUDE_DIR)
     set(ERROR_MESSAGE "\nCould not find include directory for FUSE.")
     set(ERROR_MESSAGE "${ERROR_MESSAGE}  Try 'pkg install fusefs-libs'")
