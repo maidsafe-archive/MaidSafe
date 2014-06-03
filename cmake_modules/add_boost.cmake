@@ -215,14 +215,15 @@ elseif(APPLE)
                      linkflags=-stdlib=libc++ architecture=combined address-model=32_64 --layout=tagged)
 elseif(UNIX)
   list(APPEND b2Args variant=release cxxflags=-fPIC cxxflags=-std=c++11 -sNO_BZIP2=1 --layout=tagged)
-  # Need to configure the toolset based on whatever CMAKE_C_COMPILER is
+  # Need to configure the toolset based on whatever version CMAKE_CXX_COMPILER is
+  string(REGEX MATCH "[0-9]+\\.[0-9]+" ToolsetVer "${CMAKE_CXX_COMPILER_VERSION}")
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-    list(APPEND b2Args toolset=clang-${CMAKE_CXX_COMPILER_VERSION})
+    list(APPEND b2Args toolset=clang-${ToolsetVer})
     if(HAVE_LIBC++)
       list(APPEND b2Args cxxflags=-stdlib=libc++ linkflags=-stdlib=libc++)
     endif()
   elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    list(APPEND b2Args toolset=gcc-${CMAKE_CXX_COMPILER_VERSION})
+    list(APPEND b2Args toolset=gcc-${ToolsetVer})
   endif()
 endif()
 
