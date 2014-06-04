@@ -113,6 +113,7 @@ extra_platforms()
 ms_check_compiler()
 ms_get_target_platform()
 ms_get_target_architecture()
+unset(AllStaticLibs CACHE)
 
 
 # Adds a target 'CleanCoverage' on Unix.  When this target is built, it removes
@@ -164,19 +165,7 @@ add_subdirectory(src/third_party_libs)
 foreach(SubModule ${SubModules})
   add_subdirectory(src/${SubModule})
 endforeach()
-
-if(EXISTS ${CMAKE_SOURCE_DIR}/src/sandbox)
-  message("${HR}\nConfiguring Sandbox projects\n----------------------------")
-  file(GLOB AllSandboxDirs "${maidsafe_SOURCE_DIR}/src/sandbox/*")
-  list(REMOVE_ITEM AllSandboxDirs "${maidsafe_SOURCE_DIR}/src/sandbox/.git"
-                                  "${maidsafe_SOURCE_DIR}/src/sandbox/.gitignore"
-                                  "${maidsafe_SOURCE_DIR}/src/sandbox/README")
-  foreach(SandboxDir ${AllSandboxDirs})
-    get_filename_component(DirName ${SandboxDir} NAME)
-    message(STATUS "${DirName}")
-    add_subdirectory(${SandboxDir})
-  endforeach()
-endif()
+include(exports)
 
 message("${HR}")
 
