@@ -783,3 +783,21 @@ function(ms_remove_block_comments CppCode)
   set(${CppCode} "${${CppCode}}" PARENT_SCOPE)
 endfunction()
 
+
+# This creates a folder in the build root named 'temp/<today's date>' and removes any old versions
+# of such folders.  The name of today's folder is set in 'TodaysTempFolder'.  Since the folder is
+# regularly deleted, it should *not* be used for files which are needed at build- or run-time.
+function(ms_get_todays_temp_folder)
+  string(TIMESTAMP TempFolderName "${CMAKE_BINARY_DIR}/Temp/%d%m%y")
+  set(TodaysTempFolder "${TempFolderName}" PARENT_SCOPE)
+  if(NOT EXISTS "${TempFolderName}")
+    file(REMOVE_RECURSE "${CMAKE_BINARY_DIR}/Temp")
+    file(MAKE_DIRECTORY "${TempFolderName}")
+    set(Msg "This folder (\"${CMAKE_BINARY_DIR}/Temp\") should only be used\n")
+    set(Msg "${Msg}to store files which are consumed by CMake.\n\n")
+    set(Msg "${Msg}It is cleared out every day when CMake is run, so it is unsuitable for storing\n")
+    set(Msg "${Msg}files which are used at build- or run-time, since reconfiguring (running CMake)\n")
+    set(Msg "${Msg}might delete them.\n")
+    file(WRITE "${CMAKE_BINARY_DIR}/Temp/README.txt" "${Msg}")
+  endif()
+endfunction()
