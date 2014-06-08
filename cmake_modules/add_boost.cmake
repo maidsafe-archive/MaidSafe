@@ -358,3 +358,10 @@ ExternalProject_Add_Step(
     )
 set_target_properties(boost_process PROPERTIES LABELS Boost FOLDER "Third Party/Boost")
 add_dependencies(boost_process boost_system)
+
+
+#==================================================================================================#
+# Package                                                                                          #
+#==================================================================================================#
+install(DIRECTORY ${BoostSourceDir}/stage/lib DESTINATION .)
+install(DIRECTORY ${BoostSourceDir}/boost DESTINATION include/maidsafe/third_party_libs)

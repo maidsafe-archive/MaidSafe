@@ -262,3 +262,16 @@ target_compile_options(leveldb
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-pthread ${LibCXX}>)
 
 target_compile_definitions(leveldb PRIVATE $<$<BOOL:${MSVC}>:UNICODE _UNICODE BOOST_ALL_NO_LIB>)
+
+
+#==================================================================================================#
+# Package                                                                                          #
+#==================================================================================================#
+set(EXPORT_NAME leveldb)
+install(TARGETS leveldb EXPORT ${EXPORT_NAME} ARCHIVE DESTINATION lib)
+
+install(FILES ${HEADER_FILES_LEVELDB_INCLUDE_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/include/leveldb)
+install(FILES ${HEADER_FILES_LEVELDB_DB_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/db)
+install(FILES ${HEADER_FILES_LEVELDB_PORT_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/port)
+install(FILES ${HEADER_FILES_LEVELDB_TABLE_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/table)
+install(FILES ${HEADER_FILES_LEVELDB_UTIL_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/util)
