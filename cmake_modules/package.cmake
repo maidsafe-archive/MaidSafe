@@ -29,6 +29,7 @@ find_file(CPACK_CONFIG_CMAKE_FILES NAMES CPackConfig.cmake CPackSourceConfig.cma
 file(REMOVE ${CPACK_CONFIG_CMAKE_FILES})
 
 if(UNIX AND NOT APPLE)
+  set(CPACK_GENERATOR TGZ)
 elseif(APPLE)
 elseif(WIN32)
   if(MSVC)
@@ -50,9 +51,10 @@ elseif(WIN32)
   install(FILES ${MSVCP120} DESTINATION bin)
   install(FILES ${MSVCR120} DESTINATION bin)
   install(FILES ${VCCORLIB120} DESTINATION bin)
+
+  set(CPACK_GENERATOR ZIP)
 endif()
 
-set(CPACK_GENERATOR ZIP)
 set(CPACK_PACKAGE_NAME "MaidSafe")
 set(CPACK_PACKAGE_VERSION_MAJOR ${ApplicationVersionMajor})
 set(CPACK_PACKAGE_VERSION_MINOR ${ApplicationVersionMinor})
