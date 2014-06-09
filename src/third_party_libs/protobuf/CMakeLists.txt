@@ -81,3 +81,14 @@ target_link_libraries(protoc protobuf)
 if(UNIX)
   target_link_libraries(protoc -lpthread)
 endif()
+
+
+#==================================================================================================#
+# Package                                                                                          #
+#==================================================================================================#
+set(EXPORT_NAME protobuf)
+install(TARGETS protobuf EXPORT ${EXPORT_NAME} ARCHIVE DESTINATION lib)
+set(EXPORT_NAME protoc)
+install(TARGETS protoc EXPORT ${EXPORT_NAME} RUNTIME DESTINATION bin)
+
+install(FILES ${LIB_PROTBUF_HEADERS} DESTINATION include/maidsafe/third_party_libs/protobuf)

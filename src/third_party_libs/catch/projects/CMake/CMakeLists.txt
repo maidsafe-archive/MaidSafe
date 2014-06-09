@@ -166,3 +166,9 @@ set_target_properties(catch PROPERTIES LABELS Catch FOLDER "Third Party/Catch")
 # set_tests_properties(ListTags PROPERTIES PASS_REGULAR_EXPRESSION "[0-9]+ tags")
 
 set(CatchSourceDir "${CATCH_DIR}/include" CACHE INTERNAL "")
+
+
+#==================================================================================================#
+# Package                                                                                          #
+#==================================================================================================#
+install(DIRECTORY ${CATCH_DIR}/include DESTINATION include/maidsafe/third_party_libs/catch)

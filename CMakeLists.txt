@@ -214,3 +214,10 @@ if(MSVC OR XCODE)
 
   add_custom_target(CMakeFiles SOURCES ${RootFiles} src/third_party_libs/CMakeLists.txt ${ModuleFiles})
 endif()
+
+
+# Package
+if(${PACKAGE_BUILD})
+  include(package)
+  include(CPack)
+endif()

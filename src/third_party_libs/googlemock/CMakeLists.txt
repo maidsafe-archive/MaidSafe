@@ -165,3 +165,12 @@ if (gmock_build_tests)
   cxx_executable(gmock_output_test_ test gmock)
   py_test(gmock_output_test)
 endif()
+
+
+#==================================================================================================#
+# Package                                                                                          #
+#==================================================================================================#
+set(EXPORT_NAME gmock)
+install(TARGETS gmock EXPORT ${EXPORT_NAME} ARCHIVE DESTINATION lib)
+
+install(DIRECTORY ${gmock_SOURCE_DIR}/include DESTINATION include/maidsafe/third_party_libs/googlemock)
