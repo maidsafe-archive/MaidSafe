@@ -34,24 +34,16 @@ set(BaseURL http://maidsafe.net/licenses)
 
 
 function(ms_get_file Filename)
-  set(DownloadedFile ${CMAKE_BINARY_DIR}/${Filename}.txt)
+  ms_get_todays_temp_folder()
+  set(DownloadedFile "${TodaysTempFolder}/${Filename}.txt")
   if(EXISTS ${DownloadedFile})
-    # Download a fresh copy of the file each day
-    string(TIMESTAMP Now %Y%j UTC)
-    file(TIMESTAMP ${DownloadedFile} LicenseTimestamp %Y%j UTC)
-    math(EXPR CopyExpires ${LicenseTimestamp}+1)
-    if(CopyExpires LESS Now)
-      file(REMOVE ${DownloadedFile})
+    # If the existing copy matches the SHA1, we're done.  Otherwise delete it and download again.
+    file(STRINGS ${DownloadedFile} Contents NEWLINE_CONSUME)
+    string(SHA1 CopySHA1 "${Contents}")
+    if("${CopySHA1}" STREQUAL "${${Filename}_SHA1}")
+      return()
     else()
-      # If the existing copy matches the SHA1, we're done.  Otherwise delete it and download again.
-      file(STRINGS ${DownloadedFile} Contents NEWLINE_CONSUME)
-      string(SHA1 CopySHA1 "${Contents}")
-      file(SHA1 "${DownloadedFile}" CopySHA1)
-      if("${CopySHA1}" STREQUAL "${${Filename}_SHA1}")
-        return()
-      else()
-        file(REMOVE ${DownloadedFile})
-      endif()
+      file(REMOVE ${DownloadedFile})
     endif()
   endif()
 

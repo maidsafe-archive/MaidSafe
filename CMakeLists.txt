@@ -109,9 +109,11 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 # Include helper functions, check compiler version, and get target platform details
 include(utils)
+extra_platforms()
 ms_check_compiler()
 ms_get_target_platform()
 ms_get_target_architecture()
+unset(AllStaticLibs CACHE)
 
 
 # Adds a target 'CleanCoverage' on Unix.  When this target is built, it removes
@@ -143,6 +145,13 @@ else()
   option(HAVE_LIBC++ "If ON, '-stdlib=libc++' is added to the compile and link flags" OFF)
   option(HAVE_LIBC++ABI "If ON, '-lc++abi' is added to the link flags" OFF)
 endif()
+# Don't use 'option' for logging so we can tell if the user has explicitly set LOGGING or not.
+if(LOGGING)
+  set(USE_LOGGING ON)
+elseif(DEFINED LOGGING)
+  set(DONT_USE_LOGGING ON)
+endif()
+option(VLOGGING "Whether to use Visualiser logging or not" OFF)
 option(USE_BOOST_CACHE "If ON, try to download, extract and build boost to a single cache directory for all MaidSafe clones" OFF)
 option(BOOST_DISABLE_ASSERTS "If ON, all BOOST_ASSERTs are disabled" ON)
 option(USE_JUST_THREADS "If ON, try to find and use the just::thread library (Windows or gcc 4.7 only)" OFF)
@@ -156,19 +165,7 @@ add_subdirectory(src/third_party_libs)
 foreach(SubModule ${SubModules})
   add_subdirectory(src/${SubModule})
 endforeach()
-
-if(EXISTS ${CMAKE_SOURCE_DIR}/src/sandbox)
-  message("${HR}\nConfiguring Sandbox projects\n----------------------------")
-  file(GLOB AllSandboxDirs "${maidsafe_SOURCE_DIR}/src/sandbox/*")
-  list(REMOVE_ITEM AllSandboxDirs "${maidsafe_SOURCE_DIR}/src/sandbox/.git"
-                                  "${maidsafe_SOURCE_DIR}/src/sandbox/.gitignore"
-                                  "${maidsafe_SOURCE_DIR}/src/sandbox/README")
-  foreach(SandboxDir ${AllSandboxDirs})
-    get_filename_component(DirName ${SandboxDir} NAME)
-    message(STATUS "${DirName}")
-    add_subdirectory(${SandboxDir})
-  endforeach()
-endif()
+include(exports)
 
 message("${HR}")
 
