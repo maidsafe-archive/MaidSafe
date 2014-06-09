@@ -44,10 +44,13 @@
     <Dependency name="Routing"/>
     <Dependency name="Nfs"/>
   </SubProject>
-  <SubProject name="Vault-Manager">
+  <SubProject name="VaultManager">
     <Dependency name="Common"/>
     <Dependency name="Passport"/>
     <Dependency name="Rudp"/>
+    <Dependency name="Routing"/>
+    <Dependency name="Nfs"/>
+    <Dependency name="Vault"/>
   </SubProject>
   <SubProject name="API">
     <Dependency name="Common"/>
