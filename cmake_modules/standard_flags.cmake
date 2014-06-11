@@ -56,12 +56,21 @@ endif()
 
 # Configure a ReleaseNoInline build type
 if(MSVC)
-  set(CMAKE_C_FLAGS_RELEASENOINLINE "${CMAKE_C_FLAGS_RELEASE} /Z7 /Oy- /Ob0")
-  set(CMAKE_CXX_FLAGS_RELEASENOINLINE "${CMAKE_CXX_FLAGS_RELEASE} /Z7 /Oy- /Ob0")
+  set(RELEASENOINLINE_FLAGS "/Z7 /Oy- /Ob0")
 else()
-  set(CMAKE_C_FLAGS_RELEASENOINLINE "${CMAKE_C_FLAGS_RELEASE} -g -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline")
-  set(CMAKE_CXX_FLAGS_RELEASENOINLINE "${CMAKE_CXX_FLAGS_RELEASE} -g -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline")
+  set(RELEASENOINLINE_FLAGS "-g -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline")
 endif()
+set(CMAKE_C_FLAGS_RELEASENOINLINE "${CMAKE_C_FLAGS_RELEASE} ${RELEASENOINLINE_FLAGS}")
+set(CMAKE_CXX_FLAGS_RELEASENOINLINE "${CMAKE_CXX_FLAGS_RELEASE} ${RELEASENOINLINE_FLAGS}")
+mark_as_advanced(RELEASENOINLINE_FLAGS CMAKE_C_FLAGS_RELEASENOINLINE CMAKE_CXX_FLAGS_RELEASENOINLINE)
+
+# Configure a Debug2 build type
+if(UNIX AND NOT HAVE_LIBC++)
+  set(CMAKE_CXX_FLAGS_DEBUG2 "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG")
+else()
+  set(CMAKE_CXX_FLAGS_DEBUG2 "${CMAKE_CXX_FLAGS_DEBUG}")
+endif()
+mark_as_advanced(CMAKE_CXX_FLAGS_DEBUG2)
 
 if(NO_UBSAN)
   message(STATUS "Undefined behaviour sanitiser is disabled.")

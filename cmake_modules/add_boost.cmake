@@ -194,6 +194,12 @@ set(b2Args <SOURCE_DIR>/b2
            -d+2
            --hash
            )
+if(${CMAKE_BUILD_TYPE} STREQUAL "ReleaseNoInline")
+  list(APPEND b2Args cxxflags="${RELEASENOINLINE_FLAGS}")
+endif()
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug2")
+  list(APPEND b2Args define=_GLIBCXX_DEBUG)
+endif()
 
 # Set up platform-specific b2 (bjam) command line arguments
 if(MSVC)
