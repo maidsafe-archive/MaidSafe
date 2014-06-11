@@ -33,7 +33,7 @@ if(MSVC)
   set_property(TARGET ${AllExesForCurrentProject} APPEND_STRING PROPERTY LINK_FLAGS_DEBUG " /DEBUG ")
   set_property(TARGET ${AllExesForCurrentProject} APPEND_STRING PROPERTY LINK_FLAGS_RELWITHDEBINFO " /OPT:REF /OPT:ICF /LTCG /INCREMENTAL:NO /DEBUG ")
   set_property(TARGET ${AllExesForCurrentProject} APPEND_STRING PROPERTY LINK_FLAGS_MINSIZEREL " /LTCG ")
-  set_property(TARGET ${AllExesForCurrentProject} APPEND_STRING PROPERTY LINK_FLAGS_RELEASENOINLINE " /OPT:REF /OPT:ICF /LTCG /INCREMENTAL:NO ")
+  set_property(TARGET ${AllExesForCurrentProject} APPEND_STRING PROPERTY LINK_FLAGS_RELEASENOINLINE " /OPT:REF /OPT:ICF /LTCG /INCREMENTAL:NO /DEBUG ")
 endif()
 
 # Avoid including anything else twice
@@ -58,7 +58,7 @@ endif()
 
 # Configure a ReleaseNoInline build type
 if(MSVC)
-  set(RELEASENOINLINE_FLAGS "/Z7 /Oy- /Ob0")
+  set(RELEASENOINLINE_FLAGS "/Zi /Oy- /Ob0")
 else()
   set(RELEASENOINLINE_FLAGS "-g -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline")
 endif()
@@ -67,11 +67,11 @@ set(CMAKE_CXX_FLAGS_RELEASENOINLINE "${CMAKE_CXX_FLAGS_RELEASE} ${RELEASENOINLIN
 set(CMAKE_EXE_LINKER_FLAGS_RELEASENOINLINE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
 mark_as_advanced(RELEASENOINLINE_FLAGS CMAKE_C_FLAGS_RELEASENOINLINE CMAKE_CXX_FLAGS_RELEASENOINLINE CMAKE_EXE_LINKER_FLAGS_RELEASENOINLINE)
 
-# Configure a SuperDebug build type (includes checked iterators)
+# Configure a DebugLibStdcxx build type (includes checked iterators)
 if(UNIX AND NOT HAVE_LIBC++)
-  set(CMAKE_CXX_FLAGS_SUPERDEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG")
+  set(CMAKE_CXX_FLAGS_DEBUGLIBSTDCXX "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG")
 endif()
-mark_as_advanced(CMAKE_CXX_FLAGS_SUPERDEBUG)
+mark_as_advanced(CMAKE_CXX_FLAGS_DEBUGLIBSTDCXX)
 
 if(NO_UBSAN)
   message(STATUS "Undefined behaviour sanitiser is disabled.")

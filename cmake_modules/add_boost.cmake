@@ -197,7 +197,7 @@ set(b2Args <SOURCE_DIR>/b2
 if("${CMAKE_BUILD_TYPE}" STREQUAL "ReleaseNoInline")
   list(APPEND b2Args cxxflags="${RELEASENOINLINE_FLAGS}")
 endif()
-if("${CMAKE_BUILD_TYPE}" STREQUAL "SuperDebug")
+if("${CMAKE_BUILD_TYPE}" STREQUAL "DebugLibStdcxx")
   list(APPEND b2Args define=_GLIBCXX_DEBUG)
 endif()
 
