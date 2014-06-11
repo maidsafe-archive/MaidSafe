@@ -54,6 +54,15 @@ else()
   set(CoverageFlags)
 endif()
 
+# Configure a ReleaseNoInline build type
+if(MSVC)
+  set(CMAKE_C_FLAGS_RELEASENOINLINE "${CMAKE_C_FLAGS_RELEASE} /Z7 /Oy- /Ob0")
+  set(CMAKE_CXX_FLAGS_RELEASENOINLINE "${CMAKE_CXX_FLAGS_RELEASE} /Z7 /Oy- /Ob0")
+else()
+  set(CMAKE_C_FLAGS_RELEASENOINLINE "${CMAKE_C_FLAGS_RELEASE} -g -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline")
+  set(CMAKE_CXX_FLAGS_RELEASENOINLINE "${CMAKE_CXX_FLAGS_RELEASE} -g -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-inline")
+endif()
+
 if(NO_UBSAN)
   message(STATUS "Undefined behaviour sanitiser is disabled.")
 elseif(HAVE_UNDEFINED_BEHAVIOR_SANITIZER AND HAVE_FLAG_SANITIZE_BLACKLIST)
