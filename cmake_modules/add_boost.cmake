@@ -194,10 +194,10 @@ set(b2Args <SOURCE_DIR>/b2
            -d+2
            --hash
            )
-if(${CMAKE_BUILD_TYPE} STREQUAL "ReleaseNoInline")
+if("${CMAKE_BUILD_TYPE}" STREQUAL "ReleaseNoInline")
   list(APPEND b2Args cxxflags="${RELEASENOINLINE_FLAGS}")
 endif()
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug2")
+if("${CMAKE_BUILD_TYPE}" STREQUAL "SuperDebug")
   list(APPEND b2Args define=_GLIBCXX_DEBUG)
 endif()
 
@@ -266,6 +266,7 @@ foreach(Component ${BoostComponents})
                           IMPORTED_LOCATION_MINSIZEREL ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
                           IMPORTED_LOCATION_RELEASE ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
                           IMPORTED_LOCATION_RELWITHDEBINFO ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
+                          IMPORTED_LOCATION_RELEASENOINLINE ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
                           LINKER_LANGUAGE CXX)
   else()
     set_target_properties(Boost${CamelCaseComponent} PROPERTIES

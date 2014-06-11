@@ -89,8 +89,9 @@ target_compile_definitions(gtest PRIVATE $<$<BOOL:${WIN32}>:MAIDSAFE_WIN32> $<$<
 
 if(MSVC)
   set_target_properties(gtest PROPERTIES
-                        STATIC_LIBRARY_FLAGS_RELEASE "/LTCG"
-                        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO "/LTCG"
+                        STATIC_LIBRARY_FLAGS_RELEASE " /LTCG "
+                        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO " /LTCG "
+                        STATIC_LIBRARY_FLAGS_RELEASENOINLINE " /LTCG "
                         FOLDER "Third Party/GoogleTest")
 endif()
 

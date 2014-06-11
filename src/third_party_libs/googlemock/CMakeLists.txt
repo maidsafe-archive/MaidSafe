@@ -89,8 +89,9 @@ ms_target_include_system_dirs(gmock PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE
 target_link_libraries(gmock gtest)
 if(MSVC)
   set_target_properties(gmock PROPERTIES
-                        STATIC_LIBRARY_FLAGS_RELEASE "/LTCG"
-                        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO "/LTCG"
+                        STATIC_LIBRARY_FLAGS_RELEASE " /LTCG "
+                        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO " /LTCG "
+                        STATIC_LIBRARY_FLAGS_RELEASENOINLINE " /LTCG "
                         FOLDER "Third Party/GoogleMock")
 endif()
 
