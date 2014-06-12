@@ -31,7 +31,7 @@ include(add_protoc_command)
 # Oddly cmake is fairly limited in standard platform defines
 function(extra_platforms)
   if(UNIX AND NOT APPLE)
-    message("This system is called ${CMAKE_SYSTEM_NAME}.")
+    message(STATUS "This system is called ${CMAKE_SYSTEM_NAME}.")
     if(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
       set(LINUX TRUE PARENT_SCOPE)
     elseif(CMAKE_SYSTEM_NAME MATCHES "kFreeBSD.*")
