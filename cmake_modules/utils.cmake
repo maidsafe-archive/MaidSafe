@@ -802,3 +802,25 @@ function(ms_get_todays_temp_folder)
     file(WRITE "${CMAKE_BINARY_DIR}/Temp/README.txt" "${Msg}")
   endif()
 endfunction()
+
+
+# Sets a factor by which all test timeouts are multiplied.  'TimeoutFactor' must be > 1 and need not be an integer.
+function(ms_set_global_test_timeout_factor TimeoutFactor)
+  if(NOT 1 LESS ${TimeoutFactor})
+    message(FATAL_ERROR "'TimeoutFactor' (${TimeoutFactor}) is not > 1")
+  endif()
+  if(GlobalTestTimeoutFactor AND NOT "${TimeoutFactor}" GREATER "${GlobalTestTimeoutFactor}")
+    # We won't decrease the existing factor.
+    return()
+  endif()
+  set(GlobalTestTimeoutFactor ${TimeoutFactor} CACHE INTERNAL "A factor by which all test timeouts are multiplied")
+endfunction()
+
+
+# Applies the global timeout factor if it exists.
+function(ms_update_test_timeout TimeoutVarToBeUpdated)
+  if(GlobalTestTimeoutFactor)
+    math(EXPR NewTimeout ${${TimeoutVarToBeUpdated}}*${GlobalTestTimeoutFactor})
+    set(${TimeoutVarToBeUpdated} ${NewTimeout} PARENT_SCOPE)
+  endif()
+endfunction()
