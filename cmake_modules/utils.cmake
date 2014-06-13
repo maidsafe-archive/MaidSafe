@@ -164,7 +164,7 @@ endfunction()
 
 # Workaround for the Xcode's missing ability to pass -isystem to the compiler.
 function(ms_target_include_system_dirs Target)
-  if(XCODE)
+  if(XCODE OR (UNIX AND NOT ${CMAKE_VERSION} VERSION_LESS 3.0))
     foreach(Arg ${ARGN})
       string(REGEX MATCH "\\$<" IsGeneratorExpression "${Arg}")
       if("${Arg}" STREQUAL "PRIVATE" OR "${Arg}" STREQUAL "PUBLIC" OR "${Arg}" STREQUAL "INTERFACE")
@@ -179,8 +179,8 @@ function(ms_target_include_system_dirs Target)
     target_include_directories(${Target} SYSTEM ${Scope} ${ARGN})
   endif()
 endfunction()
-                                     
-                                     
+
+
 function(ms_add_style_test)
   if(NOT MaidsafeTesting)
     return()
@@ -201,7 +201,7 @@ function(ms_add_style_test)
 endfunction()
 
 
-# Adds two targets to the current project; AllXXX and ExperXXX where XXX is the project name. 
+# Adds two targets to the current project; AllXXX and ExperXXX where XXX is the project name.
 function(ms_add_project_experimental)
   add_custom_target(All${CamelCaseProjectName} DEPENDS ${AllExesForCurrentProject})
   set_target_properties(All${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/All")
@@ -596,7 +596,7 @@ function(ms_get_target_architecture)
     #error cmake_ARCH ppc
     #endif
     #endif
-    
+
     #error cmake_ARCH unknown
     ")
     file(WRITE "${CMAKE_BINARY_DIR}/arch.c" "${archdetect_c_code}")
