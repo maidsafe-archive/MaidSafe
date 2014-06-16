@@ -86,9 +86,8 @@ endif()
 #==================================================================================================#
 # Package                                                                                          #
 #==================================================================================================#
-set(EXPORT_NAME protobuf)
-install(TARGETS protobuf EXPORT ${EXPORT_NAME} ARCHIVE DESTINATION lib)
-set(EXPORT_NAME protoc)
-install(TARGETS protoc EXPORT ${EXPORT_NAME} RUNTIME DESTINATION bin)
+install(TARGETS protobuf COMPONENT Development CONFIGURATIONS Debug Release ARCHIVE DESTINATION lib)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/ COMPONENT Development DESTINATION include/maidsafe/third_party_libs)
 
-install(FILES ${LIB_PROTBUF_HEADERS} DESTINATION include/maidsafe/third_party_libs/protobuf)
+install(TARGETS protoc COMPONENT Tools CONFIGURATIONS Debug RUNTIME DESTINATION bin/debug)
+install(TARGETS protoc COMPONENT Tools CONFIGURATIONS Release RUNTIME DESTINATION bin)

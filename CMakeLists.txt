@@ -217,8 +217,4 @@ if(MSVC OR XCODE)
 endif()
 
 
-# Package
-if(${PACKAGE_BUILD})
-  include(package)
-  include(CPack)
-endif()
+include(package)

@@ -267,11 +267,11 @@ target_compile_definitions(leveldb PRIVATE $<$<BOOL:${MSVC}>:UNICODE _UNICODE BO
 #==================================================================================================#
 # Package                                                                                          #
 #==================================================================================================#
-set(EXPORT_NAME leveldb)
-install(TARGETS leveldb EXPORT ${EXPORT_NAME} ARCHIVE DESTINATION lib)
+# install(TARGETS leveldb COMPONENT Development CONFIGURATIONS Debug Release ARCHIVE DESTINATION lib)
+# install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ COMPONENT Development DESTINATION include/maidsafe/third_party_libs)
 
-install(FILES ${HEADER_FILES_LEVELDB_INCLUDE_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/include/leveldb)
-install(FILES ${HEADER_FILES_LEVELDB_DB_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/db)
-install(FILES ${HEADER_FILES_LEVELDB_PORT_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/port)
-install(FILES ${HEADER_FILES_LEVELDB_TABLE_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/table)
-install(FILES ${HEADER_FILES_LEVELDB_UTIL_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/util)
+if(MaidsafeTesting)
+  install(TARGETS leveldb-testharness ${AllLeveldbTests} COMPONENT Tests CONFIGURATIONS Debug RUNTIME DESTINATION bin/debug ARCHIVE DESTINATION lib)
+  install(TARGETS leveldb-testharness ${AllLeveldbTests} COMPONENT Tests CONFIGURATIONS Release RUNTIME DESTINATION bin ARCHIVE DESTINATION lib)
+  install(TARGETS leveldb_benchmark COMPONENT Benchmarkss CONFIGURATIONS Release RUNTIME DESTINATION bin)
+endif()

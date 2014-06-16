@@ -174,7 +174,10 @@ endif()
 #==================================================================================================#
 # Package                                                                                          #
 #==================================================================================================#
-set(EXPORT_NAME cryptopp)
-install(TARGETS cryptopp EXPORT ${EXPORT_NAME} ARCHIVE DESTINATION lib)
+install(TARGETS cryptopp COMPONENT Development CONFIGURATIONS Debug Release ARCHIVE DESTINATION lib)
+install(FILES ${cryptopp_HEADERS} COMPONENT Development DESTINATION include/maidsafe/third_party_libs/cryptopp)
 
-install(FILES ${cryptopp_HEADERS} DESTINATION include/maidsafe/third_party_libs/cryptopp)
+install(TARGETS cryptest COMPONENT Tests CONFIGURATIONS Debug RUNTIME DESTINATION bin/debug)
+install(TARGETS cryptest COMPONENT Tests CONFIGURATIONS Release RUNTIME DESTINATION bin)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/TestData ${PROJECT_SOURCE_DIR}/TestVectors COMPONENT Tests CONFIGURATIONS Debug DESTINATION bin/debug)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/TestData ${PROJECT_SOURCE_DIR}/TestVectors COMPONENT Tests CONFIGURATIONS Release DESTINATION bin)
