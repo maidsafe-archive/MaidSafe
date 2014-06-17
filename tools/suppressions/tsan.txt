@@ -41,3 +41,14 @@ race:maidsafe::rudp::ManagedConnections::DebugString() const
 # 2014-04-09 ned: Gmock noise
 # /home/qa1/MaidSafe-Testing/MaidSafe/src/third_party_libs/googlemock/gtest/src/gtest.cc:2761
 race:testing::internal::PrettyUnitTestResultPrinter::OnTestCaseStart(testing::TestCase const&)
+
+# 2014-06-12 ned: Logging induced noise
+# /home/jenkins-slave/workspace/Maidsafe Sanitise Linux64 clang 3.4/src/common/src/maidsafe/common/log.cc:605
+race:maidsafe::log::Logging::WriteToCombinedLogfile(std::string const&)
+
+# 2014-06-12 ned: I really hate this suppression - TSan is tripping on the non-comforming reference
+#                 counted std::string in libstdc++ prior to v4.10. I have no easy way of suppressing
+#                 it as the backtracer isn't spotting the std::string relation, so I'll suppress via
+#                 the other thread doing the copy :(
+# /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/bits/stl_algobase.h:458:15
+race:unsigned char* std::copy<__gnu_cxx::__normal_iterator<char const*, std::string>, unsigned char*>(__gnu_cxx::__normal_iterator<char const*, std::string>, __gnu_cxx::__normal_iterator<char const*, std::string>, unsigned char*)

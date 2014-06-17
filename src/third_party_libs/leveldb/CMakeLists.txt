@@ -262,3 +262,16 @@ target_compile_options(leveldb
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-pthread ${LibCXX}>)
 
 target_compile_definitions(leveldb PRIVATE $<$<BOOL:${MSVC}>:UNICODE _UNICODE BOOST_ALL_NO_LIB>)
+
+
+#==================================================================================================#
+# Package                                                                                          #
+#==================================================================================================#
+# install(TARGETS leveldb COMPONENT Development CONFIGURATIONS Debug Release ARCHIVE DESTINATION lib)
+# install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ COMPONENT Development DESTINATION include/maidsafe/third_party_libs)
+
+if(MaidsafeTesting)
+  install(TARGETS leveldb-testharness ${AllLeveldbTests} COMPONENT Tests CONFIGURATIONS Debug RUNTIME DESTINATION bin/debug ARCHIVE DESTINATION lib)
+  install(TARGETS leveldb-testharness ${AllLeveldbTests} COMPONENT Tests CONFIGURATIONS Release RUNTIME DESTINATION bin ARCHIVE DESTINATION lib)
+  install(TARGETS leveldb_benchmark COMPONENT Benchmarkss CONFIGURATIONS Release RUNTIME DESTINATION bin)
+endif()

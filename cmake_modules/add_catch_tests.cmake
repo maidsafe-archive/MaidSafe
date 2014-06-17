@@ -50,7 +50,8 @@
 #  line) of the form '// Timeout <value in seconds>', for example:                                 #
 #    TEST_CASE("Crypto", "[Unit][RSA]") {  // Timeout 30                                           #
 #                                                                                                  #
-#  If MEMORY_CHECK is defined, all timeouts are multiplied by 100, even overridden ones.           #
+#  If 'GlobalTestTimeoutFactor' is defined, all timeouts are multiplied by this value, even        #
+#  overridden ones.                                                                                #
 #                                                                                                  #
 #  Usage                                                                                           #
 #  =====                                                                                           #
@@ -160,9 +161,6 @@ function(ms_parse_file SourceFile TestTarget)
     if(ExplicitTimeout GREATER 0)
       set(Timeout ${ExplicitTimeout})
     endif()
-    if(${MEMORY_CHECK})
-      math(EXPR Timeout ${Timeout}*100)
-    endif()
 
     # Disable test if "[hide]" is a tag
     list(FIND Tags "hide" HideFound)
@@ -175,6 +173,7 @@ function(ms_parse_file SourceFile TestTarget)
                COMMAND ${TestTarget} ${Name} --durations yes --warn NoAssertions
                        --name "${TestTarget} ($<CONFIGURATION> build)")
 
+      ms_update_test_timeout(Timeout)
       set_tests_properties("\"${CTestName}\"" PROPERTIES
                            FAIL_REGULAR_EXPRESSION "No tests ran"
                            TIMEOUT ${Timeout}

@@ -169,3 +169,15 @@ elseif(MSVC)
   set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/pch.cpp PROPERTIES COMPILE_FLAGS "/Yc\"pch.h\"")
   target_link_libraries(cryptest odbc32.lib odbccp32.lib Ws2_32.lib)
 endif()
+
+
+#==================================================================================================#
+# Package                                                                                          #
+#==================================================================================================#
+install(TARGETS cryptopp COMPONENT Development CONFIGURATIONS Debug Release ARCHIVE DESTINATION lib)
+install(FILES ${cryptopp_HEADERS} COMPONENT Development DESTINATION include/maidsafe/third_party_libs/cryptopp)
+
+install(TARGETS cryptest COMPONENT Tests CONFIGURATIONS Debug RUNTIME DESTINATION bin/debug)
+install(TARGETS cryptest COMPONENT Tests CONFIGURATIONS Release RUNTIME DESTINATION bin)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/TestData ${PROJECT_SOURCE_DIR}/TestVectors COMPONENT Tests CONFIGURATIONS Debug DESTINATION bin/debug)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/TestData ${PROJECT_SOURCE_DIR}/TestVectors COMPONENT Tests CONFIGURATIONS Release DESTINATION bin)

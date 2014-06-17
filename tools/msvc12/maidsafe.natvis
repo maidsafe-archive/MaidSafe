@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+<Type Name="maidsafe::NodeId">
+    <DisplayString>{debug_id_,sb}</DisplayString>
+    <Expand>
+        <Item Name="Debug ID">debug_id_,sb</Item>
+        <ArrayItems>
+            <Size>64</Size>
+            <ValuePointer>raw_id_._Bx._Ptr,h</ValuePointer>
+        </ArrayItems>
+    </Expand>
+</Type>
+
+</AutoVisualizer>

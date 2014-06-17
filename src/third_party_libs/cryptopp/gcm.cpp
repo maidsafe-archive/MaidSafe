@@ -85,6 +85,8 @@ static CRYPTOPP_ALIGN_DATA(16) const word64 s_clmulConstants64[] = {
 static const __m128i *s_clmulConstants = (const __m128i *)s_clmulConstants64;
 static const unsigned int s_clmulTableSizeInBlocks = 8;
 
+#include "dirtyHackForGcc49.h"
+
 inline __m128i CLMUL_Reduce(__m128i c0, __m128i c1, __m128i c2, const __m128i &r)
 {
 	/* 

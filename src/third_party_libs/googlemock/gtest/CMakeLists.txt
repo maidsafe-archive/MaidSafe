@@ -89,8 +89,9 @@ target_compile_definitions(gtest PRIVATE $<$<BOOL:${WIN32}>:MAIDSAFE_WIN32> $<$<
 
 if(MSVC)
   set_target_properties(gtest PROPERTIES
-                        STATIC_LIBRARY_FLAGS_RELEASE "/LTCG"
-                        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO "/LTCG"
+                        STATIC_LIBRARY_FLAGS_RELEASE " /LTCG "
+                        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO " /LTCG "
+                        STATIC_LIBRARY_FLAGS_RELEASENOINLINE " /LTCG "
                         FOLDER "Third Party/GoogleTest")
 endif()
 
@@ -265,3 +266,12 @@ if (gtest_build_tests)
   cxx_executable(gtest_xml_output_unittest_ test gtest)
   py_test(gtest_xml_output_unittest)
 endif()
+
+
+#==================================================================================================#
+# Package                                                                                          #
+#==================================================================================================#
+set(EXPORT_NAME gtest)
+install(TARGETS gtest EXPORT ${EXPORT_NAME} ARCHIVE DESTINATION lib)
+
+install(DIRECTORY ${gtest_SOURCE_DIR}/include DESTINATION include/maidsafe/third_party_libs/googlemock/gtest)

@@ -195,6 +195,9 @@ void Rijndael::Base::FillDecTable()
 	s_TdFilled = true;
 }
 
+#define EXCLUDE_FIRST_HALF
+#include "dirtyHackForGcc49.h"
+
 void Rijndael::Base::UncheckedSetKey(const byte *userKey, unsigned int keylen, const NameValuePairs &)
 {
 	AssertValidKeyLength(keylen);

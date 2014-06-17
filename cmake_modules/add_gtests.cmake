@@ -39,6 +39,8 @@
 #  default to 60s.  Tests named FUNC_ will be treated as functional tests and will have a CTest    #
 #  timeout of FUNCTIONAL_TEST_TIMEOUT which can also be set externally, or will default to 600s.   #
 #                                                                                                  #
+#  If 'GlobalTestTimeoutFactor' is defined, all timeouts are multiplied by this value.             #
+#                                                                                                  #
 #  The variable MAIDSAFE_TEST_TYPE can be set to control which test types will be added; BEH for   #
 #  behavioural, FUNC for functional, and anything else for all types.                              #
 #                                                                                                  #
@@ -63,11 +65,6 @@ function(ms_add_gtests TEST_TARGET)
   endif()
   if(NOT FUNCTIONAL_TEST_TIMEOUT)
     set(FUNCTIONAL_TEST_TIMEOUT 600)
-  endif()
-
-  if(${MEMORY_CHECK})
-    math(EXPR BEHAVIOURAL_TEST_TIMEOUT ${BEHAVIOURAL_TEST_TIMEOUT}*100)
-    math(EXPR FUNCTIONAL_TEST_TIMEOUT ${FUNCTIONAL_TEST_TIMEOUT}*100)
   endif()
 
   get_target_property(GTEST_SOURCE_FILES ${TEST_TARGET} SOURCES)
@@ -332,9 +329,11 @@ function(add_maidsafe_test GTEST_FIXTURE_NAME GTEST_NAME FULL_GTEST_NAME TEST_EX
       endif()
       if("${GTEST_NAME}" MATCHES "^FUNC_" OR "${GTEST_NAME}" MATCHES "^DISABLED_FUNC_")
         set_property(TEST ${FULL_GTEST_NAME} PROPERTY LABELS ${CamelCaseProjectName} Functional)
+        ms_update_test_timeout(FUNCTIONAL_TEST_TIMEOUT)
         set_property(TEST ${FULL_GTEST_NAME} PROPERTY TIMEOUT ${FUNCTIONAL_TEST_TIMEOUT})
       elseif("${GTEST_NAME}" MATCHES "^BEH_" OR "${GTEST_NAME}" MATCHES "^DISABLED_BEH_")
         set_property(TEST ${FULL_GTEST_NAME} PROPERTY LABELS ${CamelCaseProjectName} Behavioural)
+        ms_update_test_timeout(BEHAVIOURAL_TEST_TIMEOUT)
         set_property(TEST ${FULL_GTEST_NAME} PROPERTY TIMEOUT ${BEHAVIOURAL_TEST_TIMEOUT})
       elseif(NOT "${GTEST_NAME}" MATCHES "^//")
         message("")

@@ -89,8 +89,9 @@ ms_target_include_system_dirs(gmock PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE
 target_link_libraries(gmock gtest)
 if(MSVC)
   set_target_properties(gmock PROPERTIES
-                        STATIC_LIBRARY_FLAGS_RELEASE "/LTCG"
-                        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO "/LTCG"
+                        STATIC_LIBRARY_FLAGS_RELEASE " /LTCG "
+                        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO " /LTCG "
+                        STATIC_LIBRARY_FLAGS_RELEASENOINLINE " /LTCG "
                         FOLDER "Third Party/GoogleMock")
 endif()
 
@@ -165,3 +166,12 @@ if (gmock_build_tests)
   cxx_executable(gmock_output_test_ test gmock)
   py_test(gmock_output_test)
 endif()
+
+
+#==================================================================================================#
+# Package                                                                                          #
+#==================================================================================================#
+set(EXPORT_NAME gmock)
+install(TARGETS gmock EXPORT ${EXPORT_NAME} ARCHIVE DESTINATION lib)
+
+install(DIRECTORY ${gmock_SOURCE_DIR}/include DESTINATION include/maidsafe/third_party_libs/googlemock)

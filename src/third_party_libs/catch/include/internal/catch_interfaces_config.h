@@ -33,7 +33,7 @@ namespace Catch {
         Never
     }; };
 
-    class TestCaseFilters;
+    class TestSpec;
 
     struct IConfig : IShared {
 
@@ -46,8 +46,9 @@ namespace Catch {
         virtual bool shouldDebugBreak() const = 0;
         virtual bool warnAboutMissingAssertions() const = 0;
         virtual int abortAfter() const = 0;
+        virtual bool showInvisibles() const = 0;
         virtual ShowDurations::OrNot showDurations() const = 0;
-        virtual std::vector<TestCaseFilters> const& filters() const = 0;
+        virtual TestSpec const& testSpec() const = 0;
     };
 }
 
