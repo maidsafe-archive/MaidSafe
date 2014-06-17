@@ -12,6 +12,7 @@
 #include "catch_text.h"
 #include "catch_console_colour.hpp"
 #include "catch_interfaces_reporter.h"
+#include "catch_test_spec_parser.hpp"
 
 #include <limits>
 #include <algorithm>
@@ -19,10 +20,14 @@
 namespace Catch {
 
     inline std::size_t listTests( Config const& config ) {
-        if( config.filters().empty() )
-            std::cout << "All available test cases:\n";
-        else
+
+        TestSpec testSpec = config.testSpec();
+        if( config.testSpec().hasFilters() )
             std::cout << "Matching test cases:\n";
+        else {
+            std::cout << "All available test cases:\n";
+            testSpec = TestSpecParser().parse( "*" ).testSpec();
+        }
 
         std::size_t matchedTests = 0;
         TextAttributes nameAttr, tagsAttr;
@@ -30,7 +35,7 @@ namespace Catch {
         tagsAttr.setIndent( 6 );
 
         std::vector<TestCase> matchedTestCases;
-        getRegistryHub().getTestCaseRegistry().getFilteredTests( config, matchedTestCases );
+        getRegistryHub().getTestCaseRegistry().getFilteredTests( testSpec, config, matchedTestCases );
         for( std::vector<TestCase>::const_iterator it = matchedTestCases.begin(), itEnd = matchedTestCases.end();
                 it != itEnd;
                 ++it ) {
@@ -46,7 +51,7 @@ namespace Catch {
                 std::cout << Text( testCaseInfo.tagsAsString, tagsAttr ) << std::endl;
         }
 
-        if( config.filters().empty() )
+        if( !config.testSpec().hasFilters() )
             std::cout << pluralise( matchedTests, "test case" ) << "\n" << std::endl;
         else
             std::cout << pluralise( matchedTests, "matching test case" ) << "\n" << std::endl;
@@ -54,9 +59,12 @@ namespace Catch {
     }
 
     inline std::size_t listTestsNamesOnly( Config const& config ) {
+        TestSpec testSpec = config.testSpec();
+        if( !config.testSpec().hasFilters() )
+            testSpec = TestSpecParser().parse( "*" ).testSpec();
         std::size_t matchedTests = 0;
         std::vector<TestCase> matchedTestCases;
-        getRegistryHub().getTestCaseRegistry().getFilteredTests( config, matchedTestCases );
+        getRegistryHub().getTestCaseRegistry().getFilteredTests( testSpec, config, matchedTestCases );
         for( std::vector<TestCase>::const_iterator it = matchedTestCases.begin(), itEnd = matchedTestCases.end();
                 it != itEnd;
                 ++it ) {
@@ -67,16 +75,37 @@ namespace Catch {
         return matchedTests;
     }
 
-    inline std::size_t listTags( Config const& config ) {
-        if( config.filters().empty() )
-            std::cout << "All available tags:\n";
-        else
-            std::cout << "Matching tags:\n";
+    struct TagInfo {
+        TagInfo() : count ( 0 ) {}
+        void add( std::string const& spelling ) {
+            ++count;
+            spellings.insert( spelling );
+        }
+        std::string all() const {
+            std::string out;
+            for( std::set<std::string>::const_iterator it = spellings.begin(), itEnd = spellings.end();
+                        it != itEnd;
+                        ++it )
+                out += "[" + *it + "]";
+            return out;
+        }
+        std::set<std::string> spellings;
+        std::size_t count;
+    };
 
-        std::map<std::string, int> tagCounts;
+    inline std::size_t listTags( Config const& config ) {
+        TestSpec testSpec = config.testSpec();
+        if( config.testSpec().hasFilters() )
+            std::cout << "Tags for matching test cases:\n";
+        else {
+            std::cout << "All available tags:\n";
+            testSpec = TestSpecParser().parse( "*" ).testSpec();
+        }
+
+        std::map<std::string, TagInfo> tagCounts;
 
         std::vector<TestCase> matchedTestCases;
-        getRegistryHub().getTestCaseRegistry().getFilteredTests( config, matchedTestCases );
+        getRegistryHub().getTestCaseRegistry().getFilteredTests( testSpec, config, matchedTestCases );
         for( std::vector<TestCase>::const_iterator it = matchedTestCases.begin(), itEnd = matchedTestCases.end();
                 it != itEnd;
                 ++it ) {
@@ -85,24 +114,24 @@ namespace Catch {
                     tagIt != tagItEnd;
                     ++tagIt ) {
                 std::string tagName = *tagIt;
-                std::map<std::string, int>::iterator countIt = tagCounts.find( tagName );
+                std::string lcaseTagName = toLower( tagName );
+                std::map<std::string, TagInfo>::iterator countIt = tagCounts.find( lcaseTagName );
                 if( countIt == tagCounts.end() )
-                    tagCounts.insert( std::make_pair( tagName, 1 ) );
-                else
-                    countIt->second++;
+                    countIt = tagCounts.insert( std::make_pair( lcaseTagName, TagInfo() ) ).first;
+                countIt->second.add( tagName );
             }
         }
 
-        for( std::map<std::string, int>::const_iterator countIt = tagCounts.begin(),
-                                                        countItEnd = tagCounts.end();
+        for( std::map<std::string, TagInfo>::const_iterator countIt = tagCounts.begin(),
+                                                            countItEnd = tagCounts.end();
                 countIt != countItEnd;
                 ++countIt ) {
             std::ostringstream oss;
-            oss << "  " << countIt->second << "  ";
-            Text wrapper( "[" + countIt->first + "]", TextAttributes()
-                                                        .setInitialIndent( 0 )
-                                                        .setIndent( oss.str().size() )
-                                                        .setWidth( CATCH_CONFIG_CONSOLE_WIDTH-10 ) );
+            oss << "  " << std::setw(2) << countIt->second.count << "  ";
+            Text wrapper( countIt->second.all(), TextAttributes()
+                                                    .setInitialIndent( 0 )
+                                                    .setIndent( oss.str().size() )
+                                                    .setWidth( CATCH_CONFIG_CONSOLE_WIDTH-10 ) );
             std::cout << oss.str() << wrapper << "\n";
         }
         std::cout << pluralise( tagCounts.size(), "tag" ) << "\n" << std::endl;

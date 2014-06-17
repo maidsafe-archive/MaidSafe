@@ -50,9 +50,6 @@ set(CATCH_INTERNAL_HEADERS
     "${CATCH_DIR}/include/internal/catch_default_main.hpp"
     "${CATCH_DIR}/include/internal/catch_evaluate.hpp"
     "${CATCH_DIR}/include/internal/catch_exception_translator_registry.hpp"
-    "${CATCH_DIR}/include/internal/catch_expressionresult_builder.h"
-    "${CATCH_DIR}/include/internal/catch_expressionresult_builder.hpp"
-    "${CATCH_DIR}/include/internal/catch_expression_decomposer.hpp"
     "${CATCH_DIR}/include/internal/catch_expression_lhs.hpp"
     "${CATCH_DIR}/include/internal/catch_generators.hpp"
     "${CATCH_DIR}/include/internal/catch_generators_impl.hpp"
@@ -78,9 +75,12 @@ set(CATCH_INTERNAL_HEADERS
     "${CATCH_DIR}/include/internal/catch_option.hpp"
     "${CATCH_DIR}/include/internal/catch_platform.h"
     "${CATCH_DIR}/include/internal/catch_ptr.hpp"
+    "${CATCH_DIR}/include/internal/catch_reenable_warnings.h"
     "${CATCH_DIR}/include/internal/catch_registry_hub.hpp"
     "${CATCH_DIR}/include/internal/catch_reporter_registrars.hpp"
     "${CATCH_DIR}/include/internal/catch_reporter_registry.hpp"
+    "${CATCH_DIR}/include/internal/catch_result_builder.h"
+    "${CATCH_DIR}/include/internal/catch_result_builder.hpp"
     "${CATCH_DIR}/include/internal/catch_result_type.h"
     "${CATCH_DIR}/include/internal/catch_runner_impl.hpp"
     "${CATCH_DIR}/include/internal/catch_section.h"
@@ -91,18 +91,18 @@ set(CATCH_INTERNAL_HEADERS
     "${CATCH_DIR}/include/internal/catch_stream.h"
     "${CATCH_DIR}/include/internal/catch_stream.hpp"
     "${CATCH_DIR}/include/internal/catch_streambuf.h"
-    "${CATCH_DIR}/include/internal/catch_tags.h"
-    "${CATCH_DIR}/include/internal/catch_tags.hpp"
+    "${CATCH_DIR}/include/internal/catch_suppress_warnings.h"
     "${CATCH_DIR}/include/internal/catch_test_case_info.h"
     "${CATCH_DIR}/include/internal/catch_test_case_info.hpp"
     "${CATCH_DIR}/include/internal/catch_test_case_registry_impl.hpp"
     "${CATCH_DIR}/include/internal/catch_test_case_tracker.hpp"
     "${CATCH_DIR}/include/internal/catch_test_registry.hpp"
-    "${CATCH_DIR}/include/internal/catch_test_spec.h"
     "${CATCH_DIR}/include/internal/catch_test_spec.hpp"
+    "${CATCH_DIR}/include/internal/catch_test_spec_parser.hpp"
     "${CATCH_DIR}/include/internal/catch_text.h"
     "${CATCH_DIR}/include/internal/catch_timer.h"
     "${CATCH_DIR}/include/internal/catch_timer.hpp"
+    "${CATCH_DIR}/include/internal/catch_tostring.h"
     "${CATCH_DIR}/include/internal/catch_tostring.hpp"
     "${CATCH_DIR}/include/internal/catch_totals.hpp"
     "${CATCH_DIR}/include/internal/catch_version.h"
@@ -112,8 +112,16 @@ set(CATCH_INTERNAL_HEADERS
 source_group("include\\internal" FILES ${CATCH_INTERNAL_HEADERS})
 CheckFileList(CATCH_INTERNAL_HEADERS "include/internal")
 
+set(CATCH_EXTERNAL_HEADERS
+    "${CATCH_DIR}/include/external/clara.h"
+    "${CATCH_DIR}/include/external/tbc_text_format.h"
+)
+source_group("include\\external" FILES ${CATCH_EXTERNAL_HEADERS})
+CheckFileList(CATCH_EXTERNAL_HEADERS "include/external")
+
 set(CATCH_REPORTERS_HEADERS
     "${CATCH_DIR}/include/reporters/catch_reporter_bases.hpp"
+    "${CATCH_DIR}/include/reporters/catch_reporter_compact.hpp"
     "${CATCH_DIR}/include/reporters/catch_reporter_console.hpp"
     "${CATCH_DIR}/include/reporters/catch_reporter_junit.hpp"
     "${CATCH_DIR}/include/reporters/catch_reporter_xml.hpp"
@@ -130,6 +138,7 @@ set(TEST_SOURCES
     "${SELF_TEST_DIR}/ApproxTests.cpp"
     "${SELF_TEST_DIR}/BDDTests.cpp"
     "${SELF_TEST_DIR}/ClassTests.cpp"
+    "${SELF_TEST_DIR}/CmdLineTests.cpp"
     "${SELF_TEST_DIR}/ConditionTests.cpp"
     "${SELF_TEST_DIR}/ExceptionTests.cpp"
     "${SELF_TEST_DIR}/GeneratorTests.cpp"
@@ -146,6 +155,7 @@ CheckFileList(TEST_SOURCES "projects/SelfTest")
 add_custom_target(catch SOURCES
     ${CATCH_HEADERS}
     ${CATCH_INTERNAL_HEADERS}
+    ${CATCH_EXTERNAL_HEADERS}
     ${CATCH_REPORTERS_HEADERS}
     ${CATCH_SINGLE_INCLUDE}
 )
@@ -171,4 +181,4 @@ set(CatchSourceDir "${CATCH_DIR}/include" CACHE INTERNAL "")
 #==================================================================================================#
 # Package                                                                                          #
 #==================================================================================================#
-install(DIRECTORY ${CATCH_DIR}/include DESTINATION include/maidsafe/third_party_libs/catch)
+install(DIRECTORY ${CATCH_DIR}/include COMPONENT Development DESTINATION include/maidsafe/third_party_libs/catch)
