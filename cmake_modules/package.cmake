@@ -49,11 +49,14 @@ if(WIN32)
       set(ERROR_MESSAGE "\nCould not find library msvcp120.dll.\nRun cmake from a Visual Studio Command Prompt.")
       message(FATAL_ERROR "${ERROR_MESSAGE}")
     endif()
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/Debug/ COMPONENT Apps CONFIGURATIONS Debug DESTINATION bin/debug FILES_MATCHING PATTERN "*.pdb")
   endif()
 
   install(FILES ${OpenMP_DLL} ${MSVCP120} ${MSVCR120} ${VCCORLIB120} COMPONENT Apps CONFIGURATIONS Debug DESTINATION bin/debug)
   install(FILES ${OpenMP_DLL} ${MSVCP120} ${MSVCR120} ${VCCORLIB120} COMPONENT Apps CONFIGURATIONS Release DESTINATION bin)
 endif()
+install(FILES ${CMAKE_SOURCE_DIR}/cmake_modules/find_maidsafe.cmake COMPONENT Development DESTINATION .)
+
 
 set(CPACK_PACKAGE_NAME "MaidSafe")
 set(CPACK_PACKAGE_VENDOR "MaidSafe.net")

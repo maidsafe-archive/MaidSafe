@@ -181,4 +181,4 @@ set(CatchSourceDir "${CATCH_DIR}/include" CACHE INTERNAL "")
 #==================================================================================================#
 # Package                                                                                          #
 #==================================================================================================#
-install(DIRECTORY ${CATCH_DIR}/include COMPONENT Development DESTINATION include/maidsafe/third_party_libs/catch)
+install(DIRECTORY ${CATCH_DIR}/include/ COMPONENT Development DESTINATION include/maidsafe/third_party_libs/catch)
