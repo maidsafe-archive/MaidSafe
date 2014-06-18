@@ -38,31 +38,50 @@ set(SfmlVersion 2.1)
 set(SfmlSHA1 c27bdffdc4bedb5f6a20db03ceca715d42aa5752)
 
 
-# Create build folder with name derived from version
-set(SfmlFolderName sfml_${SfmlVersion})
-string(REPLACE "." "_" SfmlFolderName ${SfmlFolderName})
-set(SfmlRoot "${CMAKE_BINARY_DIR}/${SfmlFolderName}")
-file(MAKE_DIRECTORY "${SfmlRoot}")
+set(SfmlSuccess TRUE)
 
-# Download SFML
-set(SfmlUrl "http://www.sfml-dev.org/download/sfml/${SfmlVersion}/SFML-${SfmlVersion}-sources.zip")
-set(SfmlZip "${SfmlRoot}/SFML-${SfmlVersion}-sources.zip")
-set(SfmlTimeout 60)
-if(NOT EXISTS "${SfmlZip}")
-  message(STATUS "Downloading SFML ${SfmlVersion} to ${SfmlRoot}")
+# Check prerequisites on Unix (Windows prerequisites are provided along with SFML)
+if(UNIX)
+  set(Packages OpenGL Freetype GLEW JPEG)
+  if(NOT APPLE)
+    list(APPEND Packages X11)
+  endif()
+  foreach(Package ${Packages})
+    find_package(${Package} QUIET)
+    string(TOUPPER ${Package} UppercasePackageName)
+    if(NOT ${Package}_FOUND AND NOT ${UppercasePackageName}_FOUND)
+      message(WARNING "SFML is unavailable due to missing prerequisite: ${Package}")
+      set(SfmlSuccess FALSE)
+      break()
+    endif()
+  endforeach()
 endif()
-file(DOWNLOAD "${SfmlUrl}" "${SfmlZip}"
-     STATUS Status
-     SHOW_PROGRESS
-     EXPECTED_HASH SHA1=${SfmlSHA1}
-     )
-list(GET Status 0 StatusCode)
-list(GET Status 1 StatusString)
-if(StatusCode EQUAL 0)
-  set(SfmlSuccess TRUE)
-else()
-  message(WARNING "SFML is unavailable due to error while downloading '${SfmlUrl}'.  StatusCode: ${StatusCode}.  StatusString: ${StatusString}.  Log: ${Log}")
-  set(SfmlSuccess FALSE)
+
+# Create build folder with name derived from version
+if(SfmlSuccess)
+  set(SfmlFolderName sfml_${SfmlVersion})
+  string(REPLACE "." "_" SfmlFolderName ${SfmlFolderName})
+  set(SfmlRoot "${CMAKE_BINARY_DIR}/${SfmlFolderName}")
+  file(MAKE_DIRECTORY "${SfmlRoot}")
+
+  # Download SFML
+  set(SfmlUrl "http://www.sfml-dev.org/download/sfml/${SfmlVersion}/SFML-${SfmlVersion}-sources.zip")
+  set(SfmlZip "${SfmlRoot}/SFML-${SfmlVersion}-sources.zip")
+  set(SfmlTimeout 60)
+  if(NOT EXISTS "${SfmlZip}")
+    message(STATUS "Downloading SFML ${SfmlVersion} to ${SfmlRoot}")
+  endif()
+  file(DOWNLOAD "${SfmlUrl}" "${SfmlZip}"
+       STATUS Status
+       SHOW_PROGRESS
+       EXPECTED_HASH SHA1=${SfmlSHA1}
+       )
+  list(GET Status 0 StatusCode)
+  list(GET Status 1 StatusString)
+  if(NOT StatusCode EQUAL 0)
+    message(WARNING "SFML is unavailable due to error while downloading '${SfmlUrl}'.  StatusCode: ${StatusCode}.  StatusString: ${StatusString}.  Log: ${Log}")
+    set(SfmlSuccess FALSE)
+  endif()
 endif()
 
 # Extract SFML
