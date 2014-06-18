@@ -190,13 +190,6 @@ macro(sfml_add_library target)
         endif()
     endif()
 
-    # add the install rule
-    install(TARGETS ${target}
-            RUNTIME DESTINATION bin COMPONENT bin
-            LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT bin 
-            ARCHIVE DESTINATION lib${LIB_SUFFIX} COMPONENT devel
-            FRAMEWORK DESTINATION ${CMAKE_INSTALL_FRAMEWORK_PREFIX} COMPONENT bin)
-
 endmacro()
 
 # add a new target which is a SFML example
@@ -225,6 +218,8 @@ macro(sfml_add_example target)
     # set the target's folder (for IDEs that support it, e.g. Visual Studio)
     set_target_properties(${target} PROPERTIES FOLDER "Third Party/SFML/Examples")
 
+    set_target_properties(${target} PROPERTIES EXCLUDE_FROM_ALL ON EXCLUDE_FROM_DEFAULT_BUILD ON)
+
     # for gcc >= 4.0 on Windows, apply the SFML_USE_STATIC_STD_LIBS option if it is enabled
     if(WINDOWS AND COMPILER_GCC AND SFML_USE_STATIC_STD_LIBS)
         if(NOT GCC_VERSION VERSION_LESS "4")
@@ -237,20 +232,4 @@ macro(sfml_add_example target)
         target_link_libraries(${target} ${THIS_DEPENDS})
     endif()
 
-    # add the install rule
-    install(TARGETS ${target}
-            RUNTIME DESTINATION ${INSTALL_MISC_DIR}/examples/${target} COMPONENT examples)
-
-    # install the example's source code
-    install(FILES ${THIS_SOURCES}
-            DESTINATION ${INSTALL_MISC_DIR}/examples/${target}
-            COMPONENT examples)
-
-    # install the example's resources as well
-    set(EXAMPLE_RESOURCES "${CMAKE_SOURCE_DIR}/examples/${target}/resources")
-    if(EXISTS ${EXAMPLE_RESOURCES})
-        install(DIRECTORY ${EXAMPLE_RESOURCES}
-                DESTINATION ${INSTALL_MISC_DIR}/examples/${target}
-                COMPONENT examples)
-    endif()
 endmacro()
