@@ -278,7 +278,9 @@ function(ms_rename_outdated_built_exes)
 
   foreach(BuiltExe ${BuiltExes})
     get_filename_component(BuiltExeNameWe ${BuiltExe} NAME_WE)
-    if(NOT TARGET ${BuiltExeNameWe} AND NOT ${BuiltExeNameWe} MATCHES "CompilerIdC[X]?[X]?$")
+    # Accommodate debug postfix in SFML examples
+    string(REGEX REPLACE "-d$" "" BuiltExeNameWithoutDebugPostfix "${BuiltExeNameWe}")
+    if(NOT TARGET ${BuiltExeNameWe} AND NOT TARGET ${BuiltExeNameWithoutDebugPostfix} AND NOT ${BuiltExeNameWe} MATCHES "CompilerIdC[X]?[X]?$")
       string(REGEX MATCH "build_qt" InQtBuildDir ${BuiltExe})
       string(REGEX MATCH "src/boost" InBoostBuildDir ${BuiltExe})
       string(REGEX MATCH "old/" AlreadyArchived ${BuiltExe})
