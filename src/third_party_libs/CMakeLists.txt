@@ -51,12 +51,6 @@ if(MaidsafeTesting)
   set(CamelCaseProjectName ThirdParty)
   set(AllExesForCurrentProject cryptest ${AllLeveldbTests} leveldb_benchmark)
   ms_add_project_experimental()
-  add_custom_command(TARGET AllThirdParty
-                       PRE_BUILD
-                       COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory $<TARGET_FILE_DIR:cryptest>/TestData ${CMAKE_CURRENT_BINARY_DIR}/TestData)
-  add_custom_command(TARGET AllThirdParty
-                       PRE_BUILD
-                       COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory $<TARGET_FILE_DIR:cryptest>/TestVectors ${CMAKE_CURRENT_BINARY_DIR}/TestVectors)
   set(Timeout 60)
   ms_update_test_timeout(Timeout)
   set(Labels ThirdParty Behavioural CryptoPP)
