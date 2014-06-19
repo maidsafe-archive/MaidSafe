@@ -103,16 +103,17 @@ if(SfmlSuccess AND NOT IS_DIRECTORY "${SfmlRoot}/sfml")
                   OUTPUT_QUIET
                   ERROR_QUIET
                   )
-  if(NOT Result EQUAL 0)
+  if(Result EQUAL 0)
+    file(GLOB ExtractedContents "${SfmlRoot}/extracted/*")
+    get_filename_component(ExtractedContents ${ExtractedContents} ABSOLUTE)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory "${SfmlRoot}/sfml")
+    file(RENAME "${ExtractedContents}" "${SfmlRoot}/sfml")
+    file(REMOVE_RECURSE "${SfmlRoot}/extracted")
+  else()
     file(REMOVE_RECURSE "${SfmlRoot}/extracted")
     message(WARNING "SFML is unavailable due to error while extracting '${SfmlZip}'.")
     set(SfmlSuccess FALSE)
   endif()
-  file(GLOB ExtractedContents "${SfmlRoot}/extracted/*")
-  get_filename_component(ExtractedContents ${ExtractedContents} ABSOLUTE)
-  execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory "${SfmlRoot}/sfml")
-  file(RENAME "${ExtractedContents}" "${SfmlRoot}/sfml")
-  file(REMOVE_RECURSE "${SfmlRoot}/extracted")
 endif()
 
 # Patch SFML
