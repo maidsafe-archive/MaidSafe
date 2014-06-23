@@ -26,7 +26,7 @@ include(CheckCCompilerFlag)
 
 set(CMAKE_REQUIRED_FLAGS "-Werror")
 set(BlacklistFile "${CMAKE_SOURCE_DIR}/tools/suppressions/blacklist.txt")
-check_c_compiler_flag("-fsanitize-blacklist=${BlacklistFile}" HAVE_FLAG_SANITIZE_BLACKLIST)
+check_c_compiler_flag("-fsanitize-blacklist='${BlacklistFile}'" HAVE_FLAG_SANITIZE_BLACKLIST)
 unset(CMAKE_REQUIRED_FLAGS)
 
 if(HAVE_FLAG_SANITIZE_BLACKLIST)
