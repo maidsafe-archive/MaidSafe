@@ -4,7 +4,8 @@
 ### local_network_controller and vault executables
 
 exe=local_network_controller
-join_nodes=8
+vault_exe=vault
+join_nodes=(32 52)
 path=/tmp/test
 listen_port=11111
 
@@ -29,17 +30,30 @@ x-terminal-emulator -e ./$exe seed.conf
 #./$exe seed.conf &>seed_log.txt &
 sleep 60
 
-i=1
+cp $path/seed/bootstrap.dat $path/bootstrap.dat
 
-while [ "$i" -le "$join_nodes" ]
+### Record the process info of the seed local_network_controller and vaults
+seed_controller=`ps -ef | grep local_network_controller`
+seed_vaults=`ps -ef | grep vault`
+
+
+### iteration : 0 - initial join, kill seeding vaults once completed 
+###             1 - later on join, process finished once completed
+declare -i iteration=0
+
+#### Join individual vaults one by one ####
+i=1
+while [ "$iteration" -le 1 ]
 do
-        listen_port=$(( $listen_port + 1 ))
-	cat > join$i.conf << EJOINOF
+	while [ "$i" -le "${join_nodes[$iteration]}" ]
+	do
+		listen_port=$(( $listen_port + 1 ))
+		cat > join$i.conf << EJOINOF
 ### Commands begin.
 ### Initial options.
 3
 ### Path to bootstrap file.
-$path/seed/bootstrap.dat
+$path/bootstrap.dat
 ### Path to VaultManager root directory.
 $path/join$i
 ### Create / Clear VaultManager root directory.
@@ -52,12 +66,32 @@ $listen_port
 
 ### Commands end.
 EJOINOF
-        x-terminal-emulator -e ./$exe join$i.conf
-#	./$exe join$i.conf &>join_log_$i.txt &
-	echo "Joining $i vault."
-	i=$(( $i + 1 ))
-        sleep 5
+		x-terminal-emulator -e ./$exe join$i.conf
+               #./$exe join$i.conf &>join_log_$i.txt &
+		echo "Joining $i vault."
+		i=$(( $i + 1 ))
+		sleep 5
+	done
+
+	if [ "$iteration" -eq 0 ]; then
+                sleep 5
+		cp $path/join1/bootstrap.dat $path/bootstrap.dat
+		#### Stop the Seed Network ####
+		echo "stop seed network"
+		readarray -t y <<< "$seed_controller"
+		for proc in "${y[@]}"
+		do
+			z=(${proc//$' '/ })
+                        if [ ${z[7]} == "./$exe" ]; then
+				kill ${z[1]}
+			fi
+		done
+		sleep 10
+        fi
+	iteration=$(( $iteration + 1 ))
 done
+
+echo "setup seeding network completed"
 
 # killall -vw -s SIGINT $exe
 
