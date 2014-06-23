@@ -1,7 +1,13 @@
 # Don't forget to set TSAN_OPTIONS like this before running unit tests!
 #
 # export TSAN_OPTIONS="suppressions=/home/ned/MaidSafe/tools/suppressions/tsan.txt history_size=7 external_symbolizer_path=/usr/bin/llvm-symbolizer-3.4"
+#
+# This file comes in two sections:
+# 1. Direct suppressions which probably have few side effects
+# 2. Indirect suppresssions which need to be reviewed each release to see if they can be replaced with direct suppressions
 
+
+#### DIRECT SUPPRESSIONS ####
 
 # Boost exception_ptr uses atomics not recognised by tsan
 race:boost/exception/detail/exception_ptr.hpp
@@ -25,12 +31,6 @@ race:std::basic_ostream<char, std::char_traits<char> >& boost::asio::ip::operato
 # 2014-04-01 ned: Probably logging induced noise
 race:maidsafe::rudp::detail::ConnectionManager::DebugString
 
-# 2014-04-02 ned: Looks like gmock is a bit racy, but I can't suppress the
-#                 gmock code or else I'll suppress all race reports. So
-#                 suppressing this instead, even though it is NOT racy.
-# /home/ned/MaidSafe/src/common/src/maidsafe/common/log.cc:405
-race:maidsafe::log::GtestLogMessage::~GtestLogMessage()::$_1::operator()() const
-
 # 2014-04-04 ned: Ignore this race in libstdc++
 race:std::ctype<char>::do_widen(char const*, char const*, char*) const
 
@@ -46,9 +46,25 @@ race:testing::internal::PrettyUnitTestResultPrinter::OnTestCaseStart(testing::Te
 # /home/jenkins-slave/workspace/Maidsafe Sanitise Linux64 clang 3.4/src/common/src/maidsafe/common/log.cc:605
 race:maidsafe::log::Logging::WriteToCombinedLogfile(std::string const&)
 
-# 2014-06-12 ned: I really hate this suppression - TSan is tripping on the non-comforming reference
+
+
+
+#### INDIRECT SUPPRESSIONS (replace these as soon as possible) ####
+
+# 2014-04-02 ned: Looks like gmock is a bit racy, but I can't suppress the
+#                 gmock code or else I'll suppress all race reports. So
+#                 suppressing this instead, even though it is NOT racy.
+# /home/ned/MaidSafe/src/common/src/maidsafe/common/log.cc:405
+race:maidsafe::log::GtestLogMessage::~GtestLogMessage()::$_1::operator()() const
+
+# 2014-06-12 ned: I really hate this suppression - TSan is tripping on the non-conforming reference
 #                 counted std::string in libstdc++ prior to v4.10. I have no easy way of suppressing
-#                 it as the backtracer isn't spotting the std::string relation, so I'll suppress via
+#                 it as the 3.4 backtracer isn't spotting the std::string relation, so I'll suppress via
 #                 the other thread doing the copy :(
 # /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/bits/stl_algobase.h:458:15
 race:unsigned char* std::copy<__gnu_cxx::__normal_iterator<char const*, std::string>, unsigned char*>(__gnu_cxx::__normal_iterator<char const*, std::string>, __gnu_cxx::__normal_iterator<char const*, std::string>, unsigned char*)
+
+# 2014-06-21 ned: Similar cause, this is really the reference counted std::string being destructed,
+#                 but again the 3.4 backtracer has a bug not spotting the string destructor so use this instead
+# /home/jenkins-slave/workspace/Maidsafe Sanitise Linux64 clang 3.4/src/common/src/maidsafe/common/utils.cc:369
+race:maidsafe::HexSubstr(std::string const&)

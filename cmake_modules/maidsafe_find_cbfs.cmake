@@ -76,11 +76,21 @@ else()
   set(CbfsRequired ${CbfsRequired})
   set(CBFS_ROOT_DIR
         "C:/Program Files/EldoS/Callback File System"
-        "D:/Program Files/EldoS/Callback File System"
-        "E:/Program Files/EldoS/Callback File System"
-        "C:/Program Files (x86)/EldoS/Callback File System"
-        "D:/Program Files (x86)/EldoS/Callback File System"
-        "E:/Program Files (x86)/EldoS/Callback File System")
+        "C:/Program Files (x86)/EldoS/Callback File System")
+
+  set(RegistryEntries "[HKEY_CURRENT_USER\\Software\\Eldos\\CallbackFS;InstallPath]")
+  execute_process(COMMAND wmic useraccount get name,sid OUTPUT_VARIABLE OutVar OUTPUT_STRIP_TRAILING_WHITESPACE)
+  string(REGEX MATCHALL "S-1-5[-0-9]+" UsersSecurityIDs "${OutVar}")
+  foreach(UsersSecurityID ${UsersSecurityIDs})
+    list(APPEND RegistryEntries "[HKEY_USERS\\${UsersSecurityID}\\Software\\Eldos\\CallbackFS;InstallPath]")
+  endforeach()
+
+  foreach(RegistryEntry ${RegistryEntries})
+    get_filename_component(CbfsRootDir "${RegistryEntry}" ABSOLUTE)
+    if(EXISTS "${CbfsRootDir}")
+      list(APPEND CBFS_ROOT_DIR "${CbfsRootDir}")
+    endif()
+  endforeach()
 endif()
 
 # Prepare to find CBFS libs and headers
