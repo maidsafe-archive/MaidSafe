@@ -55,6 +55,8 @@ fun:*get_min_size*
 fun:*FunctionMockerBase* #hopefully only catches gmock (routing suffers this)
 #Gmock argh!!
 fun:*InvokeWith*
+fun:*HandleExceptionsInMethodIfSupported*
+fun:*TestFactoryImpl*
 
 #### Compile time filters for asan ####
 
