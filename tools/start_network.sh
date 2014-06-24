@@ -74,8 +74,9 @@ EJOINOF
 	done
 
 	if [ "$iteration" -eq 0 ]; then
-                sleep 5
-		cp $path/join1/bootstrap.dat $path/bootstrap.dat
+		echo "Please join one vault from other machine"
+		read temp
+		cp $path/other/bootstrap.dat $path/bootstrap.dat
 		#### Stop the Seed Network ####
 		echo "stop seed network"
 		readarray -t y <<< "$seed_controller"
