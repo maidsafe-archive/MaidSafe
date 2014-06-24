@@ -38,7 +38,7 @@ if(HAVE_FLAG_SANITIZE_BLACKLIST)
   # when CMake was last run.  If they don't match, targets which depend on this one will fail to build
   # until CMake is rerun.
   add_custom_target(check_sanitizer_blacklist ALL
-      ${CMAKE_COMMAND} -DBlacklistFile="${BlacklistFile}"
+      ${CMAKE_COMMAND} "-DBlacklistFile=${BlacklistFile}"
                        -DBlacklistFileHash=${Hash}
                        -P "${CMAKE_SOURCE_DIR}/tools/suppressions/blacklist_check.cmake")
 endif()
