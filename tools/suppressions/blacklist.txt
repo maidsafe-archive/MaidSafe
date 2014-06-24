@@ -52,6 +52,9 @@ fun:*pointer_to*
 fun:*priv_static_cast_from*
 fun:*tree_iterator*
 fun:*get_min_size*
+fun:*FunctionMockerBase* #hopefully only catches gmock (routing suffers this)
+#Gmock argh!!
+fun:*InvokeWith*
 
 #### Compile time filters for asan ####
 
