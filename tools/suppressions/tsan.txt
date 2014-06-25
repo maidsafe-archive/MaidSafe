@@ -68,3 +68,7 @@ race:unsigned char* std::copy<__gnu_cxx::__normal_iterator<char const*, std::str
 #                 but again the 3.4 backtracer has a bug not spotting the string destructor so use this instead
 # /home/jenkins-slave/workspace/Maidsafe Sanitise Linux64 clang 3.4/src/common/src/maidsafe/common/utils.cc:369
 race:maidsafe::HexSubstr(std::string const&)
+
+# 2014-06-25 ned: Ditto for libstdc++ 4.9
+# /usr/bin/../lib/gcc/x86_64-linux-gnu/4.9/../../../../include/c++/4.9/bits/stl_uninitialized.h:75
+race:unsigned char* std::__uninitialized_copy<false>::__uninit_copy<__gnu_cxx::__normal_iterator<char const*, std::string>, unsigned char*>(__gnu_cxx::__normal_iterator<char const*, std::string>, __gnu_cxx::__normal_iterator<char const*, std::string>, unsigned char*)
