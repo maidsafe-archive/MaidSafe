@@ -48,6 +48,12 @@ if(WIN32 AND NOT "${CMAKE_VERSION}" VERSION_GREATER 2.8.12.2)
   message(WARNING "\nCMake version 3.0.0 or higher is required for SFML on Windows.\n")
 endif()
 
+if("${HAVE_LIBC++}")
+  set(SfmlSuccess FALSE)
+  message(WARNING "\nSFML not available with libc++.\n")
+endif()
+
+
 # Check prerequisites on Unix (Windows ones and some OS X ones are provided along with SFML)
 if(UNIX)
   if(APPLE)
