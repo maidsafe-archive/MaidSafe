@@ -22,6 +22,8 @@
 #                                                                                                  #
 #  Downloads, extracts and patches SFML.                                                           #
 #                                                                                                  #
+#  Requires CMAKE_VERSION >= 3.0.0 on Windows                                                      #
+#                                                                                                  #
 #  Only the first 2 variables should require regular maintenance, i.e. SfmlVersion & SfmlSHA1.     #
 #                                                                                                  #
 #  Variables set and cached by this module are:                                                    #
@@ -39,6 +41,12 @@ set(SfmlSHA1 c27bdffdc4bedb5f6a20db03ceca715d42aa5752)
 
 
 set(SfmlSuccess TRUE)
+
+# Disable SFML on Windows with CMAKE < 3.0.0 as the tar extract fails
+if(WIN32 AND NOT "${CMAKE_VERSION}" VERSION_GREATER 2.8.12.2)
+  set(SfmlSuccess FALSE)
+  message(WARNING "\nCMake version 3.0.0 or higher is required for SFML on Windows.\n")
+endif()
 
 # Check prerequisites on Unix (Windows ones and some OS X ones are provided along with SFML)
 if(UNIX)
