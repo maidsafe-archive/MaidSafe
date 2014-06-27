@@ -195,3 +195,5 @@ execute_process(COMMAND msbuild /M:7 /P:Configuration=Release,Platform=Win32 CbF
 if(NOT "${ResVar}" EQUAL 0)
   message(FATAL_ERROR "Failed to run command msbuild /M:7 /P:Configuration=Release,Platform=Win32 CbFS_VS2013.sln from within \"${CbfsRootDir}/SourceCode/CBFS/CPP\"\n\n${OutVar}")
 endif()
+
+message("Now do the following:\n  * configure the MaidSafe super project (run cmake on it)\n  * build the 'cbfs_driver_installer' target\n  * run cbfs_driver_installer with '-i' to install these new drivers")
