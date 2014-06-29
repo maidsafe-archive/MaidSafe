@@ -225,6 +225,7 @@ class Foo {
                   const char* s10) {
     return string(s1) + s2 + s3 + s4 + s5 + s6 + s7 + s8 + s9 + s10;
   }
+
  private:
   int value_;
 };
@@ -326,7 +327,7 @@ TEST(InvokeTest, FunctionThatTakes10Arguments) {
 TEST(InvokeTest, FunctionWithUnusedParameters) {
   Action<int(int, int, double, const string&)> a1 =
       Invoke(SumOfFirst2);
-  EXPECT_EQ(12, a1.Perform(make_tuple(10, 2, 5.6, CharPtr("hi"))));
+  EXPECT_EQ(12, a1.Perform(make_tuple(10, 2, 5.6, string("hi"))));
 
   Action<int(int, int, bool, int*)> a2 =
       Invoke(SumOfFirst2);
