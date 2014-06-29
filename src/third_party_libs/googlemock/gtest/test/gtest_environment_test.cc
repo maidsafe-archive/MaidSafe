@@ -65,7 +65,7 @@ class MyEnvironment : public testing::Environment {
         ADD_FAILURE() << "Expected non-fatal failure in global set-up.";
         break;
       case FATAL_FAILURE:
-        FAIL() << "Expected fatal failure in global set-up.";
+        GTEST_FAIL() << "Expected fatal failure in global set-up.";
         break;
       default:
         break;

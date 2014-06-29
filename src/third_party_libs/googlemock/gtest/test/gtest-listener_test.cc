@@ -159,12 +159,12 @@ TEST_F(ListenerTest, DoesFoo) {
   // Test execution order within a test case is not guaranteed so we are not
   // recording the test name.
   g_events->push_back("ListenerTest::* Test Body");
-  SUCCEED();  // Triggers OnTestPartResult.
+  GTEST_SUCCEED();  // Triggers OnTestPartResult.
 }
 
 TEST_F(ListenerTest, DoesBar) {
   g_events->push_back("ListenerTest::* Test Body");
-  SUCCEED();  // Triggers OnTestPartResult.
+  GTEST_SUCCEED();  // Triggers OnTestPartResult.
 }
 
 }  // namespace internal

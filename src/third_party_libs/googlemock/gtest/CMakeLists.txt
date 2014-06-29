@@ -16,7 +16,7 @@ option(
   "Use shared (DLL) run-time lib even when Google Test is built as static lib."
   OFF)
 
-option(gtest_build_tests "Build all of gtest's own tests." OFF)
+option(gtest_build_tests "Build all of gtest's own tests." ON)
 
 option(gtest_build_samples "Build gtest's sample programs." OFF)
 
@@ -42,6 +42,7 @@ endif()
 project(gtest CXX C)
 cmake_minimum_required(VERSION 2.8.12.1)
 
+include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_setup.cmake)
 if (COMMAND set_up_hermetic_build)
   set_up_hermetic_build()
 endif()
@@ -52,15 +53,16 @@ include(cmake/internal_utils.cmake)
 config_compiler_and_linker()  # Defined in internal_utils.cmake.
 
 # Where Google Test's .h files can be found.
-# include_directories(
-#   ${gtest_SOURCE_DIR}/include
-#   ${gtest_SOURCE_DIR}
-#   ${CMAKE_SOURCE_DIR}/src/common/include
-#   ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost
-#   )
+ include_directories(
+   ${gtest_SOURCE_DIR}/include
+   ${gtest_SOURCE_DIR}
+   ${CMAKE_SOURCE_DIR}/src/common/include
+   ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost
+   ${CMAKE_SOURCE_DIR}/src/third_party_libs/googlemock/gtest/include
+   )
 
 # Where Google Test's libraries can be found.
-# link_directories(${gtest_BINARY_DIR}/src)
+ link_directories(${CMAKE_BINARY_DIR})
 
 ########################################################################
 #
@@ -71,8 +73,8 @@ config_compiler_and_linker()  # Defined in internal_utils.cmake.
 # are used for other targets, to ensure that gtest can be compiled by a user
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
-target_include_directories(gtest PRIVATE ${CMAKE_SOURCE_DIR}/src/common/include)
-ms_target_include_system_dirs(gtest PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR} ${BoostSourceDir})
+target_include_directories(gtest PRIVATE ${gtest_SOURCE_DIR}/src/common/include)
+ms_target_include_system_dirs(gtest PUBLIC ${gtest_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR} ${BoostSourceDir})
 
 target_compile_definitions(gtest
   INTERFACE
@@ -95,9 +97,9 @@ if(MSVC)
                         FOLDER "Third Party/GoogleTest")
 endif()
 
-# cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
-# target_link_libraries(gtest_main gtest)
-# set_target_properties(gtest_main PROPERTIES FOLDER "Third Party/GoogleTest")
+ cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
+ target_link_libraries(gtest_main gtest)
+ set_target_properties(gtest_main PROPERTIES FOLDER "Third Party/GoogleTest")
 
 ########################################################################
 #
@@ -152,18 +154,18 @@ if (gtest_build_tests)
     test/gtest-param-test2_test.cc)
   cxx_test(gtest-port_test gtest_main)
   cxx_test(gtest_pred_impl_unittest gtest_main)
-  cxx_test(gtest-printers_test gtest_main)
+  # cxx_test(gtest-printers_test gtest_main)
   cxx_test(gtest_prod_test gtest_main
     test/production.cc)
   cxx_test(gtest_repeat_test gtest)
-  cxx_test(gtest_sole_header_test gtest_main)
+  # cxx_test(gtest_sole_header_test gtest_main)
   cxx_test(gtest_stress_test gtest)
   cxx_test(gtest-test-part_test gtest_main)
   cxx_test(gtest_throw_on_failure_ex_test gtest)
   cxx_test(gtest-typed-test_test gtest_main
     test/gtest-typed-test2_test.cc)
-  cxx_test(gtest_unittest gtest_main)
-  cxx_test(gtest-unittest-api_test gtest)
+  # cxx_test(gtest_unittest gtest_main)
+  # cxx_test(gtest-unittest-api_test gtest)
 
   ############################################################
   # C++ tests built with non-standard compiler flags.
@@ -175,24 +177,24 @@ if (gtest_build_tests)
   cxx_library(gtest_main_no_rtti "${cxx_no_rtti}"
     src/gtest-all.cc src/gtest_main.cc)
 
-  cxx_test_with_flags(gtest-death-test_ex_nocatch_test
-    "${cxx_exception} -DGTEST_ENABLE_CATCH_EXCEPTIONS_=0"
-    gtest test/gtest-death-test_ex_test.cc)
-  cxx_test_with_flags(gtest-death-test_ex_catch_test
-    "${cxx_exception} -DGTEST_ENABLE_CATCH_EXCEPTIONS_=1"
-    gtest test/gtest-death-test_ex_test.cc)
+  # cxx_test_with_flags(gtest-death-test_ex_nocatch_test
+  #   "${cxx_exception} -DGTEST_ENABLE_CATCH_EXCEPTIONS_=0"
+  #   gtest test/gtest-death-test_ex_test.cc)
+  # cxx_test_with_flags(gtest-death-test_ex_catch_test
+  #   "${cxx_exception} -DGTEST_ENABLE_CATCH_EXCEPTIONS_=1"
+  #   gtest test/gtest-death-test_ex_test.cc)
 
   cxx_test_with_flags(gtest_no_rtti_unittest "${cxx_no_rtti}"
     gtest_main_no_rtti test/gtest_unittest.cc)
-
-  cxx_shared_library(gtest_dll "${cxx_default}"
-    src/gtest-all.cc src/gtest_main.cc)
-
-  cxx_executable_with_flags(gtest_dll_test_ "${cxx_default}"
-    gtest_dll test/gtest_all_test.cc)
-  set_target_properties(gtest_dll_test_
-                        PROPERTIES
-                        COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
+  #
+  # cxx_shared_library(gtest_dll "${cxx_default}"
+  #   src/gtest-all.cc src/gtest_main.cc)
+  #
+  # cxx_executable_with_flags(gtest_dll_test_ "${cxx_default}"
+  #   gtest_dll test/gtest_all_test.cc)
+  # set_target_properties(gtest_dll_test_
+  #                       PROPERTIES
+  #                       COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
 
   if (NOT MSVC OR NOT MSVC_VERSION EQUAL 1600)
     # The C++ Standard specifies tuple_element<int, class>.

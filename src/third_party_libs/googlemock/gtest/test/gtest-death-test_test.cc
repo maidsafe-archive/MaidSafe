@@ -1363,5 +1363,5 @@ TEST(ConditionalDeathMacrosSyntaxDeathTest, SwitchStatement) {
 // Tests that a test case whose name ends with "DeathTest" works fine
 // on Windows.
 TEST(NotADeathTest, Test) {
-  SUCCEED();
+  GTEST_SUCCEED();
 }

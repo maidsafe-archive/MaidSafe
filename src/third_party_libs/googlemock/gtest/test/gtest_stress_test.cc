@@ -162,7 +162,7 @@ TEST(StressTest, CanUseScopedTraceAndAssertionsInManyThreads) {
 
 void FailingThread(bool is_fatal) {
   if (is_fatal)
-    FAIL() << "Fatal failure in some other thread. "
+    GTEST_FAIL() << "Fatal failure in some other thread. "
            << "(This failure is expected.)";
   else
     ADD_FAILURE() << "Non-fatal failure in some other thread. "

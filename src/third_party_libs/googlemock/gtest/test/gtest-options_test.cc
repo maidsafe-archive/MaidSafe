@@ -121,7 +121,7 @@ TEST(OutputFileHelpersTest, GetCurrentExecutableName) {
       exe_str == "gtest_dll_test";
 #endif  // GTEST_OS_WINDOWS
   if (!success)
-    FAIL() << "GetCurrentExecutableName() returns " << exe_str;
+    GTEST_FAIL() << "GetCurrentExecutableName() returns " << exe_str;
 }
 
 class XmlOutputChangeDirTest : public Test {

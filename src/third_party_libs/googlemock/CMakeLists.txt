@@ -17,7 +17,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
 # TODO(vladl@google.com): Implement building gMock as a DLL.
 set(BUILD_SHARED_LIBS OFF)
 
-option(gmock_build_tests "Build all of Google Mock's own tests." OFF)
+option(gmock_build_tests "Build all of Google Mock's own tests." ON)
 
 # A directory to find Google Test sources.
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/gtest/CMakeLists.txt")
@@ -69,12 +69,12 @@ config_compiler_and_linker()  # from ${gtest_dir}/cmake/internal_utils.cmake
 # endif()
 
 # Adds Google Mock's and Google Test's header directories to the search path.
-# include_directories("${gmock_SOURCE_DIR}/include"
-#                     "${gmock_SOURCE_DIR}"
-#                     "${gtest_SOURCE_DIR}/include"
-#                     # This directory is needed to build directly from Google
-#                     # Test sources.
-#                     "${gtest_SOURCE_DIR}")
+ include_directories("${gmock_SOURCE_DIR}/include"
+                     "${gmock_SOURCE_DIR}"
+                     "${gtest_SOURCE_DIR}/include"
+                     # This directory is needed to build directly from Google
+                     # Test sources.
+                     "${gtest_SOURCE_DIR}")
 
 ########################################################################
 #
@@ -95,9 +95,9 @@ if(MSVC)
                         FOLDER "Third Party/GoogleMock")
 endif()
 
-# cxx_library(gmock_main "${cxx_strict}" src/gmock_main.cc)
-# target_link_libraries(gmock_main gmock)
-# set_target_properties(gmock_main PROPERTIES FOLDER "Third Party/GoogleMock")
+ cxx_library(gmock_main "${cxx_strict}" src/gmock_main.cc)
+ target_link_libraries(gmock_main gmock)
+ set_target_properties(gmock_main PROPERTIES FOLDER "Third Party/GoogleMock")
 
 ########################################################################
 #
@@ -157,14 +157,6 @@ if (gmock_build_tests)
   cxx_test_with_flags(gmock_use_own_tuple_test "${cxx_use_own_tuple}"
     gmock_main_use_own_tuple test/gmock-spec-builders_test.cc)
 
-  ############################################################
-  # Python tests.
-
-  cxx_executable(gmock_leak_test_ test gmock_main)
-  py_test(gmock_leak_test)
-
-  cxx_executable(gmock_output_test_ test gmock)
-  py_test(gmock_output_test)
 endif()
 
 
