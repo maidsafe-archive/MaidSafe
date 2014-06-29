@@ -200,14 +200,15 @@ if(MaidsafeTesting)
     PRIVATE
       $<$<CXX_COMPILER_ID:MSVC>:/wd4996>
       $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>)
-  set_target_properties(leveldb-testharness PROPERTIES FOLDER "MaidSafe/Executables/Tests/Common/LevelDB Tests")
+  set_target_properties(leveldb-testharness PROPERTIES FOLDER "Third Party/LevelDB")
 
   macro(leveldb_tests)
     foreach(value ${ARGN})
       get_filename_component(exe_name ${value} NAME_WE)
       get_filename_component(Extension ${value} EXT)
       string(REGEX REPLACE "(.*)_test" "test_leveldb_\\1" exe_name ${exe_name})
-      ms_add_executable(${exe_name} "Tests/Common/LevelDB Tests" ${value})
+      ms_add_executable(${exe_name} "." ${value})
+      set_target_properties(${exe_name} PROPERTIES FOLDER "Third Party/LevelDB")
       ms_target_include_system_dirs(${exe_name} PRIVATE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include)
       target_link_libraries(${exe_name} leveldb-testharness)
       target_compile_options(${exe_name}
@@ -242,7 +243,8 @@ if(MaidsafeTesting)
     leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/c_test.c)
   endif()
 
-  ms_add_executable(leveldb_benchmark "Tools/Common" ${CMAKE_CURRENT_SOURCE_DIR}/db/db_bench.cc)
+  ms_add_executable(leveldb_benchmark "." ${CMAKE_CURRENT_SOURCE_DIR}/db/db_bench.cc)
+  set_target_properties(leveldb_benchmark PROPERTIES FOLDER "Third Party/LevelDB")
   ms_target_include_system_dirs(leveldb_benchmark PRIVATE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include)
   target_link_libraries(leveldb_benchmark leveldb-testharness)
   target_compile_options(leveldb_benchmark

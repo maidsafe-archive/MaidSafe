@@ -177,7 +177,8 @@ using ::testing::internal::EventRecordingListener;
 void VerifyResults(const std::vector<std::string>& data,
                    const char* const* expected_data,
                    int expected_data_size) {
-  const int actual_size = data.size();
+  ASSERT_LT(data.size(), static_cast<size_t>(std::numeric_limits<int>::max()));
+  const int actual_size = static_cast<int>(data.size());
   // If the following assertion fails, a new entry will be appended to
   // data.  Hence we save data.size() first.
   EXPECT_EQ(expected_data_size, actual_size);

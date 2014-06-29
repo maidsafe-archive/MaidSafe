@@ -826,9 +826,9 @@ class MockDeathTestFactory : public DeathTestFactory {
   // Accessors.
   int AssumeRoleCalls() const { return assume_role_calls_; }
   int WaitCalls() const { return wait_calls_; }
-  int PassedCalls() const { return passed_args_.size(); }
+  int PassedCalls() const { return static_cast<int>(passed_args_.size()); }
   bool PassedArgument(int n) const { return passed_args_[n]; }
-  int AbortCalls() const { return abort_args_.size(); }
+  int AbortCalls() const { return static_cast<int>(abort_args_.size()); }
   DeathTest::AbortReason AbortArgument(int n) const {
     return abort_args_[n];
   }
