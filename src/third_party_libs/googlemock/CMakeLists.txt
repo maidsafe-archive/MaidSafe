@@ -131,12 +131,12 @@ if (gmock_build_tests)
   cxx_test(gmock-port_test gmock_main)
   cxx_test(gmock-spec-builders_test gmock_main)
   cxx_test(gmock_link_test gmock_main test/gmock_link2_test.cc)
-  # cxx_test(gmock_stress_test gmock)
+  cxx_test(gmock_stress_test gmock)
   cxx_test(gmock_test gmock_main)
 
   # gmock_all_test is commented to save time building and running tests.
   # Uncomment if necessary.
-  # cxx_test(gmock_all_test gmock_main)
+  cxx_test(gmock_all_test gmock_main)
 
   ############################################################
   # C++ tests built with non-standard compiler flags.

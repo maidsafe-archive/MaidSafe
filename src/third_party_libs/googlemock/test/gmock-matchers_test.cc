@@ -152,7 +152,9 @@ using testing::internal::scoped_ptr;
 using testing::internal::string;
 
 // Evaluates to the number of elements in 'array'.
+#ifndef GMOCK_ARRAY_SIZE_
 #define GMOCK_ARRAY_SIZE_(array) (sizeof(array) / sizeof(array[0]))
+#endif
 
 // For testing ExplainMatchResultTo().
 class GreaterThanMatcher : public MatcherInterface<int> {
