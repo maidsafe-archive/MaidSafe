@@ -151,6 +151,7 @@ if (gtest_build_tests)
   cxx_test(gtest-param-test_test gtest
     test/gtest-param-test2_test.cc)
   cxx_test(gtest-port_test gtest_main)
+  target_compile_options(gtest-port_test PRIVATE $<$<BOOL:${MSVC}>:/J>)
   cxx_test(gtest_pred_impl_unittest gtest_main)
   # cxx_test(gtest-printers_test gtest_main)
   cxx_test(gtest_prod_test gtest_main
