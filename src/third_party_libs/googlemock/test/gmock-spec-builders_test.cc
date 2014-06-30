@@ -1081,7 +1081,7 @@ TEST(UnexpectedCallTest, UnsatisifiedPrerequisites) {
 
   // Verifies that the failure message contains the two unsatisfied
   // pre-requisites but not the satisfied one.
-#if GTEST_USES_PCRE
+#if defined GTEST_USES_PCRE && GTEST_USES_PCRE
   EXPECT_THAT(r.message(), ContainsRegex(
       // PCRE has trouble using (.|\n) to match any character, but
       // supports the (?s) prefix for using . to match any character.
@@ -2597,7 +2597,7 @@ TEST(SynchronizationTest, CanCallMockMethodInAction) {
 // Allows the user to define his own main and then invoke gmock_main
 // from it. This might be necessary on some platforms which require
 // specific setup and teardown.
-#if GMOCK_RENAME_MAIN
+#if defined GMOCK_RENAME_MAIN && GMOCK_RENAME_MAIN
 int gmock_main(int argc, char **argv) {
 #else
 int main(int argc, char **argv) {

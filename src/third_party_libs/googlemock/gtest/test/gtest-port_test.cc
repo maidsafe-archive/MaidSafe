@@ -35,7 +35,7 @@
 
 #include <stdio.h>
 
-#if GTEST_OS_MAC
+#if defined GTEST_OS_MAC && GTEST_OS_MAC
 # include <time.h>
 #endif  // GTEST_OS_MAC
 
@@ -242,10 +242,10 @@ TEST(GtestCheckSyntaxTest, BehavesLikeASingleStatement) {
     GTEST_CHECK_(false) << "This should never be executed; "
                            "It's a compilation test only.";
 
-  if (AlwaysTrue())
+  if (AlwaysTrue()) {
     GTEST_CHECK_(true);
-  else
-    ;  // NOLINT
+  } else {
+  }
 
   if (AlwaysFalse())
     ;  // NOLINT
@@ -304,7 +304,7 @@ TEST(FormatCompilerIndependentFileLocationTest, FormatsUknownFileAndLine) {
   EXPECT_EQ("unknown file", FormatCompilerIndependentFileLocation(NULL, -1));
 }
 
-#if GTEST_OS_MAC || GTEST_OS_QNX
+#if (defined GTEST_OS_MAC && GTEST_OS_MAC) || (defined GTEST_OS_QNX && GTEST_OS_QNX)
 void* ThreadFunc(void* data) {
   pthread_mutex_t* mutex = static_cast<pthread_mutex_t*>(data);
   pthread_mutex_lock(mutex);
@@ -466,7 +466,7 @@ TYPED_TEST(RETest, PartialMatchWorks) {
 
 # endif  // GTEST_HAS_TYPED_TEST
 
-#elif GTEST_USES_SIMPLE_RE
+#elif defined GTEST_USES_SIMPLE_RE && GTEST_USES_SIMPLE_RE
 
 TEST(IsInSetTest, NulCharIsNotInAnySet) {
   EXPECT_FALSE(IsInSet('\0', ""));
@@ -932,7 +932,7 @@ TEST(RETest, PartialMatchWorks) {
 
 #endif  // GTEST_USES_POSIX_RE
 
-#if !GTEST_OS_WINDOWS_MOBILE
+#if !defined GTEST_OS_WINDOWS_MOBILE || !GTEST_OS_WINDOWS_MOBILE
 
 TEST(CaptureTest, CapturesStdout) {
   CaptureStdout();

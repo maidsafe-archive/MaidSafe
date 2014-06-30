@@ -237,7 +237,7 @@ TEST(NiceMockTest, NonDefaultConstructor10) {
   nice_bar.That(5, true);
 }
 
-#if !GTEST_OS_SYMBIAN && !GTEST_OS_WINDOWS_MOBILE
+#if (!defined GTEST_OS_SYMBIAN || !GTEST_OS_SYMBIAN) && (!defined GTEST_OS_WINDOWS_MOBILE || !GTEST_OS_WINDOWS_MOBILE)
 // Tests that NiceMock<Mock> compiles where Mock is a user-defined
 // class (as opposed to ::testing::Mock).  We had to work around an
 // MSVC 8.0 bug that caused the symbol Mock used in the definition of
@@ -330,7 +330,7 @@ TEST(NaggyMockTest, NonDefaultConstructor10) {
   naggy_bar.That(5, true);
 }
 
-#if !GTEST_OS_SYMBIAN && !GTEST_OS_WINDOWS_MOBILE
+#if (!defined GTEST_OS_SYMBIAN || !GTEST_OS_SYMBIAN) && (!defined GTEST_OS_WINDOWS_MOBILE || !GTEST_OS_WINDOWS_MOBILE)
 // Tests that NaggyMock<Mock> compiles where Mock is a user-defined
 // class (as opposed to ::testing::Mock).  We had to work around an
 // MSVC 8.0 bug that caused the symbol Mock used in the definition of
@@ -404,7 +404,7 @@ TEST(StrictMockTest, NonDefaultConstructor10) {
                           "Uninteresting mock function call");
 }
 
-#if !GTEST_OS_SYMBIAN && !GTEST_OS_WINDOWS_MOBILE
+#if (!defined GTEST_OS_SYMBIAN || !GTEST_OS_SYMBIAN) && (!defined GTEST_OS_WINDOWS_MOBILE || !GTEST_OS_WINDOWS_MOBILE)
 // Tests that StrictMock<Mock> compiles where Mock is a user-defined
 // class (as opposed to ::testing::Mock).  We had to work around an
 // MSVC 8.0 bug that caused the symbol Mock used in the definition of

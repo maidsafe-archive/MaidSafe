@@ -72,11 +72,11 @@ using testing::ReturnRefOfCopy;
 using testing::SetArgPointee;
 using testing::SetArgumentPointee;
 
-#if !GTEST_OS_WINDOWS_MOBILE
+#if !defined GTEST_OS_WINDOWS_MOBILE || !GTEST_OS_WINDOWS_MOBILE
 using testing::SetErrnoAndReturn;
 #endif
 
-#if GTEST_HAS_PROTOBUF_
+#if defined GTEST_HAS_PROTOBUF_ && GTEST_HAS_PROTOBUF_
 using testing::internal::TestMessage;
 #endif  // GTEST_HAS_PROTOBUF_
 
@@ -396,7 +396,7 @@ class IsNotZero : public ActionInterface<bool(int)> {  // NOLINT
   }
 };
 
-#if !GTEST_OS_SYMBIAN
+#if !defined GTEST_OS_SYMBIAN || !GTEST_OS_SYMBIAN
 // Compiling this test on Nokia's Symbian compiler fails with:
 //  'Result' is not a member of class 'testing::internal::Function<int>'
 //  (point of instantiation: '@unnamed@gmock_actions_test_cc@::
@@ -719,7 +719,7 @@ TEST(SetArgPointeeTest, SetsTheNthPointee) {
   EXPECT_EQ('a', ch);
 }
 
-#if !((GTEST_GCC_VER_ && GTEST_GCC_VER_ < 40000) || GTEST_OS_SYMBIAN)
+#if !((GTEST_GCC_VER_ && GTEST_GCC_VER_ < 40000) || (defined GTEST_OS_SYMBIAN && GTEST_OS_SYMBIAN))
 // Tests that SetArgPointee<N>() accepts a string literal.
 // GCC prior to v4.0 and the Symbian compiler do not support this.
 TEST(SetArgPointeeTest, AcceptsStringLiteral) {
@@ -797,7 +797,7 @@ TEST(SetArgPointeeTest, AcceptsWideCharPointer) {
 # endif
 }
 
-#if GTEST_HAS_PROTOBUF_
+#if defined GTEST_HAS_PROTOBUF_ && GTEST_HAS_PROTOBUF_
 
 // Tests that SetArgPointee<N>(proto_buffer) sets the v1 protobuf
 // variable pointed to by the N-th (0-based) argument to proto_buffer.
@@ -916,7 +916,7 @@ TEST(SetArgumentPointeeTest, SetsTheNthPointee) {
   EXPECT_EQ('a', ch);
 }
 
-#if GTEST_HAS_PROTOBUF_
+#if defined GTEST_HAS_PROTOBUF_ && GTEST_HAS_PROTOBUF_
 
 // Tests that SetArgumentPointee<N>(proto_buffer) sets the v1 protobuf
 // variable pointed to by the N-th (0-based) argument to proto_buffer.
@@ -1139,7 +1139,7 @@ TEST(AssignTest, CompatibleTypes) {
   EXPECT_DOUBLE_EQ(5, x);
 }
 
-#if !GTEST_OS_WINDOWS_MOBILE
+#if !defined GTEST_OS_WINDOWS_MOBILE || !GTEST_OS_WINDOWS_MOBILE
 
 class SetErrnoAndReturnTest : public testing::Test {
  protected:

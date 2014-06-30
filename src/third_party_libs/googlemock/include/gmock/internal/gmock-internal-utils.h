@@ -113,9 +113,13 @@ struct LinkedPtrLessThan {
 //
 // To gcc,
 //   wchar_t == signed wchar_t != unsigned wchar_t == unsigned int
+
+// Fraser: With -Wpedantic on, the Standard disallows signed/unsigned wchar_t.  Hence negate this
+// definition.
 #ifdef __GNUC__
-// signed/unsigned wchar_t are valid types.
-# define GMOCK_HAS_SIGNED_WCHAR_T_ 1
+//// signed/unsigned wchar_t are valid types.
+//# define GMOCK_HAS_SIGNED_WCHAR_T_ 1
+# define GMOCK_HAS_SIGNED_WCHAR_T_ 0
 #endif
 
 // In what follows, we use the term "kind" to indicate whether a type

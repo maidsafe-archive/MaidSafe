@@ -229,7 +229,7 @@ TEST(ArgsTest, ExplainsMatchResultWithoutInnerExplanation) {
 // For testing Args<>'s explanation.
 class LessThanMatcher : public MatcherInterface<tuple<char, int> > {
  public:
-  virtual void DescribeTo(::std::ostream* os) const {}
+  virtual void DescribeTo(::std::ostream* /*os*/) const {}
 
   virtual bool MatchAndExplain(tuple<char, int> value,
                                MatchResultListener* listener) const {
@@ -1262,7 +1262,10 @@ namespace adl_test {
 
 // The matcher must be in the same namespace as AllOf/AnyOf to make argument
 // dependent lookup find those.
-MATCHER(M, "") { return true; }
+MATCHER(M, "") {
+  static_cast<void>(arg);
+  return true;
+}
 
 template <typename T1, typename T2>
 bool AllOf(const T1& t1, const T2& t2) { return true; }

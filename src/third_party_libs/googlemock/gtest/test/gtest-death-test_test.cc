@@ -40,7 +40,7 @@ using testing::internal::AlwaysTrue;
 
 #if GTEST_HAS_DEATH_TEST
 
-# if GTEST_OS_WINDOWS
+# if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
 #  include <direct.h>          // For chdir().
 # else
 #  include <unistd.h>
@@ -208,7 +208,7 @@ int DieInDebugElse12(int* sideeffect) {
   return 12;
 }
 
-# if GTEST_OS_WINDOWS
+# if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
 
 // Tests the ExitedWithCode predicate.
 TEST(ExitStatusPredicateTest, ExitedWithCode) {
@@ -290,12 +290,12 @@ TEST_F(TestForDeathTest, SingleStatement) {
     // This would fail if executed; this is a compilation test only
     ASSERT_DEATH(return, "");
 
-  if (AlwaysTrue())
+  if (AlwaysTrue()) {
     EXPECT_DEATH(_exit(1), "");
-  else
+  } else {
     // This empty "else" branch is meant to ensure that EXPECT_DEATH
     // doesn't expand into an "if" statement without an "else"
-    ;
+  }
 
   if (AlwaysFalse())
     ASSERT_DEATH(return, "") << "did not die";
@@ -312,7 +312,7 @@ void DieWithEmbeddedNul() {
   _exit(1);
 }
 
-# if GTEST_USES_PCRE
+# if defined GTEST_USES_PCRE && GTEST_USES_PCRE
 // Tests that EXPECT_DEATH and ASSERT_DEATH work when the error
 // message has a NUL character in it.
 TEST_F(TestForDeathTest, EmbeddedNulInMessage) {
@@ -676,7 +676,7 @@ void ExpectDebugDeathHelper(bool* aborted) {
   *aborted = false;
 }
 
-#  if GTEST_OS_WINDOWS
+#  if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
 TEST(PopUpDeathTest, DoesNotShowPopUpOnAbort) {
   printf("This test should be considered failing if it shows "
          "any pop-up dialogs.\n");
@@ -719,7 +719,7 @@ static void TestExitMacros() {
   EXPECT_EXIT(_exit(1),  testing::ExitedWithCode(1),  "");
   ASSERT_EXIT(_exit(42), testing::ExitedWithCode(42), "");
 
-# if GTEST_OS_WINDOWS
+# if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
 
   // Of all signals effects on the process exit code, only those of SIGABRT
   // are documented on Windows.
@@ -1092,7 +1092,7 @@ TEST(GetLastErrnoDescription, GetLastErrnoDescriptionWorks) {
   EXPECT_STREQ("", GetLastErrnoDescription().c_str());
 }
 
-# if GTEST_OS_WINDOWS
+# if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
 TEST(AutoHandleTest, AutoHandleWorks) {
   HANDLE handle = ::CreateEvent(NULL, FALSE, FALSE, NULL);
   ASSERT_NE(INVALID_HANDLE_VALUE, handle);
@@ -1119,7 +1119,7 @@ TEST(AutoHandleTest, AutoHandleWorks) {
 }
 # endif  // GTEST_OS_WINDOWS
 
-# if GTEST_OS_WINDOWS
+# if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
 typedef unsigned __int64 BiggestParsable;
 typedef signed __int64 BiggestSignedParsable;
 # else
@@ -1216,7 +1216,7 @@ TEST(ParseNaturalNumberTest, WorksForShorterIntegers) {
   EXPECT_EQ(123, char_result);
 }
 
-# if GTEST_OS_WINDOWS
+# if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
 TEST(EnvironmentTest, HandleFitsIntoSizeT) {
   // TODO(vladl@google.com): Remove this test after this condition is verified
   // in a static assertion in gtest-death-test.cc in the function
@@ -1320,12 +1320,12 @@ TEST(ConditionalDeathMacrosSyntaxDeathTest, SingleStatement) {
     // This would fail if executed; this is a compilation test only
     ASSERT_DEATH_IF_SUPPORTED(return, "");
 
-  if (AlwaysTrue())
+  if (AlwaysTrue()) {
     EXPECT_DEATH_IF_SUPPORTED(_exit(1), "");
-  else
+  } else {
     // This empty "else" branch is meant to ensure that EXPECT_DEATH
     // doesn't expand into an "if" statement without an "else"
-    ;  // NOLINT
+  }
 
   if (AlwaysFalse())
     ASSERT_DEATH_IF_SUPPORTED(return, "") << "did not die";

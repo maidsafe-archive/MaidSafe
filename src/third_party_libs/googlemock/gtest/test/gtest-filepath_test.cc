@@ -50,9 +50,9 @@
 #include "src/gtest-internal-inl.h"
 #undef GTEST_IMPLEMENTATION_
 
-#if GTEST_OS_WINDOWS_MOBILE
+#if defined GTEST_OS_WINDOWS_MOBILE && GTEST_OS_WINDOWS_MOBILE
 # include <windows.h>  // NOLINT
-#elif GTEST_OS_WINDOWS
+#elif defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
 # include <direct.h>  // NOLINT
 #endif  // GTEST_OS_WINDOWS_MOBILE
 
@@ -60,7 +60,7 @@ namespace testing {
 namespace internal {
 namespace {
 
-#if GTEST_OS_WINDOWS_MOBILE
+#if defined GTEST_OS_WINDOWS_MOBILE && GTEST_OS_WINDOWS_MOBILE
 // TODO(wan@google.com): Move these to the POSIX adapter section in
 // gtest-port.h.
 
@@ -91,7 +91,7 @@ TEST(GetCurrentDirTest, ReturnsCurrentDir) {
   const FilePath cwd = FilePath::GetCurrentDir();
   posix::ChDir(original_dir.c_str());
 
-# if GTEST_OS_WINDOWS
+# if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
 
   // Skips the ":".
   const char* const cwd_without_drive = strchr(cwd.c_str(), ':');
@@ -184,7 +184,7 @@ TEST(RemoveDirectoryNameTest, ShouldAlsoGiveFileNameForAlternateSeparator) {
 
 // RemoveFileName "" -> "./"
 TEST(RemoveFileNameTest, EmptyName) {
-#if GTEST_OS_WINDOWS_MOBILE
+#if defined GTEST_OS_WINDOWS_MOBILE && GTEST_OS_WINDOWS_MOBILE
   // On Windows CE, we use the root as the current directory.
   EXPECT_EQ(GTEST_PATH_SEP_, FilePath("").RemoveFileName().string());
 #else
@@ -367,7 +367,7 @@ TEST(RemoveTrailingPathSeparatorTest, ShouldReturnUnmodified) {
 }
 
 TEST(DirectoryTest, RootDirectoryExists) {
-#if GTEST_OS_WINDOWS  // We are on Windows.
+#if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS  // We are on Windows.
   char current_drive[_MAX_PATH];  // NOLINT
   current_drive[0] = static_cast<char>(_getdrive() + 'A' - 1);
   current_drive[1] = ':';
@@ -379,7 +379,7 @@ TEST(DirectoryTest, RootDirectoryExists) {
 #endif  // GTEST_OS_WINDOWS
 }
 
-#if GTEST_OS_WINDOWS
+#if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
 TEST(DirectoryTest, RootOfWrongDriveDoesNotExists) {
   const int saved_drive_ = _getdrive();
   // Find a drive that doesn't exist. Start with 'Z' to avoid common ones.
@@ -397,7 +397,7 @@ TEST(DirectoryTest, RootOfWrongDriveDoesNotExists) {
 }
 #endif  // GTEST_OS_WINDOWS
 
-#if !GTEST_OS_WINDOWS_MOBILE
+#if !defined GTEST_OS_WINDOWS_MOBILE || !GTEST_OS_WINDOWS_MOBILE
 // Windows CE _does_ consider an empty directory to exist.
 TEST(DirectoryTest, EmptyPathDirectoryDoesNotExist) {
   EXPECT_FALSE(FilePath("").DirectoryExists());
@@ -405,7 +405,7 @@ TEST(DirectoryTest, EmptyPathDirectoryDoesNotExist) {
 #endif  // !GTEST_OS_WINDOWS_MOBILE
 
 TEST(DirectoryTest, CurrentDirectoryExists) {
-#if GTEST_OS_WINDOWS  // We are on Windows.
+#if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS  // We are on Windows.
 # ifndef _WIN32_CE  // Windows CE doesn't have a current directory.
 
   EXPECT_TRUE(FilePath(".").DirectoryExists());
@@ -515,9 +515,9 @@ class DirectoryCreationTest : public Test {
   }
 
   std::string TempDir() const {
-#if GTEST_OS_WINDOWS_MOBILE
+#if defined GTEST_OS_WINDOWS_MOBILE && GTEST_OS_WINDOWS_MOBILE
     return "\\temp\\";
-#elif GTEST_OS_WINDOWS
+#elif defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
     const char* temp_dir = posix::GetEnv("TEMP");
     if (temp_dir == NULL || temp_dir[0] == '\0')
       return "\\temp\\";
@@ -525,7 +525,7 @@ class DirectoryCreationTest : public Test {
       return temp_dir;
     else
       return std::string(temp_dir) + "\\";
-#elif GTEST_OS_LINUX_ANDROID
+#elif defined GTEST_OS_LINUX_ANDROID && GTEST_OS_LINUX_ANDROID
     return "/sdcard/";
 #else
     return "/tmp/";
@@ -644,7 +644,7 @@ TEST(FilePathTest, IsDirectory) {
 TEST(FilePathTest, IsAbsolutePath) {
   EXPECT_FALSE(FilePath("is" GTEST_PATH_SEP_ "relative").IsAbsolutePath());
   EXPECT_FALSE(FilePath("").IsAbsolutePath());
-#if GTEST_OS_WINDOWS
+#if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
   EXPECT_TRUE(FilePath("c:\\" GTEST_PATH_SEP_ "is_not"
                        GTEST_PATH_SEP_ "relative").IsAbsolutePath());
   EXPECT_FALSE(FilePath("c:foo" GTEST_PATH_SEP_ "bar").IsAbsolutePath());
@@ -657,7 +657,7 @@ TEST(FilePathTest, IsAbsolutePath) {
 }
 
 TEST(FilePathTest, IsRootDirectory) {
-#if GTEST_OS_WINDOWS
+#if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
   EXPECT_TRUE(FilePath("a:\\").IsRootDirectory());
   EXPECT_TRUE(FilePath("Z:/").IsRootDirectory());
   EXPECT_TRUE(FilePath("e://").IsRootDirectory());

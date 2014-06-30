@@ -386,7 +386,7 @@ TEST(StringMatcherTest, CanBeImplicitlyConstructedFromString) {
   EXPECT_FALSE(m2.Matches("hello"));
 }
 
-#if GTEST_HAS_STRING_PIECE_
+#if defined GTEST_HAS_STRING_PIECE_ && GTEST_HAS_STRING_PIECE_
 // Tests that a C-string literal can be implicitly converted to a
 // Matcher<StringPiece> or Matcher<const StringPiece&>.
 TEST(StringPieceMatcherTest, CanBeImplicitlyConstructedFromCStringLiteral) {
@@ -435,6 +435,10 @@ TEST(MakeMatcherTest, ConstructsMatcherFromMatcherInterface) {
 // Tests that MakePolymorphicMatcher() can construct a polymorphic
 // matcher from its implementation using the old API.
 const int g_bar = 1;
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+#endif
 class ReferencesBarOrIsZeroImpl {
  public:
   template <typename T>
@@ -450,6 +454,9 @@ class ReferencesBarOrIsZeroImpl {
     *os << "doesn't reference g_bar and is not zero";
   }
 };
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 // This function verifies that MakePolymorphicMatcher() returns a
 // PolymorphicMatcher<T> where T is the argument's type.
@@ -955,7 +962,7 @@ TEST(IsNullTest, MatchesNullPointer) {
   EXPECT_TRUE(m2.Matches(p2));
   EXPECT_FALSE(m2.Matches("hi"));
 
-#if !GTEST_OS_SYMBIAN
+#if !defined GTEST_OS_SYMBIAN || !GTEST_OS_SYMBIAN
   // Nokia's Symbian compiler generates:
   // gmock-matchers.h: ambiguous access to overloaded function
   // gmock-matchers.h: 'testing::Matcher<void *>::Matcher(void *)'
@@ -2610,7 +2617,7 @@ TEST(MatcherAssertionTest, WorksForByRefArguments) {
                        "Actual: 0" + OfType("int") + ", which is located @");
 }
 
-#if !GTEST_OS_SYMBIAN
+#if !defined GTEST_OS_SYMBIAN || !GTEST_OS_SYMBIAN
 // Tests that ASSERT_THAT() and EXPECT_THAT() work when the matcher is
 // monomorphic.
 
@@ -5128,6 +5135,10 @@ TEST(EachTest, WorksForNativeArrayAsTuple) {
 }
 
 // For testing Pointwise().
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+#endif
 class IsHalfOfMatcher {
  public:
   template <typename T1, typename T2>
@@ -5150,6 +5161,9 @@ class IsHalfOfMatcher {
     *os << "are a pair where the first isn't half of the second";
   }
 };
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 PolymorphicMatcher<IsHalfOfMatcher> IsHalfOf() {
   return MakePolymorphicMatcher(IsHalfOfMatcher());

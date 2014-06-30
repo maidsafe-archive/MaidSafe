@@ -136,11 +136,18 @@ void VerifyGenerator(const ParamGenerator<T>& generator,
         << "created with the copy constructor.\n";
     // We cannot use EXPECT_EQ() here as the values may be tuples,
     // which don't support <<.
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+#endif
     EXPECT_TRUE(expected_values[i] == *it)
         << "where i is " << i
         << ", expected_values[i] is " << PrintValue(expected_values[i])
         << ", *it is " << PrintValue(*it)
         << ", and 'it' is an iterator created with the copy constructor.\n";
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
     it++;
   }
   EXPECT_TRUE(it == generator.end())
@@ -156,11 +163,18 @@ void VerifyGenerator(const ParamGenerator<T>& generator,
     ASSERT_FALSE(it == generator.end())
         << "At element " << i << " when accessing via an iterator "
         << "created with the assignment operator.\n";
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+#endif
     EXPECT_TRUE(expected_values[i] == *it)
         << "where i is " << i
         << ", expected_values[i] is " << PrintValue(expected_values[i])
         << ", *it is " << PrintValue(*it)
         << ", and 'it' is an iterator created with the copy constructor.\n";
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
     it++;
   }
   EXPECT_TRUE(it == generator.end())

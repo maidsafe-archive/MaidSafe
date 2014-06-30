@@ -40,9 +40,9 @@
 
 #include "gtest/gtest.h"
 
-#if GTEST_OS_WINDOWS_MOBILE
+#if defined GTEST_OS_WINDOWS_MOBILE && GTEST_OS_WINDOWS_MOBILE
 # include <windows.h>
-#elif GTEST_OS_WINDOWS
+#elif defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
 # include <direct.h>
 #endif  // GTEST_OS_WINDOWS_MOBILE
 
@@ -96,7 +96,7 @@ TEST(XmlOutputTest, GetOutputFileFromDirectoryPath) {
                    GetCurrentExecutableName().string() + ".xml")).string();
   const std::string& output_file =
       UnitTestOptions::GetAbsolutePathToOutputFile();
-#if GTEST_OS_WINDOWS
+#if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
   EXPECT_STRCASEEQ(expected_output_file.c_str(), output_file.c_str());
 #else
   EXPECT_EQ(expected_output_file, output_file.c_str());
@@ -105,7 +105,7 @@ TEST(XmlOutputTest, GetOutputFileFromDirectoryPath) {
 
 TEST(OutputFileHelpersTest, GetCurrentExecutableName) {
   const std::string exe_str = GetCurrentExecutableName().string();
-#if GTEST_OS_WINDOWS
+#if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
   const bool success =
       _strcmpi("gtest-options_test", exe_str.c_str()) == 0 ||
       _strcmpi("gtest-options-ex_test", exe_str.c_str()) == 0 ||
@@ -171,7 +171,7 @@ TEST_F(XmlOutputChangeDirTest, PreserveOriginalWorkingDirWithRelativePath) {
                    GetCurrentExecutableName().string() + ".xml")).string();
   const std::string& output_file =
       UnitTestOptions::GetAbsolutePathToOutputFile();
-#if GTEST_OS_WINDOWS
+#if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
   EXPECT_STRCASEEQ(expected_output_file.c_str(), output_file.c_str());
 #else
   EXPECT_EQ(expected_output_file, output_file.c_str());
@@ -179,7 +179,7 @@ TEST_F(XmlOutputChangeDirTest, PreserveOriginalWorkingDirWithRelativePath) {
 }
 
 TEST_F(XmlOutputChangeDirTest, PreserveOriginalWorkingDirWithAbsoluteFile) {
-#if GTEST_OS_WINDOWS
+#if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
   GTEST_FLAG(output) = "xml:c:\\tmp\\filename.abc";
   EXPECT_EQ(FilePath("c:\\tmp\\filename.abc").string(),
             UnitTestOptions::GetAbsolutePathToOutputFile());
@@ -191,7 +191,7 @@ TEST_F(XmlOutputChangeDirTest, PreserveOriginalWorkingDirWithAbsoluteFile) {
 }
 
 TEST_F(XmlOutputChangeDirTest, PreserveOriginalWorkingDirWithAbsolutePath) {
-#if GTEST_OS_WINDOWS
+#if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
   const std::string path = "c:\\tmp\\";
 #else
   const std::string path = "/tmp/";
@@ -203,7 +203,7 @@ TEST_F(XmlOutputChangeDirTest, PreserveOriginalWorkingDirWithAbsolutePath) {
   const std::string& output_file =
       UnitTestOptions::GetAbsolutePathToOutputFile();
 
-#if GTEST_OS_WINDOWS
+#if defined GTEST_OS_WINDOWS && GTEST_OS_WINDOWS
   EXPECT_STRCASEEQ(expected_output_file.c_str(), output_file.c_str());
 #else
   EXPECT_EQ(expected_output_file, output_file.c_str());

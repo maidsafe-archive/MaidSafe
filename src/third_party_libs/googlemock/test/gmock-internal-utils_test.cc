@@ -44,7 +44,7 @@
 #include "gtest/gtest.h"
 #include "gtest/gtest-spi.h"
 
-#if GTEST_OS_CYGWIN
+#if defined GTEST_OS_CYGWIN && GTEST_OS_CYGWIN
 # include <sys/types.h>  // For ssize_t. NOLINT
 #endif
 
@@ -411,7 +411,7 @@ TEST(LogTest, NoSkippingStackFrameInOptMode) {
   Log(kWarning, "Test log.\n", 100);
   const string log = GetCapturedStdout();
 
-# if defined(NDEBUG) && GTEST_GOOGLE3_MODE_
+# if defined(NDEBUG) && defined(GTEST_GOOGLE3_MODE_) && GTEST_GOOGLE3_MODE_
 
   // In opt mode, no stack frame should be skipped.
   EXPECT_THAT(log, ContainsRegex("\nGMOCK WARNING:\n"
@@ -515,7 +515,7 @@ void ExpectCallLogger() {
   DummyMock mock;
   EXPECT_CALL(mock, TestMethod());
   mock.TestMethod();
-};
+}
 
 // Verifies that EXPECT_CALL logs if the --gmock_verbose flag is set to "info".
 TEST(ExpectCallTest, LogsWhenVerbosityIsInfo) {
@@ -538,7 +538,7 @@ TEST(ExpectCallTest,  DoesNotLogWhenVerbosityIsError) {
 void OnCallLogger() {
   DummyMock mock;
   ON_CALL(mock, TestMethod());
-};
+}
 
 // Verifies that ON_CALL logs if the --gmock_verbose flag is set to "info".
 TEST(OnCallTest, LogsWhenVerbosityIsInfo) {
