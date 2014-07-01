@@ -38,8 +38,6 @@ endif()
 
 
 include(add_boost)
-include(add_sfml)
-add_subdirectory(catch/projects/CMake)
 add_subdirectory(cryptopp)
 add_subdirectory(googlemock)
 add_subdirectory(protobuf)
