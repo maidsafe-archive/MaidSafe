@@ -79,7 +79,8 @@ target_compile_definitions(gtest
   INTERFACE
     GTEST_DONT_DEFINE_FAIL=1
     GTEST_DONT_DEFINE_SUCCEED=1
-    $<$<AND:$<BOOL:${UNIX}>,$<CXX_COMPILER_ID:Clang>>:GTEST_USE_OWN_TR1_TUPLE=1 _FILE_OFFSET_BITS=64>
+    GTEST_USE_OWN_TUPLE=0
+    $<$<AND:$<BOOL:${UNIX}>,$<CXX_COMPILER_ID:Clang>>:_FILE_OFFSET_BITS=64>
 )
 
 # These next 2 commands are a workaround to avoid having to link maidsafe_common via a target_link_libraries call.

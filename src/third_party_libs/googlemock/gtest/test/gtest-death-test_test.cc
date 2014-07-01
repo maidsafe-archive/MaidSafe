@@ -51,7 +51,7 @@ using testing::internal::AlwaysTrue;
 # include <signal.h>
 # include <stdio.h>
 
-# if GTEST_OS_LINUX
+# if defined GTEST_OS_LINUX && GTEST_OS_LINUX
 #  include <sys/time.h>
 # endif  // GTEST_OS_LINUX
 
@@ -375,7 +375,7 @@ TEST_F(TestForDeathTest, FastDeathTestInChangedDir) {
   ASSERT_DEATH(_exit(1), "");
 }
 
-# if GTEST_OS_LINUX
+# if defined GTEST_OS_LINUX && GTEST_OS_LINUX
 void SigprofAction(int, siginfo_t*, void*) { /* no op */ }
 
 // Sets SIGPROF action and ITIMER_PROF timer (interval: 1ms).

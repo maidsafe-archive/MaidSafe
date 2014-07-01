@@ -1268,7 +1268,7 @@ MATCHER(M, "") {
 }
 
 template <typename T1, typename T2>
-bool AllOf(const T1& t1, const T2& t2) { return true; }
+bool AllOf(const T1& /*t1*/, const T2& /*t2*/) { return true; }
 
 TEST(AllOfTest, DoesNotCallAllOfUnqualified) {
   EXPECT_THAT(42, testing::AllOf(
@@ -1276,7 +1276,7 @@ TEST(AllOfTest, DoesNotCallAllOfUnqualified) {
 }
 
 template <typename T1, typename T2> bool
-AnyOf(const T1& t1, const T2& t2) { return true; }
+AnyOf(const T1& /*t1*/, const T2& /*t2*/) { return true; }
 
 TEST(AnyOfTest, DoesNotCallAnyOfUnqualified) {
   EXPECT_THAT(42, testing::AnyOf(

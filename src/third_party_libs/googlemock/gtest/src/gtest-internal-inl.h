@@ -58,7 +58,7 @@
 
 #include "gtest/internal/gtest-port.h"
 
-#if GTEST_CAN_STREAM_RESULTS_
+#if defined GTEST_CAN_STREAM_RESULTS_ && GTEST_CAN_STREAM_RESULTS_
 # include <arpa/inet.h>  // NOLINT
 # include <netdb.h>  // NOLINT
 #endif
@@ -781,7 +781,7 @@ class GTEST_API_ UnitTestImpl {
   // UnitTestOptions. Must not be called before InitGoogleTest.
   void ConfigureXmlOutput();
 
-#if GTEST_CAN_STREAM_RESULTS_
+#if defined GTEST_CAN_STREAM_RESULTS_ && GTEST_CAN_STREAM_RESULTS_
   // Initializes the event listener for streaming test results to a socket.
   // Must not be called before InitGoogleTest.
   void ConfigureStreamingOutput();
@@ -1064,7 +1064,7 @@ class TestResultAccessor {
   }
 };
 
-#if GTEST_CAN_STREAM_RESULTS_
+#if defined GTEST_CAN_STREAM_RESULTS_ && GTEST_CAN_STREAM_RESULTS_
 
 // Streams test results to the given port on the given host machine.
 class StreamingListener : public EmptyTestEventListener {

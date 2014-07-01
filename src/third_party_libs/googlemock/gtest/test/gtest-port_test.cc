@@ -389,7 +389,7 @@ TEST(GtestCheckDeathTest, LivesSilentlyOnSuccess) {
 // the platform. The test will produce compiler errors in case of failure.
 // For simplicity, we only cover the most important platforms here.
 TEST(RegexEngineSelectionTest, SelectsCorrectRegexEngine) {
-#if GTEST_HAS_POSIX_RE
+#if defined __clang__ || (defined GTEST_HAS_POSIX_RE && defined GTEST_HAS_POSIX_REGTEST_HAS_POSIX_RE && GTEST_HAS_POSIX_REGTEST_HAS_POSIX_RE)
 
   EXPECT_TRUE(GTEST_USES_POSIX_RE);
 

@@ -395,7 +395,9 @@
 // Solaris' libc++ doesn't support it either.  Android has
 // no support for it at least as recent as Froyo (2.2).
 # define GTEST_HAS_STD_WSTRING \
-    (!(GTEST_OS_LINUX_ANDROID || GTEST_OS_CYGWIN || GTEST_OS_SOLARIS))
+    (!((defined GTEST_OS_LINUX_ANDROID && GTEST_OS_LINUX_ANDROID) || \
+       (defined GTEST_OS_CYGWIN && GTEST_OS_CYGWIN) || \
+       (defined GTEST_OS_SOLARIS && GTEST_OS_SOLARIS)))
 
 #endif  // GTEST_HAS_STD_WSTRING
 
