@@ -72,7 +72,7 @@ list(REMOVE_ITEM cryptopp_HEADERS ${cryptopp_TEST_HEADERS})
 
 set(CurrentCamelCaseProjectName ${CamelCaseProjectName})
 set(CamelCaseProjectName Common)
-ms_add_executable(cryptest "Tests/Common" ${cryptopp_TEST_SOURCES} ${cryptopp_TEST_HEADERS})
+ms_add_executable(cryptest "." ${cryptopp_TEST_SOURCES} ${cryptopp_TEST_HEADERS})
 set(CamelCaseProjectName ${CurrentCamelCaseProjectName})
 
 #add_executable(TESTcryptopp ${TESTcryptopp_DIR})
@@ -86,7 +86,7 @@ ms_target_include_system_dirs(cryptopp INTERFACE ${PROJECT_SOURCE_DIR}/.. PRIVAT
 if(JustThread_FOUND)
   ms_target_include_system_dirs(cryptopp PUBLIC ${JustThread_INCLUDE_DIR})
 endif()
-set_target_properties(cryptopp PROPERTIES FOLDER "Third Party/Crypto++")
+set_target_properties(cryptopp cryptest PROPERTIES FOLDER "Third Party/Crypto++")
 
 
 add_custom_command(TARGET cryptest
