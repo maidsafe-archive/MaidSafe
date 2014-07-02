@@ -376,7 +376,8 @@ class SubstractAction : public ActionInterface<int(int, int)> {  // NOLINT
 TEST(WithArgsTest, NonInvokeAction) {
   Action<int(const string&, int, int)> a =  // NOLINT
       WithArgs<2, 1>(MakeAction(new SubstractAction));
-  EXPECT_EQ(8, a.Perform(make_tuple(CharPtr("hi"), 2, 10)));
+  auto t(make_tuple(string("hi"), 2, 10));
+  EXPECT_EQ(8, a.Perform(t));
 }
 
 // Tests using WithArgs to pass all original arguments in the original order.
@@ -753,7 +754,8 @@ TEST(ActionPMacroTest, CanReferenceArgumentAndParameterTypes) {
 TEST(ActionPMacroTest, WorksInCompatibleMockFunction) {
   Action<std::string(const std::string& s)> a1 = Plus("tail");
   const std::string re = "re";
-  EXPECT_EQ("retail", a1.Perform(make_tuple(re)));
+  auto t(make_tuple(re));
+  EXPECT_EQ("retail", a1.Perform(t));
 }
 
 // Tests that we can use ACTION*() to define actions overloaded on the
@@ -795,7 +797,8 @@ TEST(ActionPnMacroTest, WorksFor3Parameters) {
 
   Action<std::string(const std::string& s)> a2 = Plus("tail", "-", ">");
   const std::string re = "re";
-  EXPECT_EQ("retail->", a2.Perform(make_tuple(re)));
+  auto t(make_tuple(re));
+  EXPECT_EQ("retail->", a2.Perform(t));
 }
 
 ACTION_P4(Plus, p0, p1, p2, p3) { return arg0 + p0 + p1 + p2 + p3; }
@@ -956,6 +959,19 @@ TEST(ActionPnMacroTest, TypesAreCorrect) {
       Plus(1, 2, 3, 4, 5, 6, 7, 8, '9');
   PlusActionP10<int, int, int, int, int, int, int, int, int, char> a10 =
       Plus(1, 2, 3, 4, 5, 6, 7, 8, 9, '0');
+
+  // Avoid "unused variable" warnings.
+  (void)a0;
+  (void)a1;
+  (void)a2;
+  (void)a3;
+  (void)a4;
+  (void)a5;
+  (void)a6;
+  (void)a7;
+  (void)a8;
+  (void)a9;
+  (void)a10;
 }
 
 // Tests that an ACTION_P*() action can be explicitly instantiated

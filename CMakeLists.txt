@@ -182,11 +182,6 @@ if(UNIX)
   endif()
 endif()
 
-message(STATUS "To include all GTests,                   cmake . -DMAIDSAFE_TEST_TYPE=ALL")
-message(STATUS "To include only behavioural GTests,      cmake . -DMAIDSAFE_TEST_TYPE=BEH")
-message(STATUS "To include only functional GTests,       cmake . -DMAIDSAFE_TEST_TYPE=FUNC")
-message("${HR}")
-
 
 # Tidy CTestCustom.cmake
 file(STRINGS ${CMAKE_BINARY_DIR}/CTestCustom.cmake CTestCustomContents)

@@ -42,11 +42,6 @@ set(SfmlSHA1 c27bdffdc4bedb5f6a20db03ceca715d42aa5752)
 
 set(SfmlSuccess TRUE)
 
-if(NOT "${SFML}") 
-  message("not building SFML as SFML not set")
-  return()
-endif()
-
 # Disable SFML on Windows with CMAKE < 3.0.0 as the tar extract fails
 if(WIN32 AND NOT "${CMAKE_VERSION}" VERSION_GREATER 2.8.12.2)
   set(SfmlSuccess FALSE)
@@ -58,9 +53,8 @@ if("${HAVE_LIBC++}")
   message(WARNING "\nSFML not available with libc++.\n")
 endif()
 
-
 # Check prerequisites on Unix (Windows ones and some OS X ones are provided along with SFML)
-if(UNIX)
+if(UNIX AND SfmlSuccess)
   if(APPLE)
     set(Packages OpenGL OpenAL)
   else()

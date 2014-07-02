@@ -57,7 +57,6 @@
 
 # Main function - the only one designed to be called from outside this module.
 function(ms_add_gtests TEST_TARGET)
-  target_compile_definitions(${TEST_TARGET} PRIVATE USE_GTEST)
   target_link_libraries(${TEST_TARGET} gmock gtest)
 
   if(NOT BEHAVIOURAL_TEST_TIMEOUT)

@@ -45,17 +45,16 @@ using ::testing::TestEventListener;
 using ::testing::TestInfo;
 using ::testing::TestPartResult;
 using ::testing::UnitTest;
-using ::testing::internal::String;
 
 // Used by tests to register their events.
-std::vector<String>* g_events = NULL;
+std::vector<std::string>* g_events = NULL;
 
 namespace testing {
 namespace internal {
 
 class EventRecordingListener : public TestEventListener {
  public:
-  EventRecordingListener(const char* name) : name_(name) {}
+  explicit EventRecordingListener(const char* name) : name_(name) {}
 
  protected:
   virtual void OnTestProgramStart(const UnitTest& /*unit_test*/) {
@@ -119,55 +118,53 @@ class EventRecordingListener : public TestEventListener {
   }
 
  private:
-  String GetFullMethodName(const char* name) {
-    Message message;
-    message << name_ << "." << name;
-    return message.GetString();
+  std::string GetFullMethodName(const char* name) {
+    return name_ + "." + name;
   }
 
-  String name_;
+  std::string name_;
 };
 
 class EnvironmentInvocationCatcher : public Environment {
  protected:
   virtual void SetUp() {
-    g_events->push_back(String("Environment::SetUp"));
+    g_events->push_back("Environment::SetUp");
   }
 
   virtual void TearDown() {
-    g_events->push_back(String("Environment::TearDown"));
+    g_events->push_back("Environment::TearDown");
   }
 };
 
 class ListenerTest : public Test {
  protected:
   static void SetUpTestCase() {
-    g_events->push_back(String("ListenerTest::SetUpTestCase"));
+    g_events->push_back("ListenerTest::SetUpTestCase");
   }
 
   static void TearDownTestCase() {
-    g_events->push_back(String("ListenerTest::TearDownTestCase"));
+    g_events->push_back("ListenerTest::TearDownTestCase");
   }
 
   virtual void SetUp() {
-    g_events->push_back(String("ListenerTest::SetUp"));
+    g_events->push_back("ListenerTest::SetUp");
   }
 
   virtual void TearDown() {
-    g_events->push_back(String("ListenerTest::TearDown"));
+    g_events->push_back("ListenerTest::TearDown");
   }
 };
 
 TEST_F(ListenerTest, DoesFoo) {
   // Test execution order within a test case is not guaranteed so we are not
   // recording the test name.
-  g_events->push_back(String("ListenerTest::* Test Body"));
-  SUCCEED();  // Triggers OnTestPartResult.
+  g_events->push_back("ListenerTest::* Test Body");
+  GTEST_SUCCEED();  // Triggers OnTestPartResult.
 }
 
 TEST_F(ListenerTest, DoesBar) {
-  g_events->push_back(String("ListenerTest::* Test Body"));
-  SUCCEED();  // Triggers OnTestPartResult.
+  g_events->push_back("ListenerTest::* Test Body");
+  GTEST_SUCCEED();  // Triggers OnTestPartResult.
 }
 
 }  // namespace internal
@@ -177,10 +174,11 @@ TEST_F(ListenerTest, DoesBar) {
 using ::testing::internal::EnvironmentInvocationCatcher;
 using ::testing::internal::EventRecordingListener;
 
-void VerifyResults(const std::vector<String>& data,
+void VerifyResults(const std::vector<std::string>& data,
                    const char* const* expected_data,
                    int expected_data_size) {
-  const int actual_size = data.size();
+  ASSERT_LT(data.size(), static_cast<size_t>(std::numeric_limits<int>::max()));
+  const int actual_size = static_cast<int>(data.size());
   // If the following assertion fails, a new entry will be appended to
   // data.  Hence we save data.size() first.
   EXPECT_EQ(expected_data_size, actual_size);
@@ -201,7 +199,7 @@ void VerifyResults(const std::vector<String>& data,
 }
 
 int main(int argc, char **argv) {
-  std::vector<String> events;
+  std::vector<std::string> events;
   g_events = &events;
   InitGoogleTest(&argc, argv);
 

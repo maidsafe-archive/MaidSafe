@@ -225,6 +225,7 @@ class Foo {
                   const char* s10) {
     return string(s1) + s2 + s3 + s4 + s5 + s6 + s7 + s8 + s9 + s10;
   }
+
  private:
   int value_;
 };
@@ -326,7 +327,8 @@ TEST(InvokeTest, FunctionThatTakes10Arguments) {
 TEST(InvokeTest, FunctionWithUnusedParameters) {
   Action<int(int, int, double, const string&)> a1 =
       Invoke(SumOfFirst2);
-  EXPECT_EQ(12, a1.Perform(make_tuple(10, 2, 5.6, CharPtr("hi"))));
+  auto t(make_tuple(10, 2, 5.6, string("hi")));
+  EXPECT_EQ(12, a1.Perform(t));
 
   Action<int(int, int, bool, int*)> a2 =
       Invoke(SumOfFirst2);
@@ -378,7 +380,8 @@ TEST(InvokeMethodTest, Binary) {
   Foo foo;
   Action<string(const string&, char)> a = Invoke(&foo, &Foo::Binary);
   string s("Hell");
-  EXPECT_EQ("Hello", a.Perform(make_tuple(s, 'o')));
+  auto t(make_tuple(s, 'o'));
+  EXPECT_EQ("Hello", a.Perform(t));
 }
 
 // Tests using Invoke() with a ternary method.

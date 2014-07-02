@@ -16,7 +16,7 @@ option(
   "Use shared (DLL) run-time lib even when Google Test is built as static lib."
   OFF)
 
-option(gtest_build_tests "Build all of gtest's own tests." OFF)
+option(gtest_build_tests "Build all of gtest's own tests." ON)
 
 option(gtest_build_samples "Build gtest's sample programs." OFF)
 
@@ -57,10 +57,11 @@ config_compiler_and_linker()  # Defined in internal_utils.cmake.
 #   ${gtest_SOURCE_DIR}
 #   ${CMAKE_SOURCE_DIR}/src/common/include
 #   ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost
+#   ${CMAKE_SOURCE_DIR}/src/third_party_libs/googlemock/gtest/include
 #   )
 
 # Where Google Test's libraries can be found.
-# link_directories(${gtest_BINARY_DIR}/src)
+# link_directories(${CMAKE_BINARY_DIR})
 
 ########################################################################
 #
@@ -72,13 +73,14 @@ config_compiler_and_linker()  # Defined in internal_utils.cmake.
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 target_include_directories(gtest PRIVATE ${CMAKE_SOURCE_DIR}/src/common/include)
-ms_target_include_system_dirs(gtest PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR} ${BoostSourceDir})
+ms_target_include_system_dirs(gtest PUBLIC ${gtest_SOURCE_DIR}/include PRIVATE ${gtest_SOURCE_DIR} ${BoostSourceDir})
 
 target_compile_definitions(gtest
   INTERFACE
     GTEST_DONT_DEFINE_FAIL=1
     GTEST_DONT_DEFINE_SUCCEED=1
-    $<$<AND:$<BOOL:${UNIX}>,$<CXX_COMPILER_ID:Clang>>:GTEST_USE_OWN_TR1_TUPLE=1 _FILE_OFFSET_BITS=64>
+    GTEST_USE_OWN_TUPLE=0
+    $<$<AND:$<BOOL:${UNIX}>,$<CXX_COMPILER_ID:Clang>>:_FILE_OFFSET_BITS=64>
 )
 
 # These next 2 commands are a workaround to avoid having to link maidsafe_common via a target_link_libraries call.
@@ -86,18 +88,17 @@ target_compile_definitions(gtest
 # CMakeLists.txt of Common.
 target_compile_options(gtest PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/wd4512>)
 target_compile_definitions(gtest PRIVATE $<$<BOOL:${WIN32}>:MAIDSAFE_WIN32> $<$<BOOL:${MSVC}>:BOOST_ALL_NO_LIB>)
+target_link_libraries(gtest maidsafe_common)
 
 if(MSVC)
   set_target_properties(gtest PROPERTIES
                         STATIC_LIBRARY_FLAGS_RELEASE " /LTCG "
                         STATIC_LIBRARY_FLAGS_RELWITHDEBINFO " /LTCG "
-                        STATIC_LIBRARY_FLAGS_RELEASENOINLINE " /LTCG "
-                        FOLDER "Third Party/GoogleTest")
+                        STATIC_LIBRARY_FLAGS_RELEASENOINLINE " /LTCG ")
 endif()
 
-# cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
-# target_link_libraries(gtest_main gtest)
-# set_target_properties(gtest_main PROPERTIES FOLDER "Third Party/GoogleTest")
+cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
+target_link_libraries(gtest_main gtest)
 
 ########################################################################
 #
@@ -151,120 +152,68 @@ if (gtest_build_tests)
   cxx_test(gtest-param-test_test gtest
     test/gtest-param-test2_test.cc)
   cxx_test(gtest-port_test gtest_main)
+  target_compile_definitions(gtest-port_test PRIVATE $<$<BOOL:${UNIX}>:GTEST_HAS_POSIX_REGTEST_HAS_POSIX_RE>)
+  target_compile_options(gtest-port_test PRIVATE $<$<BOOL:${MSVC}>:/J>)
   cxx_test(gtest_pred_impl_unittest gtest_main)
-  cxx_test(gtest-printers_test gtest_main)
+  # cxx_test(gtest-printers_test gtest_main)
   cxx_test(gtest_prod_test gtest_main
     test/production.cc)
   cxx_test(gtest_repeat_test gtest)
-  cxx_test(gtest_sole_header_test gtest_main)
+  # cxx_test(gtest_sole_header_test gtest_main)
   cxx_test(gtest_stress_test gtest)
   cxx_test(gtest-test-part_test gtest_main)
   cxx_test(gtest_throw_on_failure_ex_test gtest)
   cxx_test(gtest-typed-test_test gtest_main
     test/gtest-typed-test2_test.cc)
-  cxx_test(gtest_unittest gtest_main)
-  cxx_test(gtest-unittest-api_test gtest)
+  # cxx_test(gtest_unittest gtest_main)
+  # cxx_test(gtest-unittest-api_test gtest)
 
   ############################################################
   # C++ tests built with non-standard compiler flags.
-
-  cxx_library(gtest_no_exception "${cxx_no_exception}"
-    src/gtest-all.cc)
-  cxx_library(gtest_main_no_exception "${cxx_no_exception}"
-    src/gtest-all.cc src/gtest_main.cc)
-  cxx_library(gtest_main_no_rtti "${cxx_no_rtti}"
-    src/gtest-all.cc src/gtest_main.cc)
-
-  cxx_test_with_flags(gtest-death-test_ex_nocatch_test
-    "${cxx_exception} -DGTEST_ENABLE_CATCH_EXCEPTIONS_=0"
-    gtest test/gtest-death-test_ex_test.cc)
-  cxx_test_with_flags(gtest-death-test_ex_catch_test
-    "${cxx_exception} -DGTEST_ENABLE_CATCH_EXCEPTIONS_=1"
-    gtest test/gtest-death-test_ex_test.cc)
-
-  cxx_test_with_flags(gtest_no_rtti_unittest "${cxx_no_rtti}"
-    gtest_main_no_rtti test/gtest_unittest.cc)
-
-  cxx_shared_library(gtest_dll "${cxx_default}"
-    src/gtest-all.cc src/gtest_main.cc)
-
-  cxx_executable_with_flags(gtest_dll_test_ "${cxx_default}"
-    gtest_dll test/gtest_all_test.cc)
-  set_target_properties(gtest_dll_test_
-                        PROPERTIES
-                        COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
-
-  if (NOT MSVC OR NOT MSVC_VERSION EQUAL 1600)
-    # The C++ Standard specifies tuple_element<int, class>.
-    # Yet MSVC 10's <utility> declares tuple_element<size_t, class>.
-    # That declaration conflicts with our own standard-conforming
-    # tuple implementation.  Therefore using our own tuple with
-    # MSVC 10 doesn't compile.
-    cxx_library(gtest_main_use_own_tuple "${cxx_use_own_tuple}"
-      src/gtest-all.cc src/gtest_main.cc)
-
-    cxx_test_with_flags(gtest-tuple_test "${cxx_use_own_tuple}"
-      gtest_main_use_own_tuple test/gtest-tuple_test.cc)
-
-    cxx_test_with_flags(gtest_use_own_tuple_test "${cxx_use_own_tuple}"
-      gtest_main_use_own_tuple
-      test/gtest-param-test_test.cc test/gtest-param-test2_test.cc)
-  endif()
-
-  ############################################################
-  # Python tests.
-
-  cxx_executable(gtest_break_on_failure_unittest_ test gtest)
-  py_test(gtest_break_on_failure_unittest)
-
-  cxx_executable_with_flags(
-    gtest_catch_exceptions_no_ex_test_
-    "${cxx_no_exception}"
-    gtest_main_no_exception
-    test/gtest_catch_exceptions_test_.cc)
-  cxx_executable_with_flags(
-    gtest_catch_exceptions_ex_test_
-    "${cxx_exception}"
-    gtest_main
-    test/gtest_catch_exceptions_test_.cc)
-  py_test(gtest_catch_exceptions_test)
-
-  cxx_executable(gtest_color_test_ test gtest)
-  py_test(gtest_color_test)
-
-  cxx_executable(gtest_env_var_test_ test gtest)
-  py_test(gtest_env_var_test)
-
-  cxx_executable(gtest_filter_unittest_ test gtest)
-  py_test(gtest_filter_unittest)
-
-  cxx_executable(gtest_help_test_ test gtest_main)
-  py_test(gtest_help_test)
-
-  cxx_executable(gtest_list_tests_unittest_ test gtest)
-  py_test(gtest_list_tests_unittest)
-
-  cxx_executable(gtest_output_test_ test gtest)
-  py_test(gtest_output_test)
-
-  cxx_executable(gtest_shuffle_test_ test gtest)
-  py_test(gtest_shuffle_test)
-
-  cxx_executable(gtest_throw_on_failure_test_ test gtest_no_exception)
-  set_target_properties(gtest_throw_on_failure_test_
-    PROPERTIES
-    COMPILE_FLAGS "${cxx_no_exception}")
-  py_test(gtest_throw_on_failure_test)
-
-  cxx_executable(gtest_uninitialized_test_ test gtest)
-  py_test(gtest_uninitialized_test)
-
-  cxx_executable(gtest_xml_outfile1_test_ test gtest_main)
-  cxx_executable(gtest_xml_outfile2_test_ test gtest_main)
-  py_test(gtest_xml_outfiles_test)
-
-  cxx_executable(gtest_xml_output_unittest_ test gtest)
-  py_test(gtest_xml_output_unittest)
+#
+#   cxx_library(gtest_no_exception "${cxx_no_exception}"
+#     src/gtest-all.cc)
+#   cxx_library(gtest_main_no_exception "${cxx_no_exception}"
+#     src/gtest-all.cc src/gtest_main.cc)
+#   cxx_library(gtest_main_no_rtti "${cxx_no_rtti}"
+#     src/gtest-all.cc src/gtest_main.cc)
+#
+#   # cxx_test_with_flags(gtest-death-test_ex_nocatch_test
+#   #   "${cxx_exception} -DGTEST_ENABLE_CATCH_EXCEPTIONS_=0"
+#   #   gtest test/gtest-death-test_ex_test.cc)
+#   # cxx_test_with_flags(gtest-death-test_ex_catch_test
+#   #   "${cxx_exception} -DGTEST_ENABLE_CATCH_EXCEPTIONS_=1"
+#   #   gtest test/gtest-death-test_ex_test.cc)
+#
+#   cxx_test_with_flags(gtest_no_rtti_unittest "${cxx_no_rtti}"
+#     gtest_main_no_rtti test/gtest_unittest.cc)
+#   #
+#   # cxx_shared_library(gtest_dll "${cxx_default}"
+#   #   src/gtest-all.cc src/gtest_main.cc)
+#   #
+#   # cxx_executable_with_flags(gtest_dll_test_ "${cxx_default}"
+#   #   gtest_dll test/gtest_all_test.cc)
+#   # set_target_properties(gtest_dll_test_
+#   #                       PROPERTIES
+#   #                       COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
+#
+#   if (NOT MSVC OR NOT MSVC_VERSION EQUAL 1600)
+#     # The C++ Standard specifies tuple_element<int, class>.
+#     # Yet MSVC 10's <utility> declares tuple_element<size_t, class>.
+#     # That declaration conflicts with our own standard-conforming
+#     # tuple implementation.  Therefore using our own tuple with
+#     # MSVC 10 doesn't compile.
+#     cxx_library(gtest_main_use_own_tuple "${cxx_use_own_tuple}"
+#       src/gtest-all.cc src/gtest_main.cc)
+#
+#     cxx_test_with_flags(gtest-tuple_test "${cxx_use_own_tuple}"
+#       gtest_main_use_own_tuple test/gtest-tuple_test.cc)
+#
+#     cxx_test_with_flags(gtest_use_own_tuple_test "${cxx_use_own_tuple}"
+#       gtest_main_use_own_tuple
+#       test/gtest-param-test_test.cc test/gtest-param-test2_test.cc)
+#   endif()
+  set(AllGTestTests ${AllGMockGTestTests} PARENT_SCOPE)
 endif()
 
 

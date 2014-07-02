@@ -17,7 +17,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
 # TODO(vladl@google.com): Implement building gMock as a DLL.
 set(BUILD_SHARED_LIBS OFF)
 
-option(gmock_build_tests "Build all of Google Mock's own tests." OFF)
+option(gmock_build_tests "Build all of Google Mock's own tests." ON)
 
 # A directory to find Google Test sources.
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/gtest/CMakeLists.txt")
@@ -57,6 +57,7 @@ endif()
 # directory in a subdirectory of our own as VC compilation may break
 # if they are the same (the default).
 add_subdirectory("${gtest_dir}" "${gmock_BINARY_DIR}/gtest")
+set(AllGTestTests ${AllGTestTests} PARENT_SCOPE)
 
 # Although Google Test's CMakeLists.txt calls this function, the
 # changes there don't affect the current scope.  Therefore we have to
@@ -91,13 +92,11 @@ if(MSVC)
   set_target_properties(gmock PROPERTIES
                         STATIC_LIBRARY_FLAGS_RELEASE " /LTCG "
                         STATIC_LIBRARY_FLAGS_RELWITHDEBINFO " /LTCG "
-                        STATIC_LIBRARY_FLAGS_RELEASENOINLINE " /LTCG "
-                        FOLDER "Third Party/GoogleMock")
+                        STATIC_LIBRARY_FLAGS_RELEASENOINLINE " /LTCG ")
 endif()
 
-# cxx_library(gmock_main "${cxx_strict}" src/gmock_main.cc)
-# target_link_libraries(gmock_main gmock)
-# set_target_properties(gmock_main PROPERTIES FOLDER "Third Party/GoogleMock")
+cxx_library(gmock_main "${cxx_strict}" src/gmock_main.cc)
+target_link_libraries(gmock_main gmock)
 
 ########################################################################
 #
@@ -122,16 +121,21 @@ if (gmock_build_tests)
   cxx_test(gmock-cardinalities_test gmock_main)
   cxx_test(gmock-generated-actions_test gmock_main)
   cxx_test(gmock-generated-function-mockers_test gmock_main)
+  target_compile_options(gmock-generated-function-mockers_test PRIVATE $<$<BOOL:${MSVC}>:/wd4373>)
   cxx_test(gmock-generated-internal-utils_test gmock_main)
   cxx_test(gmock-generated-matchers_test gmock_main)
   cxx_test(gmock-internal-utils_test gmock_main)
   cxx_test(gmock-matchers_test gmock_main)
+  target_compile_options(gmock-matchers_test PRIVATE $<$<BOOL:${MSVC}>:/wd4267 /bigobj>)
   cxx_test(gmock-more-actions_test gmock_main)
   cxx_test(gmock-nice-strict_test gmock_main)
   cxx_test(gmock-port_test gmock_main)
   cxx_test(gmock-spec-builders_test gmock_main)
   cxx_test(gmock_link_test gmock_main test/gmock_link2_test.cc)
-  # cxx_test(gmock_stress_test gmock)
+  target_include_directories(gmock_link_test PRIVATE ${gmock_SOURCE_DIR})
+  if(NOT MSVC)
+    cxx_test(gmock_stress_test gmock)
+  endif()
   cxx_test(gmock_test gmock_main)
 
   # gmock_all_test is commented to save time building and running tests.
@@ -140,31 +144,23 @@ if (gmock_build_tests)
 
   ############################################################
   # C++ tests built with non-standard compiler flags.
-
-  cxx_library(gmock_main_no_exception "${cxx_no_exception}"
-    "${gtest_dir}/src/gtest-all.cc" src/gmock-all.cc src/gmock_main.cc)
-  cxx_library(gmock_main_no_rtti "${cxx_no_rtti}"
-    "${gtest_dir}/src/gtest-all.cc" src/gmock-all.cc src/gmock_main.cc)
-  cxx_library(gmock_main_use_own_tuple "${cxx_use_own_tuple}"
-    "${gtest_dir}/src/gtest-all.cc" src/gmock-all.cc src/gmock_main.cc)
-
-  cxx_test_with_flags(gmock-more-actions_no_exception_test "${cxx_no_exception}"
-    gmock_main_no_exception test/gmock-more-actions_test.cc)
-
-  cxx_test_with_flags(gmock_no_rtti_test "${cxx_no_rtti}"
-    gmock_main_no_rtti test/gmock-spec-builders_test.cc)
-
-  cxx_test_with_flags(gmock_use_own_tuple_test "${cxx_use_own_tuple}"
-    gmock_main_use_own_tuple test/gmock-spec-builders_test.cc)
-
-  ############################################################
-  # Python tests.
-
-  cxx_executable(gmock_leak_test_ test gmock_main)
-  py_test(gmock_leak_test)
-
-  cxx_executable(gmock_output_test_ test gmock)
-  py_test(gmock_output_test)
+# 
+#   cxx_library(gmock_main_no_exception "${cxx_no_exception}"
+#     "${gtest_dir}/src/gtest-all.cc" src/gmock-all.cc src/gmock_main.cc)
+#   cxx_library(gmock_main_no_rtti "${cxx_no_rtti}"
+#     "${gtest_dir}/src/gtest-all.cc" src/gmock-all.cc src/gmock_main.cc)
+#   cxx_library(gmock_main_use_own_tuple "${cxx_use_own_tuple}"
+#     "${gtest_dir}/src/gtest-all.cc" src/gmock-all.cc src/gmock_main.cc)
+# 
+#   cxx_test_with_flags(gmock-more-actions_no_exception_test "${cxx_no_exception}"
+#     gmock_main_no_exception test/gmock-more-actions_test.cc)
+# 
+#   cxx_test_with_flags(gmock_no_rtti_test "${cxx_no_rtti}"
+#     gmock_main_no_rtti test/gmock-spec-builders_test.cc)
+# 
+#   cxx_test_with_flags(gmock_use_own_tuple_test "${cxx_use_own_tuple}"
+#     gmock_main_use_own_tuple test/gmock-spec-builders_test.cc)
+  set(AllGMockTests ${AllGMockGTestTests} PARENT_SCOPE)
 endif()
 
 
