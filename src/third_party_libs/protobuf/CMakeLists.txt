@@ -18,7 +18,7 @@ add_definitions(-DHAVE_HASH_MAP=1)
 
 project(Protobuf)
 
-file(GLOB_RECURSE LIB_PROTBUF_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/*.cc" "${PROJECT_SOURCE_DIR}/src/google/protobuf/stubs/once.cc")
+file(GLOB_RECURSE LIB_PROTBUF_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/*.cc") 
 file(GLOB_RECURSE LIB_PROTBUF_TEST_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/*test*.cc")
 file(GLOB_RECURSE LIB_PROTBUF_HEADERS "${PROJECT_SOURCE_DIR}/src/google/protobuf/*.h")
 set(PROTOBUF_DIR ${LIB_PROTBUF_SOURCES} ${LIB_PROTBUF_HEADERS})
