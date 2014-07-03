@@ -36,8 +36,6 @@
 #include <errno.h>
 #include <vector>
 
-// #include "config.h"
-
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN  // We only need minimal includes
 #include <windows.h>
@@ -115,8 +113,8 @@ void DefaultLogHandler(LogLevel level, const char* filename, int line,
   fflush(stderr);  // Needed on MSVC.
 }
 
-void NullLogHandler(LogLevel level, const char* filename, int line,
-                    const string& message) {
+void NullLogHandler(LogLevel /* level */, const char* /* filename */,
+                    int /* line */, const string& /* message */) {
   // Nothing.
 }
 

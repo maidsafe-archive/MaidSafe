@@ -68,7 +68,7 @@ bool ParseNamedEnum(const EnumDescriptor* descriptor,
 
 const string& NameOfEnum(const EnumDescriptor* descriptor, int value) {
   const EnumValueDescriptor* d = descriptor->FindValueByNumber(value);
-  return (d == NULL ? kEmptyString : d->name());
+  return (d == NULL ? GetEmptyString() : d->name());
 }
 
 // ===================================================================
@@ -771,13 +771,13 @@ string GeneratedMessageReflection::GetString(
     }
 
     GOOGLE_LOG(FATAL) << "Can't get here.";
-    return kEmptyString;  // Make compiler happy.
+    return GetEmptyString();  // Make compiler happy.
   }
 }
 
 const string& GeneratedMessageReflection::GetStringReference(
     const Message& message,
-    const FieldDescriptor* field, string* scratch) const {
+    const FieldDescriptor* field, string* /* scratch */) const {
   USAGE_CHECK_ALL(GetStringReference, SINGULAR, STRING);
   if (field->is_extension()) {
     return GetExtensionSet(message).GetString(field->number(),
@@ -790,7 +790,7 @@ const string& GeneratedMessageReflection::GetStringReference(
     }
 
     GOOGLE_LOG(FATAL) << "Can't get here.";
-    return kEmptyString;  // Make compiler happy.
+    return GetEmptyString();  // Make compiler happy.
   }
 }
 
@@ -832,13 +832,13 @@ string GeneratedMessageReflection::GetRepeatedString(
     }
 
     GOOGLE_LOG(FATAL) << "Can't get here.";
-    return kEmptyString;  // Make compiler happy.
+    return GetEmptyString();  // Make compiler happy.
   }
 }
 
 const string& GeneratedMessageReflection::GetRepeatedStringReference(
     const Message& message, const FieldDescriptor* field,
-    int index, string* scratch) const {
+    int index, string* /* scratch */) const {
   USAGE_CHECK_ALL(GetRepeatedStringReference, REPEATED, STRING);
   if (field->is_extension()) {
     return GetExtensionSet(message).GetRepeatedString(field->number(), index);
@@ -850,7 +850,7 @@ const string& GeneratedMessageReflection::GetRepeatedStringReference(
     }
 
     GOOGLE_LOG(FATAL) << "Can't get here.";
-    return kEmptyString;  // Make compiler happy.
+    return GetEmptyString();  // Make compiler happy.
   }
 }
 

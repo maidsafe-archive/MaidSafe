@@ -31,57 +31,71 @@
 // Author: kenton@google.com (Kenton Varda)
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
-//
-// This file contains miscellaneous helper code used by generated code --
-// including lite types -- but which should not be used directly by users.
 
-#ifndef GOOGLE_PROTOBUF_GENERATED_MESSAGE_UTIL_H__
-#define GOOGLE_PROTOBUF_GENERATED_MESSAGE_UTIL_H__
+#ifndef GOOGLE_PROTOBUF_COMPILER_JAVA_FILE_H__
+#define GOOGLE_PROTOBUF_COMPILER_JAVA_FILE_H__
 
 #include <string>
-
+#include <vector>
 #include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/once.h>
+
 namespace google {
 namespace protobuf {
-namespace internal {
-
-// Annotation for the compiler to emit a deprecation message if a field marked
-// with option 'deprecated=true' is used in the code, or for other things in
-// generated code which are deprecated.
-//
-// For internal use in the pb.cc files, deprecation warnings are suppressed
-// there.
-#undef DEPRECATED_PROTOBUF_FIELD
-#define PROTOBUF_DEPRECATED
-
-
-// Constants for special floating point values.
-LIBPROTOBUF_EXPORT double Infinity();
-LIBPROTOBUF_EXPORT double NaN();
-
-// Default empty string object. Don't use the pointer directly. Instead, call
-// GetEmptyString() to get the reference.
-LIBPROTOBUF_EXPORT extern const ::std::string* empty_string_;
-LIBPROTOBUF_EXPORT extern ProtobufOnceType empty_string_once_init_;
-
-LIBPROTOBUF_EXPORT void InitEmptyString();
-
-LIBPROTOBUF_EXPORT inline const ::std::string& GetEmptyString() {
-  GoogleOnceInit(&empty_string_once_init_, &InitEmptyString);
-  return *empty_string_;
+  class FileDescriptor;        // descriptor.h
+  namespace io {
+    class Printer;             // printer.h
+  }
+  namespace compiler {
+    class GeneratorContext;     // code_generator.h
+  }
 }
 
-// Defined in generated_message_reflection.cc -- not actually part of the lite
-// library.
-//
-// TODO(jasonh): The various callers get this declaration from a variety of
-// places: probably in most cases repeated_field.h. Clean these up so they all
-// get the declaration from this file.
-LIBPROTOBUF_EXPORT int StringSpaceUsedExcludingSelf(const string& str);
+namespace protobuf {
+namespace compiler {
+namespace java {
 
-}  // namespace internal
+class FileGenerator {
+ public:
+  explicit FileGenerator(const FileDescriptor* file);
+  ~FileGenerator();
+
+  // Checks for problems that would otherwise lead to cryptic compile errors.
+  // Returns true if there are no problems, or writes an error description to
+  // the given string and returns false otherwise.
+  bool Validate(string* error);
+
+  void Generate(io::Printer* printer);
+
+  // If we aren't putting everything into one file, this will write all the
+  // files other than the outer file (i.e. one for each message, enum, and
+  // service type).
+  void GenerateSiblings(const string& package_dir,
+                        GeneratorContext* generator_context,
+                        vector<string>* file_list);
+
+  const string& java_package() { return java_package_; }
+  const string& classname()    { return classname_;    }
+
+
+ private:
+  // Returns whether the dependency should be included in the output file.
+  // Always returns true for opensource, but used internally at Google to help
+  // improve compatibility with version 1 of protocol buffers.
+  bool ShouldIncludeDependency(const FileDescriptor* descriptor);
+
+  const FileDescriptor* file_;
+  string java_package_;
+  string classname_;
+
+
+  void GenerateEmbeddedDescriptor(io::Printer* printer);
+
+  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(FileGenerator);
+};
+
+}  // namespace java
+}  // namespace compiler
 }  // namespace protobuf
 
 }  // namespace google
-#endif  // GOOGLE_PROTOBUF_GENERATED_MESSAGE_UTIL_H__
+#endif  // GOOGLE_PROTOBUF_COMPILER_JAVA_FILE_H__

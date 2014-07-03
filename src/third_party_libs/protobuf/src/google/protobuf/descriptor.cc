@@ -139,8 +139,6 @@ const int FieldDescriptor::kLastReservedNumber;
 
 namespace {
 
-const string kEmptyString;
-
 string ToCamelCase(const string& input) {
   bool capitalize_next = false;
   string result;
@@ -813,7 +811,7 @@ string* DescriptorPool::Tables::AllocateString(const string& value) {
 }
 
 template<typename Type>
-Type* DescriptorPool::Tables::AllocateMessage(Type* dummy) {
+Type* DescriptorPool::Tables::AllocateMessage(Type* /* dummy */) {
   Type* result = new Type;
   messages_.push_back(result);
   return result;
@@ -2757,7 +2755,7 @@ Symbol DescriptorBuilder::NewPlaceholder(const string& name,
     placeholder_name = tables_->AllocateString(
       placeholder_full_name->substr(dotpos + 1));
   } else {
-    placeholder_package = &kEmptyString;
+    placeholder_package = &::google::protobuf::internal::GetEmptyString();
     placeholder_name = placeholder_full_name;
   }
 
@@ -2843,7 +2841,7 @@ const FileDescriptor* DescriptorBuilder::NewPlaceholderFile(
   memset(placeholder, 0, sizeof(*placeholder));
 
   placeholder->name_ = tables_->AllocateString(name);
-  placeholder->package_ = &kEmptyString;
+  placeholder->package_ = &::google::protobuf::internal::GetEmptyString();
   placeholder->pool_ = pool_;
   placeholder->options_ = &FileOptions::default_instance();
   placeholder->tables_ = &FileDescriptorTables::kEmpty;
@@ -3485,7 +3483,7 @@ void DescriptorBuilder::BuildFieldOrExtension(const FieldDescriptorProto& proto,
           result->default_value_enum_ = NULL;
           break;
         case FieldDescriptor::CPPTYPE_STRING:
-          result->default_value_string_ = &kEmptyString;
+          result->default_value_string_ = &::google::protobuf::internal::GetEmptyString();
           break;
         case FieldDescriptor::CPPTYPE_MESSAGE:
           break;
@@ -3679,7 +3677,7 @@ void DescriptorBuilder::BuildEnumValue(const EnumValueDescriptorProto& proto,
 }
 
 void DescriptorBuilder::BuildService(const ServiceDescriptorProto& proto,
-                                     const void* dummy,
+                                     const void* /* dummy */,
                                      ServiceDescriptor* result) {
   string* full_name = tables_->AllocateString(file_->package());
   if (!full_name->empty()) full_name->append(1, '.');
@@ -3959,7 +3957,8 @@ void DescriptorBuilder::CrossLinkEnum(
 }
 
 void DescriptorBuilder::CrossLinkEnumValue(
-    EnumValueDescriptor* enum_value, const EnumValueDescriptorProto& proto) {
+    EnumValueDescriptor* enum_value,
+    const EnumValueDescriptorProto& /* proto */) {
   if (enum_value->options_ == NULL) {
     enum_value->options_ = &EnumValueOptions::default_instance();
   }
@@ -4160,7 +4159,8 @@ void DescriptorBuilder::ValidateEnumOptions(EnumDescriptor* enm,
 }
 
 void DescriptorBuilder::ValidateEnumValueOptions(
-    EnumValueDescriptor* enum_value, const EnumValueDescriptorProto& proto) {
+    EnumValueDescriptor* /* enum_value */,
+    const EnumValueDescriptorProto& /* proto */) {
   // Nothing to do so far.
 }
 void DescriptorBuilder::ValidateServiceOptions(ServiceDescriptor* service,
@@ -4178,8 +4178,8 @@ void DescriptorBuilder::ValidateServiceOptions(ServiceDescriptor* service,
   VALIDATE_OPTIONS_FROM_ARRAY(service, method, Method);
 }
 
-void DescriptorBuilder::ValidateMethodOptions(MethodDescriptor* method,
-    const MethodDescriptorProto& proto) {
+void DescriptorBuilder::ValidateMethodOptions(MethodDescriptor* /* method */,
+    const MethodDescriptorProto& /* proto */) {
   // Nothing to do so far.
 }
 
@@ -4807,14 +4807,16 @@ class AggregateErrorCollector : public io::ErrorCollector {
  public:
   string error_;
 
-  virtual void AddError(int line, int column, const string& message) {
+  virtual void AddError(int /* line */, int /* column */,
+                        const string& message) {
     if (!error_.empty()) {
       error_ += "; ";
     }
     error_ += message;
   }
 
-  virtual void AddWarning(int line, int column, const string& message) {
+  virtual void AddWarning(int /* line */, int /* column */,
+                          const string& /* message */) {
     // Ignore warnings
   }
 };

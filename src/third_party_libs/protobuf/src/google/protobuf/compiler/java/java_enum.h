@@ -31,57 +31,56 @@
 // Author: kenton@google.com (Kenton Varda)
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
-//
-// This file contains miscellaneous helper code used by generated code --
-// including lite types -- but which should not be used directly by users.
 
-#ifndef GOOGLE_PROTOBUF_GENERATED_MESSAGE_UTIL_H__
-#define GOOGLE_PROTOBUF_GENERATED_MESSAGE_UTIL_H__
+#ifndef GOOGLE_PROTOBUF_COMPILER_JAVA_ENUM_H__
+#define GOOGLE_PROTOBUF_COMPILER_JAVA_ENUM_H__
 
 #include <string>
+#include <vector>
+#include <google/protobuf/descriptor.h>
 
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/once.h>
 namespace google {
 namespace protobuf {
-namespace internal {
-
-// Annotation for the compiler to emit a deprecation message if a field marked
-// with option 'deprecated=true' is used in the code, or for other things in
-// generated code which are deprecated.
-//
-// For internal use in the pb.cc files, deprecation warnings are suppressed
-// there.
-#undef DEPRECATED_PROTOBUF_FIELD
-#define PROTOBUF_DEPRECATED
-
-
-// Constants for special floating point values.
-LIBPROTOBUF_EXPORT double Infinity();
-LIBPROTOBUF_EXPORT double NaN();
-
-// Default empty string object. Don't use the pointer directly. Instead, call
-// GetEmptyString() to get the reference.
-LIBPROTOBUF_EXPORT extern const ::std::string* empty_string_;
-LIBPROTOBUF_EXPORT extern ProtobufOnceType empty_string_once_init_;
-
-LIBPROTOBUF_EXPORT void InitEmptyString();
-
-LIBPROTOBUF_EXPORT inline const ::std::string& GetEmptyString() {
-  GoogleOnceInit(&empty_string_once_init_, &InitEmptyString);
-  return *empty_string_;
+  namespace io {
+    class Printer;             // printer.h
+  }
 }
 
-// Defined in generated_message_reflection.cc -- not actually part of the lite
-// library.
-//
-// TODO(jasonh): The various callers get this declaration from a variety of
-// places: probably in most cases repeated_field.h. Clean these up so they all
-// get the declaration from this file.
-LIBPROTOBUF_EXPORT int StringSpaceUsedExcludingSelf(const string& str);
+namespace protobuf {
+namespace compiler {
+namespace java {
 
-}  // namespace internal
+class EnumGenerator {
+ public:
+  explicit EnumGenerator(const EnumDescriptor* descriptor);
+  ~EnumGenerator();
+
+  void Generate(io::Printer* printer);
+
+ private:
+  const EnumDescriptor* descriptor_;
+
+  // The proto language allows multiple enum constants to have the same numeric
+  // value.  Java, however, does not allow multiple enum constants to be
+  // considered equivalent.  We treat the first defined constant for any
+  // given numeric value as "canonical" and the rest as aliases of that
+  // canonical value.
+  vector<const EnumValueDescriptor*> canonical_values_;
+
+  struct Alias {
+    const EnumValueDescriptor* value;
+    const EnumValueDescriptor* canonical_value;
+  };
+  vector<Alias> aliases_;
+
+  bool CanUseEnumValues();
+
+  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(EnumGenerator);
+};
+
+}  // namespace java
+}  // namespace compiler
 }  // namespace protobuf
 
 }  // namespace google
-#endif  // GOOGLE_PROTOBUF_GENERATED_MESSAGE_UTIL_H__
+#endif  // GOOGLE_PROTOBUF_COMPILER_JAVA_ENUM_H__

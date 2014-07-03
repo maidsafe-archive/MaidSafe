@@ -37,7 +37,6 @@
 
 #include <string.h>
 #include <google/protobuf/stubs/common.h>
-// #include "config.h"
 
 #if defined(HAVE_HASH_MAP) && defined(HAVE_HASH_SET)
 #include HASH_MAP_H
@@ -102,7 +101,7 @@ class hash_set : public std::set<Key, HashFcn> {
   hash_set(int = 0) {}
 };
 
-#elif defined(_MSC_VER) && !defined(_STLPORT_VERSION)
+#elif defined(_MSC_VER) && _MSC_VER < 1800 && !defined(_STLPORT_VERSION)
 
 template <typename Key>
 struct hash : public HASH_NAMESPACE::hash_compare<Key> {

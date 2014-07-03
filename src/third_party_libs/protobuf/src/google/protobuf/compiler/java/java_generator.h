@@ -32,56 +32,41 @@
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 //
-// This file contains miscellaneous helper code used by generated code --
-// including lite types -- but which should not be used directly by users.
+// Generates Java code for a given .proto file.
 
-#ifndef GOOGLE_PROTOBUF_GENERATED_MESSAGE_UTIL_H__
-#define GOOGLE_PROTOBUF_GENERATED_MESSAGE_UTIL_H__
+#ifndef GOOGLE_PROTOBUF_COMPILER_JAVA_GENERATOR_H__
+#define GOOGLE_PROTOBUF_COMPILER_JAVA_GENERATOR_H__
 
 #include <string>
+#include <google/protobuf/compiler/code_generator.h>
 
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/once.h>
 namespace google {
 namespace protobuf {
-namespace internal {
+namespace compiler {
+namespace java {
 
-// Annotation for the compiler to emit a deprecation message if a field marked
-// with option 'deprecated=true' is used in the code, or for other things in
-// generated code which are deprecated.
-//
-// For internal use in the pb.cc files, deprecation warnings are suppressed
-// there.
-#undef DEPRECATED_PROTOBUF_FIELD
-#define PROTOBUF_DEPRECATED
+// CodeGenerator implementation which generates Java code.  If you create your
+// own protocol compiler binary and you want it to support Java output, you
+// can do so by registering an instance of this CodeGenerator with the
+// CommandLineInterface in your main() function.
+class LIBPROTOC_EXPORT JavaGenerator : public CodeGenerator {
+ public:
+  JavaGenerator();
+  ~JavaGenerator();
 
+  // implements CodeGenerator ----------------------------------------
+  bool Generate(const FileDescriptor* file,
+                const string& parameter,
+                GeneratorContext* context,
+                string* error) const;
 
-// Constants for special floating point values.
-LIBPROTOBUF_EXPORT double Infinity();
-LIBPROTOBUF_EXPORT double NaN();
+ private:
+  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(JavaGenerator);
+};
 
-// Default empty string object. Don't use the pointer directly. Instead, call
-// GetEmptyString() to get the reference.
-LIBPROTOBUF_EXPORT extern const ::std::string* empty_string_;
-LIBPROTOBUF_EXPORT extern ProtobufOnceType empty_string_once_init_;
-
-LIBPROTOBUF_EXPORT void InitEmptyString();
-
-LIBPROTOBUF_EXPORT inline const ::std::string& GetEmptyString() {
-  GoogleOnceInit(&empty_string_once_init_, &InitEmptyString);
-  return *empty_string_;
-}
-
-// Defined in generated_message_reflection.cc -- not actually part of the lite
-// library.
-//
-// TODO(jasonh): The various callers get this declaration from a variety of
-// places: probably in most cases repeated_field.h. Clean these up so they all
-// get the declaration from this file.
-LIBPROTOBUF_EXPORT int StringSpaceUsedExcludingSelf(const string& str);
-
-}  // namespace internal
+}  // namespace java
+}  // namespace compiler
 }  // namespace protobuf
 
 }  // namespace google
-#endif  // GOOGLE_PROTOBUF_GENERATED_MESSAGE_UTIL_H__
+#endif  // GOOGLE_PROTOBUF_COMPILER_JAVA_GENERATOR_H__
