@@ -42,6 +42,7 @@ add_subdirectory(cryptopp)
 add_subdirectory(googlemock)
 add_subdirectory(protobuf)
 add_subdirectory(leveldb)
+add_subdirectory(sqlite)
 
 
 # Add third party tests
