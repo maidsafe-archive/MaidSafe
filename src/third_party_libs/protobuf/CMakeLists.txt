@@ -14,15 +14,23 @@ set(CMAKE_RELWITHDEBINFO_POSTFIX -rwdi)
 set(CMAKE_MINSIZEREL_POSTFIX -msr)
 set(CMAKE_RELEASENOINLINE_POSTFIX -rni)
 
+add_definitions(-DHAVE_HASH_MAP=1)
+
 project(Protobuf)
 
-file(GLOB_RECURSE LIB_PROTBUF_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/*.cc")
+file(GLOB_RECURSE LIB_PROTBUF_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/*.cc" "${PROJECT_SOURCE_DIR}/src/google/protobuf/stubs/once.cc")
+file(GLOB_RECURSE LIB_PROTBUF_TEST_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/*test*.cc")
 file(GLOB_RECURSE LIB_PROTBUF_HEADERS "${PROJECT_SOURCE_DIR}/src/google/protobuf/*.h")
 set(PROTOBUF_DIR ${LIB_PROTBUF_SOURCES} ${LIB_PROTBUF_HEADERS})
+list(REMOVE_ITEM PROTOBUF_DIR ${LIB_PROTBUF_TEST_SOURCES})
 
 file(GLOB_RECURSE LIB_PROTOC_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/compiler/*.cc")
+file(GLOB_RECURSE LIB_PROTOC_TEST_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/compiler/*test*.cc")
 file(GLOB_RECURSE LIB_PROTOC_HEADERS "${PROJECT_SOURCE_DIR}/src/google/protobuf/compiler/*.h")
-set(PROTOC_DIR ${LIB_PROTOC_SOURCES} ${LIB_PROTOC_HEADERS})
+set(PROTOC_DIR ${LIB_PROTOC_SOURCES} ${LIB_PROTOC_HEADERS}) 
+list(REMOVE_ITEM PROTOC_DIR ${LIB_PROTOC_TEST_SOURCES}) 
+list(REMOVE_ITEM PROTOC_DIR "${PROJECT_SOURCE_DIR}/src/google/protobuf/compiler/mock_code_generator.cc")
+list(REMOVE_ITEM PROTOBUF_DIR "${PROJECT_SOURCE_DIR}/src/google/protobuf/compiler/mock_code_generator.cc")
 
 file(GLOB_RECURSE PROTOC_TESTS_SOURCES "${PROJECT_SOURCE_DIR}/src/google/protobuf/tests/*.cc")
 file(GLOB_RECURSE PROTOC_TESTS_HEADERS "${PROJECT_SOURCE_DIR}/src/google/protobuf/tests/*.h")
@@ -32,10 +40,6 @@ set(TESTS ${PROTOC_TESTS_SOURCES} ${PROTOC_TESTS_HEADERS})
 list(REMOVE_ITEM PROTOBUF_DIR ${PROTOC_DIR} ${TESTS}
      "${PROJECT_SOURCE_DIR}/src/google/protobuf/io/gzip_stream.cc"
      "${PROJECT_SOURCE_DIR}/src/google/protobuf/io/gzip_stream.h")
-if(NOT WIN32)
-  # Only contains code used on Windows
-  list(REMOVE_ITEM PROTOBUF_DIR "${PROJECT_SOURCE_DIR}/src/google/protobuf/stubs/once.cc")
-endif()
 
 add_library(protobuf ${PROTOBUF_DIR})
 ms_target_include_system_dirs(protobuf PUBLIC ${PROJECT_SOURCE_DIR}/src)

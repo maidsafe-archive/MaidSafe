@@ -37,8 +37,8 @@
 #include <string>
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/io/coded_stream.h>
-#include <google/protobuf/io/zero_copy_stream_impl.h>
-#include <google/protobuf/stubs/stl_util-inl.h>
+#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
+#include <google/protobuf/stubs/stl_util.h>
 
 namespace google {
 namespace protobuf {
@@ -120,7 +120,7 @@ bool InlineMergeFromCodedStream(io::CodedInputStream* input,
                                 MessageLite* message) {
   if (!message->MergePartialFromCodedStream(input)) return false;
   if (!message->IsInitialized()) {
-    //GOOGLE_LOG(ERROR) << InitializationErrorMessage("parse", *message);
+    GOOGLE_LOG(ERROR) << InitializationErrorMessage("parse", *message);
     return false;
   }
   return true;
@@ -226,7 +226,7 @@ uint8* MessageLite::SerializeWithCachedSizesToArray(uint8* target) const {
 }
 
 bool MessageLite::SerializeToCodedStream(io::CodedOutputStream* output) const {
-  GOOGLE_CHECK(IsInitialized()) << InitializationErrorMessage("serialize", *this);
+  GOOGLE_DCHECK(IsInitialized()) << InitializationErrorMessage("serialize", *this);
   return SerializePartialToCodedStream(output);
 }
 
@@ -270,7 +270,7 @@ bool MessageLite::SerializePartialToZeroCopyStream(
 }
 
 bool MessageLite::AppendToString(string* output) const {
-  GOOGLE_CHECK(IsInitialized()) << InitializationErrorMessage("serialize", *this);
+  GOOGLE_DCHECK(IsInitialized()) << InitializationErrorMessage("serialize", *this);
   return AppendPartialToString(output);
 }
 
@@ -297,7 +297,7 @@ bool MessageLite::SerializePartialToString(string* output) const {
 }
 
 bool MessageLite::SerializeToArray(void* data, int size) const {
-  GOOGLE_CHECK(IsInitialized()) << InitializationErrorMessage("serialize", *this);
+  GOOGLE_DCHECK(IsInitialized()) << InitializationErrorMessage("serialize", *this);
   return SerializePartialToArray(data, size);
 }
 
