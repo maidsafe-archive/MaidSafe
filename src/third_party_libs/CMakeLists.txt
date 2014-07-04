@@ -39,6 +39,7 @@ endif()
 
 include(add_boost)
 add_subdirectory(cryptopp)
+set(gmock_build_tests ON)
 add_subdirectory(googlemock)
 add_subdirectory(protobuf)
 add_subdirectory(leveldb)
