@@ -12,7 +12,7 @@ set(ProtobufLiteSources
     "${ProtobufSourcesDir}/stubs/stringprintf.cc"
     "${ProtobufSourcesDir}/wire_format_lite.cc"
     )
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+if(UNIX AND (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang"))
   list(APPEND ProtobufLiteSources "${ProtobufSourcesDir}/stubs/atomicops_internals_x86_gcc.cc")
 elseif(MSVC)
   list(APPEND ProtobufLiteSources "${ProtobufSourcesDir}/stubs/atomicops_internals_x86_msvc.cc")
