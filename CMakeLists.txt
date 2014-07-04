@@ -171,16 +171,7 @@ foreach(SubModule ${SubModules})
   add_subdirectory(src/${SubModule})
 endforeach()
 include(exports)
-
 message("${HR}")
-
-if(UNIX)
-  if(COVERAGE)
-    message(STATUS "Coverage ON")
-  else()
-    message(STATUS "Coverage OFF.  To enable, re-run CMake with -DCOVERAGE=ON")
-  endif()
-endif()
 
 
 # Tidy CTestCustom.cmake
@@ -189,6 +180,7 @@ list(REMOVE_DUPLICATES CTestCustomContents)
 list(SORT CTestCustomContents)
 string(REPLACE ";" "\n" CTestCustomContents "${CTestCustomContents}")
 file(WRITE ${CMAKE_BINARY_DIR}/CTestCustom.cmake "${CTestCustomContents}\n")
+
 
 ms_cleanup_temp_dir()
 ms_rename_outdated_built_exes()
