@@ -34,6 +34,8 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <algorithm>
+#include <iterator>
 #include <limits>
 
 #include <google/protobuf/text_format.h>
@@ -115,15 +117,22 @@ class TextFormatExtensionsTest : public testing::Test {
 };
 string TextFormatExtensionsTest::static_proto_debug_string_;
 
-
 TEST_F(TextFormatTest, Basic) {
   TestUtil::SetAllFields(&proto_);
-  EXPECT_EQ(proto_debug_string_, proto_.DebugString());
+  // Git's line-ending insanity forces us to ignore line-ending differences.
+  string unix_formatted_string;
+  std::remove_copy(proto_debug_string_.begin(), proto_debug_string_.end(),
+      std::back_inserter(unix_formatted_string), '\r');
+  EXPECT_EQ(unix_formatted_string, proto_.DebugString());
 }
 
 TEST_F(TextFormatExtensionsTest, Extensions) {
   TestUtil::SetAllExtensions(&proto_);
-  EXPECT_EQ(proto_debug_string_, proto_.DebugString());
+  // Git's line-ending buffoonery forces us to ignore line-ending differences.
+  string unix_formatted_string;
+  std::remove_copy(proto_debug_string_.begin(), proto_debug_string_.end(),
+      std::back_inserter(unix_formatted_string), '\r');
+  EXPECT_EQ(unix_formatted_string, proto_.DebugString());
 }
 
 TEST_F(TextFormatTest, ShortDebugString) {

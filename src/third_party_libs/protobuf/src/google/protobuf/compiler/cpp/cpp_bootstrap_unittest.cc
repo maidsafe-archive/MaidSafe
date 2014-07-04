@@ -42,6 +42,8 @@
 // "generate_descriptor_proto.sh" and add
 // descriptor.pb.{h,cc} to your changelist.
 
+#include <algorithm>
+#include <iterator>
 #include <map>
 
 #include <google/protobuf/compiler/cpp/cpp_generator.h>
@@ -92,31 +94,19 @@ class MockGeneratorContext : public GeneratorContext {
     ASSERT_TRUE(expected_contents != NULL)
       << "Generator failed to generate file: " << virtual_filename;
 
-    string error_message(physical_filename + " needs to be regenerated.  "
-      "Please run generate_descriptor_proto.sh and add this file to your CL.");
     string actual_contents;
     File::ReadFileToStringOrDie(
       TestSourceDir() + "/" + physical_filename,
       &actual_contents);
-    if (actual_contents.size() == expected_contents->size()) {
-      EXPECT_TRUE(actual_contents == *expected_contents) << error_message;
-    } else {
-      // Git has doubtless shafted us again with its line-ending madness.
-      // Ignore line-ending differences.
-      ASSERT_GT(actual_contents.size(), expected_contents->size())
-        << error_message;
-      auto actual_itr(actual_contents.begin());
-      auto expected_itr(expected_contents->begin());
-      while (actual_itr != actual_contents.end() &&
-             expected_itr != expected_contents->end()) {
-        if (*actual_itr == '\r') {
-          ++actual_itr;
-          continue;
-        }
-        ASSERT_TRUE(*actual_itr++ == *expected_itr++) << error_message;
-      }
-    }
+    // Git's line-ending madness forces us to ignore line-ending differences.
+    actual_contents.erase(std::remove(actual_contents.begin(), actual_contents.end(), '\r'),
+                          actual_contents.end());
+    EXPECT_TRUE(actual_contents == *expected_contents)
+      << physical_filename << " needs to be regenerated.  Please run "
+         "generate_descriptor_proto.sh and add this file "
+         "to your CL.";
   }
+
   // implements GeneratorContext --------------------------------------
 
   virtual io::ZeroCopyOutputStream* Open(const string& filename) {
