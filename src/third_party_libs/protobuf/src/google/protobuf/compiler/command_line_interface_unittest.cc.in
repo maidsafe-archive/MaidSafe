@@ -273,9 +273,10 @@ void CommandLineInterfaceTest::Run(const string& command) {
       // directly, it works -- I guess the environment variables set by the
       // protobuf-tests.exe wrapper happen to be correct for it too.  So we do
       // that.
-      ".libs/test_plugin.exe",  // Win32 w/autotool (Cygwin / MinGW)
-      "test_plugin.exe",        // Other Win32 (MSVC)
-      "test_plugin",            // Unix
+      //".libs/test_plugin.exe",  // Win32 w/autotool (Cygwin / MinGW)
+      //"test_plugin.exe",        // Other Win32 (MSVC)
+      //"test_plugin",            // Unix
+      "@PLUGIN_PATH@"
     };
 
     string plugin_path;
@@ -691,7 +692,7 @@ TEST_F(CommandLineInterfaceTest, ColonDelimitedPath) {
 #endif
 
   Run("protocol_compiler --test_out=$tmpdir "
-      "--proto_path=$tmpdir/a"PATH_SEPARATOR"$tmpdir/b foo.proto");
+      "--proto_path=$tmpdir/a" PATH_SEPARATOR "$tmpdir/b foo.proto");
 
 #undef PATH_SEPARATOR
 

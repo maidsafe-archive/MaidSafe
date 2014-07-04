@@ -66,7 +66,6 @@ set(ProtobufSources
     "${ProtobufSourcesDir}/message.cc"
     "${ProtobufSourcesDir}/reflection_ops.cc"
     "${ProtobufSourcesDir}/service.cc"
-    "${ProtobufSourcesDir}/stubs/atomicops_internals_x86_msvc.cc"
     "${ProtobufSourcesDir}/stubs/structurally_valid.cc"
     "${ProtobufSourcesDir}/stubs/strutil.cc"
     "${ProtobufSourcesDir}/stubs/substitute.cc"
@@ -230,6 +229,7 @@ set(TestsSourcesGenerated
     "${CMAKE_BINARY_DIR}/GeneratedProtoFiles/google/protobuf/unittest_mset.pb.cc"
     "${CMAKE_BINARY_DIR}/GeneratedProtoFiles/google/protobuf/unittest_no_generic_services.pb.cc"
     "${CMAKE_BINARY_DIR}/GeneratedProtoFiles/google/protobuf/unittest_optimize_for.pb.cc"
+    "${CMAKE_BINARY_DIR}/GeneratedProtoFiles/google/protobuf/compiler/command_line_interface_unittest.cc"  # This is configured by CMake, not protoc
     "${CMAKE_BINARY_DIR}/GeneratedProtoFiles/google/protobuf/testing/googletest.cc"  # This is configured by CMake, not protoc
     )
 set(TestsHeadersGenerated
@@ -258,7 +258,7 @@ set(TestsProtoFiles
     )
 source_group("Proto Files" FILES ${TestsProtoFiles})
 set(TestsSources
-    "${ProtobufSourcesDir}/compiler/command_line_interface_unittest.cc"
+#    "${ProtobufSourcesDir}/compiler/command_line_interface_unittest.cc"  # This needs the path to protobuf_test_plugin, so is configured by CMake and included in ${TestsSourcesGenerated}
     "${ProtobufSourcesDir}/compiler/cpp/cpp_bootstrap_unittest.cc"
     "${ProtobufSourcesDir}/compiler/cpp/cpp_plugin_unittest.cc"
     "${ProtobufSourcesDir}/compiler/cpp/cpp_unittest.cc"

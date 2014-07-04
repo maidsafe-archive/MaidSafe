@@ -84,6 +84,11 @@ target_link_libraries(protobuf_lite_tests protobuf_lite)
 add_executable(protobuf_test_plugin ${TestPluginAllFiles})
 target_compile_options(protobuf_test_plugin PRIVATE $<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4100 /wd4127 /wd4244 /wd4245 /wd4267 /wd4800 /wd4996> $<$<BOOL:${UNIX}>:-w>)
 target_link_libraries(protobuf_test_plugin proto_compiler gtest)
+add_custom_command(TARGET protobuf_test_plugin PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND}
+                   -DINPUT_FILE="${ProtobufSourcesDir}/compiler/command_line_interface_unittest.cc.in"
+                   -DOUTPUT_FILE="${CMAKE_BINARY_DIR}/GeneratedProtoFiles/google/protobuf/compiler/command_line_interface_unittest.cc"
+                   -DPLUGIN_PATH="$<TARGET_FILE:protobuf_test_plugin>" -P "${PROJECT_SOURCE_DIR}/configure_cli_unittest.cmake")
 
 add_executable(protobuf_tests ${TestsAllFiles})
 target_include_directories(protobuf_tests PRIVATE ${GeneratedProtoRootDir} ${BoostSourceDir})
