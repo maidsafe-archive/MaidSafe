@@ -49,6 +49,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "boost/filesystem/path.hpp"
+
 namespace google {
 namespace protobuf {
 
@@ -115,7 +117,9 @@ string GetTemporaryDirectoryName() {
 // quits.
 class TempDirDeleter {
  public:
-  TempDirDeleter() {}
+  // Call boost::filesystem::path just to initialise its static objects and
+  // avoid initialising after exiting main.
+  TempDirDeleter() { boost::filesystem::path("."); }
   ~TempDirDeleter() {
     if (!name_.empty()) {
       File::DeleteRecursively(name_, NULL, NULL);
