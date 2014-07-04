@@ -92,16 +92,31 @@ class MockGeneratorContext : public GeneratorContext {
     ASSERT_TRUE(expected_contents != NULL)
       << "Generator failed to generate file: " << virtual_filename;
 
+    string error_message(physical_filename + " needs to be regenerated.  "
+      "Please run generate_descriptor_proto.sh and add this file to your CL.");
     string actual_contents;
     File::ReadFileToStringOrDie(
       TestSourceDir() + "/" + physical_filename,
       &actual_contents);
-    EXPECT_TRUE(actual_contents == *expected_contents)
-      << physical_filename << " needs to be regenerated.  Please run "
-         "generate_descriptor_proto.sh and add this file "
-         "to your CL.";
+    if (actual_contents.size() == expected_contents->size()) {
+      EXPECT_TRUE(actual_contents == *expected_contents) << error_message;
+    } else {
+      // Git has doubtless shafted us again with its line-ending madness.
+      // Ignore line-ending differences.
+      ASSERT_GT(actual_contents.size(), expected_contents->size())
+        << error_message;
+      auto actual_itr(actual_contents.begin());
+      auto expected_itr(expected_contents->begin());
+      while (actual_itr != actual_contents.end() &&
+             expected_itr != expected_contents->end()) {
+        if (*actual_itr == '\r') {
+          ++actual_itr;
+          continue;
+        }
+        ASSERT_TRUE(*actual_itr++ == *expected_itr++) << error_message;
+      }
+    }
   }
-
   // implements GeneratorContext --------------------------------------
 
   virtual io::ZeroCopyOutputStream* Open(const string& filename) {
