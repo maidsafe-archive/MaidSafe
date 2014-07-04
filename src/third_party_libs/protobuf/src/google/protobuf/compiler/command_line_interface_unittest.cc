@@ -415,10 +415,10 @@ void CommandLineInterfaceTest::ReadDescriptorSet(
   string path = temp_directory_ + "/" + filename;
   string file_contents;
   if (!File::ReadFileToString(path, &file_contents)) {
-    FAIL() << "File not found: " << path;
+    GTEST_FAIL() << "File not found: " << path;
   }
   if (!descriptor_set->ParseFromString(file_contents)) {
-    FAIL() << "Could not parse file contents: " << path;
+    GTEST_FAIL() << "Could not parse file contents: " << path;
   }
 }
 

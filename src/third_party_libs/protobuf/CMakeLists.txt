@@ -17,77 +17,11 @@ set(CMAKE_RELEASENOINLINE_POSTFIX -rni)
 project(Protobuf)
 
 include(files.cmake)
-# 
-# # Protoc files
-# set(ProtobufSourcesDir "${PROJECT_SOURCE_DIR}/src/google/protobuf")
-# file(GLOB_RECURSE ProtocSources "${ProtobufSourcesDir}/compiler/*.cc")
-# file(GLOB_RECURSE ProtocTestSources "${ProtobufSourcesDir}/compiler/*test*.cc" "${ProtobufSourcesDir}/compiler/*mock*.cc")
-# list(REMOVE_ITEM ProtocSources ${ProtocTestSources})
-# 
-# file(GLOB_RECURSE ProtocHeaders "${ProtobufSourcesDir}/compiler/*.h")
-# file(GLOB_RECURSE ProtocTestHeaders "${ProtobufSourcesDir}/compiler/*test*.h" "${ProtobufSourcesDir}/compiler/*mock*.h")
-# list(REMOVE_ITEM ProtocHeaders ${ProtocTestHeaders})
-# 
-# set(ProtocAllFiles ${ProtocSources} ${ProtocHeaders})
-# set(ProtocTestAllFiles ${ProtocTestSources} ${ProtocTestHeaders})
-# 
-# # Protobuf files
-# file(GLOB_RECURSE ProtobufSources "${ProtobufSourcesDir}/*.cc")
-# file(GLOB_RECURSE ProtobufTestSources "${ProtobufSourcesDir}/*test*.cc" "${ProtobufSourcesDir}/*mock*.cc" "${ProtobufSourcesDir}/tests/*.cc" "${ProtobufSourcesDir}/testing/*.cc")
-# # Only useful if zlib is found and linked, otherwise generates "no symbols" linker warnings
-# list(REMOVE_ITEM ProtobufSources ${ProtobufTestSources} ${ProtocSources} ${ProtocTestSources} "${ProtobufSourcesDir}/io/gzip_stream.cc")
-# if(NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-#   list(REMOVE_ITEM ProtobufSources "${ProtobufSourcesDir}/stubs/atomicops_internals_x86_gcc.cc")
-# endif()
-# if(NOT MSVC)
-#   list(REMOVE_ITEM ProtobufSources "${ProtobufSourcesDir}/stubs/atomicops_internals_x86_msvc.cc")
-# endif()
-# list(REMOVE_ITEM ProtobufTestSources ${ProtocTestSources})
-# 
-# file(GLOB_RECURSE ProtobufHeaders "${ProtobufSourcesDir}/*.h")
-# file(GLOB_RECURSE ProtobufTestHeaders "${ProtobufSourcesDir}/*test*.h" "${ProtobufSourcesDir}/*mock*.h" "${ProtobufSourcesDir}/tests/*.h" "${ProtobufSourcesDir}/testing/*.h")
-# list(REMOVE_ITEM ProtobufHeaders ${ProtobufTestHeaders} ${ProtocHeaders} ${ProtocTestHeaders} "${ProtobufSourcesDir}/io/gzip_stream.h")
-# list(REMOVE_ITEM ProtobufTestHeaders ${ProtocTestHeaders})
-# 
-# set(ProtobufAllFiles ${ProtobufSources} ${ProtobufHeaders})
-# set(ProtobufTestAllFiles ${ProtobufTestSources} ${ProtobufTestHeaders})
-# 
-# foreach(ProtobufSource ${ProtobufSources})
-#   message("ProtobufSource: ${ProtobufSource}")
-# endforeach()
-# message("")
-# foreach(ProtobufHeader ${ProtobufHeaders})
-#   message("ProtobufHeader: ${ProtobufHeader}")
-# endforeach()
-# message("")
-# foreach(ProtocSource ${ProtocSources})
-#   message("ProtocSource: ${ProtocSource}")
-# endforeach()
-# message("")
-# foreach(ProtocHeader ${ProtocHeaders})
-#   message("ProtocHeader: ${ProtocHeader}")
-# endforeach()
-# message("")
-# 
-# foreach(ProtobufTestSource ${ProtobufTestSources})
-#   message("ProtobufTestSource: ${ProtobufTestSource}")
-# endforeach()
-# message("")
-# foreach(ProtobufTestHeader ${ProtobufTestHeaders})
-#   message("ProtobufTestHeader: ${ProtobufTestHeader}")
-# endforeach()
-# message("")
-# foreach(ProtocTestSource ${ProtocTestSources})
-#   message("ProtocTestSource: ${ProtocTestSource}")
-# endforeach()
-# message("")
-# foreach(ProtocTestHeader ${ProtocTestHeaders})
-#   message("ProtocTestHeader: ${ProtocTestHeader}")
-# endforeach()
-# message("")
 
 
-
+#==================================================================================================#
+# Define libraries and protoc executable                                                           #
+#==================================================================================================#
 add_library(protobuf_lite STATIC ${ProtobufLiteAllFiles})
 ms_target_include_system_dirs(protobuf_lite PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_compile_definitions(protobuf_lite
@@ -101,6 +35,7 @@ target_compile_definitions(protobuf_lite
     $<$<BOOL:${MSVC}>:NOMINMAX>
   PRIVATE
     $<$<BOOL:${UNIX}>:HAVE_PTHREAD>
+    $<$<STREQUAL:"${CMAKE_BUILD_TYPE}","Tsan">:THREAD_SANITIZER>
 )
 target_compile_options(protobuf_lite
   PUBLIC
@@ -136,17 +71,25 @@ if(UNIX)
   target_link_libraries(protoc -lpthread)
 endif()
 
+
+#==================================================================================================#
+# Define test executables                                                                          #
+#==================================================================================================#
+set(GeneratedProtoRootDir ${CMAKE_BINARY_DIR}/GeneratedProtoFiles)
 add_executable(protobuf_lite_tests ${LiteTestAllFiles})
+target_include_directories(protobuf_lite_tests PRIVATE ${GeneratedProtoRootDir})
 target_compile_options(protobuf_lite_tests PRIVATE $<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4244 /wd4267 /wd4800 /wd4996> $<$<BOOL:${UNIX}>:-w>)
 target_link_libraries(protobuf_lite_tests protobuf_lite)
 
 add_executable(protobuf_test_plugin ${TestPluginAllFiles})
-target_compile_options(protobuf_test_plugin PRIVATE $<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4244 /wd4267 /wd4800 /wd4996> $<$<BOOL:${UNIX}>:-w>)
-target_link_libraries(protobuf_test_plugin proto_compiler)
+target_compile_options(protobuf_test_plugin PRIVATE $<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4100 /wd4127 /wd4244 /wd4245 /wd4267 /wd4800 /wd4996> $<$<BOOL:${UNIX}>:-w>)
+target_link_libraries(protobuf_test_plugin proto_compiler gtest)
 
 add_executable(protobuf_tests ${TestsAllFiles})
-target_compile_options(protobuf_tests PRIVATE $<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4244 /wd4267 /wd4800 /wd4996> $<$<BOOL:${UNIX}>:-w>)
-target_link_libraries(protobuf_tests proto_compiler)
+target_include_directories(protobuf_tests PRIVATE ${GeneratedProtoRootDir} ${BoostSourceDir})
+target_compile_options(protobuf_tests PRIVATE $<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4100 /wd4125 /wd4127 /wd4146 /wd4244 /wd4267 /wd4305 /wd4307 /wd4800 /wd4996> $<$<BOOL:${UNIX}>:-w>)
+target_link_libraries(protobuf_tests proto_compiler gtest_main gtest_no_maidsafe_log ${BoostFilesystemLibs} ${BoostSystemLibs})
+add_dependencies(protobuf_tests protobuf_test_plugin)
 
 set_target_properties(protobuf_lite protobuf proto_compiler protoc protobuf_lite_tests protobuf_test_plugin protobuf_tests
                       PROPERTIES FOLDER "Third Party/Google Protocol Buffers")
@@ -154,6 +97,31 @@ set_target_properties(protobuf_lite protobuf proto_compiler protoc protobuf_lite
 set(AllStaticLibsForCurrentProject protobuf_lite protobuf proto_compiler)
 set(AllExesForCurrentProject protoc protobuf_lite_tests protobuf_test_plugin protobuf_tests)
 include(../../../cmake_modules/standard_flags.cmake)
+
+
+#==================================================================================================#
+# Set up protoc custom commands for tests                                                          #
+#==================================================================================================#
+set(ProtocArgs "--proto_path=${PROJECT_SOURCE_DIR}/src" "--cpp_out=${GeneratedProtoRootDir}")
+if(MSVC)
+  list(APPEND ProtocArgs "--error_format=msvs")
+else()
+  list(APPEND ProtocArgs "--error_format=gcc")
+endif()
+
+# Add custom command to generate CC and header files
+file(MAKE_DIRECTORY ${GeneratedProtoRootDir})
+foreach(ProtoFile ${LiteTestProtoFiles} ${TestsProtoFiles})
+  get_filename_component(ProtoFileNameWe ${ProtoFile} NAME_WE)
+  string(REPLACE "${PROJECT_SOURCE_DIR}/src" "${GeneratedProtoRootDir}" GeneratedFile "${ProtoFile}")
+  string(REPLACE ".proto" ".pb.cc" GeneratedSource "${GeneratedFile}")
+  string(REPLACE ".proto" ".pb.h" GeneratedHeader "${GeneratedFile}")
+  add_custom_command(OUTPUT ${GeneratedSource} ${GeneratedHeader}
+                     COMMAND $<TARGET_FILE:protoc> ${ProtocArgs} ${ProtoFile}
+                     DEPENDS protoc ${ProtoFile}
+                     COMMENT "Generated files from ${ProtoFileNameWe}.proto"
+                     VERBATIM)
+endforeach()
 
 
 #==================================================================================================#

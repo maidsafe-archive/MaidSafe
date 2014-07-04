@@ -4,6 +4,11 @@
 #ifndef PROTOBUF_google_2fprotobuf_2fcompiler_2fplugin_2eproto__INCLUDED
 #define PROTOBUF_google_2fprotobuf_2fcompiler_2fplugin_2eproto__INCLUDED
 
+#ifdef _MSC_VER
+#  pragma warning(push)
+#  pragma warning(disable: 4127 4244 4267)
+#endif
+
 #include <string>
 
 #include <google/protobuf/stubs/common.h>
@@ -852,5 +857,9 @@ namespace protobuf {
 #endif  // SWIG
 
 // @@protoc_insertion_point(global_scope)
+
+#ifdef _MSC_VER
+#  pragma warning(pop)
+#endif
 
 #endif  // PROTOBUF_google_2fprotobuf_2fcompiler_2fplugin_2eproto__INCLUDED

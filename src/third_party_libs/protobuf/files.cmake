@@ -217,6 +217,8 @@ set(TestPluginHeaders
 set(TestPluginAllFiles ${TestPluginSources} ${TestPluginHeaders})
 
 
+configure_file("${ProtobufSourcesDir}/testing/googletest.cc.in"
+               "${CMAKE_BINARY_DIR}/GeneratedProtoFiles/google/protobuf/testing/googletest.cc" @ONLY)
 set(TestsSourcesGenerated
     "${CMAKE_BINARY_DIR}/GeneratedProtoFiles/google/protobuf/compiler/cpp/cpp_test_bad_identifiers.pb.cc"
     "${CMAKE_BINARY_DIR}/GeneratedProtoFiles/google/protobuf/unittest.pb.cc"
@@ -228,6 +230,7 @@ set(TestsSourcesGenerated
     "${CMAKE_BINARY_DIR}/GeneratedProtoFiles/google/protobuf/unittest_mset.pb.cc"
     "${CMAKE_BINARY_DIR}/GeneratedProtoFiles/google/protobuf/unittest_no_generic_services.pb.cc"
     "${CMAKE_BINARY_DIR}/GeneratedProtoFiles/google/protobuf/unittest_optimize_for.pb.cc"
+    "${CMAKE_BINARY_DIR}/GeneratedProtoFiles/google/protobuf/testing/googletest.cc"  # This is configured by CMake, not protoc
     )
 set(TestsHeadersGenerated
     "${CMAKE_BINARY_DIR}/GeneratedProtoFiles/google/protobuf/compiler/cpp/cpp_test_bad_identifiers.pb.h"
@@ -286,7 +289,7 @@ set(TestsSources
     "${ProtobufSourcesDir}/stubs/template_util_unittest.cc"
     "${ProtobufSourcesDir}/stubs/type_traits_unittest.cc"
     "${ProtobufSourcesDir}/testing/file.cc"
-    "${ProtobufSourcesDir}/testing/googletest.cc"
+#    "${ProtobufSourcesDir}/testing/googletest.cc"  # This needs the source dir, so is configured by CMake and included in ${TestsSourcesGenerated}
     "${ProtobufSourcesDir}/test_util.cc"
     "${ProtobufSourcesDir}/text_format_unittest.cc"
     "${ProtobufSourcesDir}/unknown_field_set_unittest.cc"

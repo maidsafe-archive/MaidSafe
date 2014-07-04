@@ -65,6 +65,8 @@ namespace protobuf {
 #endif
 
 string TestSourceDir() {
+  return "@PROJECT_SOURCE_DIR@/src";
+/*
 #ifdef _MSC_VER
   // Look for the "src" directory.
   string prefix = ".";
@@ -88,6 +90,7 @@ string TestSourceDir() {
     return result;
   }
 #endif
+*/
 }
 
 namespace {
