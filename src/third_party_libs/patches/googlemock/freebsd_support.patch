@@ -1,10 +1,10 @@
-diff --git a/gtest/include/gtest/internal/gtest-port.h a/gtest/include/gtest/internal/gtest-port.h
+diff --git a/gtest/include/gtest/internal/gtest-port.h b/gtest/include/gtest/internal/gtest-port.h
 --- a/gtest/include/gtest/internal/gtest-port.h
 +++ b/gtest/include/gtest/internal/gtest-port.h
-@@ -232,6 +232,9 @@
- # ifdef ANDROID
+@@ -253,6 +253,9 @@
+ # if defined __ANDROID__
  #  define GTEST_OS_LINUX_ANDROID 1
- # endif  // ANDROID
+ # endif
 +#elif defined __FreeBSD__
 +# define GTEST_OS_LINUX 1
 +# define GTEST_HAS_CLONE 0
@@ -26,4 +26,3 @@ diff --git a/gtest/include/gtest/internal/gtest-internal.h b/gtest/include/gtest
  
  #include <ctype.h>
  #include <string.h>
-
