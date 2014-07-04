@@ -39,6 +39,8 @@ endif()
 
 include(add_boost)
 add_subdirectory(cryptopp)
+set(gmock_build_tests ON)
+set(gtest_build_tests ON)
 add_subdirectory(googlemock)
 add_subdirectory(protobuf)
 add_subdirectory(leveldb)
@@ -46,8 +48,9 @@ add_subdirectory(leveldb)
 
 # Add third party tests
 if(MaidsafeTesting)
+  # Crypto++
   set(CamelCaseProjectName ThirdParty)
-  set(AllExesForCurrentProject cryptest ${AllGMockTests} ${AllGTestTests} ${AllLeveldbTests} leveldb_benchmark)
+  set(AllExesForCurrentProject cryptest protobuf_lite_tests protobuf_tests ${AllGMockTests} ${AllGTestTests} ${AllLeveldbTests} leveldb_benchmark)
   ms_add_project_experimental()
   set(Timeout 60)
   ms_update_test_timeout(Timeout)
@@ -71,8 +74,14 @@ if(MaidsafeTesting)
   set_tests_properties("\"CryptoPP test vectors for RSA-PKCS1 v1.5\"" PROPERTIES TIMEOUT ${Timeout} LABELS "${Labels}")
   ms_add_memcheck_ignore("CryptoPP test vectors for RSA-PKCS1 v1.5")
 
+  # Protobuf
   set(Timeout 10)
   ms_update_test_timeout(Timeout)
+  add_test(NAME protobuf_lite_tests COMMAND protobuf_lite_tests)
+  add_test(NAME protobuf_tests COMMAND protobuf_tests)
+  set_tests_properties(protobuf_lite_tests protobuf_tests PROPERTIES TIMEOUT ${Timeout} LABELS "ThirdParty;Behavioural;Protobuf")
+
+  # GMock
   foreach(GMockTest ${AllGMockTests})
     add_test(NAME ${GMockTest} COMMAND ${GMockTest})
     if("${GMockTest}" STREQUAL "gmock-matchers_test")
@@ -84,11 +93,13 @@ if(MaidsafeTesting)
     endif()
   endforeach()
 
+  # GTest
   foreach(GTestTest ${AllGTestTests})
     add_test(NAME ${GTestTest} COMMAND ${GTestTest})
     set_tests_properties(${GTestTest} PROPERTIES TIMEOUT ${Timeout} LABELS "ThirdParty;Behavioural;GTest")
   endforeach()
 
+  # LevelDB
   foreach(LeveldbTest ${AllLeveldbTests})
     string(REPLACE "test_leveldb_" "LevelDB " TestName ${LeveldbTest})
     add_test(NAME "\"${TestName}\"" COMMAND ${LeveldbTest})

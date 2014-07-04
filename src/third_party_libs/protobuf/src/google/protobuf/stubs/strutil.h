@@ -168,6 +168,18 @@ LIBPROTOBUF_EXPORT string StringReplace(const string& s, const string& oldsub,
 LIBPROTOBUF_EXPORT void SplitStringUsing(const string& full, const char* delim,
                                          vector<string>* res);
 
+// Split a string using one or more byte delimiters, presented
+// as a nul-terminated c string. Append the components to 'result'.
+// If there are consecutive delimiters, this function will return
+// corresponding empty strings.  If you want to drop the empty
+// strings, try SplitStringUsing().
+//
+// If "full" is the empty string, yields an empty string as the only value.
+// ----------------------------------------------------------------------
+LIBPROTOBUF_EXPORT void SplitStringAllowEmpty(const string& full,
+                                              const char* delim,
+                                              vector<string>* result);
+
 // ----------------------------------------------------------------------
 // JoinStrings()
 //    These methods concatenate a vector of strings into a C++ string, using
@@ -303,12 +315,14 @@ inline uint32 strtou32(const char *nptr, char **endptr, int base) {
 // For now, long long is 64-bit on all the platforms we care about, so these
 // functions can simply pass the call to strto[u]ll.
 inline int64 strto64(const char *nptr, char **endptr, int base) {
-  static_assert(sizeof(int64) == sizeof(long long), "int64 length issue");
+  GOOGLE_COMPILE_ASSERT(sizeof(int64) == sizeof(long long),
+                        sizeof_int64_is_not_sizeof_long_long);
   return strtoll(nptr, endptr, base);
 }
 
 inline uint64 strtou64(const char *nptr, char **endptr, int base) {
-  static_assert(sizeof(uint64) == sizeof(unsigned long long), "uint64 length issue");
+  GOOGLE_COMPILE_ASSERT(sizeof(uint64) == sizeof(unsigned long long),
+                        sizeof_uint64_is_not_sizeof_long_long);
   return strtoull(nptr, endptr, base);
 }
 
@@ -451,5 +465,3 @@ LIBPROTOBUF_EXPORT double NoLocaleStrtod(const char* text, char** endptr);
 }  // namespace google
 
 #endif  // GOOGLE_PROTOBUF_STUBS_STRUTIL_H__
-
-

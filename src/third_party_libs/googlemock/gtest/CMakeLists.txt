@@ -16,7 +16,7 @@ option(
   "Use shared (DLL) run-time lib even when Google Test is built as static lib."
   OFF)
 
-option(gtest_build_tests "Build all of gtest's own tests." ON)
+option(gtest_build_tests "Build all of gtest's own tests." OFF)
 
 option(gtest_build_samples "Build gtest's sample programs." OFF)
 
@@ -72,22 +72,37 @@ config_compiler_and_linker()  # Defined in internal_utils.cmake.
 # are used for other targets, to ensure that gtest can be compiled by a user
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
+cxx_library(gtest_no_maidsafe_log "${cxx_strict}" src/gtest-all.cc)
 target_include_directories(gtest PRIVATE ${CMAKE_SOURCE_DIR}/src/common/include)
 ms_target_include_system_dirs(gtest PUBLIC ${gtest_SOURCE_DIR}/include PRIVATE ${gtest_SOURCE_DIR} ${BoostSourceDir})
+ms_target_include_system_dirs(gtest_no_maidsafe_log PUBLIC ${gtest_SOURCE_DIR}/include PRIVATE ${gtest_SOURCE_DIR})
 
 target_compile_definitions(gtest
   INTERFACE
     GTEST_DONT_DEFINE_FAIL=1
     GTEST_DONT_DEFINE_SUCCEED=1
     GTEST_USE_OWN_TUPLE=0
+  PUBLIC
+    USE_MAIDSAFE_LOG=1
+    $<$<AND:$<BOOL:${UNIX}>,$<CXX_COMPILER_ID:Clang>>:_FILE_OFFSET_BITS=64>
+)
+target_compile_definitions(gtest_no_maidsafe_log
+  INTERFACE
+    GTEST_DONT_DEFINE_FAIL=1
+    GTEST_DONT_DEFINE_SUCCEED=1
+    GTEST_USE_OWN_TUPLE=0
+  PUBLIC
+    USE_MAIDSAFE_LOG=0
     $<$<AND:$<BOOL:${UNIX}>,$<CXX_COMPILER_ID:Clang>>:_FILE_OFFSET_BITS=64>
 )
 
-# These next 2 commands are a workaround to avoid having to link maidsafe_common via a target_link_libraries call.
+# These next 4 commands are a workaround to avoid having to link maidsafe_common via a target_link_libraries call.
 # GTest depends on Common since we use log.h, but this would involve including this file from within the
 # CMakeLists.txt of Common.
 target_compile_options(gtest PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/wd4512>)
+target_compile_options(gtest_no_maidsafe_log PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/wd4512>)
 target_compile_definitions(gtest PRIVATE $<$<BOOL:${WIN32}>:MAIDSAFE_WIN32> $<$<BOOL:${MSVC}>:BOOST_ALL_NO_LIB>)
+target_compile_definitions(gtest_no_maidsafe_log PRIVATE $<$<BOOL:${WIN32}>:MAIDSAFE_WIN32> $<$<BOOL:${MSVC}>:BOOST_ALL_NO_LIB>)
 target_link_libraries(gtest maidsafe_common)
 
 if(MSVC)
@@ -98,7 +113,7 @@ if(MSVC)
 endif()
 
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
-target_link_libraries(gtest_main gtest)
+target_include_directories(gtest_main PRIVATE ${gtest_SOURCE_DIR}/include)
 
 ########################################################################
 #
@@ -140,32 +155,32 @@ if (gtest_build_tests)
   ############################################################
   # C++ tests built with standard compiler flags.
 
-  cxx_test(gtest-death-test_test gtest_main)
+  cxx_test(gtest-death-test_test "gtest_main;gtest")
   cxx_test(gtest_environment_test gtest)
-  cxx_test(gtest-filepath_test gtest_main)
-  cxx_test(gtest-linked_ptr_test gtest_main)
-  cxx_test(gtest-listener_test gtest_main)
-  cxx_test(gtest_main_unittest gtest_main)
-  cxx_test(gtest-message_test gtest_main)
+  cxx_test(gtest-filepath_test "gtest_main;gtest")
+  cxx_test(gtest-linked_ptr_test "gtest_main;gtest")
+  cxx_test(gtest-listener_test "gtest_main;gtest")
+  cxx_test(gtest_main_unittest "gtest_main;gtest")
+  cxx_test(gtest-message_test "gtest_main;gtest")
   cxx_test(gtest_no_test_unittest gtest)
-  cxx_test(gtest-options_test gtest_main)
+  cxx_test(gtest-options_test "gtest_main;gtest")
   cxx_test(gtest-param-test_test gtest
     test/gtest-param-test2_test.cc)
-  cxx_test(gtest-port_test gtest_main)
+  cxx_test(gtest-port_test "gtest_main;gtest")
   target_compile_definitions(gtest-port_test PRIVATE $<$<BOOL:${UNIX}>:GTEST_HAS_POSIX_REGTEST_HAS_POSIX_RE>)
   target_compile_options(gtest-port_test PRIVATE $<$<BOOL:${MSVC}>:/J>)
-  cxx_test(gtest_pred_impl_unittest gtest_main)
-  # cxx_test(gtest-printers_test gtest_main)
-  cxx_test(gtest_prod_test gtest_main
+  cxx_test(gtest_pred_impl_unittest "gtest_main;gtest")
+  # cxx_test(gtest-printers_test "gtest_main;gtest")
+  cxx_test(gtest_prod_test "gtest_main;gtest"
     test/production.cc)
   cxx_test(gtest_repeat_test gtest)
-  # cxx_test(gtest_sole_header_test gtest_main)
+  # cxx_test(gtest_sole_header_test "gtest_main;gtest")
   cxx_test(gtest_stress_test gtest)
-  cxx_test(gtest-test-part_test gtest_main)
+  cxx_test(gtest-test-part_test "gtest_main;gtest")
   cxx_test(gtest_throw_on_failure_ex_test gtest)
-  cxx_test(gtest-typed-test_test gtest_main
+  cxx_test(gtest-typed-test_test "gtest_main;gtest"
     test/gtest-typed-test2_test.cc)
-  # cxx_test(gtest_unittest gtest_main)
+  # cxx_test(gtest_unittest "gtest_main;gtest")
   # cxx_test(gtest-unittest-api_test gtest)
 
   ############################################################

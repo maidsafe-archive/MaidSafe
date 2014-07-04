@@ -148,13 +148,13 @@ bool SourceTreeDescriptorDatabase::FindFileByName(
 }
 
 bool SourceTreeDescriptorDatabase::FindFileContainingSymbol(
-    const string& /*symbol_name*/, FileDescriptorProto* /*output*/) {
+    const string& symbol_name, FileDescriptorProto* output) {
   return false;
 }
 
 bool SourceTreeDescriptorDatabase::FindFileContainingExtension(
-    const string& /*containing_type*/, int /*field_number*/,
-    FileDescriptorProto* /*output*/) {
+    const string& containing_type, int field_number,
+    FileDescriptorProto* output) {
   return false;
 }
 
@@ -242,7 +242,7 @@ static string CanonicalizePath(string path) {
   vector<string> parts;
   vector<string> canonical_parts;
   SplitStringUsing(path, "/", &parts);  // Note:  Removes empty parts.
-  for (size_t i = 0; i < parts.size(); i++) {
+  for (int i = 0; i < parts.size(); i++) {
     if (parts[i] == ".") {
       // Ignore.
     } else {
@@ -355,7 +355,7 @@ DiskSourceTree::DiskFileToVirtualFile(
   int mapping_index = -1;
   string canonical_disk_file = CanonicalizePath(disk_file);
 
-  for (size_t i = 0; i < mappings_.size(); i++) {
+  for (int i = 0; i < mappings_.size(); i++) {
     // Apply the mapping in reverse.
     if (ApplyMapping(canonical_disk_file, mappings_[i].disk_path,
                      mappings_[i].virtual_path, virtual_file)) {
@@ -415,7 +415,7 @@ io::ZeroCopyInputStream* DiskSourceTree::OpenVirtualFile(
     return NULL;
   }
 
-  for (size_t i = 0; i < mappings_.size(); i++) {
+  for (int i = 0; i < mappings_.size(); i++) {
     string temp_disk_file;
     if (ApplyMapping(virtual_file, mappings_[i].virtual_path,
                      mappings_[i].disk_path, &temp_disk_file)) {

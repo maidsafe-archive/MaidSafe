@@ -222,12 +222,12 @@ endfunction()
 
 
 function(ms_add_coverage_exclude Regex)
-  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_COVERAGE_EXCLUDE \${CTEST_CUSTOM_COVERAGE_EXCLUDE} \"${Regex}\")\n")
+  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "set(CTEST_CUSTOM_COVERAGE_EXCLUDE \${CTEST_CUSTOM_COVERAGE_EXCLUDE} \"${Regex}\")\n")
 endfunction()
 
 
 function(ms_add_memcheck_ignore TestName)
-  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_MEMCHECK_IGNORE \${CTEST_CUSTOM_MEMCHECK_IGNORE} \"${TestName}\")\n")
+  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "set(CTEST_CUSTOM_MEMCHECK_IGNORE \${CTEST_CUSTOM_MEMCHECK_IGNORE} \"${TestName}\")\n")
 endfunction()
 
 

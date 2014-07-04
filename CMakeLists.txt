@@ -163,10 +163,21 @@ option(USE_JUST_THREADS "If ON, try to find and use the just::thread library (Wi
 include(standard_flags)
 
 
+# Prepare CTestCustom.cmake
+if(MaidsafeTesting)
+  set(CTestCustomFile "${CMAKE_BINARY_DIR}/CTestCustom.cmake")
+  file(WRITE ${CTestCustomFile} "")
+  ms_add_coverage_exclude(\\\\.pb\\\\.)
+  ms_add_coverage_exclude(tests/)
+  ms_add_coverage_exclude(boost/)
+  ms_add_coverage_exclude(src/third_party_libs/)
+  ms_add_coverage_exclude(GeneratedProtoFiles/)
+  ms_add_coverage_exclude(main\\\\.cc)
+endif()
+
+
+# Add third party libs and each sub-module
 add_subdirectory(src/third_party_libs)
-
-
-# Add each sub-module
 foreach(SubModule ${SubModules})
   add_subdirectory(src/${SubModule})
 endforeach()
@@ -174,21 +185,16 @@ include(exports)
 
 message("${HR}")
 
-if(UNIX)
-  if(COVERAGE)
-    message(STATUS "Coverage ON")
-  else()
-    message(STATUS "Coverage OFF.  To enable, re-run CMake with -DCOVERAGE=ON")
-  endif()
+
+# Tidy CTestCustom.cmake and apply pre- and post-test commands
+if(MaidsafeTesting)
+  file(STRINGS ${CTestCustomFile} CTestCustomContents)
+  list(REMOVE_DUPLICATES CTestCustomContents)
+  list(SORT CTestCustomContents)
+  string(REPLACE ";" "\n" CTestCustomContents "${CTestCustomContents}")
+  file(WRITE ${CTestCustomFile} "${CTestCustomContents}\n")
 endif()
 
-
-# Tidy CTestCustom.cmake
-file(STRINGS ${CMAKE_BINARY_DIR}/CTestCustom.cmake CTestCustomContents)
-list(REMOVE_DUPLICATES CTestCustomContents)
-list(SORT CTestCustomContents)
-string(REPLACE ";" "\n" CTestCustomContents "${CTestCustomContents}")
-file(WRITE ${CMAKE_BINARY_DIR}/CTestCustom.cmake "${CTestCustomContents}\n")
 
 ms_cleanup_temp_dir()
 ms_rename_outdated_built_exes()
