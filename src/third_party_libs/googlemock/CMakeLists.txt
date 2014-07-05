@@ -17,7 +17,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
 # TODO(vladl@google.com): Implement building gMock as a DLL.
 set(BUILD_SHARED_LIBS OFF)
 
-option(gmock_build_tests "Build all of Google Mock's own tests." ON)
+option(gmock_build_tests "Build all of Google Mock's own tests." OFF)
 
 # A directory to find Google Test sources.
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/gtest/CMakeLists.txt")

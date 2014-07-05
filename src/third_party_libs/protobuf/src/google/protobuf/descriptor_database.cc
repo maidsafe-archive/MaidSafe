@@ -39,7 +39,7 @@
 #include <google/protobuf/descriptor.pb.h>
 #include <google/protobuf/wire_format_lite_inl.h>
 #include <google/protobuf/stubs/strutil.h>
-#include <google/protobuf/stubs/stl_util-inl.h>
+#include <google/protobuf/stubs/stl_util.h>
 #include <google/protobuf/stubs/map-util.h>
 
 namespace google {
@@ -234,7 +234,7 @@ bool SimpleDescriptorDatabase::DescriptorIndex<Value>::IsSubSymbol(
 template <typename Value>
 bool SimpleDescriptorDatabase::DescriptorIndex<Value>::ValidateSymbolName(
     const string& name) {
-  for (size_t i = 0; i < name.size(); i++) {
+  for (int i = 0; i < name.size(); i++) {
     // I don't trust ctype.h due to locales.  :(
     if (name[i] != '.' && name[i] != '_' &&
         (name[i] < '0' || name[i] > '9') &&
@@ -300,7 +300,7 @@ bool SimpleDescriptorDatabase::MaybeCopy(const FileDescriptorProto* file,
 
 EncodedDescriptorDatabase::EncodedDescriptorDatabase() {}
 EncodedDescriptorDatabase::~EncodedDescriptorDatabase() {
-  for (size_t i = 0; i < files_to_delete_.size(); i++) {
+  for (int i = 0; i < files_to_delete_.size(); i++) {
     operator delete(files_to_delete_[i]);
   }
 }
@@ -438,7 +438,7 @@ bool DescriptorPoolDatabase::FindAllExtensionNumbers(
   vector<const FieldDescriptor*> extensions;
   pool_.FindAllExtensions(extendee, &extensions);
 
-  for (size_t i = 0; i < extensions.size(); ++i) {
+  for (int i = 0; i < extensions.size(); ++i) {
     output->push_back(extensions[i]->number());
   }
 
@@ -461,7 +461,7 @@ MergedDescriptorDatabase::~MergedDescriptorDatabase() {}
 bool MergedDescriptorDatabase::FindFileByName(
     const string& filename,
     FileDescriptorProto* output) {
-  for (size_t i = 0; i < sources_.size(); i++) {
+  for (int i = 0; i < sources_.size(); i++) {
     if (sources_[i]->FindFileByName(filename, output)) {
       return true;
     }
@@ -472,7 +472,7 @@ bool MergedDescriptorDatabase::FindFileByName(
 bool MergedDescriptorDatabase::FindFileContainingSymbol(
     const string& symbol_name,
     FileDescriptorProto* output) {
-  for (size_t i = 0; i < sources_.size(); i++) {
+  for (int i = 0; i < sources_.size(); i++) {
     if (sources_[i]->FindFileContainingSymbol(symbol_name, output)) {
       // The symbol was found in source i.  However, if one of the previous
       // sources defines a file with the same name (which presumably doesn't
@@ -495,7 +495,7 @@ bool MergedDescriptorDatabase::FindFileContainingExtension(
     const string& containing_type,
     int field_number,
     FileDescriptorProto* output) {
-  for (size_t i = 0; i < sources_.size(); i++) {
+  for (int i = 0; i < sources_.size(); i++) {
     if (sources_[i]->FindFileContainingExtension(
           containing_type, field_number, output)) {
       // The symbol was found in source i.  However, if one of the previous
@@ -503,7 +503,7 @@ bool MergedDescriptorDatabase::FindFileContainingExtension(
       // contain the symbol, since it wasn't found in that source), then we
       // must hide it from the caller.
       FileDescriptorProto temp;
-      for (size_t j = 0; j < i; j++) {
+      for (int j = 0; j < i; j++) {
         if (sources_[j]->FindFileByName(output->name(), &temp)) {
           // Found conflicting file in a previous source.
           return false;

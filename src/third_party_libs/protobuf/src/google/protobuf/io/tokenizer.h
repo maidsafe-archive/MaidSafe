@@ -38,6 +38,7 @@
 #define GOOGLE_PROTOBUF_IO_TOKENIZER_H__
 
 #include <string>
+#include <vector>
 #include <google/protobuf/stubs/common.h>
 
 namespace google {
@@ -66,7 +67,8 @@ class LIBPROTOBUF_EXPORT ErrorCollector {
   // Indicates that there was a warning in the input at the given line and
   // column numbers.  The numbers are zero-based, so you may want to add
   // 1 to each before printing them.
-  virtual void AddWarning(int /*line*/, int /*column*/, const string& /*message*/) { }
+  virtual void AddWarning(int /* line */, int /* column */,
+                          const string& /* message */) { }
 
  private:
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(ErrorCollector);
@@ -106,7 +108,7 @@ class LIBPROTOBUF_EXPORT Tokenizer {
     TYPE_STRING,      // A quoted sequence of escaped characters.  Either single
                       // or double quotes can be used, but they must match.
                       // A string literal cannot cross a line break.
-    TYPE_SYMBOL      // Any other printable character, like '!' or '+'.
+    TYPE_SYMBOL,      // Any other printable character, like '!' or '+'.
                       // Symbols are always a single character, so "!+$%" is
                       // four tokens.
   };
@@ -136,6 +138,53 @@ class LIBPROTOBUF_EXPORT Tokenizer {
   // Advance to the next token.  Returns false if the end of the input is
   // reached.
   bool Next();
+
+  // Like Next(), but also collects comments which appear between the previous
+  // and next tokens.
+  //
+  // Comments which appear to be attached to the previous token are stored
+  // in *prev_tailing_comments.  Comments which appear to be attached to the
+  // next token are stored in *next_leading_comments.  Comments appearing in
+  // between which do not appear to be attached to either will be added to
+  // detached_comments.  Any of these parameters can be NULL to simply discard
+  // the comments.
+  //
+  // A series of line comments appearing on consecutive lines, with no other
+  // tokens appearing on those lines, will be treated as a single comment.
+  //
+  // Only the comment content is returned; comment markers (e.g. //) are
+  // stripped out.  For block comments, leading whitespace and an asterisk will
+  // be stripped from the beginning of each line other than the first.  Newlines
+  // are included in the output.
+  //
+  // Examples:
+  //
+  //   optional int32 foo = 1;  // Comment attached to foo.
+  //   // Comment attached to bar.
+  //   optional int32 bar = 2;
+  //
+  //   optional string baz = 3;
+  //   // Comment attached to baz.
+  //   // Another line attached to baz.
+  //
+  //   // Comment attached to qux.
+  //   //
+  //   // Another line attached to qux.
+  //   optional double qux = 4;
+  //
+  //   // Detached comment.  This is not attached to qux or corge
+  //   // because there are blank lines separating it from both.
+  //
+  //   optional string corge = 5;
+  //   /* Block comment attached
+  //    * to corge.  Leading asterisks
+  //    * will be removed. */
+  //   /* Block comment attached to
+  //    * grault. */
+  //   optional int32 grault = 6;
+  bool NextWithComments(string* prev_trailing_comments,
+                        vector<string>* detached_comments,
+                        string* next_leading_comments);
 
   // Parse helpers ---------------------------------------------------
 
@@ -200,11 +249,12 @@ class LIBPROTOBUF_EXPORT Tokenizer {
   int line_;
   int column_;
 
-  // Position in buffer_ where StartToken() was called.  If the token
-  // started in the previous buffer, this is zero, and current_.text already
-  // contains the part of the token from the previous buffer.  If not
-  // currently parsing a token, this is -1.
-  int token_start_;
+  // String to which text should be appended as we advance through it.
+  // Call RecordTo(&str) to start recording and StopRecording() to stop.
+  // E.g. StartToken() calls RecordTo(&current_.text).  record_start_ is the
+  // position within the current buffer where recording started.
+  string* record_target_;
+  int record_start_;
 
   // Options.
   bool allow_f_after_float_;
@@ -222,6 +272,9 @@ class LIBPROTOBUF_EXPORT Tokenizer {
 
   // Read a new buffer from the input.
   void Refresh();
+
+  inline void RecordTo(string* target);
+  inline void StopRecording();
 
   // Called when the current character is the first character of a new
   // token (not including whitespace or comments).
@@ -255,9 +308,28 @@ class LIBPROTOBUF_EXPORT Tokenizer {
   TokenType ConsumeNumber(bool started_with_zero, bool started_with_dot);
 
   // Consume the rest of a line.
-  void ConsumeLineComment();
+  void ConsumeLineComment(string* content);
   // Consume until "*/".
-  void ConsumeBlockComment();
+  void ConsumeBlockComment(string* content);
+
+  enum NextCommentStatus {
+    // Started a line comment.
+    LINE_COMMENT,
+
+    // Started a block comment.
+    BLOCK_COMMENT,
+
+    // Consumed a slash, then realized it wasn't a comment.  current_ has
+    // been filled in with a slash token.  The caller should return it.
+    SLASH_NOT_COMMENT,
+
+    // We do not appear to be starting a comment here.
+    NO_COMMENT
+  };
+
+  // If we're at the start of a new comment, consume it and return what kind
+  // of comment it is.
+  NextCommentStatus TryConsumeCommentStart();
 
   // -----------------------------------------------------------------
   // These helper methods make the parsing code more readable.  The

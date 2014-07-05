@@ -75,16 +75,6 @@ include(utils)
 ms_check_licenses()
 
 
-# Create CTestCustom.cmake to avoid inclusion of coverage results from test files, protocol buffer files and main.cc files
-file(WRITE ${PROJECT_BINARY_DIR}/CTestCustom.cmake "\n")
-ms_add_coverage_exclude(\\\\.pb\\\\.)
-ms_add_coverage_exclude(tests/)
-ms_add_coverage_exclude(boost/)
-ms_add_coverage_exclude(src/third_party_libs/)
-ms_add_coverage_exclude(GeneratedProtoFiles/)
-ms_add_coverage_exclude(main\\\\.cc)
-
-
 # Avoid running MemCheck on Style Check tests
 ms_add_memcheck_ignore(${CamelCaseProjectName}StyleCheck)
 

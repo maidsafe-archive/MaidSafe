@@ -37,7 +37,6 @@
 
 #include <string.h>
 #include <google/protobuf/stubs/common.h>
-//#include "config.h"
 
 #if defined(HAVE_HASH_MAP) && defined(HAVE_HASH_SET)
 #include HASH_MAP_H
@@ -62,7 +61,7 @@ namespace protobuf {
 template <typename Key>
 struct hash {
   // Dummy, just to make derivative hash functions compile.
-  int operator()(const Key& /*key*/) {
+  int operator()(const Key& key) {
     GOOGLE_LOG(FATAL) << "Should never be called.";
     return 0;
   }
@@ -76,7 +75,7 @@ struct hash {
 template <>
 struct hash<const char*> {
   // Dummy, just to make derivative hash functions compile.
-  int operator()(const char* /*key*/) {
+  int operator()(const char* key) {
     GOOGLE_LOG(FATAL) << "Should never be called.";
     return 0;
   }
@@ -90,15 +89,19 @@ template <typename Key, typename Data,
           typename HashFcn = hash<Key>,
           typename EqualKey = int >
 class hash_map : public std::map<Key, Data, HashFcn> {
+ public:
+  hash_map(int = 0) {}
 };
 
 template <typename Key,
           typename HashFcn = hash<Key>,
           typename EqualKey = int >
 class hash_set : public std::set<Key, HashFcn> {
+ public:
+  hash_set(int = 0) {}
 };
 
-#elif defined(_MSC_VER) && !defined(_STLPORT_VERSION)
+#elif defined(_MSC_VER) && _MSC_VER < 1800 && !defined(_STLPORT_VERSION)
 
 template <typename Key>
 struct hash : public HASH_NAMESPACE::hash_compare<Key> {
@@ -123,6 +126,8 @@ template <typename Key, typename Data,
           typename EqualKey = int >
 class hash_map : public HASH_NAMESPACE::hash_map<
     Key, Data, HashFcn> {
+ public:
+  hash_map(int = 0) {}
 };
 
 template <typename Key,
@@ -130,6 +135,8 @@ template <typename Key,
           typename EqualKey = int >
 class hash_set : public HASH_NAMESPACE::hash_set<
     Key, HashFcn> {
+ public:
+  hash_set(int = 0) {}
 };
 
 #else
@@ -163,6 +170,8 @@ template <typename Key, typename Data,
           typename EqualKey = std::equal_to<Key> >
 class hash_map : public HASH_NAMESPACE::HASH_MAP_CLASS<
     Key, Data, HashFcn, EqualKey> {
+ public:
+  hash_map(int = 0) {}
 };
 
 template <typename Key,
@@ -170,6 +179,8 @@ template <typename Key,
           typename EqualKey = std::equal_to<Key> >
 class hash_set : public HASH_NAMESPACE::HASH_SET_CLASS<
     Key, HashFcn, EqualKey> {
+ public:
+  hash_set(int = 0) {}
 };
 
 #endif
