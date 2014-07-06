@@ -50,6 +50,7 @@
 #include <fstream>
 
 #include "boost/filesystem/path.hpp"
+#include "boost/filesystem/operations.hpp"
 
 namespace google {
 namespace protobuf {
@@ -65,6 +66,8 @@ namespace protobuf {
 #define O_BINARY 0     // If this isn't defined, the platform doesn't need it.
 #endif
 #endif
+
+namespace fs = boost::filesystem;
 
 string TestSourceDir() {
   return "@PROJECT_SOURCE_DIR@/src";
@@ -98,19 +101,8 @@ string TestSourceDir() {
 namespace {
 
 string GetTemporaryDirectoryName() {
-  // tmpnam() is generally not considered safe but we're only using it for
-  // testing.  We cannot use tmpfile() or mkstemp() since we're creating a
-  // directory.
-  char b[L_tmpnam + 1];     // HPUX multithread return 0 if s is 0
-  string result = tmpnam(b);
-#ifdef _WIN32
-  // On Win32, tmpnam() returns a file prefixed with '\', but which is supposed
-  // to be used in the current working directory.  WTF?
-  if (HasPrefixString(result, "\\")) {
-    result.erase(0, 1);
-  }
-#endif  // _WIN32
-  return result;
+      return fs::path(fs::unique_path(
+            fs::temp_directory_path() / "%%%%-%%%%-%%%%")).string();
 }
 
 // Creates a temporary directory on demand and deletes it when the process
