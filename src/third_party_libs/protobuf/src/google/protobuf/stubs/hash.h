@@ -154,8 +154,13 @@ struct hash<const Key*> {
 
 // Unlike the old SGI version, the TR1 "hash" does not special-case char*.  So,
 // we go ahead and provide our own implementation.
+#if defined(__has_feature) &&  __has_feature(memory_sanitizer)
+template <>
+struct hash<const char*> { __attribute__((no_sanitize_memory)) 
+#else
 template <>
 struct hash<const char*> {
+#endif
   inline size_t operator()(const char* str) const {
     size_t result = 0;
     for (; *str != '\0'; str++) {
@@ -219,11 +224,19 @@ struct hash<pair<First, Second> > {
 
 // Used by GCC/SGI STL only.  (Why isn't this provided by the standard
 // library?  :( )
-struct streq {
+#if defined(__has_feature) &&  __has_feature(memory_sanitizer)
+struct streq { __attribute__((no_sanitize_memory)) 
+  inline bool operator()(const char* a, const char* b) const __attribute__((no_sanitize_memory)) {
+    return strcmp(a, b) == 0;
+  }
+};
+#else
+  struct streq {
   inline bool operator()(const char* a, const char* b) const {
     return strcmp(a, b) == 0;
   }
 };
+#endif
 
 }  // namespace protobuf
 }  // namespace google

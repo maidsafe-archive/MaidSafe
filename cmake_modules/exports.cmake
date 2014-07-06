@@ -48,7 +48,7 @@ if(Cbfs_FOUND)
   file(APPEND ${ExportFile} "set(CbfsGUIDNetwork \"${CbfsGUIDNetwork}\")\n\n")
 endif()
 
-set(AllTargets ${AllStaticLibs} local_drive drive leveldb cryptopp protobuf protoc gmock gtest)
+set(AllTargets ${AllStaticLibs} local_drive drive leveldb cryptopp protobuf_lite protoc gmock gtest)
 if(Cbfs_FOUND)
   list(APPEND AllTargets cbfs_driver)
 endif()

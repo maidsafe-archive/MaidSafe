@@ -286,10 +286,18 @@ static inline bool ContainsParentReference(const string& path) {
 //   assert(!ApplyMapping("foo/bar", "baz", "qux", &result));
 //   assert(!ApplyMapping("foo/bar", "baz", "qux", &result));
 //   assert(!ApplyMapping("foobar", "foo", "baz", &result));
+
+#if defined(__has_feature) &&  __has_feature(memory_sanitizer)
 static bool ApplyMapping(const string& filename,
                          const string& old_prefix,
                          const string& new_prefix,
+                         string* result) __attribute__((no_sanitize_memory)) {
+#else
+ static bool ApplyMapping(const string& filename,
+                         const string& old_prefix,
+                         const string& new_prefix,
                          string* result) {
+#endif
   if (old_prefix.empty()) {
     // old_prefix matches any relative path.
     if (ContainsParentReference(filename)) {

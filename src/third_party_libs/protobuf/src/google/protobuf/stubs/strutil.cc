@@ -149,9 +149,15 @@ string StringReplace(const string& s, const string& oldsub,
 // ----------------------------------------------------------------------
 template <typename ITR>
 static inline
+#if defined(__has_feature) &&  __has_feature(memory_sanitizer)
+void SplitStringToIteratorUsing(const string& full,
+                                const char* delim,
+                                ITR& result) __attribute__((no_sanitize_memory)) {
+#else
 void SplitStringToIteratorUsing(const string& full,
                                 const char* delim,
                                 ITR& result) {
+#endif
   // Optimize the common case where delim is a single character.
   if (delim[0] != '\0' && delim[1] == '\0') {
     char c = delim[0];
