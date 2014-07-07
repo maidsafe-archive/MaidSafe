@@ -245,11 +245,7 @@ class LIBPROTOBUF_EXPORT SimpleDescriptorDatabase : public DescriptorDatabase {
     // Returns true if and only if all characters in the name are alphanumerics,
     // underscores, or periods.
 
-#if defined(__has_feature) &&  __has_feature(memory_sanitizer)
-    bool ValidateSymbolName(const string& name) __attribute__((no_sanitize_memory));
-#else
     bool ValidateSymbolName(const string& name);
-#endif
   };
 
 

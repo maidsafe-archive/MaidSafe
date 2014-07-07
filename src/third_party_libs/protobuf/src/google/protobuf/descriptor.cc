@@ -139,11 +139,7 @@ const int FieldDescriptor::kLastReservedNumber;
 
 namespace {
 
-#if defined(__has_feature) &&  __has_feature(memory_sanitizer)
-  string ToCamelCase(const string& input) __attribute__((no_sanitize_memory)) {
-#else
   string ToCamelCase(const string& input) {
-#endif
   bool capitalize_next = false;
   string result("");
   result.reserve(input.size());

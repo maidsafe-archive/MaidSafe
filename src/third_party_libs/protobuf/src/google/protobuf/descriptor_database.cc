@@ -235,7 +235,7 @@ bool SimpleDescriptorDatabase::DescriptorIndex<Value>::IsSubSymbol(
 
 template <typename Value> 
 bool SimpleDescriptorDatabase::DescriptorIndex<Value>::ValidateSymbolName(
-    const string& name)  __attribute__((no_sanitize_memory)) {
+    const string& name) {
   if (name.empty())
     return false;
   bool check(true);
