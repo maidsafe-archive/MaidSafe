@@ -1,0 +1,36 @@
+language: cpp
+compiler:
+  - clang
+notifications:
+  email:
+    - dev@maidsafe.net
+# whitelist
+branches:
+  only:
+    - next
+git:
+  submodules: false
+
+# Install pre-reqs
+before_install:
+  - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+  - git submodule update --init --recursive
+  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+  - sudo apt-get clean -qq
+  - sudo apt-get update -qq
+  - sudo apt-get install -y -f build-essential python-psutil libfuse-dev libicu-dev libstdc++-4.8-dev
+  - wget http://www.cmake.org/files/v2.8/cmake-2.8.12.2.tar.gz
+  - tar xf cmake-2.8.12.2.tar.gz
+  - cd cmake-2.8.12.2
+  - ./bootstrap
+  - make
+  - sudo make install
+  - cd ../..
+
+# Run the Build script
+before_script:
+  - cmake -HMaidSafe -Bbuild_maidsafe -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
+  - cd build_maidsafe
+
+script:
+  - make -j4
