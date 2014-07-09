@@ -175,6 +175,13 @@ if(MaidsafeTesting)
   ms_add_coverage_exclude(main\\\\.cc)
 endif()
 
+if(UNIX)
+ if(COVERAGE)
+ message(STATUS "Coverage ON")
+ else()
+ message(STATUS "Coverage OFF. To enable, re-run CMake with -DCOVERAGE=ON")
+ endif()
+endif()
 
 # Add third party libs and each sub-module
 add_subdirectory(src/third_party_libs)
