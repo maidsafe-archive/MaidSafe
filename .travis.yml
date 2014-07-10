@@ -29,8 +29,8 @@ before_install:
 
 # Run the Build script
 before_script:
-  - cmake -HMaidSafe -Bbuild_maidsafe -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
+  - cmake -HMaidSafe -Bbuild_maidsafe -DCMAKE_BUILD_TYPE=Release -DMAIDSAFE_TEST_TYPE=BEH -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
   - cd build_maidsafe
 
 script:
-  - make -j4
+  - make -j4 Experimental
