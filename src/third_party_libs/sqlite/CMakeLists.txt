@@ -51,7 +51,7 @@ else()
   target_link_libraries(threadtest2 sqlite maidsafe_test ${BoostFilesystemLibs})
   target_link_libraries(threadtest3 sqlite maidsafe_test ${BoostFilesystemLibs})
 
-  target_include_directories(threadtest3 ${PROJECT_SOURCE_DIR}/src/)
+#  target_include_directories(threadtest3 ${PROJECT_SOURCE_DIR}/src/)  // FIXME(Brian)
 
   set_target_properties(sqlite sqlite_test crashtest1 speedtest1 threadtest1 threadtest2 threadtest3 wordcount PROPERTIES FOLDER "Third Party/SQLite")
   set(AllExesForCurrentProject sqlite_test speedtest1 crashtest1 speedtest1 threadtest1 threadtest2 threadtest3 wordcount)
