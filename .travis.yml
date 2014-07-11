@@ -33,4 +33,4 @@ before_script:
   - cd build_maidsafe
 
 script:
-  - make -j4 Experimental
+  - make -j4
