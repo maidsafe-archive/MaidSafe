@@ -45,6 +45,7 @@ add_subdirectory(googlemock)
 mark_as_advanced(FORCE b2Path gmock_build_tests gtest_build_samples gtest_build_tests gtest_disable_pthreads gtest_force_shared_crt)
 add_subdirectory(protobuf)
 add_subdirectory(leveldb)
+add_subdirectory(sqlite)
 
 
 # Add third party tests
