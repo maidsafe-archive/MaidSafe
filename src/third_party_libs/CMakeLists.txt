@@ -39,9 +39,10 @@ endif()
 
 include(add_boost)
 add_subdirectory(cryptopp)
-set(gmock_build_tests ON)
-set(gtest_build_tests ON)
+set(gmock_build_tests ON CACHE BOOL "Build all of Google Mock's own tests.")
+set(gtest_build_tests ON CACHE BOOL "Build gtest's sample programs.")
 add_subdirectory(googlemock)
+mark_as_advanced(FORCE b2Path gmock_build_tests gtest_build_samples gtest_build_tests gtest_disable_pthreads gtest_force_shared_crt)
 add_subdirectory(protobuf)
 add_subdirectory(leveldb)
 

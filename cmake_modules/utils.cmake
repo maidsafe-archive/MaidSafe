@@ -123,8 +123,62 @@ macro(ms_glob_dir BaseName Dir SourceGroupName)
 endmacro()
 
 
+# Checks that the given file includes an appropriate license block at the top.
+function(check_license_block File)
+  set(MaidSafeCopyrightBlock
+      ""
+      "    This MaidSafe Software is licensed to you under (1) the MaidSafe.net Commercial License,"
+      "    version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which"
+      "    licence you accepted on initial access to the Software (the \"Licences\")."
+      ""
+      "    By contributing code to the MaidSafe Software, or to this project generally, you agree to be"
+      "    bound by the terms of the MaidSafe Contributor Agreement, version 1.0, found in the root"
+      "    directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also"
+      "    available at: http://www.maidsafe.net/licenses"
+      ""
+      "    Unless required by applicable law or agreed to in writing, the MaidSafe Software distributed"
+      "    under the GPL Licence is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS"
+      "    OF ANY KIND, either express or implied."
+      ""
+      "    See the Licences for the specific language governing permissions and limitations relating to"
+      "    use of the MaidSafe Software.                                                                 */")
+  if("${PROJECT_NAME}" STREQUAL "api" OR
+     "${PROJECT_NAME}" STREQUAL "common" OR
+     "${PROJECT_NAME}" STREQUAL "drive" OR
+     "${PROJECT_NAME}" STREQUAL "encrypt" OR
+     "${PROJECT_NAME}" STREQUAL "nfs" OR
+     "${PROJECT_NAME}" STREQUAL "passport" OR
+     "${PROJECT_NAME}" STREQUAL "routing" OR
+     "${PROJECT_NAME}" STREQUAL "rudp" OR
+     "${PROJECT_NAME}" STREQUAL "vault" OR
+     "${PROJECT_NAME}" STREQUAL "vault_manager")
+    file(STRINGS ${File} CopyrightBlock LIMIT_COUNT 17)
+    list(LENGTH CopyrightBlock CopyrightBlockLength)
+    unset(Found)
+    if(${CopyrightBlockLength} EQUAL 17)
+      list(GET CopyrightBlock 0 FirstLine)
+      list(REMOVE_AT CopyrightBlock 0)
+      string(REGEX MATCH "^/\\*  Copyright 20[01][0-9] MaidSafe.net limited$" Found "${FirstLine}")
+    endif()
+    if(NOT ${CopyrightBlockLength} EQUAL 17 OR NOT Found OR NOT "${CopyrightBlock}" STREQUAL "${MaidSafeCopyrightBlock}")
+      string(REPLACE "${PROJECT_SOURCE_DIR}/" "" RelativePath "${File}")
+      string(REGEX MATCH "\\.pb\\.(h|cc)$" IsProtobuf "${File}")
+      string(REGEX MATCH "\\.meta$" IsMeta "${File}")
+      if(NOT IsProtobuf AND NOT IsMeta AND
+         NOT "${RelativePath}" STREQUAL "src/maidsafe/rudp/tests/udp_echo_server.cc" AND
+         NOT "${RelativePath}" STREQUAL "src/maidsafe/rudp/tests/udp_client.cc")
+        message(AUTHOR_WARNING "Copyright block at top of \"${RelativePath}\" missing or incorrect.")
+      endif()
+    endif()
+  endif()
+endfunction()
+
+
 # Adds a static library with CMake Target name of "${Lib}".
 function(ms_add_static_library Lib)
+  foreach(File ${ARGN})
+    check_license_block(${File})
+  endforeach()
   string(REGEX MATCH "^maidsafe_[a-z]" Found "${Lib}")
   string(TOLOWER ${Lib} LibLowerCase)
   if(NOT Found OR NOT "${Lib}" STREQUAL "${LibLowerCase}")
@@ -146,6 +200,9 @@ endfunction()
 # camel-case name of the exe.  (e.g. the exe 'test_common', will have APPLICATION_NAME=TestCommon
 # unless 'test_commonName' is set, in which case it will have APPLICATION_NAME=${test_commonName})
 function(ms_add_executable Exe FolderName)
+  foreach(File ${ARGN})
+    check_license_block(${File})
+  endforeach()
   set(AllExesForCurrentProject ${AllExesForCurrentProject} ${Exe} PARENT_SCOPE)
   add_executable(${Exe} ${ARGN})
   if(${Exe}Name)
@@ -327,8 +384,6 @@ function(ms_cleanup_temp_dir)
   # Find MaidSafe-specific directories
   ms_get_temp_dir()
   file(GLOB MaidSafeTempDirs ${TempDir}/MaidSafe_Test*)
-  file(GLOB SigmoidTempDirs ${TempDir}/Sigmoid_Test*)
-  list(APPEND MaidSafeTempDirs ${SigmoidTempDirs})
   list(LENGTH MaidSafeTempDirs DirCount)
   if(NOT DirCount)
     return()
