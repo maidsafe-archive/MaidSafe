@@ -39,31 +39,31 @@ endif()
 set(AllStaticLibsForCurrentProject sqlite)
 
 ms_add_executable(sqlite_test "." ${PROJECT_SOURCE_DIR}/src/sqlite_test.cc)
-ms_add_executable(speedtest1 "." ${PROJECT_SOURCE_DIR}/src/speedtest1.cc)
-ms_add_executable(wordcount "." ${PROJECT_SOURCE_DIR}/src/wordcount.c)
+# ms_add_executable(speedtest1 "." ${PROJECT_SOURCE_DIR}/src/speedtest1.cc)
+# ms_add_executable(wordcount "." ${PROJECT_SOURCE_DIR}/src/wordcount.c)
 
 target_link_libraries(sqlite_test sqlite maidsafe_test ${BoostFilesystemLibs})
-target_link_libraries(speedtest1 sqlite maidsafe_test ${BoostFilesystemLibs})
-target_link_libraries(wordcount sqlite maidsafe_test ${BoostFilesystemLibs})
+# target_link_libraries(speedtest1 sqlite maidsafe_test ${BoostFilesystemLibs})
+# target_link_libraries(wordcount sqlite maidsafe_test ${BoostFilesystemLibs})
 
 if(MSVC)
   set_target_properties(sqlite sqlite_test speedtest1 wordcount PROPERTIES FOLDER "Third Party/SQLite")
   set(AllExesForCurrentProject sqlite_test speedtest1 wordcount)
 else()
-  ms_add_executable(crashtest1 "." ${PROJECT_SOURCE_DIR}/src/crashtest1.cc)
-  ms_add_executable(threadtest1 "." ${PROJECT_SOURCE_DIR}/src/threadtest1.c)
-  ms_add_executable(threadtest2 "." ${PROJECT_SOURCE_DIR}/src/threadtest2.c)
-  ms_add_executable(threadtest3 "." ${PROJECT_SOURCE_DIR}/src/threadtest3.c)
-
-  target_link_libraries(crashtest1 sqlite maidsafe_test ${BoostFilesystemLibs})
-  target_link_libraries(threadtest1 sqlite maidsafe_test ${BoostFilesystemLibs})
-  target_link_libraries(threadtest2 sqlite maidsafe_test ${BoostFilesystemLibs})
-  target_link_libraries(threadtest3 sqlite maidsafe_test ${BoostFilesystemLibs})
-
+  # ms_add_executable(crashtest1 "." ${PROJECT_SOURCE_DIR}/src/crashtest1.cc)
+  # ms_add_executable(threadtest1 "." ${PROJECT_SOURCE_DIR}/src/threadtest1.c)
+  # ms_add_executable(threadtest2 "." ${PROJECT_SOURCE_DIR}/src/threadtest2.c)
+  # ms_add_executable(threadtest3 "." ${PROJECT_SOURCE_DIR}/src/threadtest3.c)
+  #
+  # target_link_libraries(crashtest1 sqlite maidsafe_test ${BoostFilesystemLibs})
+  # target_link_libraries(threadtest1 sqlite maidsafe_test ${BoostFilesystemLibs})
+  # target_link_libraries(threadtest2 sqlite maidsafe_test ${BoostFilesystemLibs})
+  # target_link_libraries(threadtest3 sqlite maidsafe_test ${BoostFilesystemLibs})
+  #
 #  target_include_directories(threadtest3 ${PROJECT_SOURCE_DIR}/src/)  // FIXME(Brian)
 
-  set_target_properties(sqlite sqlite_test crashtest1 speedtest1 threadtest1 threadtest2 threadtest3 wordcount PROPERTIES FOLDER "Third Party/SQLite")
-  set(AllExesForCurrentProject sqlite_test speedtest1 crashtest1 speedtest1 threadtest1 threadtest2 threadtest3 wordcount)
+  # set_target_properties(sqlite sqlite_test  wordcount PROPERTIES FOLDER "Third Party/SQLite")
+  # set(AllExesForCurrentProject sqlite_test speedtest1 wordcount)
 endif()
 
 add_definitions(-DSQLITE_ENABLE_RTREE)
