@@ -24,7 +24,7 @@ include(files.cmake)
 #==================================================================================================#
 add_library(protobuf_lite STATIC ${ProtobufLiteAllFiles})
 ms_target_include_system_dirs(protobuf_lite PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_compile_definitions(protobuf_lite 
+target_compile_definitions(protobuf_lite
   PUBLIC
     HAVE_HASH_MAP=1 HAVE_HASH_SET=1
     HASH_NAMESPACE=std
@@ -56,36 +56,10 @@ if(TARGET check_sanitizer_blacklist)
 endif()
 
 add_library(protobuf STATIC ${ProtobufAllFiles})
-# target_compile_definitions(protobuf 
-#   PUBLIC
-#     HAVE_HASH_MAP=1 HAVE_HASH_SET=1
-#     HASH_NAMESPACE=std
-#     HASH_MAP_H=<unordered_map> HASH_SET_H=<unordered_set>
-#     HASH_MAP_CLASS=unordered_map HASH_SET_CLASS=unordered_set
-#     HAVE_ZLIB=0
-#     $<$<AND:$<BOOL:${JUST_THREAD_DEADLOCK_CHECK}>,$<CONFIG:Debug>>:_JUST_THREAD_DEADLOCK_CHECK>
-#     $<$<BOOL:${MSVC}>:NOMINMAX>
-#   PRIVATE
-#     $<$<BOOL:${UNIX}>:HAVE_PTHREAD>
-#     $<$<STREQUAL:"${CMAKE_BUILD_TYPE}","Tsan">:THREAD_SANITIZER>
-# )
 target_compile_options(protobuf PRIVATE $<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4244 /wd4267 /wd4800 /wd4996> $<$<BOOL:${UNIX}>:-w>)
 target_link_libraries(protobuf protobuf_lite)
 
 add_library(proto_compiler ${ProtocAllFiles})
-# target_compile_definitions(proto_compiler 
-#   PUBLIC
-#     HAVE_HASH_MAP=1 HAVE_HASH_SET=1
-#     HASH_NAMESPACE=std
-#     HASH_MAP_H=<unordered_map> HASH_SET_H=<unordered_set>
-#     HASH_MAP_CLASS=unordered_map HASH_SET_CLASS=unordered_set
-#     HAVE_ZLIB=0
-#     $<$<AND:$<BOOL:${JUST_THREAD_DEADLOCK_CHECK}>,$<CONFIG:Debug>>:_JUST_THREAD_DEADLOCK_CHECK>
-#     $<$<BOOL:${MSVC}>:NOMINMAX>
-#   PRIVATE
-#     $<$<BOOL:${UNIX}>:HAVE_PTHREAD>
-#     $<$<STREQUAL:"${CMAKE_BUILD_TYPE}","Tsan">:THREAD_SANITIZER>
-# )
 target_include_directories(proto_compiler PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_compile_options(proto_compiler PRIVATE $<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4146 /wd4244 /wd4267 /wd4800 /wd4996> $<$<BOOL:${UNIX}>:-w>)
 target_link_libraries(proto_compiler protobuf)

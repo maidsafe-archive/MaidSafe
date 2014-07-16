@@ -28,7 +28,7 @@
 ms_check_compiler()
 ms_underscores_to_camel_case(${PROJECT_NAME} CamelCaseProjectName)
 
-if(NOT PROJECT_NAME STREQUAL Cryptopp AND NOT PROJECT_NAME STREQUAL leveldb AND NOT PROJECT_NAME STREQUAL network_viewer)
+if(NOT PROJECT_NAME STREQUAL Cryptopp AND NOT PROJECT_NAME STREQUAL sqlite AND NOT PROJECT_NAME STREQUAL leveldb AND NOT PROJECT_NAME STREQUAL network_viewer)
   ms_get_branch(Branch)
   set(Msg "Configuring MaidSafe ${CamelCaseProjectName} project on ${Branch} branch")
   string(REGEX REPLACE . "-" Underscore ${Msg})
