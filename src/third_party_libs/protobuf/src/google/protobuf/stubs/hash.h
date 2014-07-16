@@ -219,7 +219,7 @@ struct hash<pair<First, Second> > {
 
 // Used by GCC/SGI STL only.  (Why isn't this provided by the standard
 // library?  :( )
-struct streq {
+  struct streq {
   inline bool operator()(const char* a, const char* b) const {
     return strcmp(a, b) == 0;
   }

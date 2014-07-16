@@ -139,9 +139,9 @@ const int FieldDescriptor::kLastReservedNumber;
 
 namespace {
 
-string ToCamelCase(const string& input) {
+  string ToCamelCase(const string& input) {
   bool capitalize_next = false;
-  string result;
+  string result("");
   result.reserve(input.size());
 
   for (int i = 0; i < input.size(); i++) {
@@ -949,7 +949,8 @@ void DescriptorPool::InternalAddGeneratedFile(
   // any descriptor-based operations, since this might cause infinite recursion
   // or deadlock.
   InitGeneratedPoolOnce();
-  GOOGLE_CHECK(generated_database_->Add(encoded_file_descriptor, size));
+  if (encoded_file_descriptor != NULL)
+    GOOGLE_CHECK(generated_database_->Add(encoded_file_descriptor, size));
 }
 
 

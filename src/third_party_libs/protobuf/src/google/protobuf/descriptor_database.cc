@@ -35,6 +35,7 @@
 #include <google/protobuf/descriptor_database.h>
 
 #include <set>
+#include <algorithm>
 
 #include <google/protobuf/descriptor.pb.h>
 #include <google/protobuf/wire_format_lite_inl.h>
@@ -86,7 +87,8 @@ template <typename Value>
 bool SimpleDescriptorDatabase::DescriptorIndex<Value>::AddSymbol(
     const string& name, Value value) {
   // We need to make sure not to violate our map invariant.
-
+  if(name.empty())
+    return false;
   // If the symbol name is invalid it could break our lookup algorithm (which
   // relies on the fact that '.' sorts before all other characters that are
   // valid in symbol names).
@@ -231,19 +233,17 @@ bool SimpleDescriptorDatabase::DescriptorIndex<Value>::IsSubSymbol(
              super_symbol[sub_symbol.size()] == '.');
 }
 
-template <typename Value>
+template <typename Value> 
 bool SimpleDescriptorDatabase::DescriptorIndex<Value>::ValidateSymbolName(
     const string& name) {
-  for (int i = 0; i < name.size(); i++) {
-    // I don't trust ctype.h due to locales.  :(
-    if (name[i] != '.' && name[i] != '_' &&
-        (name[i] < '0' || name[i] > '9') &&
-        (name[i] < 'A' || name[i] > 'Z') &&
-        (name[i] < 'a' || name[i] > 'z')) {
-      return false;
-    }
+  if (name.empty())
+    return false;
+  bool check(true);
+  for (const auto& character: name) {
+   if(!(isalnum(character) || character == '.' || character == '_' ))
+     check = false; 
   }
-  return true;
+  return check;
 }
 
 // -------------------------------------------------------------------

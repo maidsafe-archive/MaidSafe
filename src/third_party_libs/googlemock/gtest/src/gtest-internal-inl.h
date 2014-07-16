@@ -755,7 +755,7 @@ class GTEST_API_ UnitTestImpl {
     return gtest_trace_stack_.get();
   }
 
-#if GTEST_HAS_DEATH_TEST
+#ifdef GTEST_HAS_DEATH_TEST
   void InitDeathTestSubprocessControlInfo() {
     internal_run_death_test_flag_.reset(ParseInternalRunDeathTestFlag());
   }
@@ -914,7 +914,7 @@ class GTEST_API_ UnitTestImpl {
   // How long the test took to run, in milliseconds.
   TimeInMillis elapsed_time_;
 
-#if GTEST_HAS_DEATH_TEST
+#ifdef GTEST_HAS_DEATH_TEST
   // The decomposed components of the gtest_internal_run_death_test flag,
   // parsed when RUN_ALL_TESTS is called.
   internal::scoped_ptr<InternalRunDeathTestFlag> internal_run_death_test_flag_;
@@ -962,7 +962,7 @@ GTEST_API_ bool MatchRegexAnywhere(const char* regex, const char* str);
 GTEST_API_ void ParseGoogleTestFlagsOnly(int* argc, char** argv);
 GTEST_API_ void ParseGoogleTestFlagsOnly(int* argc, wchar_t** argv);
 
-#if GTEST_HAS_DEATH_TEST
+#ifdef GTEST_HAS_DEATH_TEST
 
 // Returns the message describing the last system error, regardless of the
 // platform.

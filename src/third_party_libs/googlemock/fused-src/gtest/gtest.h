@@ -1754,7 +1754,10 @@ using ::std::tuple_size;
      (GTEST_OS_WINDOWS_DESKTOP && _MSC_VER >= 1400) || \
      GTEST_OS_WINDOWS_MINGW || GTEST_OS_AIX || GTEST_OS_HPUX || \
      GTEST_OS_OPENBSD || GTEST_OS_QNX)
-# define GTEST_HAS_DEATH_TEST 1
+// # define GTEST_HAS_DEATH_TEST 1
+#ifdef GTEST_HAS_DEATH_TEST 
+#undef GTEST_HAS_DEATH_TEST 
+#endif
 # include <vector>  // NOLINT
 #endif
 

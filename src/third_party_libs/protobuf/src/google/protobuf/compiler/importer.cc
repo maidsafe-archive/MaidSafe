@@ -286,7 +286,8 @@ static inline bool ContainsParentReference(const string& path) {
 //   assert(!ApplyMapping("foo/bar", "baz", "qux", &result));
 //   assert(!ApplyMapping("foo/bar", "baz", "qux", &result));
 //   assert(!ApplyMapping("foobar", "foo", "baz", &result));
-static bool ApplyMapping(const string& filename,
+
+ static bool ApplyMapping(const string& filename,
                          const string& old_prefix,
                          const string& new_prefix,
                          string* result) {

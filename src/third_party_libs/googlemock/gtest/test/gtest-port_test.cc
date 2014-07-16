@@ -373,7 +373,7 @@ TEST(GtestCheckDeathTest, DiesWithCorrectOutputOnFailure) {
                             regex);
 }
 
-#if GTEST_HAS_DEATH_TEST
+#ifdef GTEST_HAS_DEATH_TEST
 
 TEST(GtestCheckDeathTest, LivesSilentlyOnSuccess) {
   EXPECT_EXIT({
