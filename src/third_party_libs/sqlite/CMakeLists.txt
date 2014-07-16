@@ -26,7 +26,6 @@ project(sqlite)
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_setup.cmake)
 
 add_library(sqlite STATIC ${PROJECT_SOURCE_DIR}/include/sqlite3.h ${PROJECT_SOURCE_DIR}/src/sqlite3.c)
-#target_compile_options(sqlite PRIVATE $<$<BOOL:${MSVC}>:/wd4244>)
 ms_target_include_system_dirs(sqlite PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_compile_definitions(sqlite PRIVATE SQLITE_OMIT_LOAD_EXTENSION)
 

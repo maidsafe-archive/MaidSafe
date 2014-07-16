@@ -83,6 +83,10 @@ if(MaidsafeTesting)
   add_test(NAME protobuf_tests COMMAND protobuf_tests)
   set_tests_properties(protobuf_lite_tests protobuf_tests PROPERTIES TIMEOUT ${Timeout} LABELS "ThirdParty;Behavioural;Protobuf")
 
+  # SQLite
+  add_test(NAME sqlite_test COMMAND sqlite_test)
+  set_tests_properties(sqlite_test PROPERTIES TIMEOUT ${Timeout} LABELS "ThirdParty;Behavioural;SQLite")
+
   # GMock
   foreach(GMockTest ${AllGMockTests})
     add_test(NAME ${GMockTest} COMMAND ${GMockTest})
