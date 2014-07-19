@@ -55,5 +55,7 @@ set_target_properties(sqlite ${AllExesForCurrentProject} PROPERTIES FOLDER "Thir
 
 include(../../../cmake_modules/standard_flags.cmake)
 
+set(AllSQLiteTests sqlite_test CACHE INTERNAL "Full list of SQLite tests.")
+
 install(TARGETS sqlite COMPONENT Development CONFIGURATIONS Debug Release ARCHIVE DESTINATION lib)
 install(FILES ${PROJECT_SOURCE_DIR}/include/sqlite.h COMPONENT Development DESTINATION include/maidsafe/third_party_libs/sqlite)

@@ -52,7 +52,8 @@ add_subdirectory(sqlite)
 if(MaidsafeTesting)
   # Crypto++
   set(CamelCaseProjectName ThirdParty)
-  set(AllExesForCurrentProject cryptest protobuf_lite_tests protobuf_tests ${AllGMockTests} ${AllGTestTests} ${AllLeveldbTests} leveldb_benchmark)
+  set(AllExesForCurrentProject cryptest protobuf_lite_tests protobuf_tests ${AllSQLiteTests}
+      ${AllGMockTests} ${AllGTestTests} ${AllLeveldbTests} leveldb_benchmark)
   ms_add_project_experimental()
   set(Timeout 60)
   ms_update_test_timeout(Timeout)
