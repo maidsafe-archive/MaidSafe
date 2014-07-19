@@ -28,7 +28,6 @@ void Base64Encoder::IsolatedInitialize(const NameValuePairs &parameters)
       (Name::Terminator(), ConstByteArrayParameter(lineBreak))
       (Name::Log2Base(), 6, true)));
 }
-
 #ifdef __GNUC__
 const int *Base64Decoder::GetDecodingLookupArray()
 {

@@ -33,15 +33,15 @@ void HexDecoder::IsolatedInitialize(const NameValuePairs &parameters)
 #ifdef __GNUC__
 const int *HexDecoder::GetDefaultDecodingLookupArray()
 {
-static volatile bool s_initialized = false;
-static int s_array[256];
+  static volatile bool s_initialized = false;
+  static int s_array[256];
 
-if (!s_initialized)
-{
-InitializeDecodingLookupArray(s_array, s_vecUpper, 16, true);
-s_initialized = true;
-}
-return s_array;
+  if (!s_initialized)
+  {
+    InitializeDecodingLookupArray(s_array, s_vecUpper, 16, true);
+    s_initialized = true;
+  }
+  return s_array;
 }
 #else
 const int *HexDecoder::GetDefaultDecodingLookupArray()
