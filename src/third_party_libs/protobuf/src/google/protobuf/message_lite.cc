@@ -120,7 +120,7 @@ bool InlineMergeFromCodedStream(io::CodedInputStream* input,
                                 MessageLite* message) {
   if (!message->MergePartialFromCodedStream(input)) return false;
   if (!message->IsInitialized()) {
-    GOOGLE_LOG(ERROR) << InitializationErrorMessage("parse", *message);
+    // GOOGLE_LOG(ERROR) << InitializationErrorMessage("parse", *message);
     return false;
   }
   return true;
