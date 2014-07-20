@@ -8,8 +8,9 @@
 #include "misc.h"
 #include <algorithm>
 #include <atomic>
-#include <thread>
+#include <memory>
 #include <mutex>
+#include <thread>
 
 #ifndef CRYPTOPP_MS_STYLE_INLINE_ASSEMBLY
 #include <signal.h>
@@ -153,8 +154,16 @@ void DetectX86Features()
   static std::once_flag detection_done_flag;
   static std::atomic<bool> detection_done(false);
 
+  auto deleter([&](char* c) {
+    delete c;
+    detection_done.store(true);
+  });
+
   std::call_once(detection_done_flag, [&] {
-	  word32 cpuid[4], cpuid1[4];
+    // This unique_ptr guarantees that 'detection_done == true' on exiting the call_once lambda.
+    const std::unique_ptr<char, decltype(deleter)> scoped_setter(new char, deleter);
+
+    word32 cpuid[4], cpuid1[4];
 	  if (!CpuId(0, cpuid))
 		  return;
 	  if (!CpuId(1, cpuid1))
@@ -194,8 +203,6 @@ void DetectX86Features()
 
 	  if (!g_cacheLineSize)
 		  g_cacheLineSize = CRYPTOPP_L1_CACHE_LINE_SIZE;
-
-    detection_done = true;
   });
 
   while (!detection_done)
