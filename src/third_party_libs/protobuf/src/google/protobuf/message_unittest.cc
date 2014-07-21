@@ -187,10 +187,12 @@ TEST(MessageTest, ParseFailsIfNotInitialized) {
     errors = log.GetMessages(ERROR);
   }
 
-  ASSERT_EQ(1, errors.size());
+  // We've commented out line 123 of message_lite.cc to avoid nuisance output in our own tests.
+  // So for this test, while the message fails to ParseFromString, there is no log output.
+  ASSERT_TRUE(errors.empty());  /* ASSERT_EQ(1, errors.size());
   EXPECT_EQ("Can't parse message of type \"protobuf_unittest.TestRequired\" "
             "because it is missing required fields: a, b, c",
-            errors[0]);
+            errors[0]); */
 }
 
 TEST(MessageTest, BypassInitializationCheckOnParse) {

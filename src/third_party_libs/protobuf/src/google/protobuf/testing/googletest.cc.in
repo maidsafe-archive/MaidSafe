@@ -67,8 +67,6 @@ namespace protobuf {
 #endif
 #endif
 
-namespace fs = boost::filesystem;
-
 string TestSourceDir() {
   return "@PROJECT_SOURCE_DIR@/src";
 /*
@@ -101,8 +99,8 @@ string TestSourceDir() {
 namespace {
 
 string GetTemporaryDirectoryName() {
-      return fs::path(fs::unique_path(
-            fs::temp_directory_path() / "%%%%-%%%%-%%%%")).string();
+  return boost::filesystem::path(boost::filesystem::unique_path(
+            boost::filesystem::temp_directory_path() / "%%%%-%%%%-%%%%")).generic_string();
 }
 
 // Creates a temporary directory on demand and deletes it when the process
