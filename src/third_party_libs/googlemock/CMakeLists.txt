@@ -99,7 +99,7 @@ cxx_library(gmock_main "${cxx_strict}" src/gmock_main.cc)
 target_link_libraries(gmock_main gmock)
 cxx_library(gmock_main_no_maidsafe_log "${cxx_strict}" src/gmock_main.cc src/gmock-all.cc)
 ms_target_include_system_dirs(gmock_main_no_maidsafe_log PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR})
-target_link_libraries(gmock_main_no_maidsafe_log gtest_no_maidsafe_log)
+target_link_libraries(gmock_main_no_maidsafe_log gtest_no_maidsafe_log maidsafe_common)  # link Common to get the flags and defs.
 
 ########################################################################
 #
