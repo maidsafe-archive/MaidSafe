@@ -97,6 +97,9 @@ endif()
 
 cxx_library(gmock_main "${cxx_strict}" src/gmock_main.cc)
 target_link_libraries(gmock_main gmock)
+cxx_library(gmock_main_no_maidsafe_log "${cxx_strict}" src/gmock_main.cc src/gmock-all.cc)
+ms_target_include_system_dirs(gmock_main_no_maidsafe_log PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR})
+target_link_libraries(gmock_main_no_maidsafe_log gtest_no_maidsafe_log)
 
 ########################################################################
 #
@@ -117,30 +120,32 @@ if (gmock_build_tests)
   ############################################################
   # C++ tests built with standard compiler flags.
 
-  cxx_test(gmock-actions_test gmock_main)
-  cxx_test(gmock-cardinalities_test gmock_main)
-  cxx_test(gmock-generated-actions_test gmock_main)
-  cxx_test(gmock-generated-function-mockers_test gmock_main)
+  cxx_test(gmock-actions_test gmock_main_no_maidsafe_log)
+  cxx_test(gmock-cardinalities_test gmock_main_no_maidsafe_log)
+  cxx_test(gmock-generated-actions_test gmock_main_no_maidsafe_log)
+  cxx_test(gmock-generated-function-mockers_test gmock_main_no_maidsafe_log)
   target_compile_options(gmock-generated-function-mockers_test PRIVATE $<$<BOOL:${MSVC}>:/wd4373>)
-  cxx_test(gmock-generated-internal-utils_test gmock_main)
-  cxx_test(gmock-generated-matchers_test gmock_main)
-  cxx_test(gmock-internal-utils_test gmock_main)
-  cxx_test(gmock-matchers_test gmock_main)
+  cxx_test(gmock-generated-internal-utils_test gmock_main_no_maidsafe_log)
+  cxx_test(gmock-generated-matchers_test gmock_main_no_maidsafe_log)
+  cxx_test(gmock-internal-utils_test gmock_main_no_maidsafe_log)
+  cxx_test(gmock-matchers_test gmock_main_no_maidsafe_log)
   target_compile_options(gmock-matchers_test PRIVATE $<$<BOOL:${MSVC}>:/wd4267 /bigobj>)
-  cxx_test(gmock-more-actions_test gmock_main)
-  cxx_test(gmock-nice-strict_test gmock_main)
-  cxx_test(gmock-port_test gmock_main)
-  cxx_test(gmock-spec-builders_test gmock_main)
-  cxx_test(gmock_link_test gmock_main test/gmock_link2_test.cc)
+  cxx_test(gmock-more-actions_test gmock_main_no_maidsafe_log)
+  target_compile_options(gmock-more-actions_test PRIVATE $<$<BOOL:${MSVC}>:/wd4996>)
+  cxx_test(gmock-nice-strict_test gmock_main_no_maidsafe_log)
+  cxx_test(gmock-port_test gmock_main_no_maidsafe_log)
+  cxx_test(gmock-spec-builders_test gmock_main_no_maidsafe_log)
+  cxx_test(gmock_link_test gmock_main_no_maidsafe_log test/gmock_link2_test.cc)
   target_include_directories(gmock_link_test PRIVATE ${gmock_SOURCE_DIR})
+  target_compile_options(gmock_link_test PRIVATE $<$<BOOL:${MSVC}>:/wd4996>)
   if(NOT MSVC)
     cxx_test(gmock_stress_test gmock)
   endif()
-  cxx_test(gmock_test gmock_main)
+  cxx_test(gmock_test gmock_main_no_maidsafe_log)
 
   # gmock_all_test is commented to save time building and running tests.
   # Uncomment if necessary.
-  # cxx_test(gmock_all_test gmock_main)
+  # cxx_test(gmock_all_test gmock_main_no_maidsafe_log)
 
   ############################################################
   # C++ tests built with non-standard compiler flags.
