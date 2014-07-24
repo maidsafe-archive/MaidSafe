@@ -8,7 +8,8 @@ while read line
 do
     IFS=';' read -a arr <<< "$line"
     echo "starts pinging to host name : ${arr[0]}  with IP : ${arr[1]}"
-    ping -D -i 10 ${arr[1]} &>ping_${arr[0]}_result.txt &
+    ping -D -i 30 ${arr[1]} &>ping_${arr[0]}_result.txt &
+    sleep 1
 done < $1
 
 # use 'sudo killall -SIGINT ping' to stop ping process
