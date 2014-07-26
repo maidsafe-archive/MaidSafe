@@ -33,6 +33,7 @@ set(ProtobufLiteHeaders
     "${ProtobufSourcesDir}/stubs/atomicops_internals_macosx.h"
     "${ProtobufSourcesDir}/stubs/atomicops_internals_mips_gcc.h"
     "${ProtobufSourcesDir}/stubs/atomicops_internals_pnacl.h"
+    "${ProtobufSourcesDir}/stubs/atomicops_internals_tsan.h"
     "${ProtobufSourcesDir}/stubs/atomicops_internals_x86_gcc.h"
     "${ProtobufSourcesDir}/stubs/atomicops_internals_x86_msvc.h"
     "${ProtobufSourcesDir}/stubs/common.h"
