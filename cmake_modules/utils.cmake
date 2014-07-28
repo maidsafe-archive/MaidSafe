@@ -70,10 +70,15 @@ function(ms_check_compiler)
   # in the compiler.  We cache the output of running the compiler with '--version' and check
   # on each subsequent configure that the output is identical.  Note, with MSVC the command
   # fails ('--version' is an unrecognised arg), but still outputs the comiler version.
+  #
+  # This check (but not the minimum version check) can be skipped by setting the variable
+  # IGNORE_COMPILER_VERSION_CHANGE to ON, but we strongly discourage doing this.  It is arguably
+  # useful if you want to upgrade your compiler version on a very frequent basis (e.g. updating and
+  # building Clang from source daily).
   execute_process(COMMAND ${CMAKE_CXX_COMPILER} --version
                   OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
   string(REPLACE "\n" ";" CombinedOutput "${OutputVar}${ErrorVar}")
-  if(CheckCompilerVersion)
+  if(CheckCompilerVersion AND NOT IGNORE_COMPILER_VERSION_CHANGE)
     if(NOT "${CheckCompilerVersion}" STREQUAL "${CombinedOutput}")
       set(Msg "\n\nThe C++ compiler \"${CMAKE_CXX_COMPILER}\" has changed since the previous run of CMake.")
       set(Msg "${Msg}  This requires a clean build folder, so either delete all contents from this")

@@ -50,7 +50,6 @@ project(maidsafe)
 if(CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES} ReleaseNoInline CACHE INTERNAL "" FORCE)
 else() 
-  set(Other "other ")
   if(NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type given.  Setting and caching CMAKE_BUILD_TYPE to Debug.")
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Type of build; options are: Debug, Release, RelWithDebInfo, or MinSizeRel." FORCE)
@@ -58,7 +57,6 @@ else()
     message(STATUS "Build type set to ${CMAKE_BUILD_TYPE}")
   endif()
 endif()
-message(STATUS "To see values of ${Other}cached CMake variables, run 'cmake . -N -LH'")
 
 
 include(CTest)
@@ -202,6 +200,7 @@ endif()
 
 ms_cleanup_temp_dir()
 ms_rename_outdated_built_exes()
+message(STATUS "To see values of cached CMake variables, run 'cmake . -N -LH'")
 
 
 unset(MAKECOMMAND CACHE)
