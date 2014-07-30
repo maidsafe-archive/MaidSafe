@@ -302,7 +302,16 @@ function(ms_add_test_for_multiple_definition_errors)
   ms_add_executable(${ExeName} "${Folder}"
                     "${HeaderIncludingAllApiFiles};${CMAKE_CURRENT_BINARY_DIR}/translation_unit_one.cc;${CMAKE_CURRENT_BINARY_DIR}/translation_unit_two.cc")
   target_include_directories(${ExeName} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/src)
-  target_link_libraries(${ExeName} ${AllStaticLibsForCurrentProject})
+
+  # Link all libs for that project not excluded from ALL_BUILD to pull in their flags and public include paths
+  unset(LinkLibs)
+  foreach(Lib ${AllStaticLibsForCurrentProject})
+    get_target_property(IsExcludedFromAll ${Lib} EXCLUDE_FROM_ALL)
+    if(NOT IsExcludedFromAll)
+      list(APPEND LinkLibs ${Lib})
+    endif()
+  endforeach()
+  target_link_libraries(${ExeName} ${LinkLibs})
   set(AllExesForCurrentProject ${AllExesForCurrentProject} PARENT_SCOPE)
 
   set(ThisTestName ${CamelCaseProjectName}MultipleDefinitionsCheck)

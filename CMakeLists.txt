@@ -178,6 +178,13 @@ if(MaidsafeTesting)
 endif()
 
 
+if(BOOTSTRAP)
+  message(STATUS "BOOTSTRAP set as '${BOOTSTRAP}'.")
+else()
+  message(STATUS "BOOTSTRAP not set.")
+endif()
+
+
 # Add third party libs and each sub-module
 add_subdirectory(src/third_party_libs)
 foreach(SubModule ${SubModules})
