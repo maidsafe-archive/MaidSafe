@@ -33,5 +33,14 @@ before_script:
   - cd build_maidsafe
 
 script:
-  - make AllThirdParty  # Build Boost targets single threaded
+  # Build Boost targets single threaded
+  - make boost_system
+  - make boost_filesystem
+  - make boost_locale
+  - make boost_program_options
+  - make boost_chrono
+  - make boost_date_time
+  - make boost_regex
+  - make boost_thread
+  - make boost_process
   - make -j4
