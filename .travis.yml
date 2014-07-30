@@ -33,4 +33,5 @@ before_script:
   - cd build_maidsafe
 
 script:
+  - make AllThirdParty  # Build Boost targets single threaded
   - make -j4
