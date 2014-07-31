@@ -62,22 +62,7 @@
 # variable 'BOOTSTRAP'.  This can be one of "none", "local", or "testnet" (all case insensitive), or
 # else can be a path to a bootstrap file.
 function(ms_add_network_gtests TEST_TARGET)
-  if(BOOTSTRAP)
-    string(TOLOWER "${BOOTSTRAP}" Bootstrap)
-  else()
-    set(Bootstrap "none")
-  endif()
-
-  if("${Bootstrap}" STREQUAL "local")
-    set(TestNetworkArg "$<TARGET_FILE_DIR:${TEST_TARGET}>/local_network_bootstrap.dat")
-  elseif("${Bootstrap}" STREQUAL "testnet")
-    set(TestNetworkArg "none")  # This works for now where the hard-coded fallbacks in Routing *are* the testnet contacts.
-#      set(TestNetworkArg "${CMAKE_BINARY_DIR}/bootstrap_files/testnet_bootstrap.dat") # need to uncomment this iff we ever have a testnet and SAFE network at the same time.
-  elseif("${Bootstrap}" STREQUAL "none")
-    set(TestNetworkArg "none")
-  else()
-    set(TestNetworkArg "${BOOTSTRAP}")
-  endif()
+  get_network_test_arg()
   ms_add_gtests(${TEST_TARGET})
 endfunction()
 
@@ -112,6 +97,26 @@ function(ms_add_gtests TEST_TARGET)
   endforeach()
   set(ALL_GTESTS ${ALL_GTESTS} PARENT_SCOPE)
 endfunction()
+
+
+macro(get_network_test_arg)
+  if(BOOTSTRAP)
+    string(TOLOWER "${BOOTSTRAP}" Bootstrap)
+  else()
+    set(Bootstrap "none")
+  endif()
+
+  if("${Bootstrap}" STREQUAL "local")
+    set(NetworkTestArg "$<TARGET_FILE_DIR:${TEST_TARGET}>/local_network_bootstrap.dat")
+  elseif("${Bootstrap}" STREQUAL "testnet")
+    set(NetworkTestArg "none")  # This works for now where the hard-coded fallbacks in Routing *are* the testnet contacts.
+#      set(NetworkTestArg "${CMAKE_BINARY_DIR}/bootstrap_files/testnet_bootstrap.dat") # need to uncomment this iff we ever have a testnet and SAFE network at the same time.
+  elseif("${Bootstrap}" STREQUAL "none")
+    set(NetworkTestArg "none")
+  else()
+    set(NetworkTestArg "${BOOTSTRAP}")
+  endif()
+endmacro()
 
 
 # Gets all type values from all "typedef testing::Types<type, type, ...> varname" statements.
@@ -347,7 +352,7 @@ function(add_maidsafe_test GTEST_FIXTURE_NAME GTEST_NAME FULL_GTEST_NAME TEST_EX
                  COMMAND ${TEST_EXECUTABLE}
                      --gtest_filter=${FULL_GTEST_NAME}
                      --gtest_catch_exceptions=${CATCH_EXCEPTIONS}
-                     $<$<BOOL:${TestNetworkArg}>:--bootstrap_file> $<$<BOOL:${TestNetworkArg}>:${TestNetworkArg}>)
+                     $<$<BOOL:${NetworkTestArg}>:--bootstrap_file> $<$<BOOL:${NetworkTestArg}>:${NetworkTestArg}>)
       endif()
       if("${GTEST_NAME}" MATCHES "^FUNC_" OR "${GTEST_NAME}" MATCHES "^DISABLED_FUNC_")
         set_property(TEST ${FULL_GTEST_NAME} PROPERTY LABELS ${CamelCaseProjectName} Functional)

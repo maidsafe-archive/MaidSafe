@@ -294,7 +294,7 @@ function(ms_add_test_for_multiple_definition_errors)
   set(Contents "// NoCheck\n#include \"all_apis.h\"\nint main() { return 0; }")
   configure_file("${CMAKE_SOURCE_DIR}/cmake_modules/generic_contents.in" "${CMAKE_CURRENT_BINARY_DIR}/translation_unit_two.cc")
 
-  string(REGEX MATCH "TEST[a-z_]+" MainTestExe "${AllExesForCurrentProject}")
+  string(REGEX MATCH "test_[a-z_]+" MainTestExe "${AllExesForCurrentProject}")
   get_target_property(Folder ${MainTestExe} FOLDER)
   string(REPLACE "MaidSafe/Executables/" "" Folder "${Folder}")
 
