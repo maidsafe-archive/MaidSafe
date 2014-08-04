@@ -5,7 +5,7 @@
 
 exe=local_network_controller
 vault_exe=vault
-join_nodes=(32 52)
+join_nodes=(1 0)
 path=/tmp/test
 listen_port=11111
 
@@ -21,6 +21,10 @@ y
 
 ### VaultManager listening port.
 $listen_port
+### Enter a Visualiser Session ID.
+
+### Choose to reveal hostname.
+
 ### Number of Vaults to start.
 
 ### Commands end.
@@ -28,14 +32,9 @@ ESEEDOF
 echo "Starting Seed Network."
 x-terminal-emulator -e ./$exe seed.conf
 #./$exe seed.conf &>seed_log.txt &
-sleep 60
+sleep 90
 
-cp $path/seed/bootstrap.dat $path/bootstrap.dat
-
-### Record the process info of the seed local_network_controller and vaults
-seed_controller=`ps -ef | grep local_network_controller`
-seed_vaults=`ps -ef | grep vault`
-
+cp ./local_network_bootstrap.dat $path/seed/local_network_bootstrap.dat
 
 ### iteration : 0 - initial join, kill seeding vaults once completed 
 ###             1 - later on join, process finished once completed
@@ -52,16 +51,22 @@ do
 ### Commands begin.
 ### Initial options.
 3
+### Choose Existing Network.
+2
 ### Path to bootstrap file.
-$path/bootstrap.dat
+$path/seed/local_network_bootstrap.dat
 ### Path to VaultManager root directory.
-$path/join$i
+$path/join
 ### Create / Clear VaultManager root directory.
 y
 ### Path to vault executable.
 
 ### VaultManager listening port.
 $listen_port
+### Enter a Visualiser Session ID.
+
+### Choose to reveal hostname.
+
 ### Number of Vaults to start.
 
 ### Commands end.
@@ -73,22 +78,22 @@ EJOINOF
 		sleep 5
 	done
 
-	if [ "$iteration" -eq 0 ]; then
-		echo "Please join one vault from other machine"
-		read temp
-		cp $path/other/bootstrap.dat $path/bootstrap.dat
-		#### Stop the Seed Network ####
-		echo "stop seed network"
-		readarray -t y <<< "$seed_controller"
-		for proc in "${y[@]}"
-		do
-			z=(${proc//$' '/ })
-                        if [ ${z[7]} == "./$exe" ]; then
-				kill ${z[1]}
-			fi
-		done
-		sleep 10
-        fi
+#	if [ "$iteration" -eq 0 ]; then
+#		echo "Please join one vault from other machine"
+#		read temp
+#		cp $path/other/bootstrap.dat $path/bootstrap.dat
+#		#### Stop the Seed Network ####
+#		echo "stop seed network"
+#		readarray -t y <<< "$seed_controller"
+#		for proc in "${y[@]}"
+#		do
+#			z=(${proc//$' '/ })
+#     if [ ${z[7]} == "./$exe" ]; then
+#		  	kill ${z[1]}
+#		  fi
+#		done
+#		sleep 10
+# fi
 	iteration=$(( $iteration + 1 ))
 done
 
