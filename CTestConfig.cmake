@@ -38,5 +38,5 @@ set(CTEST_PROJECT_SUBPROJECTS
     Drive
     Vault
     VaultManager
-#    API
+    Api
     )
