@@ -64,6 +64,7 @@
 function(ms_add_network_gtests TEST_TARGET)
   get_network_test_arg()
   ms_add_gtests(${TEST_TARGET})
+  set(ALL_GTESTS ${ALL_GTESTS} PARENT_SCOPE)
 endfunction()
 
 
