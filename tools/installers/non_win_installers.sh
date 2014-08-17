@@ -61,13 +61,13 @@ if [[ $(grep -i ubuntu /etc/issue) || $(grep -i debian /etc/issue) || $(grep -i 
   cmake . -DCMAKE_BUILD_TYPE="Debug"
   clean
   make -j8 DESTDIR=$PWD/ms_tmp_install_dir/ install
-  fpm -s dir -t deb -C $PWD/ms_tmp_install_dir --name maidsafe-dev-dbg --version $major$1.$minor$2.$patch$3 --iteration 1 -d 'build-essential' -d 'python-psutil' -d 'libfuse-dev' -d'git-all' -d 'libicu-dev' --description "MaidSafe Development Package with symbols"  --maintainer 'dev@maidsafe.net' --url 'http://www.maidsafe.net' --license 'GPL' --vendor 'maidsafe.net limited' .
+  fpm -s dir -t deb -C $PWD/ms_tmp_install_dir --name maidsafe-dev-dbg --version $major$1.$minor$2.$patch$3 --iteration 1 -d 'build-essential'  -d 'libfuse-dev' -d'git-all' -d 'libicu-dev' --description "MaidSafe Development Package with symbols"  --maintainer 'dev@maidsafe.net' --url 'http://www.maidsafe.net' --license 'GPL' --vendor 'maidsafe.net limited' .
 
   cmake . -DCMAKE_BUILD_TYPE="Release"
   clean
   make -j8  DESTDIR="$PWD/ms_tmp_install_dir/" install
   find ms_tmp_install_dir/ -type f -name "*.a" -exec strip {} \;
-  fpm -s dir -t deb -C $PWD/ms_tmp_install_dir --name maidsafe-dev --version $major$1.$minor$2.$patch$3 --iteration 1 -d 'build-essential' -d 'python-psutil' -d 'libfuse-dev' -d'git-all' -d 'libicu-dev' --description "MaidSafe Development Package"  --maintainer 'dev@maidsafe.net' --url 'http://www.maidsafe.net' --license 'GPL' --vendor 'maidsafe.net limited' .
+  fpm -s dir -t deb -C $PWD/ms_tmp_install_dir --name maidsafe-dev --version $major$1.$minor$2.$patch$3 --iteration 1 -d 'build-essential'  -d 'libfuse-dev' -d'git-all' -d 'libicu-dev' --description "MaidSafe Development Package"  --maintainer 'dev@maidsafe.net' --url 'http://www.maidsafe.net' --license 'GPL' --vendor 'maidsafe.net limited' .
 
   clean
   make vault -j8  DESTDIR="$PWD/ms_tmp_install_dir/" install
@@ -87,13 +87,13 @@ then
   cmake . -DCMAKE_BUILD_TYPE="Debug"
   clean
   make -j8  DESTDIR="$PWD/ms_tmp_install_dir/" install
-  fpm -s dir -t rpm -C $PWD/ms_tmp_install_dir --name maidsafe-dev-dbg --version $major$1.$minor$2.$patch$3 --iteration 1 -d 'build-essential' -d 'python-psutil' -d 'libfuse-dev' -d'git-all' -d 'libicu-dev' --description "MaidSafe Development Package with symbols"  --maintainer 'dev@maidsafe.net' --url 'http://www.maidsafe.net' --license 'GPL' --vendor 'maidsafe.net limited' .
+  fpm -s dir -t rpm -C $PWD/ms_tmp_install_dir --name maidsafe-dev-dbg --version $major$1.$minor$2.$patch$3 --iteration 1 -d 'build-essential'  -d 'libfuse-dev' -d'git-all' -d 'libicu-dev' --description "MaidSafe Development Package with symbols"  --maintainer 'dev@maidsafe.net' --url 'http://www.maidsafe.net' --license 'GPL' --vendor 'maidsafe.net limited' .
   
   cmake . -DCMAKE_BUILD_TYPE="Release"
   clean
   make -j8  DESTDIR="$PWD/ms_tmp_install_dir/" install
   find ms_tmp_install_dir/ -type f -name "*.a" -exec strip {} \;
-  fpm -s dir -t rpm -C $PWD/ms_tmp_install_dir --name maidsafe-dev-dbg --version $major$1.$minor$2.$patch$3 --iteration 1 -d 'build-essential' -d 'python-psutil' -d 'libfuse-dev' -d'git-all' -d 'libicu-dev' --description "MaidSafe Development Package"  --maintainer 'dev@maidsafe.net' --url 'http://www.maidsafe.net' --license 'GPL' --vendor 'maidsafe.net limited' .
+  fpm -s dir -t rpm -C $PWD/ms_tmp_install_dir --name maidsafe-dev-dbg --version $major$1.$minor$2.$patch$3 --iteration 1 -d 'build-essential'  -d 'libfuse-dev' -d'git-all' -d 'libicu-dev' --description "MaidSafe Development Package"  --maintainer 'dev@maidsafe.net' --url 'http://www.maidsafe.net' --license 'GPL' --vendor 'maidsafe.net limited' .
 
   clean
   make vault -j8  DESTDIR="$PWD/ms_tmp_install_dir/" install
