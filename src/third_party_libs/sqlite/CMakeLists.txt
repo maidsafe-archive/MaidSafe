@@ -36,7 +36,7 @@ else()
 endif()
 
 set(AllStaticLibsForCurrentProject sqlite)
-
+if(MaidsafeTesting) 
 ms_add_executable(sqlite_test "." ${PROJECT_SOURCE_DIR}/src/sqlite_test.cc)
 # ms_add_executable(speedtest1 "." ${PROJECT_SOURCE_DIR}/src/speedtest1.cc)
 # ms_add_executable(wordcount "." ${PROJECT_SOURCE_DIR}/src/wordcount.c)
@@ -51,11 +51,12 @@ foreach(Exe ${AllExesForCurrentProject})
   target_compile_definitions(${Exe} PRIVATE SQLITE_ENABLE_RTREE)
   target_link_libraries(${Exe} sqlite maidsafe_test ${BoostFilesystemLibs})
 endforeach()
-set_target_properties(sqlite ${AllExesForCurrentProject} PROPERTIES FOLDER "Third Party/SQLite")
 
 include(../../../cmake_modules/standard_flags.cmake)
 
 set(AllSQLiteTests sqlite_test CACHE INTERNAL "Full list of SQLite tests.")
+endif(MaidsafeTesting)
+set_target_properties(sqlite ${AllExesForCurrentProject} PROPERTIES FOLDER "Third Party/SQLite")
 
 install(TARGETS sqlite COMPONENT Development CONFIGURATIONS Debug Release ARCHIVE DESTINATION lib)
 install(FILES ${PROJECT_SOURCE_DIR}/include/sqlite.h COMPONENT Development DESTINATION include/maidsafe/third_party_libs/sqlite)

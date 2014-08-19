@@ -64,7 +64,6 @@ set(CMAKE_RELEASENOINLINE_POSTFIX -rni)
 if(UNIX)
   set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ")
   set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
-  set(CMAKE_INSTALL_PREFIX "/usr" FORCE)
 endif()
 
 

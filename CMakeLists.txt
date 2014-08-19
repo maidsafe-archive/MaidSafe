@@ -58,7 +58,6 @@ else()
   endif()
 endif()
 
-
 include(CTest)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # works for Unix MakeFiles (also ninja)
 set(BUILD_SHARED_LIBS OFF)
@@ -99,6 +98,7 @@ endforeach()
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 
 include(version)
+include(Installers)
 
 # Set Maidsafe Testing to OFF if package build defined.
 if(PACKAGE_BUILD)
