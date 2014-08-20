@@ -73,7 +73,7 @@ if [[ $(grep -i ubuntu /etc/issue) || $(grep -i debian /etc/issue) || $(grep -i 
   make vault -j8  DESTDIR="$PWD/ms_tmp_install_dir/" install
   make vault_manager -j8  DESTDIR=$PWD/ms_tmp_install_dir/ install
   find ms_tmp_install_dir/ -type f -name "*.a" -exec strip {} \;
-  fpm -s dir -t deb -C $PWD/ms_tmp_install_dir --name maidsafe-farmer --version $major$1.$minor$2.$patch$3 --iteration 1 -d 'fuse' --description "MaidSafe Development Package"  --maintainer 'dev@maidsafe.net' --url 'http://www.maidsafe.net' --license 'GPL' --vendor 'maidsafe.net limited' --after-install 'src/vault_manager/post_install' .
+  fpm -s dir -t deb -C $PWD/ms_tmp_install_dir --name maidsafe-farmer --version $major$1.$minor$2.$patch$3 --iteration 1 -d 'fuse' --description "MaidSafe Farmer Package"  --maintainer 'dev@maidsafe.net' --url 'http://www.maidsafe.net' --license 'GPL' --vendor 'maidsafe.net limited' --after-install 'src/vault_manager/post_install' .
 #also build release rpms
   clean
   make vault -j8  DESTDIR="$PWD/ms_tmp_install_dir/" install
