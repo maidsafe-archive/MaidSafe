@@ -65,7 +65,7 @@ if(UNIX)
 # else()
       COMMAND fpm -s dir -t deb -C ${PROJECT_BINARY_DIR}/installer --name maidsafe-dev --version "${ApplicationVersionMajor}.${ApplicationVersionMinor}.${ApplicationVersionPatch}" --iteration 1 -d 'build-essential'  -d 'libfuse-dev' -d 'git-all' -d 'libicu-dev' --description "MaidSafe developer Environment"  --maintainer "dev@maidsafe.net" --url 'http://www.maidsafe.net' --license 'GPL' --vendor "maidsafe.net limited" .
       COMMAND fpm -s dir -t tar -C ${PROJECT_BINARY_DIR}/installer --name maidsafe-dev --version "${ApplicationVersionMajor}.${ApplicationVersionMinor}.${ApplicationVersionPatch}" --iteration 1 -d 'build-essential'  -d 'libfuse-dev' -d 'git-all' -d 'libicu-dev' --description "MaidSafe developer Environment"  --maintainer "dev@maidsafe.net" --url 'http://www.maidsafe.net' --license 'GPL' --vendor "maidsafe.net limited" .
-      COMMAND fpm -s dir -t rpm -C ${PROJECT_BINARY_DIR}/installer --name maidsafe-dev --version "${ApplicationVersionMajor}.${ApplicationVersionMinor}.${ApplicationVersionPatch}" --iteration 1 --epoch 1 -d 'build-essential' -d 'libfuse-dev' -d 'git-all' -d 'libicu-dev' --description "MaidSafe developer Environment"  --maintainer "dev@maidsafe.net" --url 'http://www.maidsafe.net' --license 'GPL' --vendor "maidsafe.net limited" .
+      COMMAND fpm -s dir -t rpm -C ${PROJECT_BINARY_DIR}/installer --name maidsafe-dev --version "${ApplicationVersionMajor}.${ApplicationVersionMinor}.${ApplicationVersionPatch}" --iteration 1 --epoch 1 -d build-essential -d libfuse-dev -d git-all -d libicu-dev --description "MaidSafe developer Environment" --maintainer "dev@maidsafe.net" --url 'http://www.maidsafe.net' --license 'GPL' --vendor "maidsafe.net limited" .
 # endif()
       VERBATIM
      ) 
