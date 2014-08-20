@@ -29,6 +29,8 @@ if(UNIX)
       COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/src/nfs/include/maidsafe" "${PROJECT_BINARY_DIR}/installer/usr/include/maidsafe/"
       COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/src/client/include/maidsafe" "${PROJECT_BINARY_DIR}/installer/usr/include/maidsafe/"
       COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/src/api/include/maidsafe" "${PROJECT_BINARY_DIR}/installer/usr/include/maidsafe/"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/src/vault/include/maidsafe" "${PROJECT_BINARY_DIR}/installer/usr/include/maidsafe/"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/src/vault_manager/include/maidsafe" "${PROJECT_BINARY_DIR}/installer/usr/include/maidsafe/"
       COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/src/third_party_libs/cryptopp" "${PROJECT_BINARY_DIR}/installer/usr/include/maidsafe/cryptopp"
       COMMAND ${CMAKE_COMMAND} -E remove_directory "${PROJECT_BINARY_DIR}/installer/usr/include/maidsafe/cryptopp/TestVectors"
       COMMAND ${CMAKE_COMMAND} -E remove_directory "${PROJECT_BINARY_DIR}/installer/usr/include/maidsafe/cryptopp/TestData"
@@ -37,8 +39,8 @@ if(UNIX)
       COMMAND ${CMAKE_COMMAND} -E copy           "${PROJECT_SOURCE_DIR}/src/third_party_libs/sqlite/include/sqlite3.h" "${PROJECT_BINARY_DIR}/installer/usr/include/maidsafe/sqlite/"
       COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/src/third_party_libs/leveldb/include/" "${PROJECT_BINARY_DIR}/installer/usr/include/maidsafe/"
       COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/src/third_party_libs/boost_process/boost" "${PROJECT_BINARY_DIR}/installer/usr/include/maidsafe/"
-
-# also install monolithic library
+      COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/installer/usr/lib/"
+      COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:maidsafe> "${PROJECT_BINARY_DIR}/installer/usr/lib/"
 
       COMMAND fpm -s dir -t deb -C ${PROJECT_BINARY_DIR}/installer --name maidsafe-dev --version "${ApplicationVersionMajor}.${ApplicationVersionMinor}.${ApplicationVersionPatch}" --iteration 1 -d 'build-essential'  -d 'libfuse-dev' -d'git-all' -d 'libicu-dev' --description "MaidSafe developer Environment"  --maintainer "dev@maidsafe.net" --url 'http://www.maidsafe.net' --license 'GPL' --vendor "maidsafe.net limited" .
       DEPENDS vault vault_manager
