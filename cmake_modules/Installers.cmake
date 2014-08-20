@@ -30,6 +30,7 @@ if(UNIX)
       COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/src/vault/include/maidsafe" "${PROJECT_BINARY_DIR}/installer/opt/maidsafe/usr/include/maidsafe/"
       COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/src/vault_manager/include/maidsafe" "${PROJECT_BINARY_DIR}/installer/opt/maidsafe/usr/include/maidsafe/"
       COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/src/third_party_libs/cryptopp" "${PROJECT_BINARY_DIR}/installer/opt/maidsafe/usr/include/maidsafe/cryptopp"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/src/third_party_libs/cereal" "${PROJECT_BINARY_DIR}/installer/opt/maidsafe/usr/include/maidsafe/cereal"
       COMMAND ${CMAKE_COMMAND} -E remove_directory "${PROJECT_BINARY_DIR}/installer/opt/maidsafe/usr/include/maidsafe/cryptopp/TestVectors"
       COMMAND ${CMAKE_COMMAND} -E remove_directory "${PROJECT_BINARY_DIR}/installer/opt/maidsafe/usr/include/maidsafe/cryptopp/TestData"
       COMMAND rm -rf "${PROJECT_BINARY_DIR}/installer/opt/maidsafe/usr/include/maidsafe/cryptopp/*.cpp"
