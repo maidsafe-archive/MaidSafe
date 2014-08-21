@@ -98,7 +98,6 @@ endforeach()
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 
 include(version)
-include(Installers)
 
 # Set Maidsafe Testing to OFF if package build defined.
 if(PACKAGE_BUILD)
@@ -232,4 +231,5 @@ if(MSVC OR XCODE)
 endif()
 
 
-include(package)
+include(add_installers)
+# include(package)
