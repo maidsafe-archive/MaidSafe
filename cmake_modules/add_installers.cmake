@@ -27,9 +27,37 @@
 set(Types Farmer Dev Utilities DevDebug)
 
 set(FarmerExeDepends vault vault_manager)
-set(DevLibDepends maidsafe_api)
-set(UtilitiesExeDepends local_network_controller)
-set(DevDebugLibDepends maidsafe_api)
+set(DevLibDepends maidsafe_common
+                  maidsafe_passport
+                  maidsafe_rudp
+                  maidsafe_routing
+                  maidsafe_encrypt
+                  maidsafe_api
+                  maidsafe_nfs_core
+                  maidsafe_nfs_client
+                  BoostSystem
+                  BoostChrono
+                  BoostDateTime
+                  BoostFilesystem
+                  BoostLocale
+                  BoostProgramOptions
+                  BoostRegex
+                  BoostThread
+                  BoostSerialization
+                  cryptopp
+                  protobuf_lite
+                  sqlite)
+set(UtilitiesExeDepends test_common
+                        test_rudp
+                        test_routing
+                        test_routing_api
+                        test_drive
+                        test_passport
+                        test_nfs
+                        test_encrypt
+                        test_filesystem
+                        test_api)
+set(DevDebugLibDepends ${DevLibDepends})
 
 if(UNIX)
   set(FarmerName "maidsafe-farmer")
@@ -50,25 +78,32 @@ else()
   return()
 endif()
 
+function(safe_path InPath OutPath)
+  set(${OutPath} "\"\"${InPath}\"\"" PARENT_SCOPE)
+endfunction()
 
 # Create Custom Installer Targets
 foreach(Type ${Types})
   foreach(LibDepend ${${Type}LibDepends})
-    list(APPEND ${Type}Libs "\"\"$<TARGET_FILE:${LibDepend}>\"\"")
+    safe_path($<TARGET_FILE:${LibDepend}> SafePath)
+    list(APPEND ${Type}Libs ${SafePath})
 
-    get_target_property(Headers ${LibDepend} INCLUDE_DIRECTORIES)
-    list(APPEND ${Type}Headers "\"\"${Headers}\"\"")
+    get_target_property(Headers ${LibDepend} INTERFACE_INCLUDE_DIRECTORIES)
+    if(Headers)
+      safe_path(${Headers} SafePath)
+      list(APPEND ${Type}Headers ${SafePath})
+    endif()
+
     get_target_property(SystemHeaders ${LibDepend} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
     if(SystemHeaders)
-      list(APPEND ${Type}Headers "\"\"${SystemHeaders}\"\"")
+      safe_path(${SystemHeaders} SafePath)
+      list(APPEND ${Type}Headers ${SafePath})
     endif()
   endforeach()
-  if(${Type}Headers)
-    list(REMOVE_DUPLICATES ${Type}Headers)
-  endif()
 
   foreach(ExeDepend ${${Type}ExeDepends})
-    list(APPEND ${Type}Exes "\"\"$<TARGET_FILE:${ExeDepend}>\"\"")
+    safe_path($<TARGET_FILE:${ExeDepend}> SafePath)
+    list(APPEND ${Type}Exes ${SafePath})
   endforeach()
 
   add_custom_target(${${Type}Name}

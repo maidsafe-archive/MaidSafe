@@ -23,7 +23,7 @@
 if(NOT "${Config}" STREQUAL Release)
   if(${TargetType} STREQUAL DevDebug)
     message(FATAL_ERROR "Debug Installers are currently disabled in Windows")
-  endif(()
+  endif()
 
   message(FATAL_ERROR "Invalid Build Config. Installers are only supported in Release config")
 endif()
