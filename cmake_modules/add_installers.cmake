@@ -50,28 +50,25 @@ else()
   return()
 endif()
 
+
 # Create Custom Installer Targets
 foreach(Type ${Types})
-  # Custom char to pass an array to cmake installer script
-  string(ASCII 236 CustomSeperator)
-
-  unset(AllHeaders)
   foreach(LibDepend ${${Type}LibDepends})
-    set(${Type}Libs "${${Type}Libs}${CustomSeperator}$<TARGET_FILE:${LibDepend}>")
-    get_target_property(Headers ${LibDepend} INTERFACE_INCLUDE_DIRECTORIES)
-    list(APPEND AllHeaders ${Headers})
+    list(APPEND ${Type}Libs "\"\"$<TARGET_FILE:${LibDepend}>\"\"")
+
+    get_target_property(Headers ${LibDepend} INCLUDE_DIRECTORIES)
+    list(APPEND ${Type}Headers "\"\"${Headers}\"\"")
     get_target_property(SystemHeaders ${LibDepend} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
     if(SystemHeaders)
-      list(APPEND AllHeaders ${SystemHeaders})
+      list(APPEND ${Type}Headers "\"\"${SystemHeaders}\"\"")
     endif()
   endforeach()
-  if(AllHeaders)
-    list(REMOVE_DUPLICATES AllHeaders)
-    string(REPLACE ";" "${CustomSeperator}" AllHeaders "${AllHeaders}")
+  if(${Type}Headers)
+    list(REMOVE_DUPLICATES ${Type}Headers)
   endif()
 
   foreach(ExeDepend ${${Type}ExeDepends})
-    set(${Type}Exes "${${Type}Exes}${CustomSeperator}$<TARGET_FILE:${ExeDepend}>")
+    list(APPEND ${Type}Exes "\"\"$<TARGET_FILE:${ExeDepend}>\"\"")
   endforeach()
 
   add_custom_target(${${Type}Name}
@@ -80,10 +77,10 @@ foreach(Type ${Types})
                         -DTargetName="${${Type}Name}"
                         -DTargetType=${Type}
                         -DTargetLibs="${${Type}Libs}"
+                        -DTargetHeaders="${${Type}Headers}"
                         -DTargetExes="${${Type}Exes}"
-                        -DTargetHeaders="${AllHeaders}"
-                        -DConfig=$<CONFIG>
-                        -DCustomSeperator=${CustomSeperator}
+                        -DConfig=$<CONFIGURATION>
                         -P "${CMAKE_SOURCE_DIR}/cmake_modules/${InstallerScriptName}"
                         -V)
+  set_target_properties(${${Type}Name} PROPERTIES FOLDER "MaidSafe/Installers")
 endforeach()

@@ -20,23 +20,27 @@
 #                                                                                                  #
 #==================================================================================================#
 
-if("${Config}" STREQUAL Release)
-  message(FATAL_ERROR "Invalid Build Config. Installers only supported in Release config")
+if(NOT "${Config}" STREQUAL Release)
+  if(${TargetType} STREQUAL DevDebug)
+    message(FATAL_ERROR "Debug Installers are currently disabled in Windows")
+  endif(()
+
+  message(FATAL_ERROR "Invalid Build Config. Installers are only supported in Release config")
 endif()
 
 message("TargetName - ${TargetName}")
 
-string(REPLACE "${CustomSeperator}" ";" TargetLibs "${TargetLibs}")
+separate_arguments(TargetLibs WINDOWS_COMMAND "${TargetLibs}")
 foreach(Lib ${TargetLibs})
   message("TargetLibs - ${Lib}")
 endforeach()
 
-string(REPLACE "${CustomSeperator}" ";" TargetHeaders "${TargetHeaders}")
+separate_arguments(TargetHeaders WINDOWS_COMMAND "${TargetHeaders}")
 foreach(Header ${TargetHeaders})
   message("Header - ${Header}")
 endforeach()
 
-string(REPLACE "${CustomSeperator}" ";" TargetExes "${TargetExes}")
+separate_arguments(TargetExes WINDOWS_COMMAND "${TargetExes}")
 foreach(Exe ${TargetExes})
   message("TargetExes - ${Exe}")
 endforeach()
