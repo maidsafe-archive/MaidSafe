@@ -28,7 +28,14 @@ if(NOT "${Config}" STREQUAL Release)
   message(FATAL_ERROR "Invalid Build Config. Installers are only supported in Release config")
 endif()
 
+message("TargetType - ${TargetType}")
 message("TargetName - ${TargetName}")
+message("Version - ${Version}")
+message("Config - ${Config}")
+message("CMAKE_CL_64 - ${CMAKE_CL_64}")
+
+message("SUPER_PROJECT_BINARY_DIR - ${SUPER_PROJECT_BINARY_DIR}")
+message("SUPER_PROJECT_SOURCE_DIR - ${SUPER_PROJECT_SOURCE_DIR}")
 
 separate_arguments(TargetLibs WINDOWS_COMMAND "${TargetLibs}")
 foreach(Lib ${TargetLibs})
@@ -37,7 +44,7 @@ endforeach()
 
 separate_arguments(TargetHeaders WINDOWS_COMMAND "${TargetHeaders}")
 foreach(Header ${TargetHeaders})
-  message("Header - ${Header}")
+  message("TargetHeaders - ${Header}")
 endforeach()
 
 separate_arguments(TargetExes WINDOWS_COMMAND "${TargetExes}")

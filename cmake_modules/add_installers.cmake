@@ -67,10 +67,10 @@ if(UNIX)
 
   set(InstallerScriptName "installer_unix.cmake")
 elseif(MSVC)
-  set(FarmerName "Farmer")
-  set(DevName "Dev")
-  set(UtilitiesName "Utilities")
-  set(DevDebugName "DevDebug")
+  set(FarmerName "FarmerInstaller")
+  set(DevName "DevInstaller")
+  set(UtilitiesName "UtilitiesInstaller")
+  set(DevDebugName "DevDebugInstaller")
 
   set(InstallerScriptName "installer_msvc.cmake")
 else()
@@ -79,7 +79,7 @@ else()
 endif()
 
 function(safe_path InPath OutPath)
-  set(${OutPath} "\"\"${InPath}\"\"" PARENT_SCOPE)
+  set(${OutPath} "\\\"${InPath}\\\"" PARENT_SCOPE)
 endfunction()
 
 # Create Custom Installer Targets
@@ -101,6 +101,10 @@ foreach(Type ${Types})
     endif()
   endforeach()
 
+  if(${Type}Headers)
+    list(REMOVE_DUPLICATES ${Type}Headers)
+  endif()
+
   foreach(ExeDepend ${${Type}ExeDepends})
     safe_path($<TARGET_FILE:${ExeDepend}> SafePath)
     list(APPEND ${Type}Exes ${SafePath})
@@ -108,7 +112,10 @@ foreach(Type ${Types})
 
   add_custom_target(${${Type}Name}
                     COMMAND ${CMAKE_COMMAND}
-                        -DCMAKE_BINARY_DIR="${CMAKE_BINARY_DIR}"
+                        -DSUPER_PROJECT_BINARY_DIR="${CMAKE_BINARY_DIR}"
+                        -DSUPER_PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+                        -DCMAKE_CL_64="${CMAKE_CL_64}"
+                        -DVersion="${ApplicationVersionMajor}.${ApplicationVersionMinor}.${ApplicationVersionPatch}"
                         -DTargetName="${${Type}Name}"
                         -DTargetType=${Type}
                         -DTargetLibs="${${Type}Libs}"
