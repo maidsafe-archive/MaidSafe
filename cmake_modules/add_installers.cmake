@@ -21,7 +21,9 @@
 #==================================================================================================#
 #                                                                                                  #
 #  Sets up installer targets for Win/Unix platforms.                                               #
+#                                                                                                  #
 #==================================================================================================#
+
 
 # Installer Types
 set(Types Farmer Dev Utilities DevDebug)
@@ -35,18 +37,12 @@ set(DevLibDepends maidsafe_common
                   maidsafe_api
                   maidsafe_nfs_core
                   maidsafe_nfs_client
-                  BoostSystem
-                  BoostChrono
-                  BoostDateTime
-                  BoostFilesystem
-                  BoostLocale
-                  BoostProgramOptions
-                  BoostRegex
-                  BoostThread
-                  BoostSerialization
+                  ${AllBoostLibs}
                   cryptopp
                   protobuf_lite
+                  protobuf
                   sqlite)
+list(REMOVE_ITEM DevLibDepends BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)  # These have various issues - hence temporarily excluded.
 set(UtilitiesExeDepends test_common
                         test_rudp
                         test_routing
@@ -121,6 +117,7 @@ foreach(Type ${Types})
                         -DTargetLibs="${${Type}Libs}"
                         -DTargetHeaders="${${Type}Headers}"
                         -DTargetExes="${${Type}Exes}"
+                        -DBoostSourceDir="${BoostSourceDir}"
                         -DConfig=$<CONFIGURATION>
                         -P "${CMAKE_SOURCE_DIR}/cmake_modules/${InstallerScriptName}"
                         -V)

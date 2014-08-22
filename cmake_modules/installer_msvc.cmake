@@ -20,12 +20,12 @@
 #                                                                                                  #
 #==================================================================================================#
 
-if(NOT "${Config}" STREQUAL Release)
-  if(${TargetType} STREQUAL DevDebug)
-    message(FATAL_ERROR "Debug Installers are currently disabled in Windows")
-  endif()
 
-  message(FATAL_ERROR "Invalid Build Config. Installers are only supported in Release config")
+if(NOT "${Config}" STREQUAL Release)
+  if(NOT "${TargetType}" STREQUAL DevDebug)
+    message(FATAL_ERROR "Debug installers are currently disabled in Windows")
+  endif()
+  message(FATAL_ERROR "Invalid build configuration.  ${TargetName} is only availale for Release builds.")
 endif()
 
 message("TargetType - ${TargetType}")
@@ -33,6 +33,7 @@ message("TargetName - ${TargetName}")
 message("Version - ${Version}")
 message("Config - ${Config}")
 message("CMAKE_CL_64 - ${CMAKE_CL_64}")
+message("BoostSourceDir - ${BoostSourceDir}")
 
 message("SUPER_PROJECT_BINARY_DIR - ${SUPER_PROJECT_BINARY_DIR}")
 message("SUPER_PROJECT_SOURCE_DIR - ${SUPER_PROJECT_SOURCE_DIR}")
