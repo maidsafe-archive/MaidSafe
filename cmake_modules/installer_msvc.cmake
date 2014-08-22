@@ -28,27 +28,62 @@ if(NOT "${Config}" STREQUAL Release)
   message(FATAL_ERROR "Invalid build configuration.  ${TargetName} is only availale for Release builds.")
 endif()
 
-message("TargetType - ${TargetType}")
-message("TargetName - ${TargetName}")
-message("Version - ${Version}")
-message("Config - ${Config}")
-message("CMAKE_CL_64 - ${CMAKE_CL_64}")
-message("BoostSourceDir - ${BoostSourceDir}")
+if (${TargetType} STREQUAL Farmer)
+  set(AdvancedInstallerPath "C:/Program Files (x86)/Caphyon/Advanced Installer 11.4.1/bin/x86/AdvancedInstaller.com")
+  set(InstallerDir "${SUPER_PROJECT_BINARY_DIR}/Release/Installer")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${InstallerDir}")
+  file(COPY "${SUPER_PROJECT_SOURCE_DIR}/tools/installers/win/farmer.aip" DESTINATION "${InstallerDir}")
 
-message("SUPER_PROJECT_BINARY_DIR - ${SUPER_PROJECT_BINARY_DIR}")
-message("SUPER_PROJECT_SOURCE_DIR - ${SUPER_PROJECT_SOURCE_DIR}")
+  ## Set Properties
+  execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /SetProperty TargetName=${TargetName}
+                  WORKING_DIRECTORY "${InstallerDir}"
+                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
+  if(NOT "${ResVar}" EQUAL 0)
+    message(FATAL_ERROR "Failed ${OutVar}")
+  endif()
+  execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /SetProperty TargetVersion=${Version}
+                  WORKING_DIRECTORY "${InstallerDir}"
+                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
+  if(NOT "${ResVar}" EQUAL 0)
+    message(FATAL_ERROR "Failed ${OutVar}")
+  endif()
 
-separate_arguments(TargetLibs WINDOWS_COMMAND "${TargetLibs}")
-foreach(Lib ${TargetLibs})
-  message("TargetLibs - ${Lib}")
-endforeach()
+  ## Add Files
+  separate_arguments(TargetExes WINDOWS_COMMAND "${TargetExes}")
+  foreach(Exe ${TargetExes})
+    file(TO_NATIVE_PATH ${Exe} Exe)
+    execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /AddFile APPDIR ${Exe}
+                    WORKING_DIRECTORY "${InstallerDir}"
+                    RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
+    if(NOT "${ResVar}" EQUAL 0)
+      message(FATAL_ERROR "Failed ${OutVar}")
+    endif()
+  endforeach()
 
-separate_arguments(TargetHeaders WINDOWS_COMMAND "${TargetHeaders}")
-foreach(Header ${TargetHeaders})
-  message("TargetHeaders - ${Header}")
-endforeach()
+  message("Done")
+endif()
 
-separate_arguments(TargetExes WINDOWS_COMMAND "${TargetExes}")
-foreach(Exe ${TargetExes})
-  message("TargetExes - ${Exe}")
-endforeach()
+# message("TargetType - ${TargetType}")
+# message("TargetName - ${TargetName}")
+# message("Version - ${Version}")
+# message("Config - ${Config}")
+# message("CMAKE_CL_64 - ${CMAKE_CL_64}")
+# message("BoostSourceDir - ${BoostSourceDir}")
+
+# message("SUPER_PROJECT_BINARY_DIR - ${SUPER_PROJECT_BINARY_DIR}")
+# message("SUPER_PROJECT_SOURCE_DIR - ${SUPER_PROJECT_SOURCE_DIR}")
+
+# separate_arguments(TargetLibs WINDOWS_COMMAND "${TargetLibs}")
+# foreach(Lib ${TargetLibs})
+  # message("TargetLibs - ${Lib}")
+# endforeach()
+
+# separate_arguments(TargetHeaders WINDOWS_COMMAND "${TargetHeaders}")
+# foreach(Header ${TargetHeaders})
+  # message("TargetHeaders - ${Header}")
+# endforeach()
+
+# separate_arguments(TargetExes WINDOWS_COMMAND "${TargetExes}")
+# foreach(Exe ${TargetExes})
+  # message("TargetExes - ${Exe}")
+# endforeach()
