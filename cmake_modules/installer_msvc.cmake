@@ -22,111 +22,49 @@
 
 
 if(NOT "${Config}" STREQUAL Release)
-  if(NOT "${TargetType}" STREQUAL DevDebug)
+  if("${TargetType}" STREQUAL DevDebug)
     message(FATAL_ERROR "Debug installers are currently disabled in Windows")
   endif()
   message(FATAL_ERROR "Invalid build configuration.  ${TargetName} is only availale for Release builds.")
 endif()
 
-if (${TargetType} STREQUAL Farmer)
-  set(AdvancedInstallerPath "C:/Program Files (x86)/Caphyon/Advanced Installer 11.4.1/bin/x86/AdvancedInstaller.com")
-  set(InstallerDir "${SUPER_PROJECT_BINARY_DIR}/Release/Installer")
+# TODO: find AdvancedInstaller in a better way like CBFS. Also check if available in ENV-PATH
+set(AdvancedInstallerPath "C:/Program Files (x86)/Caphyon/Advanced Installer 11.4.1/bin/x86/AdvancedInstaller.com")
+set(InstallerDir "${SUPER_PROJECT_BINARY_DIR}/Release/Installer")
+set(InstallerConfigFile "${InstallerDir}/${TargetType}.aic")
 
-  if(CMAKE_CL_64)
-    set(PACKAGE_TYPE x64)
-  else()
-    set(PACKAGE_TYPE x86)
-  endif()
-
-  execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${InstallerDir}")
-  file(COPY "${SUPER_PROJECT_SOURCE_DIR}/tools/installers/win/farmer.aip" DESTINATION "${InstallerDir}")
-
-  ### TODO: All execute process commands to be bundled as a single command via .aic file
-
-  ## Set Properties
-  execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /SetProperty UDInstallerType=${TargetType}
-                  WORKING_DIRECTORY "${InstallerDir}"
-                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
-  if(NOT "${ResVar}" EQUAL 0)
-    message(FATAL_ERROR "Failed ${OutVar}")
-  endif()
-
-  execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /SetProperty UDPackageType=${PACKAGE_TYPE}
-                  WORKING_DIRECTORY "${InstallerDir}"
-                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
-  if(NOT "${ResVar}" EQUAL 0)
-    message(FATAL_ERROR "Failed ${OutVar}")
-  endif()
-
-  ## Set Version
-  execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /SetVersion ${Version}
-                  WORKING_DIRECTORY "${InstallerDir}"
-                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
-  if(NOT "${ResVar}" EQUAL 0)
-    message(FATAL_ERROR "Failed ${OutVar}")
-  endif()
-
-  ## Set Package Type
-  execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /SetPackageType ${PACKAGE_TYPE}
-                  WORKING_DIRECTORY "${InstallerDir}"
-                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
-  if(NOT "${ResVar}" EQUAL 0)
-    message(FATAL_ERROR "Failed ${OutVar}")
-  endif()
-
-  ## Add Files - TODO: Needs Updated to use custom Path variable from Release folder
-  separate_arguments(TargetExes WINDOWS_COMMAND "${TargetExes}")
-  foreach(Exe ${TargetExes})
-    file(TO_NATIVE_PATH ${Exe} Exe)
-    execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /AddFile APPDIR ${Exe}
-                    WORKING_DIRECTORY "${InstallerDir}"
-                    RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
-    if(NOT "${ResVar}" EQUAL 0)
-      message(FATAL_ERROR "Failed ${OutVar}")
-    endif()
-  endforeach()
-
-  ## Set Installer Output Location
-  file(TO_NATIVE_PATH ${InstallerDir} InstallerDirWinPath)
-  execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /SetOutputLocation -buildname DefaultBuild -path ${InstallerDirWinPath}
-                  WORKING_DIRECTORY "${InstallerDir}"
-                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
-  if(NOT "${ResVar}" EQUAL 0)
-    message(FATAL_ERROR "Failed ${OutVar}")
-  endif()
-
-  ## Rebuild Installer to build regardless of changes
-  execute_process(COMMAND "${AdvancedInstallerPath}" /rebuild farmer.aip
-                  WORKING_DIRECTORY "${InstallerDir}"
-                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
-  if(NOT "${ResVar}" EQUAL 0)
-    message(FATAL_ERROR "Failed ${OutVar}")
-  endif()
-
-  message("Done")
+if(CMAKE_CL_64)
+  set(PACKAGE_TYPE x64)
+else()
+  set(PACKAGE_TYPE x86)
 endif()
 
-# message("TargetType - ${TargetType}")
-# message("TargetName - ${TargetName}")
-# message("Version - ${Version}")
-# message("Config - ${Config}")
-# message("CMAKE_CL_64 - ${CMAKE_CL_64}")
-# message("BoostSourceDir - ${BoostSourceDir}")
+execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${InstallerDir}")
 
-# message("SUPER_PROJECT_BINARY_DIR - ${SUPER_PROJECT_BINARY_DIR}")
-# message("SUPER_PROJECT_SOURCE_DIR - ${SUPER_PROJECT_SOURCE_DIR}")
+file(WRITE ${InstallerConfigFile} ";aic\n")
+file(APPEND ${InstallerConfigFile} "SetVersion ${Version}\n")
+file(APPEND ${InstallerConfigFile} "SetPackageType ${PACKAGE_TYPE}\n")
+file(APPEND ${InstallerConfigFile} "SetProperty UDInstallerType=\"${TargetType}\"\n")
+file(APPEND ${InstallerConfigFile} "SetProperty UDPackageType=\"${PACKAGE_TYPE}\"\n")
 
-# separate_arguments(TargetLibs WINDOWS_COMMAND "${TargetLibs}")
-# foreach(Lib ${TargetLibs})
-  # message("TargetLibs - ${Lib}")
-# endforeach()
+file(TO_NATIVE_PATH ${SUPER_PROJECT_SOURCE_DIR} SuperProjectSourceFolder)
+file(APPEND ${InstallerConfigFile} "NewPathVariable -name SuperProjectSourceFolder -value \"${SuperProjectSourceFolder}\" -valuetype Folder\n")
 
-# separate_arguments(TargetHeaders WINDOWS_COMMAND "${TargetHeaders}")
-# foreach(Header ${TargetHeaders})
-  # message("TargetHeaders - ${Header}")
-# endforeach()
+file(TO_NATIVE_PATH ${SUPER_PROJECT_BINARY_DIR}/Release BinariesFolder)
+file(APPEND ${InstallerConfigFile} "NewPathVariable -name BinariesFolder -value \"${BinariesFolder}\" -valuetype Folder\n")
 
-# separate_arguments(TargetExes WINDOWS_COMMAND "${TargetExes}")
-# foreach(Exe ${TargetExes})
-  # message("TargetExes - ${Exe}")
-# endforeach()
+file(TO_NATIVE_PATH ${InstallerDir} InstallerDirWinPath)
+file(APPEND ${InstallerConfigFile} "SetOutputLocation -buildname DefaultBuild -path \"${InstallerDirWinPath}\"\n")
+file(APPEND ${InstallerConfigFile} "Save\nRebuild")
+
+file(COPY "${SUPER_PROJECT_SOURCE_DIR}/tools/installers/win/${TargetType}.aip" DESTINATION "${InstallerDir}")
+file(TO_NATIVE_PATH ${InstallerConfigFile} InstallerConfigFileWinPath)
+
+execute_process(COMMAND "${AdvancedInstallerPath}" /execute ${TargetType}.aip ${InstallerConfigFileWinPath}
+                WORKING_DIRECTORY "${InstallerDir}"
+                RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
+if(NOT "${ResVar}" EQUAL 0)
+  message(FATAL_ERROR "Failed - ${OutVar}")
+endif()
+
+message("Success")

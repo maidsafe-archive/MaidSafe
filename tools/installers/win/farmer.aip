@@ -5,7 +5,7 @@
     <ROW Property="ALLUSERS" Value="1"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install the [|ProductName]." ValueLocId="*"/>
     <ROW Property="ARPHELPLINK" Value="https://github.com/orgs/maidsafe/dashboard"/>
-    <ROW Property="ARPPRODUCTICON" Value="favicon.exe" Type="8"/>
+    <ROW Property="ARPPRODUCTICON" Value="icon.exe" Type="8"/>
     <ROW Property="ARPURLINFOABOUT" Value="http://maidsafe.net/"/>
     <ROW Property="Manufacturer" Value="MaidSafe.net"/>
     <ROW Property="ProductCode" Value="1033:{61D3397C-C353-45BD-85CF-4025224A87F7} " Type="16"/>
@@ -33,15 +33,21 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
     <ROW Component="CA62D813A4E74FA2AAE86A7D7B7B1493" ComponentId="{62D7A135-A05D-4282-B04A-A36D2E8D18A4}" Directory_="APPDIR" Attributes="260" KeyPath="CA62D813A4E74FA2AAE86A7D7B7B1493" Options="2"/>
     <ROW Component="ProductInformation" ComponentId="{ACA8B6C1-C82B-4EF6-A047-EB7325F04B37}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
-    <ROW Component="vault_manager.exe" ComponentId="{0A1F03A8-D23A-43CF-B58F-171E8D854D22}" Directory_="APPDIR" Attributes="256" KeyPath="vault_manager.exe"/>
+    <ROW Component="vault.exe" ComponentId="{B07246F4-CC62-47FC-9B55-E2D5D562BC90}" Directory_="APPDIR" Attributes="256" KeyPath="vault.exe"/>
+    <ROW Component="vault_manager.exe" ComponentId="{CC1C83D9-8C68-4B60-A78C-000605A9963F}" Directory_="APPDIR" Attributes="256" KeyPath="vault_manager.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="CA62D813A4E74FA2AAE86A7D7B7B1493" Title="Visual C++ Redistributable for Visual Studio 2013 x64" Description="Visual C++ Redistributable for Visual Studio 2013 x64" Display="3" Level="1" Attributes="0" Components="CA62D813A4E74FA2AAE86A7D7B7B1493"/>
-    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="ProductInformation vault_manager.exe"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="ProductInformation vault.exe vault_manager.exe"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
-    <ROW File="vault_manager.exe" Component_="vault_manager.exe" FileName="VAULT_~1.EXE|vault_manager.exe" Attributes="0" SourcePath="..\..\..\build\Debug\vault_manager.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="vault.exe" Component_="vault.exe" FileName="vault.exe" Attributes="0" SourcePath="&lt;BinariesFolder&gt;vault.exe" SelfReg="false" NextFile="vault_manager.exe" DigSign="true"/>
+    <ROW File="vault_manager.exe" Component_="vault_manager.exe" FileName="VAULT_~1.EXE|vault_manager.exe" Attributes="0" SourcePath="&lt;BinariesFolder&gt;vault_manager.exe" SelfReg="false" DigSign="true"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.AppPathsComponent">
+    <ROW Name="BinariesFolder" Path="..\..\..\build\Release" Type="2" Content="0"/>
+    <ROW Name="SuperProjectSourceFolder" Path="..\..\.." Type="2" Content="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
     <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFileName="MaidSafe[|UDInstallerType]-[|UDPackageType]-v[|ProductVersion]" Languages="en" InstallationType="4" UseLargeSchema="true" MsiPackageType="x64"/>
@@ -122,10 +128,10 @@
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[ProgramFiles64Folder][Manufacturer]\Farmer"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
-    <ROW Action="vault_manager.exe" Type="82" Source="vault_manager.exe"/>
+    <ROW Action="vault_manager.exe" Type="210" Source="vault_manager.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
-    <ROW Name="favicon.exe" SourcePath="..\..\..\..\Network-Visualiser\frontend\imgs\favicon.ico" Index="0"/>
+    <ROW Name="icon.exe" SourcePath="&lt;SuperProjectSourceFolder&gt;tools\installers\win\icon.ico" Index="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
@@ -133,9 +139,9 @@
     <ROW Action="AI_STORE_LOCATION" Condition="(Not Installed) OR REINSTALL" Sequence="1501"/>
     <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1399"/>
     <ROW Action="AI_ResolveKnownFolders" Sequence="51"/>
-    <ROW Action="vault_manager.exe" Condition="( NOT Installed )" Sequence="6401"/>
     <ROW Action="AI_VerifyPrereq" Sequence="1101"/>
     <ROW Action="AI_AppSearchEx" Sequence="101"/>
+    <ROW Action="vault_manager.exe" Condition="( NOT Installed )" Sequence="6401"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="ExecuteAction" Sequence="1298" SeqType="0" MsiKey="ExecuteAction"/>
@@ -160,7 +166,7 @@
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
-    <ROW Shortcut="VaultManager" Directory_="StartupFolder" Name="VAULTM~1|Vault Manager" Component_="vault_manager.exe" Target="[#vault_manager.exe]" Hotkey="0" Icon_="favicon.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
+    <ROW Shortcut="VaultManager" Directory_="StartupFolder" Name="VAULTM~1|Vault Manager" Component_="vault_manager.exe" Target="[#vault_manager.exe]" Hotkey="0" Icon_="icon.exe" IconIndex="0" ShowCmd="7" WkDir="APPDIR"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
     <ATTRIBUTE name="UsedTheme" value="classic"/>
