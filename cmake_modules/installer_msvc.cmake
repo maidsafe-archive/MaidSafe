@@ -31,24 +31,50 @@ endif()
 if (${TargetType} STREQUAL Farmer)
   set(AdvancedInstallerPath "C:/Program Files (x86)/Caphyon/Advanced Installer 11.4.1/bin/x86/AdvancedInstaller.com")
   set(InstallerDir "${SUPER_PROJECT_BINARY_DIR}/Release/Installer")
+
+  if(CMAKE_CL_64)
+    set(PACKAGE_TYPE x64)
+  else()
+    set(PACKAGE_TYPE x86)
+  endif()
+
   execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${InstallerDir}")
   file(COPY "${SUPER_PROJECT_SOURCE_DIR}/tools/installers/win/farmer.aip" DESTINATION "${InstallerDir}")
 
+  ### TODO: All execute process commands to be bundled as a single command via .aic file
+
   ## Set Properties
-  execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /SetProperty TargetName=${TargetName}
-                  WORKING_DIRECTORY "${InstallerDir}"
-                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
-  if(NOT "${ResVar}" EQUAL 0)
-    message(FATAL_ERROR "Failed ${OutVar}")
-  endif()
-  execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /SetProperty TargetVersion=${Version}
+  execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /SetProperty UDInstallerType=${TargetType}
                   WORKING_DIRECTORY "${InstallerDir}"
                   RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
   if(NOT "${ResVar}" EQUAL 0)
     message(FATAL_ERROR "Failed ${OutVar}")
   endif()
 
-  ## Add Files
+  execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /SetProperty UDPackageType=${PACKAGE_TYPE}
+                  WORKING_DIRECTORY "${InstallerDir}"
+                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
+  if(NOT "${ResVar}" EQUAL 0)
+    message(FATAL_ERROR "Failed ${OutVar}")
+  endif()
+
+  ## Set Version
+  execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /SetVersion ${Version}
+                  WORKING_DIRECTORY "${InstallerDir}"
+                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
+  if(NOT "${ResVar}" EQUAL 0)
+    message(FATAL_ERROR "Failed ${OutVar}")
+  endif()
+
+  ## Set Package Type
+  execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /SetPackageType ${PACKAGE_TYPE}
+                  WORKING_DIRECTORY "${InstallerDir}"
+                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
+  if(NOT "${ResVar}" EQUAL 0)
+    message(FATAL_ERROR "Failed ${OutVar}")
+  endif()
+
+  ## Add Files - TODO: Needs Updated to use custom Path variable from Release folder
   separate_arguments(TargetExes WINDOWS_COMMAND "${TargetExes}")
   foreach(Exe ${TargetExes})
     file(TO_NATIVE_PATH ${Exe} Exe)
@@ -59,6 +85,23 @@ if (${TargetType} STREQUAL Farmer)
       message(FATAL_ERROR "Failed ${OutVar}")
     endif()
   endforeach()
+
+  ## Set Installer Output Location
+  file(TO_NATIVE_PATH ${InstallerDir} InstallerDirWinPath)
+  execute_process(COMMAND "${AdvancedInstallerPath}" /edit farmer.aip /SetOutputLocation -buildname DefaultBuild -path ${InstallerDirWinPath}
+                  WORKING_DIRECTORY "${InstallerDir}"
+                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
+  if(NOT "${ResVar}" EQUAL 0)
+    message(FATAL_ERROR "Failed ${OutVar}")
+  endif()
+
+  ## Rebuild Installer to build regardless of changes
+  execute_process(COMMAND "${AdvancedInstallerPath}" /rebuild farmer.aip
+                  WORKING_DIRECTORY "${InstallerDir}"
+                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
+  if(NOT "${ResVar}" EQUAL 0)
+    message(FATAL_ERROR "Failed ${OutVar}")
+  endif()
 
   message("Done")
 endif()

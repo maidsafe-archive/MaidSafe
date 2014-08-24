@@ -3,18 +3,18 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
     <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
     <ROW Property="ALLUSERS" Value="1"/>
-    <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
+    <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install the [|ProductName]." ValueLocId="*"/>
     <ROW Property="ARPHELPLINK" Value="https://github.com/orgs/maidsafe/dashboard"/>
     <ROW Property="ARPPRODUCTICON" Value="favicon.exe" Type="8"/>
     <ROW Property="ARPURLINFOABOUT" Value="http://maidsafe.net/"/>
     <ROW Property="Manufacturer" Value="MaidSafe.net"/>
     <ROW Property="ProductCode" Value="1033:{61D3397C-C353-45BD-85CF-4025224A87F7} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
-    <ROW Property="ProductName" Value="[|Manufacturer][|TargetName].[|TargetVersion]"/>
+    <ROW Property="ProductName" Value="MaidSafe [|UDInstallerType] Package"/>
     <ROW Property="ProductVersion" Value="1.0.0" Type="32"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
-    <ROW Property="TargetName" Value="Your Value"/>
-    <ROW Property="TargetVersion" Value="x"/>
+    <ROW Property="UDInstallerType" Value="UDInstallerType"/>
+    <ROW Property="UDPackageType" Value="UDPackageType"/>
     <ROW Property="UpgradeCode" Value="{A4261417-FF15-4BB6-A078-285A23018DA3}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
     <ROW Property="WindowsType9XDisplay" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
@@ -31,7 +31,7 @@
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
-    <ROW Component="CA62D813A4E74FA2AAE86A7D7B7B1493" ComponentId="{52AF7CD3-12FF-484B-956D-FF46C18F8B9F}" Directory_="APPDIR" Attributes="260" KeyPath="CA62D813A4E74FA2AAE86A7D7B7B1493" Options="2"/>
+    <ROW Component="CA62D813A4E74FA2AAE86A7D7B7B1493" ComponentId="{62D7A135-A05D-4282-B04A-A36D2E8D18A4}" Directory_="APPDIR" Attributes="260" KeyPath="CA62D813A4E74FA2AAE86A7D7B7B1493" Options="2"/>
     <ROW Component="ProductInformation" ComponentId="{ACA8B6C1-C82B-4EF6-A047-EB7325F04B37}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
     <ROW Component="vault_manager.exe" ComponentId="{0A1F03A8-D23A-43CF-B58F-171E8D854D22}" Directory_="APPDIR" Attributes="256" KeyPath="vault_manager.exe"/>
   </COMPONENT>
@@ -44,7 +44,7 @@
     <ROW File="vault_manager.exe" Component_="vault_manager.exe" FileName="VAULT_~1.EXE|vault_manager.exe" Attributes="0" SourcePath="..\..\..\build\Debug\vault_manager.exe" SelfReg="false" DigSign="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
-    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" Languages="en" InstallationType="4" UseLargeSchema="true" MsiPackageType="x64"/>
+    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFileName="MaidSafe[|UDInstallerType]-[|UDPackageType]-v[|ProductVersion]" Languages="en" InstallationType="4" UseLargeSchema="true" MsiPackageType="x64"/>
     <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
@@ -97,11 +97,11 @@
     <ROW Dialog_="VerifyRemoveDlg" Control_="Remove" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="299" Options="1"/>
     <ROW Dialog_="PatchWelcomeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_PATCH" Ordering="201"/>
     <ROW Dialog_="ResumeDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_RESUME" Ordering="299"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="203"/>
     <ROW Dialog_="ExitDialog" Control_="Finish" Event="DoAction" Argument="AI_CleanPrereq" Condition="1" Ordering="301"/>
     <ROW Dialog_="FatalError" Control_="Finish" Event="DoAction" Argument="AI_CleanPrereq" Condition="1" Ordering="102"/>
     <ROW Dialog_="UserExit" Control_="Finish" Event="DoAction" Argument="AI_CleanPrereq" Condition="1" Ordering="101"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="203"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
     <ROW Action="AI_AppSearchEx" Type="1" Source="Prereq.dll" Target="DoAppSearchEx"/>
@@ -119,7 +119,7 @@
     <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
     <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
     <ROW Action="AI_VerifyPrereq" Type="1" Source="Prereq.dll" Target="VerifyPrereq"/>
-    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[ProgramFiles64Folder][Manufacturer]\[ProductName]"/>
+    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[ProgramFiles64Folder][Manufacturer]\Farmer"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
     <ROW Action="vault_manager.exe" Type="82" Source="vault_manager.exe"/>
@@ -133,19 +133,19 @@
     <ROW Action="AI_STORE_LOCATION" Condition="(Not Installed) OR REINSTALL" Sequence="1501"/>
     <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1399"/>
     <ROW Action="AI_ResolveKnownFolders" Sequence="51"/>
+    <ROW Action="vault_manager.exe" Condition="( NOT Installed )" Sequence="6401"/>
     <ROW Action="AI_VerifyPrereq" Sequence="1101"/>
     <ROW Action="AI_AppSearchEx" Sequence="101"/>
-    <ROW Action="vault_manager.exe" Condition="( NOT Installed )" Sequence="6401"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
-    <ROW Action="ExecuteAction" Sequence="1299" SeqType="0" MsiKey="ExecuteAction"/>
+    <ROW Action="ExecuteAction" Sequence="1298" SeqType="0" MsiKey="ExecuteAction"/>
     <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
     <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
     <ROW Action="AI_DpiContentScale" Sequence="51"/>
-    <ROW Action="AI_DownloadPrereq" Sequence="1296"/>
-    <ROW Action="AI_ExtractPrereq" Sequence="1297"/>
-    <ROW Action="AI_InstallPrerequisite" Sequence="1298"/>
-    <ROW Action="AI_InstallPostPrerequisite" Sequence="1300"/>
+    <ROW Action="AI_DownloadPrereq" Sequence="1295"/>
+    <ROW Action="AI_ExtractPrereq" Sequence="1296"/>
+    <ROW Action="AI_InstallPrerequisite" Sequence="1297"/>
+    <ROW Action="AI_InstallPostPrerequisite" Sequence="1299"/>
     <ROW Action="AI_AppSearchEx" Sequence="101"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
@@ -170,7 +170,7 @@
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.PreReqComponent">
-    <ROW PrereqKey="CA62D813A4E74FA2AAE86A7D7B7B1493" DisplayName="Visual C++ Redistributable for Visual Studio 2013 x64" VersionMin="12.0" SetupFileUrl="..\..\..\..\..\Users\Viv\Documents\Advanced Installer\Projects\MaidSafe Farmer\Prerequisites\Visual C++ Redistributable for Visual Studio 2013\vcredist_x64.exe" Location="0" ExactSize="7188536" WinNTVersions="Windows 9x/ME/NT/2000/XP/Vista/Windows 7/Windows 8 x86/Windows 8.1 x86" Operator="1" NoUiComLine="/q /norestart" Options="x" MD5="c7187ac06dafd0628587f86742945601" TargetName="Visual C++ Redistributable for Visual Studio 2013\vcredist_x64.exe" Type="1" Feature="CA62D813A4E74FA2AAE86A7D7B7B1493"/>
+    <ROW PrereqKey="CA62D813A4E74FA2AAE86A7D7B7B1493" DisplayName="Visual C++ Redistributable for Visual Studio 2013 x64" VersionMin="12.0" SetupFileUrl="http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe" Location="1" ExactSize="7188536" WinNTVersions="Windows 9x/ME/NT/2000/XP/Vista/Windows 7/Windows 8 x86/Windows 8.1 x86" Operator="1" NoUiComLine="/q /norestart" Options="x" MD5="c7187ac06dafd0628587f86742945601" TargetName="Visual C++ Redistributable for Visual Studio 2013?vcredist_x64.exe" Type="1" Feature="CA62D813A4E74FA2AAE86A7D7B7B1493"/>
     <ATTRIBUTE name="PrereqsOrder" value="CA62D813A4E74FA2AAE86A7D7B7B1493"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.PreReqSearchComponent">
