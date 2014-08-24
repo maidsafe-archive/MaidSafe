@@ -27,7 +27,7 @@
 
 # Installer Types
 set(Types Farmer Dev Utilities DevDebug)
-
+include(monolithic_lib)
 set(FarmerExeDepends vault vault_manager)
 set(DevLibDepends maidsafe_common
                   maidsafe_passport
@@ -43,6 +43,7 @@ set(DevLibDepends maidsafe_common
                   protobuf
                   sqlite)
 list(REMOVE_ITEM DevLibDepends BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)  # These have various issues - hence temporarily excluded.
+ms_monolithic_lib(${DevLibDepends})
 set(UtilitiesExeDepends test_common
                         test_rudp
                         test_routing
