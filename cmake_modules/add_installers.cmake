@@ -43,7 +43,7 @@ set(DevLibDepends maidsafe_common
                   protobuf
                   sqlite)
 list(REMOVE_ITEM DevLibDepends BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)  # These have various issues - hence temporarily excluded.
-ms_monolithic_lib(${DevLibDepends})
+ms_monolithic_lib("${DevLibDepends}")
 set(UtilitiesExeDepends test_common
                         test_rudp
                         test_routing
@@ -55,6 +55,7 @@ set(UtilitiesExeDepends test_common
                         test_filesystem
                         test_api)
 set(DevDebugLibDepends ${DevLibDepends})
+ms_monolithic_lib("${DevDebugLibDepends}")
 
 if(UNIX)
   set(FarmerName "maidsafe-farmer")

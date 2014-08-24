@@ -4,7 +4,7 @@ function(ms_monolithic_lib ALL_LIBS)
 
   SET(OSLIBS)
   FOREACH(LIB ${ALL_LIBS})
-message("target libs" ${LIB})
+message("target libs" "${LIB}")
     GET_TARGET_PROPERTY(LIB_LOCATION ${LIB} LOCATION)
     GET_TARGET_PROPERTY(LIB_TYPE ${LIB} TYPE)
     IF(NOT LIB_LOCATION)
