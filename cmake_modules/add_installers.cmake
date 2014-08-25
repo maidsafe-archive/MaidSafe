@@ -25,25 +25,13 @@
 #==================================================================================================#
 
 
+include(monolithic_lib)
+
 # Installer Types
 set(Types Farmer Dev Utilities DevDebug)
-include(monolithic_lib)
+
 set(FarmerExeDepends vault vault_manager)
-set(DevLibDepends maidsafe_common
-                  maidsafe_passport
-                  maidsafe_rudp
-                  maidsafe_routing
-                  maidsafe_encrypt
-                  maidsafe_api
-                  maidsafe_nfs_core
-                  maidsafe_nfs_client
-                  ${AllBoostLibs}
-                  cryptopp
-                  protobuf_lite
-                  protobuf
-                  sqlite)
-list(REMOVE_ITEM DevLibDepends BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)  # These have various issues - hence temporarily excluded.
-ms_monolithic_lib("${DevLibDepends}")
+set(DevLibDepends maidsafe)
 set(UtilitiesExeDepends test_common
                         test_rudp
                         test_routing
@@ -55,7 +43,6 @@ set(UtilitiesExeDepends test_common
                         test_filesystem
                         test_api)
 set(DevDebugLibDepends ${DevLibDepends})
-ms_monolithic_lib("${DevDebugLibDepends}")
 
 if(UNIX)
   set(FarmerName "maidsafe-farmer")

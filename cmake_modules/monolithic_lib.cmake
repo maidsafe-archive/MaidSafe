@@ -1,58 +1,3 @@
-function(ms_monolithic_lib ALL_LIBS)
-  SET(SOURCE_FILE ${CMAKE_CURRENT_BINARY_DIR}/maidsafe_depends.cc)
-  ADD_LIBRARY(maidsafe STATIC ${SOURCE_FILE})
-
-  SET(OSLIBS)
-  FOREACH(LIB ${ALL_LIBS})
-message("target libs" "${LIB}")
-    GET_TARGET_PROPERTY(LIB_LOCATION ${LIB} LOCATION)
-    GET_TARGET_PROPERTY(LIB_TYPE ${LIB} TYPE)
-    IF(NOT LIB_LOCATION)
-       LIST(APPEND OSLIBS ${LIB})
-    ELSE()
-      IF(LIB_TYPE STREQUAL "STATIC_LIBRARY")
-        SET(STATIC_LIBS ${STATIC_LIBS} ${LIB_LOCATION})
-        ADD_DEPENDENCIES(maidsafe ${LIB})
-        GET_DEPEND_OS_LIBS(${LIB} LIB_OSLIBS)
-        LIST(APPEND OSLIBS ${LIB_OSLIBS})
-      ELSE()
-        LIST(APPEND OSLIBS ${LIB})
-      ENDIF()
-    ENDIF()
-  ENDFOREACH()
-  IF(OSLIBS)
-    LIST(REMOVE_DUPLICATES OSLIBS)
-    TARGET_LINK_LIBRARIES(maidsafe ${OSLIBS})
-  ENDIF()
-
-  ADD_CUSTOM_COMMAND( 
-    OUTPUT  ${SOURCE_FILE}
-    COMMAND ${CMAKE_COMMAND}  -E touch ${SOURCE_FILE}
-    DEPENDS ${STATIC_LIBS})
-
-  IF(MSVC)
-    SET(LINKER_EXTRA_FLAGS "")
-    FOREACH(LIB ${STATIC_LIBS})
-      SET(LINKER_EXTRA_FLAGS "${LINKER_EXTRA_FLAGS} ${LIB}")
-    ENDFOREACH()
-    SET_TARGET_PROPERTIES(maidsafe PROPERTIES STATIC_LIBRARY_FLAGS 
-      "${LINKER_EXTRA_FLAGS}")
-  ELSE()
-    GET_TARGET_PROPERTY(TARGET_LOCATION maidsafe LOCATION)  
-    IF(APPLE)
-      ADD_CUSTOM_COMMAND(TARGET maidsafe POST_BUILD
-        COMMAND rm ${TARGET_LOCATION}
-        COMMAND /usr/bin/libtool -static -o ${TARGET_LOCATION} 
-        ${STATIC_LIBS}
-      )  
-    ELSE()
-      ADD_CUSTOM_COMMAND(TARGET maidsafe POST_BUILD
-        COMMAND rm ${TARGET_LOCATION}
-      )
-        unix_static_lib() 
-    ENDIF()
-  ENDIF()
-endfunction()
 
 function(GET_DEPEND_OS_LIBS target result)
   SET(deps ${${target}_LIB_DEPENDS})
@@ -68,6 +13,80 @@ function(GET_DEPEND_OS_LIBS target result)
   ENDIF()
   SET(${result} ${ret} PARENT_SCOPE)
 endfunction()
+
+set(DevLibDepends maidsafe_common
+                  maidsafe_passport
+                  maidsafe_rudp
+                  maidsafe_routing
+                  maidsafe_encrypt
+                  maidsafe_api
+                  maidsafe_nfs_core
+                  maidsafe_nfs_client
+                  ${AllBoostLibs}
+                  cryptopp
+                  protobuf_lite
+                  protobuf
+                  sqlite)
+list(REMOVE_ITEM DevLibDepends BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)
+foreach(Libb ${DevLibDepends})
+  message("lib - ${Libb}")
+endforeach()
+
+SET(SOURCE_FILE ${CMAKE_CURRENT_BINARY_DIR}/maidsafe_depends.cc)
+ADD_LIBRARY(maidsafe STATIC ${SOURCE_FILE})
+target_include_directories(maidsafe PUBLIC "${CMAKE_SOURCE_DIR}/src/common/include/maidsafe")
+SET(OSLIBS)
+FOREACH(LIB ${DevLibDepends})
+  message("target libs" "${LIB}")
+  GET_TARGET_PROPERTY(LIB_LOCATION ${LIB} LOCATION_RELEASE)
+  GET_TARGET_PROPERTY(LIB_TYPE ${LIB} TYPE)
+  IF(NOT LIB_LOCATION)
+     LIST(APPEND OSLIBS ${LIB})
+  ELSE()
+    IF(LIB_TYPE STREQUAL "STATIC_LIBRARY")
+      SET(STATIC_LIBS ${STATIC_LIBS} ${LIB_LOCATION})
+      ADD_DEPENDENCIES(maidsafe ${LIB})
+      GET_DEPEND_OS_LIBS(${LIB} LIB_OSLIBS)
+      LIST(APPEND OSLIBS ${LIB_OSLIBS})
+    ELSE()
+      LIST(APPEND OSLIBS ${LIB})
+    ENDIF()
+  ENDIF()
+ENDFOREACH()
+IF(OSLIBS)
+  LIST(REMOVE_DUPLICATES OSLIBS)
+  TARGET_LINK_LIBRARIES(maidsafe PUBLIC ${OSLIBS})
+ENDIF()
+
+ADD_CUSTOM_COMMAND(
+  OUTPUT  ${SOURCE_FILE}
+  COMMAND ${CMAKE_COMMAND}  -E touch ${SOURCE_FILE}
+  DEPENDS ${STATIC_LIBS})
+
+IF(MSVC)
+  SET(LINKER_EXTRA_FLAGS "")
+  FOREACH(LIB ${STATIC_LIBS})
+    SET(LINKER_EXTRA_FLAGS "${LINKER_EXTRA_FLAGS} ${LIB}")
+  ENDFOREACH()
+  SET_TARGET_PROPERTIES(maidsafe PROPERTIES STATIC_LIBRARY_FLAGS
+    "${LINKER_EXTRA_FLAGS}")
+ELSE()
+  GET_TARGET_PROPERTY(TARGET_LOCATION maidsafe LOCATION)
+  IF(APPLE)
+    ADD_CUSTOM_COMMAND(TARGET maidsafe POST_BUILD
+      COMMAND rm ${TARGET_LOCATION}
+      COMMAND /usr/bin/libtool -static -o ${TARGET_LOCATION}
+      ${STATIC_LIBS}
+    )
+  ELSE()
+    ADD_CUSTOM_COMMAND(TARGET maidsafe POST_BUILD
+      COMMAND rm ${TARGET_LOCATION}
+      COMMAND
+    )
+      unix_static_lib()
+  ENDIF()
+ENDIF()
+
 
 function(unix_static_lib)
   SET(TEMP_DIR ${CMAKE_CURRENT_BINARY_DIR}/merge_libs_temp_dir)

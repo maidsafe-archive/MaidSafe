@@ -28,6 +28,17 @@ if(NOT "${Config}" STREQUAL Release)
   message(FATAL_ERROR "Invalid build configuration.  ${TargetName} is only availale for Release builds.")
 endif()
 
+separate_arguments(TargetLibs WINDOWS_COMMAND "${TargetLibs}")
+message("${TargetLibs}")
+
+separate_arguments(TargetHeaders WINDOWS_COMMAND "${TargetHeaders}")
+message("Headers - ${TargetHeaders}")
+
+set(InstallerDir "${SUPER_PROJECT_BINARY_DIR}/Release")
+# file(COPY "${SUPER_PROJECT_SOURCE_DIR}/src/common/include/maidsafe" DESTINATION "${InstallerDir}")
+
+message(FATAL_ERROR "Done--------------")
+
 # TODO: find AdvancedInstaller in a better way like CBFS. Also check if available in ENV-PATH
 set(AdvancedInstallerPath "C:/Program Files (x86)/Caphyon/Advanced Installer 11.4.1/bin/x86/AdvancedInstaller.com")
 set(InstallerDir "${SUPER_PROJECT_BINARY_DIR}/Release/Installer")
@@ -50,7 +61,7 @@ file(APPEND ${InstallerConfigFile} "SetProperty UDPackageType=\"${PACKAGE_TYPE}\
 file(TO_NATIVE_PATH ${SUPER_PROJECT_SOURCE_DIR} SuperProjectSourceFolder)
 file(APPEND ${InstallerConfigFile} "NewPathVariable -name SuperProjectSourceFolder -value \"${SuperProjectSourceFolder}\" -valuetype Folder\n")
 
-file(TO_NATIVE_PATH ${SUPER_PROJECT_BINARY_DIR}/Release BinariesFolder)
+file(TO_NATIVE_PATH ${SUPER_PROJECT_BINARY_DIR}/Debug BinariesFolder)
 file(APPEND ${InstallerConfigFile} "NewPathVariable -name BinariesFolder -value \"${BinariesFolder}\" -valuetype Folder\n")
 
 file(TO_NATIVE_PATH ${InstallerDir} InstallerDirWinPath)
