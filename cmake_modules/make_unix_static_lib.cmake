@@ -2,8 +2,6 @@ set(TEMP_DIR ${CMAKE_BINARY_DIR}/merge_libs_temp_dir)
 make_directory(${TEMP_DIR})
 string (REPLACE " " ";" STATIC_LIBS "${STATIC_LIBS}")
 
-message(" here ${STATIC_LIBS}")
-message(" here ${CMAKE_AR}")
 foreach(LIB ${STATIC_LIBS})
 get_filename_component(NAME_NO_EXT ${LIB} NAME_WE)
 set(TEMP_SUBDIR ${TEMP_DIR}/${NAME_NO_EXT})
