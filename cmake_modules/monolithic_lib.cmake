@@ -1,18 +1,44 @@
+#==================================================================================================#
+#                                                                                                  #
+#  Copyright 2014 MaidSafe.net limited                                                             #
+#                                                                                                  #
+#  This MaidSafe Software is licensed to you under (1) the MaidSafe.net Commercial License,        #
+#  version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which    #
+#  licence you accepted on initial access to the Software (the "Licences").                        #
+#                                                                                                  #
+#  By contributing code to the MaidSafe Software, or to this project generally, you agree to be    #
+#  bound by the terms of the MaidSafe Contributor Agreement, version 1.0, found in the root        #
+#  directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also available   #
+#  at: http://www.maidsafe.net/licenses                                                            #
+#                                                                                                  #
+#  Unless required by applicable law or agreed to in writing, the MaidSafe Software distributed    #
+#  under the GPL Licence is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF   #
+#  ANY KIND, either express or implied.                                                            #
+#                                                                                                  #
+#  See the Licences for the specific language governing permissions and limitations relating to    #
+#  use of the MaidSafe Software.                                                                   #
+#                                                                                                  #
+#==================================================================================================#
+#                                                                                                  #
+#  Sets up monolithic target for Win/Unix platforms.                                               #
+#                                                                                                  #
+#==================================================================================================#
 
-function(GET_DEPEND_OS_LIBS target result)
-  SET(deps ${${target}_LIB_DEPENDS})
-  IF(deps)
-   FOREACH(lib ${deps})
-    IF(NOT lib MATCHES "general" AND NOT lib MATCHES "debug" AND NOT lib MATCHES "optimized")
-      GET_TARGET_PROPERTY(lib_location ${lib} LOCATION)
-      IF(NOT lib_location)
-        SET(ret ${ret} ${lib})
-      ENDIF()
-    ENDIF()
-   ENDFOREACH()
-  ENDIF()
-  SET(${result} ${ret} PARENT_SCOPE)
-endfunction()
+
+#function(get_depend_os_libs Target Result)
+#  set(Deps ${${Target}_LIB_DEPENDS})
+#  if(Deps)
+#   foreach(CurrentLib ${Deps})
+#    if(NOT CurrentLib MATCHES "general" AND NOT CurrentLib MATCHES "debug" AND NOT CurrentLib MATCHES "optimized")
+#      get_target_property(LibLocation ${CurrentLib} LOCATION)
+#      if(NOT LibLocation)
+#        set(Ret ${Ret} ${CurrentLib})
+#      endif()
+#    endif()
+#   endforeach()
+#  endif()
+#  set(${Result} ${Ret} PARENT_SCOPE)
+#endfunction()
 
 set(DevLibDepends maidsafe_common
                   maidsafe_passport
@@ -28,70 +54,101 @@ set(DevLibDepends maidsafe_common
                   protobuf
                   sqlite)
 list(REMOVE_ITEM DevLibDepends BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)
-foreach(Libb ${DevLibDepends})
-  message("lib - ${Libb}")
+
+set(SourceFile ${CMAKE_CURRENT_BINARY_DIR}_depends.cc)
+set(CMAKE_DEBUG_POSTFIX -d)
+add_library(maidsafe STATIC ${SourceFile})
+
+set(MonolithicIncludes "${CMAKE_BINARY_DIR}/MonolithicIncludes")
+#file(GLOB CryptoHeaders "${Cryptopp_SOURCE_DIR}/*.h")
+#file(COPY ${CryptoHeaders} DESTINATION "${MonolithicIncludes}/cryptopp")
+
+set(HeadersHelper "${CMAKE_BINARY_DIR}/headers_helper.cmake")
+file(WRITE  "${HeadersHelper}" "file(COPY \"${common_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${passport_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${rudp_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${routing_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${drive_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${encrypt_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${nfs_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${api_SOURCE_DIR}/include/maidsafe.h\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${api_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${BoostSourceDir}/boost\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(GLOB CryptoHeaders \"${Cryptopp_SOURCE_DIR}/*.h\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \${CryptoHeaders} DESTINATION \"${MonolithicIncludes}/cryptopp\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/cereal\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/sqlite/include/sqlite3.h\" DESTINATION \"${MonolithicIncludes}/sqlite\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/leveldb/include/\" DESTINATION \"${MonolithicIncludes}\")\n")
+
+add_custom_command(TARGET maidsafe POST_BUILD COMMAND ${CMAKE_COMMAND} -DMonolithicIncludes="${MonolithicIncludes}" -P "${HeadersHelper}")
+
+foreach(Lib ${DevLibDepends})
+  if(MSVC)
+    cmake_policy(PUSH)
+    cmake_policy(SET CMP0026 OLD)
+    foreach(Config ${CMAKE_CONFIGURATION_TYPES})
+      string(TOUPPER ${Config} ConfigUppercase)
+      get_target_property(LibLocation${Config} ${Lib} LOCATION_${ConfigUppercase})
+      list(APPEND LibLocations${Config} "${LibLocation${Config}}")
+    endforeach()
+    cmake_policy(POP)
+  else()
+    list(APPEND LibLocations "$<TARGET_FILE:${Lib}>")
+  endif()
+#  get_target_property(LIB_TYPE ${Lib} TYPE)
+#  if(NOT LIB_LOCATION)
+#     list(APPEND OSLIBS ${Lib})
+#  else()
+#    if(LIB_TYPE STREQUAL "STATIC_LIBRARY")
+#      set(STATIC_LIBS ${STATIC_LIBS} ${LIB_LOCATION})
+#      add_dependencies(maidsafe ${Lib})
+#      get_depend_os_libs(${Lib} LIB_OSLIBS)
+#      list(APPEND OSLIBS ${LIB_OSLIBS})
+#    else()
+#      list(APPEND OSLIBS ${Lib})
+#    endif()
+#  endif()
 endforeach()
+#if(OSLIBS)
+#  list(REMOVE_DUPLICATES OSLIBS)
+#  target_link_libraries(maidsafe PUBLIC ${OSLIBS})
+#endif()
 
-SET(SOURCE_FILE ${CMAKE_CURRENT_BINARY_DIR}/maidsafe_depends.cc)
-ADD_LIBRARY(maidsafe STATIC ${SOURCE_FILE})
-target_include_directories(maidsafe PUBLIC "${CMAKE_SOURCE_DIR}/src/common/include/maidsafe")
-SET(OSLIBS)
-FOREACH(LIB ${DevLibDepends})
-  GET_TARGET_PROPERTY(LIB_LOCATION ${LIB} LOCATION_RELEASE)
-  GET_TARGET_PROPERTY(LIB_TYPE ${LIB} TYPE)
-  IF(NOT LIB_LOCATION)
-     LIST(APPEND OSLIBS ${LIB})
-  ELSE()
-    IF(LIB_TYPE STREQUAL "STATIC_LIBRARY")
-      SET(STATIC_LIBS ${STATIC_LIBS} ${LIB_LOCATION})
-      ADD_DEPENDENCIES(maidsafe ${LIB})
-      GET_DEPEND_OS_LIBS(${LIB} LIB_OSLIBS)
-      LIST(APPEND OSLIBS ${LIB_OSLIBS})
-    ELSE()
-      LIST(APPEND OSLIBS ${LIB})
-    ENDIF()
-  ENDIF()
-ENDFOREACH()
-IF(OSLIBS)
-  LIST(REMOVE_DUPLICATES OSLIBS)
-  TARGET_LINK_LIBRARIES(maidsafe PUBLIC ${OSLIBS})
-ENDIF()
+add_custom_command(OUTPUT  ${SourceFile}
+    COMMAND ${CMAKE_COMMAND} -E touch ${SourceFile}
+    DEPENDS ${DevLibDepends})
 
-ADD_CUSTOM_COMMAND(
-  OUTPUT  ${SOURCE_FILE}
-  COMMAND ${CMAKE_COMMAND}  -E touch ${SOURCE_FILE}
-  DEPENDS ${STATIC_LIBS})
-
-IF(MSVC)
-  SET(LINKER_EXTRA_FLAGS "")
-  FOREACH(LIB ${STATIC_LIBS})
-    SET(LINKER_EXTRA_FLAGS "${LINKER_EXTRA_FLAGS} ${LIB}")
-  ENDFOREACH()
-  SET_TARGET_PROPERTIES(maidsafe PROPERTIES STATIC_LIBRARY_FLAGS
-    "${LINKER_EXTRA_FLAGS}")
-ELSE()
-  GET_TARGET_PROPERTY(TARGET_LOCATION maidsafe LOCATION)
-  IF(APPLE)
-    ADD_CUSTOM_COMMAND(TARGET maidsafe POST_BUILD
-      COMMAND rm ${TARGET_LOCATION}
-      COMMAND /usr/bin/libtool -static -o ${TARGET_LOCATION}
-      ${STATIC_LIBS}
-    )
-  ELSE()
-    ADD_CUSTOM_COMMAND(TARGET maidsafe POST_BUILD
-      COMMAND rm ${TARGET_LOCATION}
-      COMMAND ${CMAKE_COMMAND}
-      -DSUPER_PROJECT_BINARY_DIR="${CMAKE_BINARY_DIR}"
-      -DSUPER_PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
-      -DTARGET_LOCATION="${TARGET_LOCATION}"
-      -DSTATIC_LIBS="${STATIC_LIBS}"
-      -DLIB="${LIB}"
-      -DCMAKE_AR="${CMAKE_AR}"
-      -DConfig=$<CONFIGURATION>
-      -P "${CMAKE_SOURCE_DIR}/cmake_modules/make_unix_static_lib.cmake"
-      -V
-    )
-  ENDIF()
-ENDIF()
+if(MSVC)
+  foreach(Config ${CMAKE_CONFIGURATION_TYPES})
+    list(REMOVE_DUPLICATES LibLocations${Config})
+    # Turn list of libs to space-separated string for passing to linker
+    string(REPLACE ";" " " Flags${Config} "${LibLocations${Config}}")
+    string(TOUPPER ${Config} ConfigUppercase)
+    set_target_properties(maidsafe PROPERTIES STATIC_LIBRARY_FLAGS_${ConfigUppercase} "${Flags${Config}}")
+  endforeach()
+else()
+  if(APPLE)
+    find_program(LibTool NAMES libtool)
+    if(NOT LibTool)
+      message(FATAL_ERROR "Failed to find libtool.")
+    endif()
+    add_custom_command(TARGET maidsafe POST_BUILD
+        COMMAND rm $<TARGET_FILE:maidsafe>
+        COMMAND ${LibTool} -static -o $<TARGET_FILE:maidsafe> ${LibLocations})
+  else()
+    add_custom_command(TARGET maidsafe POST_BUILD
+        COMMAND rm $<TARGET_FILE:maidsafe>
+        COMMAND ${CMAKE_COMMAND}
+        -DSUPER_PROJECT_BINARY_DIR="${CMAKE_BINARY_DIR}"
+        -DSUPER_PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+        -DTARGET_LOCATION="${TARGET_LOCATION}"
+        -DSTATIC_LIBS="${STATIC_LIBS}"
+        -DLIB="${Lib}"
+        -DCMAKE_AR="${CMAKE_AR}"
+        -DConfig=$<CONFIGURATION>
+        -P "${CMAKE_SOURCE_DIR}/cmake_modules/make_unix_static_lib.cmake"
+        -V)
+  endif()
+endif()
 
 

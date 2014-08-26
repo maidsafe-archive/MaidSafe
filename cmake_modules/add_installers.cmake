@@ -25,10 +25,17 @@
 #==================================================================================================#
 
 
-include(monolithic_lib)
-
 # Installer Types
-set(Types Farmer Dev Utilities DevDebug)
+if(MSVC)
+  set(Types Farmer Dev Utilities)
+else()
+  if(NOT ${CMAKE_BUILD_TYPE} STREQUAL Release)
+    return()
+  endif()
+  set(Types Farmer Dev Utilities DevDebug)
+endif()
+
+include(monolithic_lib)
 
 set(FarmerExeDepends vault vault_manager)
 set(DevLibDepends maidsafe)
@@ -55,7 +62,6 @@ elseif(MSVC)
   set(FarmerName "FarmerInstaller")
   set(DevName "DevInstaller")
   set(UtilitiesName "UtilitiesInstaller")
-  set(DevDebugName "DevDebugInstaller")
 
   set(InstallerScriptName "installer_msvc.cmake")
 else()
@@ -69,27 +75,6 @@ endfunction()
 
 # Create Custom Installer Targets
 foreach(Type ${Types})
-  foreach(LibDepend ${${Type}LibDepends})
-    safe_path($<TARGET_FILE:${LibDepend}> SafePath)
-    list(APPEND ${Type}Libs ${SafePath})
-
-    get_target_property(Headers ${LibDepend} INTERFACE_INCLUDE_DIRECTORIES)
-    if(Headers)
-      safe_path(${Headers} SafePath)
-      list(APPEND ${Type}Headers ${SafePath})
-    endif()
-
-    get_target_property(SystemHeaders ${LibDepend} INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
-    if(SystemHeaders)
-      safe_path(${SystemHeaders} SafePath)
-      list(APPEND ${Type}Headers ${SafePath})
-    endif()
-  endforeach()
-
-  if(${Type}Headers)
-    list(REMOVE_DUPLICATES ${Type}Headers)
-  endif()
-
   foreach(ExeDepend ${${Type}ExeDepends})
     safe_path($<TARGET_FILE:${ExeDepend}> SafePath)
     list(APPEND ${Type}Exes ${SafePath})
@@ -103,8 +88,8 @@ foreach(Type ${Types})
                         -DVersion="${ApplicationVersionMajor}.${ApplicationVersionMinor}.${ApplicationVersionPatch}"
                         -DTargetName="${${Type}Name}"
                         -DTargetType=${Type}
-                        -DTargetLibs="${${Type}Libs}"
-                        -DTargetHeaders="${${Type}Headers}"
+                        -DTargetLibs=$<TARGET_FILE:maidsafe>
+                        -DMonolithicIncludes="${MonolithicIncludes}"
                         -DTargetExes="${${Type}Exes}"
                         -DBoostSourceDir="${BoostSourceDir}"
                         -DConfig=$<CONFIGURATION>

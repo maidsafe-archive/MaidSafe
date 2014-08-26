@@ -22,25 +22,24 @@
 
 
 if(NOT "${Config}" STREQUAL Release)
-  if("${TargetType}" STREQUAL DevDebug)
-    message(FATAL_ERROR "Debug installers are currently disabled in Windows")
-  endif()
-  message(FATAL_ERROR "Invalid build configuration.  ${TargetName} is only availale for Release builds.")
+  message(FATAL_ERROR "Invalid build configuration.  ${TargetName} is only available for Release builds.")
 endif()
 
-separate_arguments(TargetLibs WINDOWS_COMMAND "${TargetLibs}")
-message("${TargetLibs}")
-
-separate_arguments(TargetHeaders WINDOWS_COMMAND "${TargetHeaders}")
-message("Headers - ${TargetHeaders}")
-
-set(InstallerDir "${SUPER_PROJECT_BINARY_DIR}/Release")
-# file(COPY "${SUPER_PROJECT_SOURCE_DIR}/src/common/include/maidsafe" DESTINATION "${InstallerDir}")
-
-message(FATAL_ERROR "Done--------------")
+if("${TargetType}" STREQUAL Dev)
+  execute_process(COMMAND ${CMAKE_COMMAND} --build ${SUPER_PROJECT_BINARY_DIR} --config Debug -- /M:7
+                  WORKING_DIRECTORY "${InstallerDir}"
+                  RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
+  if(NOT "${ResVar}" EQUAL 0)
+    message(FATAL_ERROR "Failed - ${OutVar}")
+  endif()
+endif()
 
 # TODO: find AdvancedInstaller in a better way like CBFS. Also check if available in ENV-PATH
-set(AdvancedInstallerPath "C:/Program Files (x86)/Caphyon/Advanced Installer 11.4.1/bin/x86/AdvancedInstaller.com")
+find_program(AdvancedInstaller NAMES AdvancedInstaller.com PATHS "C:/Program Files (x86)/Caphyon/Advanced Installer 11.4.1/bin/x86")
+if(NOT AdvancedInstaller)
+  message(FATAL_ERROR "Failed to find AdvancedInstaller.")
+endif()
+
 set(InstallerDir "${SUPER_PROJECT_BINARY_DIR}/Release/Installer")
 set(InstallerConfigFile "${InstallerDir}/${TargetType}.aic")
 
