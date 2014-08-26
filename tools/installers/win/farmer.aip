@@ -7,7 +7,7 @@
     <ROW Property="ARPHELPLINK" Value="https://github.com/orgs/maidsafe/dashboard"/>
     <ROW Property="ARPPRODUCTICON" Value="icon.exe" Type="8"/>
     <ROW Property="ARPURLINFOABOUT" Value="http://maidsafe.net/"/>
-    <ROW Property="Manufacturer" Value="MaidSafe.net"/>
+    <ROW Property="Manufacturer" Value="MaidSafe"/>
     <ROW Property="ProductCode" Value="1033:{61D3397C-C353-45BD-85CF-4025224A87F7} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="MaidSafe [|UDInstallerType] Package"/>
@@ -42,11 +42,11 @@
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
-    <ROW File="vault.exe" Component_="vault.exe" FileName="vault.exe" Attributes="0" SourcePath="&lt;BinariesFolder&gt;vault.exe" SelfReg="false" NextFile="vault_manager.exe" DigSign="true"/>
-    <ROW File="vault_manager.exe" Component_="vault_manager.exe" FileName="VAULT_~1.EXE|vault_manager.exe" Attributes="0" SourcePath="&lt;BinariesFolder&gt;vault_manager.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="vault.exe" Component_="vault.exe" FileName="vault.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\vault.exe" SelfReg="false" NextFile="vault_manager.exe" DigSign="true"/>
+    <ROW File="vault_manager.exe" Component_="vault_manager.exe" FileName="VAULT_~1.EXE|vault_manager.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\vault_manager.exe" SelfReg="false" DigSign="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.AppPathsComponent">
-    <ROW Name="BinariesFolder" Path="..\..\..\build\Release" Type="2" Content="0"/>
+    <ROW Name="SuperProjectBinaryFolder" Path="..\..\..\build" Type="2" Content="0"/>
     <ROW Name="SuperProjectSourceFolder" Path="..\..\.." Type="2" Content="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">

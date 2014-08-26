@@ -26,21 +26,19 @@ if(NOT "${Config}" STREQUAL Release)
 endif()
 
 if("${TargetType}" STREQUAL Dev)
-  execute_process(COMMAND ${CMAKE_COMMAND} --build ${SUPER_PROJECT_BINARY_DIR} --config Debug -- /M:7
-                  WORKING_DIRECTORY "${InstallerDir}"
+  execute_process(COMMAND ${CMAKE_COMMAND} --build ${SUPER_PROJECT_BINARY_DIR} --target maidsafe --config Debug -- /M:7
                   RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
   if(NOT "${ResVar}" EQUAL 0)
     message(FATAL_ERROR "Failed - ${OutVar}")
   endif()
 endif()
 
-# TODO: find AdvancedInstaller in a better way like CBFS. Also check if available in ENV-PATH
 find_program(AdvancedInstaller NAMES AdvancedInstaller.com PATHS "C:/Program Files (x86)/Caphyon/Advanced Installer 11.4.1/bin/x86")
 if(NOT AdvancedInstaller)
   message(FATAL_ERROR "Failed to find AdvancedInstaller.")
 endif()
 
-set(InstallerDir "${SUPER_PROJECT_BINARY_DIR}/Release/Installer")
+set(InstallerDir "${SUPER_PROJECT_BINARY_DIR}/Release")
 set(InstallerConfigFile "${InstallerDir}/${TargetType}.aic")
 
 if(CMAKE_CL_64)
@@ -50,6 +48,7 @@ else()
 endif()
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${InstallerDir}")
+file(COPY "${SUPER_PROJECT_SOURCE_DIR}/tools/installers/win/${TargetType}.aip" DESTINATION "${InstallerDir}")
 
 file(WRITE ${InstallerConfigFile} ";aic\n")
 file(APPEND ${InstallerConfigFile} "SetVersion ${Version}\n")
@@ -60,14 +59,13 @@ file(APPEND ${InstallerConfigFile} "SetProperty UDPackageType=\"${PACKAGE_TYPE}\
 file(TO_NATIVE_PATH ${SUPER_PROJECT_SOURCE_DIR} SuperProjectSourceFolder)
 file(APPEND ${InstallerConfigFile} "NewPathVariable -name SuperProjectSourceFolder -value \"${SuperProjectSourceFolder}\" -valuetype Folder\n")
 
-file(TO_NATIVE_PATH ${SUPER_PROJECT_BINARY_DIR}/Debug BinariesFolder)
-file(APPEND ${InstallerConfigFile} "NewPathVariable -name BinariesFolder -value \"${BinariesFolder}\" -valuetype Folder\n")
+file(TO_NATIVE_PATH ${SUPER_PROJECT_BINARY_DIR} SuperProjectBinaryFolder)
+file(APPEND ${InstallerConfigFile} "NewPathVariable -name SuperProjectBinaryFolder -value \"${SuperProjectBinaryFolder}\" -valuetype Folder\n")
 
 file(TO_NATIVE_PATH ${InstallerDir} InstallerDirWinPath)
 file(APPEND ${InstallerConfigFile} "SetOutputLocation -buildname DefaultBuild -path \"${InstallerDirWinPath}\"\n")
 file(APPEND ${InstallerConfigFile} "Save\nRebuild")
 
-file(COPY "${SUPER_PROJECT_SOURCE_DIR}/tools/installers/win/${TargetType}.aip" DESTINATION "${InstallerDir}")
 file(TO_NATIVE_PATH ${InstallerConfigFile} InstallerConfigFileWinPath)
 
 execute_process(COMMAND "${AdvancedInstallerPath}" /execute ${TargetType}.aip ${InstallerConfigFileWinPath}
