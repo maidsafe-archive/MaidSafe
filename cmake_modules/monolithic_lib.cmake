@@ -58,17 +58,15 @@ list(REMOVE_ITEM DevLibDepends BoostGraphParallel BoostMath BoostMpi BoostRegex 
 set(SourceFile ${CMAKE_CURRENT_BINARY_DIR}_depends.cc)
 set(CMAKE_DEBUG_POSTFIX -d)
 add_library(maidsafe STATIC ${SourceFile})
+set_target_properties(maidsafe PROPERTIES FOLDER "MaidSafe/Monolithic")
 
 set(MonolithicIncludes "${CMAKE_BINARY_DIR}/MonolithicIncludes")
-#file(GLOB CryptoHeaders "${Cryptopp_SOURCE_DIR}/*.h")
-#file(COPY ${CryptoHeaders} DESTINATION "${MonolithicIncludes}/cryptopp")
 
 set(HeadersHelper "${CMAKE_BINARY_DIR}/headers_helper.cmake")
 file(WRITE  "${HeadersHelper}" "file(COPY \"${common_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${passport_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${rudp_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${routing_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
-file(APPEND "${HeadersHelper}" "file(COPY \"${drive_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${encrypt_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${nfs_SOURCE_DIR}/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${api_SOURCE_DIR}/include/maidsafe.h\" DESTINATION \"${MonolithicIncludes}\")\n")
