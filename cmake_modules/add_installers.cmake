@@ -88,7 +88,7 @@ foreach(Type ${Types})
                         -DVersion="${ApplicationVersionMajor}.${ApplicationVersionMinor}.${ApplicationVersionPatch}"
                         -DTargetName="${${Type}Name}"
                         -DTargetType=${Type}
-                        -DTargetLibs=$<TARGET_FILE:maidsafe>
+                        $<$<OR:$<STREQUAL:${Type},Dev>,$<STREQUAL:${Type},DevDebug>>:-DTargetLibs=$<TARGET_FILE:maidsafe>>
                         -DMonolithicIncludes="${MonolithicIncludes}"
                         -DTargetExes="${${Type}Exes}"
                         -DBoostSourceDir="${BoostSourceDir}"
