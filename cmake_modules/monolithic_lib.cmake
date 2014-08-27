@@ -25,20 +25,20 @@
 #==================================================================================================#
 
 
-#function(get_depend_os_libs Target Result)
-#  set(Deps ${${Target}_LIB_DEPENDS})
-#  if(Deps)
-#   foreach(CurrentLib ${Deps})
-#    if(NOT CurrentLib MATCHES "general" AND NOT CurrentLib MATCHES "debug" AND NOT CurrentLib MATCHES "optimized")
-#      get_target_property(LibLocation ${CurrentLib} LOCATION)
-#      if(NOT LibLocation)
-#        set(Ret ${Ret} ${CurrentLib})
-#      endif()
-#    endif()
-#   endforeach()
-#  endif()
-#  set(${Result} ${Ret} PARENT_SCOPE)
-#endfunction()
+function(get_depend_os_libs Target Result)
+ set(Deps ${${Target}_LIB_DEPENDS})
+ if(Deps)
+  foreach(CurrentLib ${Deps})
+   if(NOT CurrentLib MATCHES "general" AND NOT CurrentLib MATCHES "debug" AND NOT CurrentLib MATCHES "optimized")
+     get_target_property(LibLocation ${CurrentLib} LOCATION)
+     if(NOT LibLocation)
+       set(Ret ${Ret} ${CurrentLib})
+     endif()
+   endif()
+  endforeach()
+ endif()
+ set(${Result} ${Ret} PARENT_SCOPE)
+endfunction()
 
 set(DevLibDepends maidsafe_common
                   maidsafe_passport
@@ -53,7 +53,7 @@ set(DevLibDepends maidsafe_common
                   protobuf_lite
                   protobuf
                   sqlite)
-list(REMOVE_ITEM DevLibDepends BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)
+list(REMOVE_ITEM DevLibDepends BoostContext BoostCoroutine BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)
 
 set(SourceFile ${CMAKE_CURRENT_BINARY_DIR}_depends.cc)
 set(CMAKE_DEBUG_POSTFIX -d)
@@ -95,24 +95,24 @@ foreach(Lib ${DevLibDepends})
   else()
     list(APPEND LibLocations "$<TARGET_FILE:${Lib}>")
   endif()
-#  get_target_property(LIB_TYPE ${Lib} TYPE)
-#  if(NOT LIB_LOCATION)
-#     list(APPEND OSLIBS ${Lib})
-#  else()
-#    if(LIB_TYPE STREQUAL "STATIC_LIBRARY")
-#      set(STATIC_LIBS ${STATIC_LIBS} ${LIB_LOCATION})
-#      add_dependencies(maidsafe ${Lib})
-#      get_depend_os_libs(${Lib} LIB_OSLIBS)
-#      list(APPEND OSLIBS ${LIB_OSLIBS})
-#    else()
-#      list(APPEND OSLIBS ${Lib})
-#    endif()
-#  endif()
+ get_target_property(LIB_TYPE ${Lib} TYPE)
+ if(NOT LIB_LOCATION)
+    list(APPEND OSLIBS ${Lib})
+ else()
+   if(LIB_TYPE STREQUAL "STATIC_LIBRARY")
+     set(STATIC_LIBS ${STATIC_LIBS} ${LIB_LOCATION})
+     add_dependencies(maidsafe ${Lib})
+     get_depend_os_libs(${Lib} LIB_OSLIBS)
+     list(APPEND OSLIBS ${LIB_OSLIBS})
+   else()
+     list(APPEND OSLIBS ${Lib})
+   endif()
+ endif()
 endforeach()
-#if(OSLIBS)
-#  list(REMOVE_DUPLICATES OSLIBS)
-#  target_link_libraries(maidsafe PUBLIC ${OSLIBS})
-#endif()
+if(OSLIBS)
+ list(REMOVE_DUPLICATES OSLIBS)
+ target_link_libraries(maidsafe PUBLIC ${OSLIBS})
+endif()
 
 add_custom_command(OUTPUT  ${SourceFile}
     COMMAND ${CMAKE_COMMAND} -E touch ${SourceFile}
@@ -141,8 +141,8 @@ else()
         COMMAND ${CMAKE_COMMAND}
         -DSUPER_PROJECT_BINARY_DIR="${CMAKE_BINARY_DIR}"
         -DSUPER_PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
-        -DTARGET_LOCATION="${TARGET_LOCATION}"
-        -DSTATIC_LIBS="${STATIC_LIBS}"
+        -DTARGET_LOCATION="$<TARGET_FILE:maidsafe>"
+        -DSTATIC_LIBS="${LibLocations}"
         -DLIB="${Lib}"
         -DCMAKE_AR="${CMAKE_AR}"
         -DConfig=$<CONFIGURATION>
