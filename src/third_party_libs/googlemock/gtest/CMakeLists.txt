@@ -154,9 +154,15 @@ if (gtest_build_tests)
 
   ############################################################
   # C++ tests built with standard compiler flags.
-
+if(UNIX AND NOT APPLE)
   cxx_test(gtest-death-test_test "gtest_main;gtest_no_maidsafe_log")
   cxx_test(gtest_environment_test gtest)
+  cxx_test(gtest-param-test_test gtest
+    test/gtest-param-test2_test.cc)
+  cxx_test(gtest_repeat_test gtest)
+  cxx_test(gtest_stress_test gtest)
+  cxx_test(gtest_throw_on_failure_ex_test gtest)
+ENDIF()
   cxx_test(gtest-filepath_test "gtest_main;gtest_no_maidsafe_log")
   cxx_test(gtest-linked_ptr_test "gtest_main;gtest_no_maidsafe_log")
   cxx_test(gtest-listener_test "gtest_main;gtest_no_maidsafe_log")
@@ -164,8 +170,6 @@ if (gtest_build_tests)
   cxx_test(gtest-message_test "gtest_main;gtest_no_maidsafe_log")
   cxx_test(gtest_no_test_unittest gtest)
   cxx_test(gtest-options_test "gtest_main;gtest_no_maidsafe_log")
-  cxx_test(gtest-param-test_test gtest
-    test/gtest-param-test2_test.cc)
   cxx_test(gtest-port_test "gtest_main;gtest_no_maidsafe_log")
   target_compile_definitions(gtest-port_test PRIVATE $<$<BOOL:${UNIX}>:GTEST_HAS_POSIX_REGTEST_HAS_POSIX_RE>)
   target_compile_options(gtest-port_test PRIVATE $<$<BOOL:${MSVC}>:/J>)
@@ -173,11 +177,8 @@ if (gtest_build_tests)
   # cxx_test(gtest-printers_test "gtest_main;gtest_no_maidsafe_log")
   cxx_test(gtest_prod_test "gtest_main;gtest_no_maidsafe_log"
     test/production.cc)
-  cxx_test(gtest_repeat_test gtest)
   # cxx_test(gtest_sole_header_test "gtest_main;gtest_no_maidsafe_log")
-  cxx_test(gtest_stress_test gtest)
   cxx_test(gtest-test-part_test "gtest_main;gtest_no_maidsafe_log")
-  cxx_test(gtest_throw_on_failure_ex_test gtest)
   cxx_test(gtest-typed-test_test "gtest_main;gtest_no_maidsafe_log"
     test/gtest-typed-test2_test.cc)
   # cxx_test(gtest_unittest "gtest_main;gtest_no_maidsafe_log")
