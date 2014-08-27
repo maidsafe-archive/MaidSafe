@@ -15,6 +15,7 @@
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UDInstallerType" Value="UDInstallerType"/>
     <ROW Property="UDPackageType" Value="UDPackageType"/>
+    <ROW Property="UDSystemVersion" Value="UDSystemVersion"/>
     <ROW Property="UpgradeCode" Value="{A4261417-FF15-4BB6-A078-285A23018DA3}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
     <ROW Property="WindowsType9XDisplay" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
@@ -12115,7 +12116,7 @@
     <ROW Name="SuperProjectSourceFolder" Path="..\..\.." Type="2" Content="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
-    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFileName="MaidSafe[|UDInstallerType]-[|UDPackageType]-v[|ProductVersion]" Languages="en" InstallationType="4" UseLargeSchema="true" MsiPackageType="x64"/>
+    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFileName="MaidSafe[|UDInstallerType]-[|UDSystemVersion]-[|UDPackageType]-v[|ProductVersion]" Languages="en" InstallationType="4" UseLargeSchema="true" MsiPackageType="x64"/>
     <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">

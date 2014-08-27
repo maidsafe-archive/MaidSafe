@@ -26,6 +26,7 @@ if(NOT "${Config}" STREQUAL Release)
 endif()
 
 if("${TargetType}" STREQUAL Dev)
+  message("Building Monolithic target in Debug mode")
   execute_process(COMMAND ${CMAKE_COMMAND} --build ${SUPER_PROJECT_BINARY_DIR} --target maidsafe --config Debug -- /M:7
                   RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
   if(NOT "${ResVar}" EQUAL 0)
@@ -47,6 +48,14 @@ else()
   set(PACKAGE_TYPE x86)
 endif()
 
+if(${CMAKE_SYSTEM_VERSION} STREQUAL 6.1)
+  set(UDSystemVersion Win7)
+elseif(${CMAKE_SYSTEM_VERSION} STREQUAL 6.2)
+  set(UDSystemVersion Win8)
+else()
+  message(FATAL_ERROR "Operating system version not found.")
+endif()
+
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${InstallerDir}")
 file(COPY "${SUPER_PROJECT_SOURCE_DIR}/tools/installers/win/${TargetType}.aip" DESTINATION "${InstallerDir}")
 
@@ -55,6 +64,7 @@ file(APPEND ${InstallerConfigFile} "SetVersion ${Version}\n")
 file(APPEND ${InstallerConfigFile} "SetPackageType ${PACKAGE_TYPE}\n")
 file(APPEND ${InstallerConfigFile} "SetProperty UDInstallerType=\"${TargetType}\"\n")
 file(APPEND ${InstallerConfigFile} "SetProperty UDPackageType=\"${PACKAGE_TYPE}\"\n")
+file(APPEND ${InstallerConfigFile} "SetProperty UDSystemVersion=\"${UDSystemVersion}\"\n")
 
 file(TO_NATIVE_PATH ${SUPER_PROJECT_SOURCE_DIR} SuperProjectSourceFolder)
 file(APPEND ${InstallerConfigFile} "NewPathVariable -name SuperProjectSourceFolder -value \"${SuperProjectSourceFolder}\" -valuetype Folder\n")
@@ -68,11 +78,14 @@ file(APPEND ${InstallerConfigFile} "Save\nRebuild")
 
 file(TO_NATIVE_PATH ${InstallerConfigFile} InstallerConfigFileWinPath)
 
-execute_process(COMMAND "${AdvancedInstallerPath}" /execute ${TargetType}.aip ${InstallerConfigFileWinPath}
+message("Creating installer package. This may take a while...")
+execute_process(COMMAND "${AdvancedInstaller}" /execute ${TargetType}.aip ${InstallerConfigFileWinPath}
                 WORKING_DIRECTORY "${InstallerDir}"
                 RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
 if(NOT "${ResVar}" EQUAL 0)
   message(FATAL_ERROR "Failed - ${OutVar}")
 endif()
 
+file(REMOVE "${InstallerConfigFile}" "${InstallerDir}/${TargetType}.aip")
+file(REMOVE_RECURSE "${InstallerDir}/${TargetType}-cache")
 message("Success")

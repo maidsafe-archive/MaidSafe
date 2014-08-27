@@ -28,23 +28,38 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
-    <ROW Directory="StartupFolder" Directory_Parent="TARGETDIR" DefaultDir="STARTU~1|StartupFolder" IsPseudoRoot="1"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
     <ROW Component="CA62D813A4E74FA2AAE86A7D7B7B1493" ComponentId="{62D7A135-A05D-4282-B04A-A36D2E8D18A4}" Directory_="APPDIR" Attributes="260" KeyPath="CA62D813A4E74FA2AAE86A7D7B7B1493" Options="2"/>
     <ROW Component="ProductInformation" ComponentId="{ACA8B6C1-C82B-4EF6-A047-EB7325F04B37}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
-    <ROW Component="vault.exe" ComponentId="{B07246F4-CC62-47FC-9B55-E2D5D562BC90}" Directory_="APPDIR" Attributes="256" KeyPath="vault.exe"/>
-    <ROW Component="vault_manager.exe" ComponentId="{CC1C83D9-8C68-4B60-A78C-000605A9963F}" Directory_="APPDIR" Attributes="256" KeyPath="vault_manager.exe"/>
+    <ROW Component="test_api.exe" ComponentId="{43FDEB76-E7CF-4BF8-BB3A-AD92588876D5}" Directory_="APPDIR" Attributes="256" KeyPath="test_api.exe"/>
+    <ROW Component="test_common.exe" ComponentId="{1227466A-1D05-4060-B8C0-4CE979BE0121}" Directory_="APPDIR" Attributes="256" KeyPath="test_common.exe"/>
+    <ROW Component="test_drive.exe" ComponentId="{37E8FDCE-5D29-464E-9EAB-FBAB9968A342}" Directory_="APPDIR" Attributes="256" KeyPath="test_drive.exe"/>
+    <ROW Component="test_encrypt.exe" ComponentId="{30B12FF4-C0F6-4927-B31F-5D2CE8178AB5}" Directory_="APPDIR" Attributes="256" KeyPath="test_encrypt.exe"/>
+    <ROW Component="test_filesystem.exe" ComponentId="{8FB34AF1-3098-41B2-818E-899A778239EC}" Directory_="APPDIR" Attributes="256" KeyPath="test_filesystem.exe"/>
+    <ROW Component="test_nfs.exe" ComponentId="{BD2D8FC7-1BBF-4AA1-B3A3-C90595D8E08E}" Directory_="APPDIR" Attributes="256" KeyPath="test_nfs.exe"/>
+    <ROW Component="test_passport.exe" ComponentId="{2A560261-B27E-40B0-A53E-2516A4A9D60F}" Directory_="APPDIR" Attributes="256" KeyPath="test_passport.exe"/>
+    <ROW Component="test_routing.exe" ComponentId="{F284E821-EF90-4D92-85C2-DAD60F04EF20}" Directory_="APPDIR" Attributes="256" KeyPath="test_routing.exe"/>
+    <ROW Component="test_routing_api.exe" ComponentId="{E1944D09-B4DF-4D72-B839-7F686112EE47}" Directory_="APPDIR" Attributes="256" KeyPath="test_routing_api.exe"/>
+    <ROW Component="test_rudp.exe" ComponentId="{5DC33277-D89C-4681-B8E7-63185149A971}" Directory_="APPDIR" Attributes="256" KeyPath="test_rudp.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="CA62D813A4E74FA2AAE86A7D7B7B1493" Title="Visual C++ Redistributable for Visual Studio 2013 x64" Description="Visual C++ Redistributable for Visual Studio 2013 x64" Display="3" Level="1" Attributes="0" Components="CA62D813A4E74FA2AAE86A7D7B7B1493"/>
-    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="ProductInformation vault.exe vault_manager.exe"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="ProductInformation test_api.exe test_common.exe test_drive.exe test_encrypt.exe test_filesystem.exe test_nfs.exe test_passport.exe test_routing.exe test_routing_api.exe test_rudp.exe"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
-    <ROW File="vault.exe" Component_="vault.exe" FileName="vault.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\vault.exe" SelfReg="false" NextFile="vault_manager.exe" DigSign="true"/>
-    <ROW File="vault_manager.exe" Component_="vault_manager.exe" FileName="VAULT_~1.EXE|vault_manager.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\vault_manager.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="test_api.exe" Component_="test_api.exe" FileName="test_api.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_api.exe" SelfReg="false" NextFile="test_common.exe" DigSign="true"/>
+    <ROW File="test_common.exe" Component_="test_common.exe" FileName="TEST_C~1.EXE|test_common.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_common.exe" SelfReg="false" NextFile="test_drive.exe" DigSign="true"/>
+    <ROW File="test_drive.exe" Component_="test_drive.exe" FileName="TEST_D~1.EXE|test_drive.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_drive.exe" SelfReg="false" NextFile="test_encrypt.exe" DigSign="true"/>
+    <ROW File="test_encrypt.exe" Component_="test_encrypt.exe" FileName="TEST_E~1.EXE|test_encrypt.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_encrypt.exe" SelfReg="false" NextFile="test_filesystem.exe" DigSign="true"/>
+    <ROW File="test_filesystem.exe" Component_="test_filesystem.exe" FileName="TEST_F~1.EXE|test_filesystem.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_filesystem.exe" SelfReg="false" NextFile="test_nfs.exe" DigSign="true"/>
+    <ROW File="test_nfs.exe" Component_="test_nfs.exe" FileName="test_nfs.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_nfs.exe" SelfReg="false" NextFile="test_passport.exe" DigSign="true"/>
+    <ROW File="test_passport.exe" Component_="test_passport.exe" FileName="TEST_P~1.EXE|test_passport.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_passport.exe" SelfReg="false" NextFile="test_routing.exe" DigSign="true"/>
+    <ROW File="test_routing.exe" Component_="test_routing.exe" FileName="TEST_R~1.EXE|test_routing.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_routing.exe" SelfReg="false" NextFile="test_routing_api.exe" DigSign="true"/>
+    <ROW File="test_routing_api.exe" Component_="test_routing_api.exe" FileName="TEST_R~2.EXE|test_routing_api.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_routing_api.exe" SelfReg="false" NextFile="test_rudp.exe" DigSign="true"/>
+    <ROW File="test_rudp.exe" Component_="test_rudp.exe" FileName="TEST_R~3.EXE|test_rudp.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_rudp.exe" SelfReg="false" DigSign="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.AppPathsComponent">
     <ROW Name="SuperProjectBinaryFolder" Path="..\..\..\build" Type="2" Content="0"/>
@@ -126,10 +141,9 @@
     <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
     <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
     <ROW Action="AI_VerifyPrereq" Type="1" Source="Prereq.dll" Target="VerifyPrereq"/>
-    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[ProgramFiles64Folder][Manufacturer]\Farmer"/>
+    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[ProgramFiles64Folder][Manufacturer]\Utilities"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
-    <ROW Action="vault_manager.exe" Type="210" Source="vault_manager.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
     <ROW Name="icon.exe" SourcePath="&lt;SuperProjectSourceFolder&gt;tools\installers\win\icon.ico" Index="0"/>
@@ -142,7 +156,6 @@
     <ROW Action="AI_ResolveKnownFolders" Sequence="51"/>
     <ROW Action="AI_VerifyPrereq" Sequence="1101"/>
     <ROW Action="AI_AppSearchEx" Sequence="101"/>
-    <ROW Action="vault_manager.exe" Condition="( NOT Installed )" Sequence="6401"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="ExecuteAction" Sequence="1298" SeqType="0" MsiKey="ExecuteAction"/>
@@ -165,9 +178,6 @@
     <ROW Registry="CA62D813A4E74FA2AAE86A7D7B7B1493" Root="-1" Key="Software\Caphyon\Advanced Installer\Prereqs\[ProductCode]\[ProductVersion]" Name="CA62D813A4E74FA2AAE86A7D7B7B1493" Value="1" Component_="CA62D813A4E74FA2AAE86A7D7B7B1493"/>
     <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
-  </COMPONENT>
-  <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
-    <ROW Shortcut="VaultManager" Directory_="StartupFolder" Name="VAULTM~1|Vault Manager" Component_="vault_manager.exe" Target="[#vault_manager.exe]" Hotkey="0" Icon_="icon.exe" IconIndex="0" ShowCmd="7" WkDir="APPDIR"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
     <ATTRIBUTE name="UsedTheme" value="classic"/>

@@ -93,6 +93,7 @@ foreach(Type ${Types})
                         -DTargetExes="${${Type}Exes}"
                         -DBoostSourceDir="${BoostSourceDir}"
                         -DConfig=$<CONFIGURATION>
+                        -DCMAKE_SYSTEM_VERSION="${CMAKE_SYSTEM_VERSION}"
                         -P "${CMAKE_SOURCE_DIR}/cmake_modules/${InstallerScriptName}"
                         -V)
   set_target_properties(${${Type}Name} PROPERTIES FOLDER "MaidSafe/Installers")
