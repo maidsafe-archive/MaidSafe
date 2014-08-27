@@ -53,7 +53,7 @@ set(DevLibDepends maidsafe_common
                   protobuf_lite
                   protobuf
                   sqlite)
-list(REMOVE_ITEM DevLibDepends BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)
+list(REMOVE_ITEM DevLibDepends BoostContext BoostCoroutine BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)
 
 set(SourceFile ${CMAKE_CURRENT_BINARY_DIR}_depends.cc)
 set(CMAKE_DEBUG_POSTFIX -d)

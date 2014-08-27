@@ -25,15 +25,14 @@
 #==================================================================================================#
 
 
-# Installer Types
-if(MSVC)
-  set(Types Farmer Dev Utilities)
-else()
-  if(NOT ${CMAKE_BUILD_TYPE} STREQUAL Release)
-    return()
-  endif()
-  set(Types Farmer Dev Utilities DevDebug)
+
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT ${CMAKE_BUILD_TYPE} STREQUAL Release)
+  message(STATUS "Installers unavailable with ${CMAKE_BUILD_TYPE} configuration")
+  return()
 endif()
+
+# Installer Types
+set(Types Farmer Dev Utilities)
 
 include(monolithic_lib)
 
