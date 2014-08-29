@@ -101,7 +101,6 @@ NAMESPACE_BEGIN(CryptoPP)
 #define CRYPTOPP_CPUID_AVAILABLE
 
 // these should not be used directly
-extern CRYPTOPP_DLL bool g_x86DetectionDone;
 extern CRYPTOPP_DLL bool g_hasSSSE3;
 extern CRYPTOPP_DLL bool g_hasAESNI;
 extern CRYPTOPP_DLL bool g_hasCLMUL;
@@ -122,22 +121,19 @@ extern CRYPTOPP_DLL bool g_hasMMX;
 
 inline bool HasSSE2()
 {
-	if (!g_x86DetectionDone)
-		DetectX86Features();
+	DetectX86Features();
 	return g_hasSSE2;
 }
 
 inline bool HasISSE()
 {
-	if (!g_x86DetectionDone)
-		DetectX86Features();
+	DetectX86Features();
 	return g_hasISSE;
 }
 
 inline bool HasMMX()
 {
-	if (!g_x86DetectionDone)
-		DetectX86Features();
+	DetectX86Features();
 	return g_hasMMX;
 }
 
@@ -145,36 +141,31 @@ inline bool HasMMX()
 
 inline bool HasSSSE3()
 {
-	if (!g_x86DetectionDone)
-		DetectX86Features();
+	DetectX86Features();
 	return g_hasSSSE3;
 }
 
 inline bool HasAESNI()
 {
-	if (!g_x86DetectionDone)
-		DetectX86Features();
+	DetectX86Features();
 	return g_hasAESNI;
 }
 
 inline bool HasCLMUL()
 {
-	if (!g_x86DetectionDone)
-		DetectX86Features();
+	DetectX86Features();
 	return g_hasCLMUL;
 }
 
 inline bool IsP4()
 {
-	if (!g_x86DetectionDone)
-		DetectX86Features();
+	DetectX86Features();
 	return g_isP4;
 }
 
 inline int GetCacheLineSize()
 {
-	if (!g_x86DetectionDone)
-		DetectX86Features();
+	DetectX86Features();
 	return g_cacheLineSize;
 }
 

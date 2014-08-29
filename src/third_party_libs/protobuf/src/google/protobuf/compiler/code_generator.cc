@@ -45,13 +45,13 @@ CodeGenerator::~CodeGenerator() {}
 GeneratorContext::~GeneratorContext() {}
 
 io::ZeroCopyOutputStream* GeneratorContext::OpenForInsert(
-    const string& /* filename */, const string& /* insertion_point */) {
+    const string& filename, const string& insertion_point) {
   GOOGLE_LOG(FATAL) << "This GeneratorContext does not support insertion.";
   return NULL;  // make compiler happy
 }
 
 void GeneratorContext::ListParsedFiles(
-    vector<const FileDescriptor*>* /* output */) {
+    vector<const FileDescriptor*>* output) {
   GOOGLE_LOG(FATAL) << "This GeneratorContext does not support ListParsedFiles";
 }
 
@@ -61,7 +61,7 @@ void ParseGeneratorParameter(const string& text,
   vector<string> parts;
   SplitStringUsing(text, ",", &parts);
 
-  for (size_t i = 0; i < parts.size(); i++) {
+  for (int i = 0; i < parts.size(); i++) {
     string::size_type equals_pos = parts[i].find_first_of('=');
     pair<string, string> value;
     if (equals_pos == string::npos) {

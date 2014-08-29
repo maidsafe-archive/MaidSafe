@@ -1,16 +1,24 @@
-#==============================================================================#
-#                                                                              #
-#  Copyright (c) 2012 MaidSafe.net limited                                     #
-#                                                                              #
-#  The following source code is property of MaidSafe.net limited and is not    #
-#  meant for external use.  The use of this code is governed by the license    #
-#  file licence.txt found in the root directory of this project and also on    #
-#  www.maidsafe.net.                                                           #
-#                                                                              #
-#  You are not free to copy, amend or otherwise use this source code without   #
-#  the explicit written permission of the board of directors of MaidSafe.net.  #
-#                                                                              #
-#==============================================================================#
+#==================================================================================================#
+#                                                                                                  #
+#  Copyright 2012 MaidSafe.net limited                                                             #
+#                                                                                                  #
+#  This MaidSafe Software is licensed to you under (1) the MaidSafe.net Commercial License,        #
+#  version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which    #
+#  licence you accepted on initial access to the Software (the "Licences").                        #
+#                                                                                                  #
+#  By contributing code to the MaidSafe Software, or to this project generally, you agree to be    #
+#  bound by the terms of the MaidSafe Contributor Agreement, version 1.0, found in the root        #
+#  directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also available   #
+#  at: http://www.maidsafe.net/licenses                                                            #
+#                                                                                                  #
+#  Unless required by applicable law or agreed to in writing, the MaidSafe Software distributed    #
+#  under the GPL Licence is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF   #
+#  ANY KIND, either express or implied.                                                            #
+#                                                                                                  #
+#  See the Licences for the specific language governing permissions and limitations relating to    #
+#  use of the MaidSafe Software.                                                                   #
+#                                                                                                  #
+#==================================================================================================#
 
 
 cmake_minimum_required(VERSION 2.8.12.1 FATAL_ERROR)
@@ -27,7 +35,12 @@ file(GLOB TESTcryptopp_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cc")
 if(CMAKE_CL_64)
   enable_language(ASM_MASM)
   if(NOT CMAKE_ASM_MASM_COMPILER_WORKS)
-    message(FATAL_ERROR "No assembler found.")
+    # This could happen if the CMakeCache.txt was deleted; try finding the ASM_MASM compiler again.
+    include(CMakeDetermineASM_MASMCompiler)
+    include(CMakeTestASM_MASMCompiler)
+    if(NOT CMAKE_ASM_MASM_COMPILER_WORKS)
+      message(FATAL_ERROR "No assembler found.")
+    endif()
   endif()
   set(cryptopp_SOURCES ${cryptopp_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/x64dll.asm ${CMAKE_CURRENT_SOURCE_DIR}/x64masm.asm $(IntDir)x64dll.obj $(IntDir)x64masm.obj)
   set_source_files_properties($(IntDir)x64dll.obj $(IntDir)x64masm.obj PROPERTIES GENERATED TRUE)
@@ -72,7 +85,7 @@ list(REMOVE_ITEM cryptopp_HEADERS ${cryptopp_TEST_HEADERS})
 
 set(CurrentCamelCaseProjectName ${CamelCaseProjectName})
 set(CamelCaseProjectName Common)
-ms_add_executable(cryptest "Tests/Common" ${cryptopp_TEST_SOURCES} ${cryptopp_TEST_HEADERS})
+ms_add_executable(cryptest "." ${cryptopp_TEST_SOURCES} ${cryptopp_TEST_HEADERS})
 set(CamelCaseProjectName ${CurrentCamelCaseProjectName})
 
 #add_executable(TESTcryptopp ${TESTcryptopp_DIR})
@@ -86,21 +99,17 @@ ms_target_include_system_dirs(cryptopp INTERFACE ${PROJECT_SOURCE_DIR}/.. PRIVAT
 if(JustThread_FOUND)
   ms_target_include_system_dirs(cryptopp PUBLIC ${JustThread_INCLUDE_DIR})
 endif()
-set_target_properties(cryptopp PROPERTIES FOLDER "Third Party/Crypto++")
+set_target_properties(cryptopp cryptest PROPERTIES FOLDER "Third Party/Crypto++")
 
 
 add_custom_command(TARGET cryptest
                      POST_BUILD
-                     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestData $<TARGET_FILE_DIR:cryptest>/TestData)
-add_custom_command(TARGET cryptest
-                     POST_BUILD
-                     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestVectors $<TARGET_FILE_DIR:cryptest>/TestVectors)
-add_custom_command(TARGET cryptest
-                     POST_BUILD
-                     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestData ${CMAKE_BINARY_DIR}/TestData)
-add_custom_command(TARGET cryptest
-                     POST_BUILD
-                     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestVectors ${CMAKE_BINARY_DIR}/TestVectors)
+                     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestData $<TARGET_FILE_DIR:cryptest>/TestData
+                     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestVectors $<TARGET_FILE_DIR:cryptest>/TestVectors
+                     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestData ${CMAKE_BINARY_DIR}/TestData
+                     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestVectors ${CMAKE_BINARY_DIR}/TestVectors
+                     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestData ${CMAKE_CURRENT_BINARY_DIR}/../TestData
+                     COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/TestVectors ${CMAKE_CURRENT_BINARY_DIR}/../TestVectors)
 
 target_link_libraries(cryptest cryptopp ${JustThread_LIBRARIES})
 #target_link_libraries(TESTcryptopp cryptopp gtest ${JustThread_LIBRARIES})
@@ -174,7 +183,10 @@ endif()
 #==================================================================================================#
 # Package                                                                                          #
 #==================================================================================================#
-set(EXPORT_NAME cryptopp)
-install(TARGETS cryptopp EXPORT ${EXPORT_NAME} ARCHIVE DESTINATION lib)
+install(TARGETS cryptopp COMPONENT Development CONFIGURATIONS Debug Release ARCHIVE DESTINATION lib)
+install(FILES ${cryptopp_HEADERS} COMPONENT Development DESTINATION include/maidsafe/third_party_libs/cryptopp)
 
-install(FILES ${cryptopp_HEADERS} DESTINATION include/maidsafe/third_party_libs/cryptopp)
+install(TARGETS cryptest COMPONENT Tests CONFIGURATIONS Debug RUNTIME DESTINATION bin/debug)
+install(TARGETS cryptest COMPONENT Tests CONFIGURATIONS Release RUNTIME DESTINATION bin)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/TestData ${PROJECT_SOURCE_DIR}/TestVectors COMPONENT Tests CONFIGURATIONS Debug DESTINATION bin/debug)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/TestData ${PROJECT_SOURCE_DIR}/TestVectors COMPONENT Tests CONFIGURATIONS Release DESTINATION bin)

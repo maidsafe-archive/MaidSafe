@@ -18,8 +18,7 @@
 # update variables in the function scope.
 macro(fix_default_compiler_settings_)
   include(${maidsafe_SOURCE_DIR}/cmake_modules/standard_flags.cmake)
-  if (MSVC)
-    string(REGEX REPLACE "/GL " "" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
+#   if (MSVC)
 #     # For MSVC, CMake sets certain flags to defaults we want to override.
 #     # This replacement code is taken from sample in the CMake Wiki at
 #     # http://www.cmake.org/Wiki/CMake_FAQ#Dynamic_Replace.
@@ -27,7 +26,6 @@ macro(fix_default_compiler_settings_)
 #              CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
 #              CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
 #       if (NOT BUILD_SHARED_LIBS AND NOT gtest_force_shared_crt)
-#       message("${flag_var} BEFORE - ${${flag_var}}")
 #         # When Google Test is built as a shared library, it should also use
 #         # shared runtime libraries.  Otherwise, it may end up with multiple
 #         # copies of runtime library data in different modules, resulting in
@@ -35,15 +33,14 @@ macro(fix_default_compiler_settings_)
 #         # preferable to use CRT as static libraries, as we don't have to rely
 #         # on CRT DLLs being available. CMake always defaults to using shared
 #         # CRT libraries, so we override that default here.
-#         string(REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-#       message("${flag_var} AFTER -  ${${flag_var}}")
+#         string(REPLACE "/MD" "-MT" ${flag_var} "${${flag_var}}")
 #       endif()
-# 
+#
 #       # We prefer more strict warning checking for building Google Test.
 #       # Replaces /W3 with /W4 in defaults.
 #       string(REPLACE "/W3" "-W4" ${flag_var} "${${flag_var}}")
 #     endforeach()
-   endif()
+#   endif()
 endmacro()
 
 # Defines the compiler/linker flags used to build Google Test and
@@ -59,31 +56,32 @@ macro(config_compiler_and_linker)
   if (MSVC)
     # Newlines inside flags variables break CMake's NMake generator.
     # TODO(vladl@google.com): Add -RTCs and -RTCu to debug builds.
-    set(cxx_base_flags "-GS -W4 -WX -wd4127 -wd4251 -wd4275 -nologo -Zi") # -J
+    set(cxx_base_flags "-GS -W4 -WX -wd4127 -wd4251 -wd4275 -nologo -Zi") # -J  (Changes the default char type from signed char to unsigned char, and the char type is zero-extended when it is widened to an int type.)
+    if (MSVC_VERSION LESS 1400)
+      # Suppress spurious warnings MSVC 7.1 sometimes issues.
+      # Forcing value to bool.
+      set(cxx_base_flags "${cxx_base_flags} -wd4800")
+      # Copy constructor and assignment operator could not be generated.
+      set(cxx_base_flags "${cxx_base_flags} -wd4511 -wd4512")
+      # Compatibility warnings not applicable to Google Test.
+      # Resolved overload was found by argument-dependent lookup.
+      set(cxx_base_flags "${cxx_base_flags} -wd4675")
+    endif()
     set(cxx_base_flags "${cxx_base_flags} -D_UNICODE -DUNICODE -DWIN32 -D_WIN32")
     set(cxx_base_flags "${cxx_base_flags} -DSTRICT -DWIN32_LEAN_AND_MEAN")
-    # VC11 contains std::tuple with variadic templates emulation macro.
-    # _VARIADIC_MAX defaulted to 5 but gtest requires 10.
-    set(cxx_base_flags "${cxx_base_flags} -D_VARIADIC_MAX=10")
     set(cxx_exception_flags "-EHsc -D_HAS_EXCEPTIONS=1")
     set(cxx_no_exception_flags "-D_HAS_EXCEPTIONS=0")
     set(cxx_no_rtti_flags "-GR-")
-  elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(cxx_base_flags "-w -std=c++11 ${LibCXX} -fPIC")
-    set(cxx_exception_flags "-fexceptions")
-    set(cxx_no_exception_flags "-fno-exceptions")
-    set(cxx_no_rtti_flags "-fno-rtti -DGTEST_HAS_RTTI=0")
-    set(cxx_strict_flags "-Wextra")
-  elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(cxx_base_flags "-w -std=c++11 -fPIC")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
+  elseif (CMAKE_COMPILER_IS_GNUCXX)
+    set(cxx_base_flags "-Wall -Wshadow")
     set(cxx_exception_flags "-fexceptions")
     set(cxx_no_exception_flags "-fno-exceptions")
     # Until version 4.3.2, GCC doesn't define a macro to indicate
     # whether RTTI is enabled.  Therefore we define GTEST_HAS_RTTI
     # explicitly.
     set(cxx_no_rtti_flags "-fno-rtti -DGTEST_HAS_RTTI=0")
-    set(cxx_strict_flags "-Wextra")
+    set(cxx_strict_flags
+      "-Wextra -Wno-unused-parameter -Wno-missing-field-initializers")
   elseif (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
     set(cxx_exception_flags "-features=except")
     # Sun Pro doesn't provide macros to indicate whether exceptions and
@@ -142,6 +140,7 @@ function(cxx_library_with_type name type cxx_flags)
   if (CMAKE_USE_PTHREADS_INIT)
     target_link_libraries(${name} ${CMAKE_THREAD_LIBS_INIT})
   endif()
+  set_target_properties(${name} PROPERTIES FOLDER "Third Party/GoogleMock and GoogleTest")
 endfunction()
 
 ########################################################################
@@ -177,6 +176,8 @@ function(cxx_executable_with_flags name cxx_flags libs)
   foreach (lib "${libs}")
     target_link_libraries(${name} ${lib})
   endforeach()
+  target_include_directories(${name} PRIVATE ${gtest_SOURCE_DIR})
+  set_target_properties(${name} PROPERTIES FOLDER "Third Party/GoogleMock and GoogleTest")
 endfunction()
 
 # cxx_executable(name dir lib srcs...)
@@ -198,7 +199,8 @@ find_package(PythonInterp)
 # from the given source files with the given compiler flags.
 function(cxx_test_with_flags name cxx_flags libs)
   cxx_executable_with_flags(${name} "${cxx_flags}" "${libs}" ${ARGN})
-  add_test(${name} ${name})
+#  add_test(${name} ${name})
+  set(AllGMockGTestTests ${AllGMockGTestTests} ${name} PARENT_SCOPE)
 endfunction()
 
 # cxx_test(name libs srcs...)
@@ -209,6 +211,7 @@ endfunction()
 function(cxx_test name libs)
   cxx_test_with_flags("${name}" "${cxx_default}" "${libs}"
     "test/${name}.cc" ${ARGN})
+  set(AllGMockGTestTests ${AllGMockGTestTests} PARENT_SCOPE)
 endfunction()
 
 # py_test(name)

@@ -65,7 +65,7 @@ class MyEnvironment : public testing::Environment {
         ADD_FAILURE() << "Expected non-fatal failure in global set-up.";
         break;
       case FATAL_FAILURE:
-        FAIL() << "Expected fatal failure in global set-up.";
+        GTEST_FAIL() << "Expected fatal failure in global set-up.";
         break;
       default:
         break;
@@ -96,6 +96,7 @@ class MyEnvironment : public testing::Environment {
 
   // Was TearDown() run?
   bool tear_down_was_run() const { return tear_down_was_run_; }
+
  private:
   FailureType failure_in_set_up_;
   bool set_up_was_run_;

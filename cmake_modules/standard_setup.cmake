@@ -28,7 +28,7 @@
 ms_check_compiler()
 ms_underscores_to_camel_case(${PROJECT_NAME} CamelCaseProjectName)
 
-if(NOT PROJECT_NAME STREQUAL Cryptopp AND NOT PROJECT_NAME STREQUAL leveldb AND NOT PROJECT_NAME STREQUAL network_viewer)
+if(NOT PROJECT_NAME STREQUAL Cryptopp AND NOT PROJECT_NAME STREQUAL sqlite AND NOT PROJECT_NAME STREQUAL leveldb AND NOT PROJECT_NAME STREQUAL network_viewer)
   ms_get_branch(Branch)
   set(Msg "Configuring MaidSafe ${CamelCaseProjectName} project on ${Branch} branch")
   string(REGEX REPLACE . "-" Underscore ${Msg})
@@ -72,19 +72,7 @@ set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 
 include(check_licenses)
 include(utils)
-include(add_catch_tests)
 ms_check_licenses()
-
-
-# Create CTestCustom.cmake to avoid inclusion of coverage results from test files, protocol buffer files and main.cc files
-file(WRITE ${PROJECT_BINARY_DIR}/CTestCustom.cmake "\n")
-ms_add_coverage_exclude(\\\\.pb\\\\.)
-ms_add_coverage_exclude(tests/)
-ms_add_coverage_exclude(boost/)
-ms_add_coverage_exclude(catch/)
-ms_add_coverage_exclude(src/third_party_libs/)
-ms_add_coverage_exclude(GeneratedProtoFiles/)
-ms_add_coverage_exclude(main\\\\.cc)
 
 
 # Avoid running MemCheck on Style Check tests

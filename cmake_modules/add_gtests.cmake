@@ -20,7 +20,13 @@
 #                                                                                                  #
 #==================================================================================================#
 #                                                                                                  #
-#  For a test target named TESTstuff, the module is invoked by calling ms_add_gtests(TESTstuff)    #
+#  For a test target named TESTstuff, the module is invoked by calling 'ms_add_gtests(TESTstuff)'  #
+#  or if the test executable needs to bootstrap to a network prior to running (i.e. it needs       #
+#  --bootstrap_file <path to file>) it should use the 'ms_add_network_gtests(TESTstuff)' function  #
+#  instead.  In this case the bootstrap filepath can be set in the variable 'BOOTSTRAP', or for    #
+#  convenience 'BOOTSTRAP' can be set to "none" (i.e. use real SAFE network), "local" (use a       #
+#  machine-local network), or "testnet" (the most current public SAFE testnet).  If 'BOOTSTRAP'    #
+#  is not set, "none" is assumed.                                                                  #
 #                                                                                                  #
 #  This module adds individual gtests by parsing the tests files at a very basic level (e.g.       #
 #  there is no support for namespaces).  It also currently doesn't support all gtest options       #
@@ -29,9 +35,6 @@
 #                                                                                                  #
 #  There is basic support for TEST(...), TEST_F(...), TEST_P(...), TYPED_TEST(...) and             #
 #  TYPED_TEST_P(...).                                                                              #
-#                                                                                                  #
-#  There is also support for the MaidSafe macro style of                                           #
-#  TEST_MS_NET(fixture_name, test_type(FUNC or BEH), general_name, test_name)                      #
 #                                                                                                  #
 #  All test names should be of the form "BEH_..." or "FUNC_..." (with an optional "DISABLED_"      #
 #  prepended.  Tests named BEH_ will be treated as behavioural tests and will have a CTest         #
@@ -55,9 +58,19 @@
 #==================================================================================================#
 
 
-# Main function - the only one designed to be called from outside this module.
+# This passes a bootstrap file argument to the test executable.  The arg is specified in the CMake
+# variable 'BOOTSTRAP'.  This can be one of "none", "local", or "testnet" (all case insensitive), or
+# else can be a path to a bootstrap file.
+function(ms_add_network_gtests TEST_TARGET)
+  get_network_test_arg()
+  ms_add_gtests(${TEST_TARGET})
+  set(ALL_GTESTS ${ALL_GTESTS} PARENT_SCOPE)
+endfunction()
+
+
+# Main function - only this or 'ms_add_network_gtests' above are designed to be called from outside
+# this module.
 function(ms_add_gtests TEST_TARGET)
-  target_compile_definitions(${TEST_TARGET} PRIVATE USE_GTEST)
   target_link_libraries(${TEST_TARGET} gmock gtest)
 
   if(NOT BEHAVIOURAL_TEST_TIMEOUT)
@@ -85,6 +98,26 @@ function(ms_add_gtests TEST_TARGET)
   endforeach()
   set(ALL_GTESTS ${ALL_GTESTS} PARENT_SCOPE)
 endfunction()
+
+
+macro(get_network_test_arg)
+  if(BOOTSTRAP)
+    string(TOLOWER "${BOOTSTRAP}" Bootstrap)
+  else()
+    set(Bootstrap "none")
+  endif()
+
+  if("${Bootstrap}" STREQUAL "local")
+    set(NetworkTestArg "$<TARGET_FILE_DIR:${TEST_TARGET}>/local_network_bootstrap.dat")
+  elseif("${Bootstrap}" STREQUAL "testnet")
+    set(NetworkTestArg "none")  # This works for now where the hard-coded fallbacks in Routing *are* the testnet contacts.
+#      set(NetworkTestArg "${CMAKE_BINARY_DIR}/bootstrap_files/testnet_bootstrap.dat") # need to uncomment this iff we ever have a testnet and SAFE network at the same time.
+  elseif("${Bootstrap}" STREQUAL "none")
+    set(NetworkTestArg "none")
+  else()
+    set(NetworkTestArg "${BOOTSTRAP}")
+  endif()
+endmacro()
 
 
 # Gets all type values from all "typedef testing::Types<type, type, ...> varname" statements.
@@ -279,18 +312,10 @@ function(add_gtest_non_type_parameterised GTEST_SOURCE_FILE TEST_TARGET)
   set(TEST_EXECUTABLE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TEST_TARGET}${TEST_POSTFIX})
   file(STRINGS ${GTEST_SOURCE_FILE} GTEST_NAMES REGEX "^(TYPED_)?TEST(_[FP])?\\(")
   foreach(GTEST_NAME ${GTEST_NAMES})
-    string(REGEX MATCH "TEST_MS_NET" TEST_IS_MS_NETWORK_TYPE ${GTEST_NAME})
     string(REGEX REPLACE ["\) \(,"] ";" GTEST_NAME ${GTEST_NAME})
     list(GET GTEST_NAME 0 GTEST_TEST_TYPE)
     list(GET GTEST_NAME 1 GTEST_FIXTURE_NAME)
-    if(TEST_IS_MS_NETWORK_TYPE)
-      list(GET GTEST_NAME 3 GTEST_NAME_PART1)
-      list(GET GTEST_NAME 5 GTEST_NAME_PART2)
-      list(GET GTEST_NAME 7 GTEST_NAME_PART3)
-      set(GTEST_NAME "${GTEST_NAME_PART1}_${GTEST_NAME_PART2}_${GTEST_NAME_PART3}")
-    else()
-      list(GET GTEST_NAME 3 GTEST_NAME)
-    endif()
+    list(GET GTEST_NAME 3 GTEST_NAME)
     if(${GTEST_TEST_TYPE} MATCHES ^TEST_P$)  # Value-parameterised tests
       foreach(VALUE_PARAMETER ${${GTEST_FIXTURE_NAME}_VALUE_PARAMETERS})
         string(REGEX REPLACE "@@@@@" ${GTEST_NAME} FULL_GTEST_NAME ${VALUE_PARAMETER})
@@ -325,7 +350,10 @@ function(add_maidsafe_test GTEST_FIXTURE_NAME GTEST_NAME FULL_GTEST_NAME TEST_EX
           set(CATCH_EXCEPTIONS "0")
         endif()
         add_test(NAME ${FULL_GTEST_NAME}
-                 COMMAND ${TEST_EXECUTABLE} --gtest_filter=${FULL_GTEST_NAME} --gtest_catch_exceptions=${CATCH_EXCEPTIONS})
+                 COMMAND ${TEST_EXECUTABLE}
+                     --gtest_filter=${FULL_GTEST_NAME}
+                     --gtest_catch_exceptions=${CATCH_EXCEPTIONS}
+                     $<$<BOOL:${NetworkTestArg}>:--bootstrap_file> $<$<BOOL:${NetworkTestArg}>:${NetworkTestArg}>)
       endif()
       if("${GTEST_NAME}" MATCHES "^FUNC_" OR "${GTEST_NAME}" MATCHES "^DISABLED_FUNC_")
         set_property(TEST ${FULL_GTEST_NAME} PROPERTY LABELS ${CamelCaseProjectName} Functional)

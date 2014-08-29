@@ -49,10 +49,15 @@ endif()
 project(maidsafe)
 if(CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES} ReleaseNoInline CACHE INTERNAL "" FORCE)
-elseif(NOT CMAKE_BUILD_TYPE)
-  message(STATUS "No build type given.  Setting CMAKE_BUILD_TYPE to Debug.")
-  set(CMAKE_BUILD_TYPE Debug)
+else() 
+  if(NOT CMAKE_BUILD_TYPE)
+    message(STATUS "No build type given.  Setting and caching CMAKE_BUILD_TYPE to Debug.")
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Type of build; options are: Debug, Release, RelWithDebInfo, or MinSizeRel." FORCE)
+  else()
+    message(STATUS "Build type set to ${CMAKE_BUILD_TYPE}")
+  endif()
 endif()
+
 
 include(CTest)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # works for Unix MakeFiles (also ninja)
@@ -140,6 +145,7 @@ include(maidsafe_find_python)
 include(maidsafe_find_git)
 include(maidsafe_find_openmp)
 
+
 if(APPLE)
   option(HAVE_LIBC++ "If ON, '-stdlib=libc++' is added to the compile and link flags" ON)
 else()
@@ -159,10 +165,28 @@ option(USE_JUST_THREADS "If ON, try to find and use the just::thread library (Wi
 include(standard_flags)
 
 
+# Prepare CTestCustom.cmake
+if(MaidsafeTesting)
+  set(CTestCustomFile "${CMAKE_BINARY_DIR}/CTestCustom.cmake")
+  file(WRITE ${CTestCustomFile} "")
+  ms_add_coverage_exclude(\\\\.pb\\\\.)
+  ms_add_coverage_exclude(tests/)
+  ms_add_coverage_exclude(boost/)
+  ms_add_coverage_exclude(src/third_party_libs/)
+  ms_add_coverage_exclude(GeneratedProtoFiles/)
+  ms_add_coverage_exclude(main\\\\.cc)
+endif()
+
+
+if(BOOTSTRAP)
+  message(STATUS "BOOTSTRAP set as '${BOOTSTRAP}'.")
+else()
+  message(STATUS "BOOTSTRAP not set.")
+endif()
+
+
+# Add third party libs and each sub-module
 add_subdirectory(src/third_party_libs)
-
-
-# Add each sub-module
 foreach(SubModule ${SubModules})
   add_subdirectory(src/${SubModule})
 endforeach()
@@ -170,29 +194,20 @@ include(exports)
 
 message("${HR}")
 
-if(UNIX)
-  if(COVERAGE)
-    message(STATUS "Coverage ON")
-  else()
-    message(STATUS "Coverage OFF.  To enable, re-run CMake with -DCOVERAGE=ON")
-  endif()
+
+# Tidy CTestCustom.cmake and apply pre- and post-test commands
+if(MaidsafeTesting)
+  file(STRINGS ${CTestCustomFile} CTestCustomContents)
+  list(REMOVE_DUPLICATES CTestCustomContents)
+  list(SORT CTestCustomContents)
+  string(REPLACE ";" "\n" CTestCustomContents "${CTestCustomContents}")
+  file(WRITE ${CTestCustomFile} "${CTestCustomContents}\n")
 endif()
 
-message(STATUS "To include all GTests,                   cmake . -DMAIDSAFE_TEST_TYPE=ALL")
-message(STATUS "To include only behavioural GTests,      cmake . -DMAIDSAFE_TEST_TYPE=BEH")
-message(STATUS "To include only functional GTests,       cmake . -DMAIDSAFE_TEST_TYPE=FUNC")
-message("${HR}")
-
-
-# Tidy CTestCustom.cmake
-file(STRINGS ${CMAKE_BINARY_DIR}/CTestCustom.cmake CTestCustomContents)
-list(REMOVE_DUPLICATES CTestCustomContents)
-list(SORT CTestCustomContents)
-string(REPLACE ";" "\n" CTestCustomContents "${CTestCustomContents}")
-file(WRITE ${CMAKE_BINARY_DIR}/CTestCustom.cmake "${CTestCustomContents}\n")
 
 ms_cleanup_temp_dir()
 ms_rename_outdated_built_exes()
+message(STATUS "To see values of cached CMake variables, run 'cmake . -N -LH'")
 
 
 unset(MAKECOMMAND CACHE)
@@ -217,8 +232,4 @@ if(MSVC OR XCODE)
 endif()
 
 
-# Package
-if(${PACKAGE_BUILD})
-  include(package)
-  include(CPack)
-endif()
+include(package)

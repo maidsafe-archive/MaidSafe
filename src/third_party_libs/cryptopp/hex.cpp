@@ -6,8 +6,9 @@
 
 #include "hex.h"
 #include <atomic>
-#include <thread>
+#include <memory>
 #include <mutex>
+#include <thread>
 
 NAMESPACE_BEGIN(CryptoPP)
 
@@ -33,15 +34,15 @@ void HexDecoder::IsolatedInitialize(const NameValuePairs &parameters)
 #ifdef __GNUC__
 const int *HexDecoder::GetDefaultDecodingLookupArray()
 {
-static volatile bool s_initialized = false;
-static int s_array[256];
+  static volatile bool s_initialized = false;
+  static int s_array[256];
 
-if (!s_initialized)
-{
-InitializeDecodingLookupArray(s_array, s_vecUpper, 16, true);
-s_initialized = true;
-}
-return s_array;
+  if (!s_initialized)
+  {
+    InitializeDecodingLookupArray(s_array, s_vecUpper, 16, true);
+    s_initialized = true;
+  }
+  return s_array;
 }
 #else
 const int *HexDecoder::GetDefaultDecodingLookupArray()
@@ -50,9 +51,15 @@ const int *HexDecoder::GetDefaultDecodingLookupArray()
   static std::atomic<bool> s_initialized(false);
   static int s_array[256];
 
-  std::call_once(s_initialized_flag, [] {
+  auto deleter([&](char* c) {
+    delete c;
+    s_initialized.store(true);
+  });
+
+  std::call_once(s_initialized_flag, [&] {
+    // This unique_ptr guarantees that 's_initialized == true' on exiting the call_once lambda.
+    const std::unique_ptr<char, decltype(deleter)> scoped_setter(new char, deleter);
     InitializeDecodingLookupArray(s_array, s_vecUpper, 16, true);
-    s_initialized = true;
   });
 
   while (!s_initialized)

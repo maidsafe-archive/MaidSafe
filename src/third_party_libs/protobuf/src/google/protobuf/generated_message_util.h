@@ -41,15 +41,8 @@
 #include <string>
 
 #include <google/protobuf/stubs/common.h>
-
-
+#include <google/protobuf/stubs/once.h>
 namespace google {
-namespace protobuf {
-  namespace io {
-    class CodedInputStream;      // coded_stream.h
-  }
-}
-
 namespace protobuf {
 namespace internal {
 
@@ -60,20 +53,32 @@ namespace internal {
 // For internal use in the pb.cc files, deprecation warnings are suppressed
 // there.
 #undef DEPRECATED_PROTOBUF_FIELD
-#if !defined(INTERNAL_SUPPRESS_PROTOBUF_FIELD_DEPRECATION)
-#  define PROTOBUF_DEPRECATED GOOGLE_ATTRIBUTE_DEPRECATED
-#else
-#  define PROTOBUF_DEPRECATED
-#endif
+#define PROTOBUF_DEPRECATED
 
 
 // Constants for special floating point values.
-double Infinity();
-double NaN();
+LIBPROTOBUF_EXPORT double Infinity();
+LIBPROTOBUF_EXPORT double NaN();
 
-// Constant used for empty default strings.
-extern const ::std::string kEmptyString;
+// Default empty string object. Don't use the pointer directly. Instead, call
+// GetEmptyString() to get the reference.
+LIBPROTOBUF_EXPORT extern const ::std::string* empty_string_;
+LIBPROTOBUF_EXPORT extern ProtobufOnceType empty_string_once_init_;
 
+LIBPROTOBUF_EXPORT void InitEmptyString();
+
+LIBPROTOBUF_EXPORT inline const ::std::string& GetEmptyString() {
+  GoogleOnceInit(&empty_string_once_init_, &InitEmptyString);
+  return *empty_string_;
+}
+
+// Defined in generated_message_reflection.cc -- not actually part of the lite
+// library.
+//
+// TODO(jasonh): The various callers get this declaration from a variety of
+// places: probably in most cases repeated_field.h. Clean these up so they all
+// get the declaration from this file.
+LIBPROTOBUF_EXPORT int StringSpaceUsedExcludingSelf(const string& str);
 
 }  // namespace internal
 }  // namespace protobuf

@@ -70,10 +70,15 @@ function(ms_check_compiler)
   # in the compiler.  We cache the output of running the compiler with '--version' and check
   # on each subsequent configure that the output is identical.  Note, with MSVC the command
   # fails ('--version' is an unrecognised arg), but still outputs the comiler version.
+  #
+  # This check (but not the minimum version check) can be skipped by setting the variable
+  # IGNORE_COMPILER_VERSION_CHANGE to ON, but we strongly discourage doing this.  It is arguably
+  # useful if you want to upgrade your compiler version on a very frequent basis (e.g. updating and
+  # building Clang from source daily).
   execute_process(COMMAND ${CMAKE_CXX_COMPILER} --version
                   OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
   string(REPLACE "\n" ";" CombinedOutput "${OutputVar}${ErrorVar}")
-  if(CheckCompilerVersion)
+  if(CheckCompilerVersion AND NOT IGNORE_COMPILER_VERSION_CHANGE)
     if(NOT "${CheckCompilerVersion}" STREQUAL "${CombinedOutput}")
       set(Msg "\n\nThe C++ compiler \"${CMAKE_CXX_COMPILER}\" has changed since the previous run of CMake.")
       set(Msg "${Msg}  This requires a clean build folder, so either delete all contents from this")
@@ -123,8 +128,71 @@ macro(ms_glob_dir BaseName Dir SourceGroupName)
 endmacro()
 
 
+# Checks that the given file includes an appropriate license block at the top.
+function(check_license_block File)
+  set(MaidSafeCopyrightBlock
+      ""
+      "    This MaidSafe Software is licensed to you under (1) the MaidSafe.net Commercial License,"
+      "    version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which"
+      "    licence you accepted on initial access to the Software (the \"Licences\")."
+      ""
+      "    By contributing code to the MaidSafe Software, or to this project generally, you agree to be"
+      "    bound by the terms of the MaidSafe Contributor Agreement, version 1.0, found in the root"
+      "    directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also"
+      "    available at: http://www.maidsafe.net/licenses"
+      ""
+      "    Unless required by applicable law or agreed to in writing, the MaidSafe Software distributed"
+      "    under the GPL Licence is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS"
+      "    OF ANY KIND, either express or implied."
+      ""
+      "    See the Licences for the specific language governing permissions and limitations relating to"
+      "    use of the MaidSafe Software.                                                                 */")
+  if("${PROJECT_NAME}" STREQUAL "api" OR
+     "${PROJECT_NAME}" STREQUAL "common" OR
+     "${PROJECT_NAME}" STREQUAL "drive" OR
+     "${PROJECT_NAME}" STREQUAL "encrypt" OR
+     "${PROJECT_NAME}" STREQUAL "nfs" OR
+     "${PROJECT_NAME}" STREQUAL "passport" OR
+     "${PROJECT_NAME}" STREQUAL "routing" OR
+     "${PROJECT_NAME}" STREQUAL "rudp" OR
+     "${PROJECT_NAME}" STREQUAL "vault" OR
+     "${PROJECT_NAME}" STREQUAL "vault_manager")
+    if(EXISTS "${File}")
+      file(STRINGS ${File} CopyrightBlock LIMIT_COUNT 17)
+    endif()
+    list(LENGTH CopyrightBlock CopyrightBlockLength)
+    unset(Found)
+    unset(ExcludeFromCheck)
+    if(${CopyrightBlockLength} GREATER 0)
+      list(GET CopyrightBlock 0 FirstLine)
+      list(REMOVE_AT CopyrightBlock 0)
+      if("${FirstLine}" STREQUAL "// NoCheck")
+        set(ExcludeFromCheck ON)
+      else()
+        string(REGEX MATCH "^/\\*  Copyright 20[01][0-9] MaidSafe.net limited$" Found "${FirstLine}")
+      endif()
+    endif()
+    if(NOT ${CopyrightBlockLength} EQUAL 17 OR NOT Found OR NOT "${CopyrightBlock}" STREQUAL "${MaidSafeCopyrightBlock}")
+      string(REPLACE "${PROJECT_SOURCE_DIR}/" "" RelativePath "${File}")
+      string(REGEX MATCH "\\.pb\\.(h|cc)$" IsProtobuf "${File}")
+      string(REGEX MATCH "\\.meta$" IsMeta "${File}")
+      if(NOT IsProtobuf AND NOT IsMeta AND EXISTS "${File}" AND NOT ExcludeFromCheck)
+        set(Msg "\nThe copyright block at the top of \"${RelativePath}\" is missing or incorrect.\n")
+        set(Msg "${Msg}If this is a MaidSafe file, please add the correct copyright block.\n")
+        set(Msg "${Msg}If this isn't a MaidSafe file, please add '// NoCheck' as the first line ")
+        set(Msg "${Msg}in this file to avoid it being checked.\n\n")
+        message(AUTHOR_WARNING "${Msg}")
+      endif()
+    endif()
+  endif()
+endfunction()
+
+
 # Adds a static library with CMake Target name of "${Lib}".
 function(ms_add_static_library Lib)
+  foreach(File ${ARGN})
+    check_license_block(${File})
+  endforeach()
   string(REGEX MATCH "^maidsafe_[a-z]" Found "${Lib}")
   string(TOLOWER ${Lib} LibLowerCase)
   if(NOT Found OR NOT "${Lib}" STREQUAL "${LibLowerCase}")
@@ -146,6 +214,9 @@ endfunction()
 # camel-case name of the exe.  (e.g. the exe 'test_common', will have APPLICATION_NAME=TestCommon
 # unless 'test_commonName' is set, in which case it will have APPLICATION_NAME=${test_commonName})
 function(ms_add_executable Exe FolderName)
+  foreach(File ${ARGN})
+    check_license_block(${File})
+  endforeach()
   set(AllExesForCurrentProject ${AllExesForCurrentProject} ${Exe} PARENT_SCOPE)
   add_executable(${Exe} ${ARGN})
   if(${Exe}Name)
@@ -201,6 +272,54 @@ function(ms_add_style_test)
 endfunction()
 
 
+# Adds a target which includes all public headers for project in two different translation units.
+# The test is simply to build the target successfully.  To exclude platform-specific files, add
+# their relative paths (as they'd appear inside a #include statement) to a variable 'Exclusions'.
+function(ms_add_test_for_multiple_definition_errors)
+  file(GLOB_RECURSE ApiFiles RELATIVE "${PROJECT_SOURCE_DIR}/include" "${PROJECT_SOURCE_DIR}/include/maidsafe/${PROJECT_NAME}/*.h")
+  if(Exclusions)
+    list(REMOVE_ITEM ApiFiles ${Exclusions})
+  endif()
+  set(HeaderIncludingAllApiFiles "${CMAKE_CURRENT_BINARY_DIR}/all_apis.h")
+  set(Contents "// NoCheck\n// This file is auto-generated by CMake ('ms_add_test_for_multiple_definition_errors' function in\n// utils.cmake)\n")
+  foreach(ApiFile ${ApiFiles})
+    set(Contents "${Contents}#include \"${ApiFile}\"\n")
+  endforeach()
+  file(WRITE "${HeaderIncludingAllApiFiles}.copy" "${Contents}")
+  configure_file("${HeaderIncludingAllApiFiles}.copy" "${HeaderIncludingAllApiFiles}" COPYONLY)
+
+  set(Contents "// NoCheck\n#include \"all_apis.h\"")
+  configure_file("${CMAKE_SOURCE_DIR}/cmake_modules/generic_contents.in" "${CMAKE_CURRENT_BINARY_DIR}/translation_unit_one.cc")
+
+  set(Contents "// NoCheck\n#include \"all_apis.h\"\nint main() { return 0; }")
+  configure_file("${CMAKE_SOURCE_DIR}/cmake_modules/generic_contents.in" "${CMAKE_CURRENT_BINARY_DIR}/translation_unit_two.cc")
+
+  string(REGEX MATCH "test_[a-z_]+" MainTestExe "${AllExesForCurrentProject}")
+  get_target_property(Folder ${MainTestExe} FOLDER)
+  string(REPLACE "MaidSafe/Executables/" "" Folder "${Folder}")
+
+  set(ExeName test_${PROJECT_NAME}_multiple_definitions)
+  ms_add_executable(${ExeName} "${Folder}"
+                    "${HeaderIncludingAllApiFiles};${CMAKE_CURRENT_BINARY_DIR}/translation_unit_one.cc;${CMAKE_CURRENT_BINARY_DIR}/translation_unit_two.cc")
+  target_include_directories(${ExeName} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/src)
+
+  # Link all libs for that project not excluded from ALL_BUILD to pull in their flags and public include paths
+  unset(LinkLibs)
+  foreach(Lib ${AllStaticLibsForCurrentProject})
+    get_target_property(IsExcludedFromAll ${Lib} EXCLUDE_FROM_ALL)
+    if(NOT IsExcludedFromAll)
+      list(APPEND LinkLibs ${Lib})
+    endif()
+  endforeach()
+  target_link_libraries(${ExeName} ${LinkLibs})
+  set(AllExesForCurrentProject ${AllExesForCurrentProject} PARENT_SCOPE)
+
+  set(ThisTestName ${CamelCaseProjectName}MultipleDefinitionsCheck)
+  add_test(NAME ${ThisTestName} COMMAND ${ExeName})
+  set_property(TEST ${ThisTestName} PROPERTY LABELS ${CamelCaseProjectName} MultipleDefinitions)
+endfunction()
+
+
 # Adds two targets to the current project; AllXXX and ExperXXX where XXX is the project name.
 function(ms_add_project_experimental)
   add_custom_target(All${CamelCaseProjectName} DEPENDS ${AllExesForCurrentProject})
@@ -215,23 +334,27 @@ function(ms_add_project_experimental)
 endfunction()
 
 
+# Adds the style test, multiple definitions test, and Exper target
+function(ms_add_default_tests)
+  ms_add_style_test()
+  ms_add_test_for_multiple_definition_errors()
+  ms_add_project_experimental()
+endfunction()
+
+
 function(ms_test_summary_output)
   list(LENGTH ALL_GTESTS GtestCount)
-  list(LENGTH AllCatchTests AllCatchTestsCount)
-  list(LENGTH HiddenCatchTests HiddenCatchTestsCount)
   message(STATUS "${MAIDSAFE_TEST_TYPE_MESSAGE}${GtestCount} Google test(s) enabled.")
-  message(STATUS "${AllCatchTestsCount} Catch test(s) enabled.")
-  message(STATUS "${HiddenCatchTestsCount} Catch test(s) disabled.")
 endfunction()
 
 
 function(ms_add_coverage_exclude Regex)
-  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_COVERAGE_EXCLUDE \${CTEST_CUSTOM_COVERAGE_EXCLUDE} \"${Regex}\")\n")
+  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "set(CTEST_CUSTOM_COVERAGE_EXCLUDE \${CTEST_CUSTOM_COVERAGE_EXCLUDE} \"${Regex}\")\n")
 endfunction()
 
 
 function(ms_add_memcheck_ignore TestName)
-  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_MEMCHECK_IGNORE \${CTEST_CUSTOM_MEMCHECK_IGNORE} \"${TestName}\")\n")
+  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "set(CTEST_CUSTOM_MEMCHECK_IGNORE \${CTEST_CUSTOM_MEMCHECK_IGNORE} \"${TestName}\")\n")
 endfunction()
 
 
@@ -278,7 +401,9 @@ function(ms_rename_outdated_built_exes)
 
   foreach(BuiltExe ${BuiltExes})
     get_filename_component(BuiltExeNameWe ${BuiltExe} NAME_WE)
-    if(NOT TARGET ${BuiltExeNameWe} AND NOT ${BuiltExeNameWe} MATCHES "CompilerIdC[X]?[X]?$")
+    # Accommodate debug postfix in SFML examples
+    string(REGEX REPLACE "-d$" "" BuiltExeNameWithoutDebugPostfix "${BuiltExeNameWe}")
+    if(NOT TARGET ${BuiltExeNameWe} AND NOT TARGET ${BuiltExeNameWithoutDebugPostfix} AND NOT ${BuiltExeNameWe} MATCHES "CompilerIdC[X]?[X]?$")
       string(REGEX MATCH "build_qt" InQtBuildDir ${BuiltExe})
       string(REGEX MATCH "src/boost" InBoostBuildDir ${BuiltExe})
       string(REGEX MATCH "old/" AlreadyArchived ${BuiltExe})
@@ -329,8 +454,6 @@ function(ms_cleanup_temp_dir)
   # Find MaidSafe-specific directories
   ms_get_temp_dir()
   file(GLOB MaidSafeTempDirs ${TempDir}/MaidSafe_Test*)
-  file(GLOB SigmoidTempDirs ${TempDir}/Sigmoid_Test*)
-  list(APPEND MaidSafeTempDirs ${SigmoidTempDirs})
   list(LENGTH MaidSafeTempDirs DirCount)
   if(NOT DirCount)
     return()

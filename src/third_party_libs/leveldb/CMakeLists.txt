@@ -1,13 +1,22 @@
 #==================================================================================================#
 #                                                                                                  #
-#  Copyright (c) 2012 MaidSafe.net limited                                                         #
+#  Copyright 2012 MaidSafe.net limited                                                             #
 #                                                                                                  #
-#  The following source code is property of MaidSafe.net limited and is not meant for external     #
-#  use.  The use of this code is governed by the license file licence.txt found in the root        #
-#  directory of this project and also on www.maidsafe.net.                                         #
+#  This MaidSafe Software is licensed to you under (1) the MaidSafe.net Commercial License,        #
+#  version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which    #
+#  licence you accepted on initial access to the Software (the "Licences").                        #
 #                                                                                                  #
-#  You are not free to copy, amend or otherwise use this source code without the explicit written  #
-#  permission of the board of directors of MaidSafe.net.                                           #
+#  By contributing code to the MaidSafe Software, or to this project generally, you agree to be    #
+#  bound by the terms of the MaidSafe Contributor Agreement, version 1.0, found in the root        #
+#  directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also available   #
+#  at: http://www.maidsafe.net/licenses                                                            #
+#                                                                                                  #
+#  Unless required by applicable law or agreed to in writing, the MaidSafe Software distributed    #
+#  under the GPL Licence is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF   #
+#  ANY KIND, either express or implied.                                                            #
+#                                                                                                  #
+#  See the Licences for the specific language governing permissions and limitations relating to    #
+#  use of the MaidSafe Software.                                                                   #
 #                                                                                                  #
 #==================================================================================================#
 
@@ -200,14 +209,15 @@ if(MaidsafeTesting)
     PRIVATE
       $<$<CXX_COMPILER_ID:MSVC>:/wd4996>
       $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-w>)
-  set_target_properties(leveldb-testharness PROPERTIES FOLDER "MaidSafe/Executables/Tests/Common/LevelDB Tests")
+  set_target_properties(leveldb-testharness PROPERTIES FOLDER "Third Party/LevelDB")
 
   macro(leveldb_tests)
     foreach(value ${ARGN})
       get_filename_component(exe_name ${value} NAME_WE)
       get_filename_component(Extension ${value} EXT)
       string(REGEX REPLACE "(.*)_test" "test_leveldb_\\1" exe_name ${exe_name})
-      ms_add_executable(${exe_name} "Tests/Common/LevelDB Tests" ${value})
+      ms_add_executable(${exe_name} "." ${value})
+      set_target_properties(${exe_name} PROPERTIES FOLDER "Third Party/LevelDB")
       ms_target_include_system_dirs(${exe_name} PRIVATE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include)
       target_link_libraries(${exe_name} leveldb-testharness)
       target_compile_options(${exe_name}
@@ -242,7 +252,8 @@ if(MaidsafeTesting)
     leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/c_test.c)
   endif()
 
-  ms_add_executable(leveldb_benchmark "Tools/Common" ${CMAKE_CURRENT_SOURCE_DIR}/db/db_bench.cc)
+  ms_add_executable(leveldb_benchmark "." ${CMAKE_CURRENT_SOURCE_DIR}/db/db_bench.cc)
+  set_target_properties(leveldb_benchmark PROPERTIES FOLDER "Third Party/LevelDB")
   ms_target_include_system_dirs(leveldb_benchmark PRIVATE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/include)
   target_link_libraries(leveldb_benchmark leveldb-testharness)
   target_compile_options(leveldb_benchmark
@@ -267,11 +278,11 @@ target_compile_definitions(leveldb PRIVATE $<$<BOOL:${MSVC}>:UNICODE _UNICODE BO
 #==================================================================================================#
 # Package                                                                                          #
 #==================================================================================================#
-set(EXPORT_NAME leveldb)
-install(TARGETS leveldb EXPORT ${EXPORT_NAME} ARCHIVE DESTINATION lib)
+# install(TARGETS leveldb COMPONENT Development CONFIGURATIONS Debug Release ARCHIVE DESTINATION lib)
+# install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ COMPONENT Development DESTINATION include/maidsafe/third_party_libs)
 
-install(FILES ${HEADER_FILES_LEVELDB_INCLUDE_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/include/leveldb)
-install(FILES ${HEADER_FILES_LEVELDB_DB_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/db)
-install(FILES ${HEADER_FILES_LEVELDB_PORT_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/port)
-install(FILES ${HEADER_FILES_LEVELDB_TABLE_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/table)
-install(FILES ${HEADER_FILES_LEVELDB_UTIL_DIR} DESTINATION include/maidsafe/third_party_libs/leveldb/util)
+if(MaidsafeTesting)
+  install(TARGETS leveldb-testharness ${AllLeveldbTests} COMPONENT Tests CONFIGURATIONS Debug RUNTIME DESTINATION bin/debug ARCHIVE DESTINATION lib)
+  install(TARGETS leveldb-testharness ${AllLeveldbTests} COMPONENT Tests CONFIGURATIONS Release RUNTIME DESTINATION bin ARCHIVE DESTINATION lib)
+  install(TARGETS leveldb_benchmark COMPONENT Benchmarkss CONFIGURATIONS Release RUNTIME DESTINATION bin)
+endif()

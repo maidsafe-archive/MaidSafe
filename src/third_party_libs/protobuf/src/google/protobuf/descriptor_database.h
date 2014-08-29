@@ -41,6 +41,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <google/protobuf/stubs/common.h>
 #include <google/protobuf/descriptor.h>
 
 namespace google {
@@ -95,8 +96,8 @@ class LIBPROTOBUF_EXPORT DescriptorDatabase {
   //
   // This method has a default implementation that always returns
   // false.
-  virtual bool FindAllExtensionNumbers(const string& /*extendee_type*/,
-                                       vector<int>* /*output*/) {
+  virtual bool FindAllExtensionNumbers(const string& /* extendee_type */,
+                                       vector<int>* /* output */) {
     return false;
   }
 
@@ -243,6 +244,7 @@ class LIBPROTOBUF_EXPORT SimpleDescriptorDatabase : public DescriptorDatabase {
 
     // Returns true if and only if all characters in the name are alphanumerics,
     // underscores, or periods.
+
     bool ValidateSymbolName(const string& name);
   };
 
