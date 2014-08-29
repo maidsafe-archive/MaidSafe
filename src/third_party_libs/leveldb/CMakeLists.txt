@@ -228,20 +228,15 @@ if(MaidsafeTesting)
     endforeach()
   endmacro()
 
-  leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/autocompact_test.cc
-                ${CMAKE_CURRENT_SOURCE_DIR}/db/corruption_test.cc
-                ${CMAKE_CURRENT_SOURCE_DIR}/db/db_test.cc
-                ${CMAKE_CURRENT_SOURCE_DIR}/db/dbformat_test.cc
+  leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/dbformat_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/filename_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/log_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/skiplist_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/version_edit_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/version_set_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/write_batch_test.cc
-                ${CMAKE_CURRENT_SOURCE_DIR}/issues/issue178_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/issues/issue200_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/table/filter_block_test.cc
-                ${CMAKE_CURRENT_SOURCE_DIR}/table/table_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/util/arena_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/util/bloom_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/util/cache_test.cc
