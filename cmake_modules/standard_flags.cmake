@@ -38,6 +38,15 @@ if(MSVC)
   set_property(TARGET ${AllExesForCurrentProject} APPEND_STRING PROPERTY LINK_FLAGS_RELEASENOINLINE " /LTCG /INCREMENTAL:NO /DEBUG /WX ")
 endif()
 
+
+find_program(CCACHE "ccache")
+if (CCACHE)
+    message( STATUS "Using ccache")
+  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache) 
+endif(CCACHE)
+
+
 # Avoid including anything else twice
 if(STANDARD_FLAGS_INCLUDED)
   return()
@@ -75,7 +84,7 @@ if(UNIX AND NOT HAVE_LIBC++)
 endif()
 mark_as_advanced(CMAKE_CXX_FLAGS_DEBUGLIBSTDCXX)
 
-if(NO_UBSAN)
+if(NO_UBSAN OR CMAKE_BUILD_TYPE STREQUAL "Release")
   message(STATUS "Undefined behaviour sanitiser is disabled.")
 elseif(HAVE_UNDEFINED_BEHAVIOR_SANITIZER AND HAVE_FLAG_SANITIZE_BLACKLIST)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_UBSAN}")
@@ -99,6 +108,10 @@ if(UNIX)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lpthread ${OpenMP_CXX_FLAGS}")
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LibCXX} ${LibCXXAbi}")
+  if(CCACHE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Qunused-arguments")
+  endif(CCACHE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -fcolor-diagnostics")
   elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     # Workaround for GCC bug https://bugs.launchpad.net/ubuntu/+source/gcc-defaults/+bug/1228201
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed")

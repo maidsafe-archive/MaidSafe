@@ -22,5 +22,5 @@
 
 
 set(ApplicationVersionMajor 0)
-set(ApplicationVersionMinor 8)
-set(ApplicationVersionPatch 100)
+set(ApplicationVersionMinor 1)
+set(ApplicationVersionPatch 171)
