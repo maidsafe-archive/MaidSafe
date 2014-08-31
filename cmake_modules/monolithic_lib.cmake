@@ -83,7 +83,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL Release OR CMAKE_CONFIGURATION_TYPES)
 endif()
 
 foreach(Lib ${DevLibDepends})
-  if(MSVC)
+  if(MSVC AND POLICY CMP0026)
     cmake_policy(PUSH)
     cmake_policy(SET CMP0026 OLD)
     foreach(Config ${CMAKE_CONFIGURATION_TYPES})
