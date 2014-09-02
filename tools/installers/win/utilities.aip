@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<DOCUMENT Type="Advanced Installer" CreateVersion="11.4.1" version="11.4.1" Modules="professional" RootPath="." Language="en" Id="{7B2943CE-58AF-4B3F-910E-30C0DBA61742}">
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
+    <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
+    <ROW Property="ALLUSERS" Value="1"/>
+    <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install the [|ProductName]." ValueLocId="*"/>
+    <ROW Property="ARPHELPLINK" Value="https://github.com/orgs/maidsafe/dashboard"/>
+    <ROW Property="ARPPRODUCTICON" Value="icon.exe" Type="8"/>
+    <ROW Property="ARPURLINFOABOUT" Value="http://maidsafe.net/"/>
+    <ROW Property="Manufacturer" Value="MaidSafe"/>
+    <ROW Property="ProductCode" Value="1033:{61D3397C-C353-45BD-85CF-4025224A87F7} " Type="16"/>
+    <ROW Property="ProductLanguage" Value="1033"/>
+    <ROW Property="ProductName" Value="MaidSafe [|UDInstallerType] Package"/>
+    <ROW Property="ProductVersion" Value="1.0.0" Type="32"/>
+    <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
+    <ROW Property="UDInstallerType" Value="UDInstallerType"/>
+    <ROW Property="UDPackageType" Value="UDPackageType"/>
+    <ROW Property="UDSystemVersion" Value="UDSystemVersion"/>
+    <ROW Property="UpgradeCode" Value="{A4261417-FF15-4BB6-A078-285A23018DA3}"/>
+    <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
+    <ROW Property="WindowsType9XDisplay" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT" MultiBuildValue="DefaultBuild:Windows 9x/ME/NT/2000/XP/Vista/Windows 7/Windows 8 x86/Windows 8.1 x86" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT40" MultiBuildValue="DefaultBuild:Windows NT 4.0" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT40Display" MultiBuildValue="DefaultBuild:Windows NT 4.0" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT64" MultiBuildValue="DefaultBuild:Windows XP x64, Windows XP x64 Service Pack 1, Windows XP x64 Service Pack 2, Windows Server 2003 x64, Windows Server 2003 x64 Service Pack 1, Windows Server 2003 x64 Service Pack 2, Windows Vista x64, Windows Vista x64 Service Pack 1, Windows Vista x64 Service Pack 2, Windows Server 2008 x64" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT64Display" MultiBuildValue="DefaultBuild:Windows XP x64, Windows Server 2003 x64, Windows Vista x64, Windows Server 2008 x64" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNTDisplay" MultiBuildValue="DefaultBuild:Windows 9x/ME/NT/2000/XP/Vista/Windows 7/Windows 8 x86/Windows 8.1 x86" ValueLocId="-"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
+    <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
+    <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
+    <ROW Component="CA62D813A4E74FA2AAE86A7D7B7B1493" ComponentId="{62D7A135-A05D-4282-B04A-A36D2E8D18A4}" Directory_="APPDIR" Attributes="260" KeyPath="CA62D813A4E74FA2AAE86A7D7B7B1493" Options="2"/>
+    <ROW Component="ProductInformation" ComponentId="{ACA8B6C1-C82B-4EF6-A047-EB7325F04B37}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
+    <ROW Component="test_api.exe" ComponentId="{43FDEB76-E7CF-4BF8-BB3A-AD92588876D5}" Directory_="APPDIR" Attributes="256" KeyPath="test_api.exe"/>
+    <ROW Component="test_common.exe" ComponentId="{1227466A-1D05-4060-B8C0-4CE979BE0121}" Directory_="APPDIR" Attributes="256" KeyPath="test_common.exe"/>
+    <ROW Component="test_drive.exe" ComponentId="{37E8FDCE-5D29-464E-9EAB-FBAB9968A342}" Directory_="APPDIR" Attributes="256" KeyPath="test_drive.exe"/>
+    <ROW Component="test_encrypt.exe" ComponentId="{30B12FF4-C0F6-4927-B31F-5D2CE8178AB5}" Directory_="APPDIR" Attributes="256" KeyPath="test_encrypt.exe"/>
+    <ROW Component="test_filesystem.exe" ComponentId="{8FB34AF1-3098-41B2-818E-899A778239EC}" Directory_="APPDIR" Attributes="256" KeyPath="test_filesystem.exe"/>
+    <ROW Component="test_nfs.exe" ComponentId="{BD2D8FC7-1BBF-4AA1-B3A3-C90595D8E08E}" Directory_="APPDIR" Attributes="256" KeyPath="test_nfs.exe"/>
+    <ROW Component="test_passport.exe" ComponentId="{2A560261-B27E-40B0-A53E-2516A4A9D60F}" Directory_="APPDIR" Attributes="256" KeyPath="test_passport.exe"/>
+    <ROW Component="test_routing.exe" ComponentId="{F284E821-EF90-4D92-85C2-DAD60F04EF20}" Directory_="APPDIR" Attributes="256" KeyPath="test_routing.exe"/>
+    <ROW Component="test_routing_api.exe" ComponentId="{E1944D09-B4DF-4D72-B839-7F686112EE47}" Directory_="APPDIR" Attributes="256" KeyPath="test_routing_api.exe"/>
+    <ROW Component="test_rudp.exe" ComponentId="{5DC33277-D89C-4681-B8E7-63185149A971}" Directory_="APPDIR" Attributes="256" KeyPath="test_rudp.exe"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
+    <ROW Feature="CA62D813A4E74FA2AAE86A7D7B7B1493" Title="Visual C++ Redistributable for Visual Studio 2013 x64" Description="Visual C++ Redistributable for Visual Studio 2013 x64" Display="3" Level="1" Attributes="0" Components="CA62D813A4E74FA2AAE86A7D7B7B1493"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="ProductInformation test_api.exe test_common.exe test_drive.exe test_encrypt.exe test_filesystem.exe test_nfs.exe test_passport.exe test_routing.exe test_routing_api.exe test_rudp.exe"/>
+    <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
+    <ROW File="test_api.exe" Component_="test_api.exe" FileName="test_api.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_api.exe" SelfReg="false" NextFile="test_common.exe" DigSign="true"/>
+    <ROW File="test_common.exe" Component_="test_common.exe" FileName="TEST_C~1.EXE|test_common.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_common.exe" SelfReg="false" NextFile="test_drive.exe" DigSign="true"/>
+    <ROW File="test_drive.exe" Component_="test_drive.exe" FileName="TEST_D~1.EXE|test_drive.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_drive.exe" SelfReg="false" NextFile="test_encrypt.exe" DigSign="true"/>
+    <ROW File="test_encrypt.exe" Component_="test_encrypt.exe" FileName="TEST_E~1.EXE|test_encrypt.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_encrypt.exe" SelfReg="false" NextFile="test_filesystem.exe" DigSign="true"/>
+    <ROW File="test_filesystem.exe" Component_="test_filesystem.exe" FileName="TEST_F~1.EXE|test_filesystem.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_filesystem.exe" SelfReg="false" NextFile="test_nfs.exe" DigSign="true"/>
+    <ROW File="test_nfs.exe" Component_="test_nfs.exe" FileName="test_nfs.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_nfs.exe" SelfReg="false" NextFile="test_passport.exe" DigSign="true"/>
+    <ROW File="test_passport.exe" Component_="test_passport.exe" FileName="TEST_P~1.EXE|test_passport.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_passport.exe" SelfReg="false" NextFile="test_routing.exe" DigSign="true"/>
+    <ROW File="test_routing.exe" Component_="test_routing.exe" FileName="TEST_R~1.EXE|test_routing.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_routing.exe" SelfReg="false" NextFile="test_routing_api.exe" DigSign="true"/>
+    <ROW File="test_routing_api.exe" Component_="test_routing_api.exe" FileName="TEST_R~2.EXE|test_routing_api.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_routing_api.exe" SelfReg="false" NextFile="test_rudp.exe" DigSign="true"/>
+    <ROW File="test_rudp.exe" Component_="test_rudp.exe" FileName="TEST_R~3.EXE|test_rudp.exe" Attributes="0" SourcePath="&lt;SuperProjectBinaryFolder&gt;Release\test_rudp.exe" SelfReg="false" DigSign="true"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.AppPathsComponent">
+    <ROW Name="SuperProjectBinaryFolder" Path="..\..\..\build" Type="2" Content="0"/>
+    <ROW Name="SuperProjectSourceFolder" Path="..\..\.." Type="2" Content="0"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
+    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFileName="MaidSafe[|UDInstallerType]-[|UDSystemVersion]-[|UDPackageType]-v[|ProductVersion]" Languages="en" InstallationType="4" UseLargeSchema="true" MsiPackageType="x64"/>
+    <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
+    <ROW Path="&lt;AI_DICTS&gt;ui.ail"/>
+    <ROW Path="&lt;AI_DICTS&gt;ui_en.ail"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.FragmentComponent">
+    <ROW Fragment="CommonUI.aip" Path="&lt;AI_FRAGS&gt;CommonUI.aip"/>
+    <ROW Fragment="FolderDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\FolderDlg.aip"/>
+    <ROW Fragment="MaintenanceTypeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\MaintenanceTypeDlg.aip"/>
+    <ROW Fragment="MaintenanceWelcomeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\MaintenanceWelcomeDlg.aip"/>
+    <ROW Fragment="SequenceDialogs.aip" Path="&lt;AI_THEMES&gt;classic\fragments\SequenceDialogs.aip"/>
+    <ROW Fragment="Sequences.aip" Path="&lt;AI_FRAGS&gt;Sequences.aip"/>
+    <ROW Fragment="StaticUIStrings.aip" Path="&lt;AI_FRAGS&gt;StaticUIStrings.aip"/>
+    <ROW Fragment="UI.aip" Path="&lt;AI_THEMES&gt;classic\fragments\UI.aip"/>
+    <ROW Fragment="Validation.aip" Path="&lt;AI_FRAGS&gt;Validation.aip"/>
+    <ROW Fragment="VerifyRemoveDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRemoveDlg.aip"/>
+    <ROW Fragment="VerifyRepairDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRepairDlg.aip"/>
+    <ROW Fragment="WelcomeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\WelcomeDlg.aip"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiActionTextComponent">
+    <ROW Action="AI_DownloadPrereq" Description="Downloading prerequisite software" Template="Downloading [1]{[2] completed}" DescriptionLocId="ActionText.Description.AI_DownloadPrereq" TemplateLocId="ActionText.Template.AI_DownloadPrereq"/>
+    <ROW Action="AI_ExtractPrereq" Description="Extracting prerequisite software" Template="Extracting [1]{[2] completed}" DescriptionLocId="ActionText.Description.AI_ExtractPrereq" TemplateLocId="ActionText.Template.AI_ExtractPrereq"/>
+    <ROW Action="AI_InstallPostPrerequisite" Description="Installing prerequisite software" Template="Installing [1]{[2] completed}" DescriptionLocId="ActionText.Description.AI_InstallPrerequisite" TemplateLocId="ActionText.Template.AI_InstallPrerequisite"/>
+    <ROW Action="AI_InstallPrerequisite" Description="Installing prerequisite software" Template="Installing [1]{[2] completed}" DescriptionLocId="ActionText.Description.AI_InstallPrerequisite" TemplateLocId="ActionText.Template.AI_InstallPrerequisite"/>
+    <ROW Action="AI_VerifyPrereq" Description="Verifying prerequisites" Template="[1] was not installed correctly." DescriptionLocId="ActionText.Description.AI_VerifyPrereq" TemplateLocId="ActionText.Template.AI_VerifyPrereq"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiBinaryComponent">
+    <ROW Name="Prereq.dll" SourcePath="&lt;AI_CUSTACTS&gt;Prereq.dll"/>
+    <ROW Name="aicustact.dll" SourcePath="&lt;AI_CUSTACTS&gt;aicustact.dll"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
+    <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="WelcomeDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="MaintenanceWelcomeDlg" Control_="Next" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="99"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_MAINT" Ordering="198"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="202"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="197"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="CustomizeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_MAINT" Ordering="101"/>
+    <ROW Dialog_="CustomizeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="ChangeButton" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="501"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceWelcomeDlg" Condition="AI_MAINT" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="RemoveButton" Event="NewDialog" Argument="VerifyRemoveDlg" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="601"/>
+    <ROW Dialog_="VerifyRemoveDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="RepairButton" Event="NewDialog" Argument="VerifyRepairDlg" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="601"/>
+    <ROW Dialog_="VerifyRepairDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="1"/>
+    <ROW Dialog_="VerifyRepairDlg" Control_="Repair" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="399" Options="1"/>
+    <ROW Dialog_="VerifyRemoveDlg" Control_="Remove" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="299" Options="1"/>
+    <ROW Dialog_="PatchWelcomeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_PATCH" Ordering="201"/>
+    <ROW Dialog_="ResumeDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_RESUME" Ordering="299"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="203"/>
+    <ROW Dialog_="ExitDialog" Control_="Finish" Event="DoAction" Argument="AI_CleanPrereq" Condition="1" Ordering="301"/>
+    <ROW Dialog_="FatalError" Control_="Finish" Event="DoAction" Argument="AI_CleanPrereq" Condition="1" Ordering="102"/>
+    <ROW Dialog_="UserExit" Control_="Finish" Event="DoAction" Argument="AI_CleanPrereq" Condition="1" Ordering="101"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
+    <ROW Action="AI_AppSearchEx" Type="1" Source="Prereq.dll" Target="DoAppSearchEx"/>
+    <ROW Action="AI_CleanPrereq" Type="65" Source="Prereq.dll" Target="CleanPrereq" WithoutSeq="true"/>
+    <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
+    <ROW Action="AI_DownloadPrereq" Type="1" Source="Prereq.dll" Target="DownloadPrereq"/>
+    <ROW Action="AI_DpiContentScale" Type="1" Source="aicustact.dll" Target="DpiContentScale"/>
+    <ROW Action="AI_ExtractPrereq" Type="65" Source="Prereq.dll" Target="ExtractPrereq"/>
+    <ROW Action="AI_InstallModeCheck" Type="1" Source="aicustact.dll" Target="UpdateInstallMode" WithoutSeq="true"/>
+    <ROW Action="AI_InstallPostPrerequisite" Type="1" Source="Prereq.dll" Target="InstallPostPrereq"/>
+    <ROW Action="AI_InstallPrerequisite" Type="65" Source="Prereq.dll" Target="InstallPrereq"/>
+    <ROW Action="AI_PREPARE_UPGRADE" Type="65" Source="aicustact.dll" Target="PrepareUpgrade"/>
+    <ROW Action="AI_RESTORE_LOCATION" Type="65" Source="aicustact.dll" Target="RestoreLocation"/>
+    <ROW Action="AI_ResolveKnownFolders" Type="1" Source="aicustact.dll" Target="AI_ResolveKnownFolders"/>
+    <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
+    <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
+    <ROW Action="AI_VerifyPrereq" Type="1" Source="Prereq.dll" Target="VerifyPrereq"/>
+    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[ProgramFiles64Folder][Manufacturer]\Utilities"/>
+    <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
+    <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
+    <ROW Name="icon.exe" SourcePath="&lt;SuperProjectSourceFolder&gt;tools\installers\win\icon.ico" Index="0"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
+    <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
+    <ROW Action="AI_STORE_LOCATION" Condition="(Not Installed) OR REINSTALL" Sequence="1501"/>
+    <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1399"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="51"/>
+    <ROW Action="AI_VerifyPrereq" Sequence="1101"/>
+    <ROW Action="AI_AppSearchEx" Sequence="101"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
+    <ROW Action="ExecuteAction" Sequence="1298" SeqType="0" MsiKey="ExecuteAction"/>
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
+    <ROW Action="AI_DpiContentScale" Sequence="51"/>
+    <ROW Action="AI_DownloadPrereq" Sequence="1295"/>
+    <ROW Action="AI_ExtractPrereq" Sequence="1296"/>
+    <ROW Action="AI_InstallPrerequisite" Sequence="1297"/>
+    <ROW Action="AI_InstallPostPrerequisite" Sequence="1299"/>
+    <ROW Action="AI_AppSearchEx" Sequence="101"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
+    <ROW Condition="( Version9X OR ( NOT VersionNT64 ) OR ( VersionNT64 AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &gt;= 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &lt;&gt; 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &lt;&gt; 2)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &gt;= 1)))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &lt;&gt; 1)))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &lt;&gt; 2)))) AND ((VersionNT64 &lt;&gt; 600) OR (((VersionNT64 = 600) AND (ServicePackLevel &gt;= 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 600) OR (((VersionNT64 = 600) AND (ServicePackLevel &lt;&gt; 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 600) OR (((VersionNT64 = 600) AND (ServicePackLevel &lt;&gt; 2)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 600) OR ((VersionNT64 = 600) AND (MsiNTProductType = 1))) ) )" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT64Display]" DescriptionLocId="AI.LaunchCondition.NoSpecificNT64" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="( Version9X OR VersionNT64 )" Description="[ProductName] cannot be installed on [WindowsTypeNTDisplay]" DescriptionLocId="AI.LaunchCondition.NoNT" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="(VersionNT &lt;&gt; 400)" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT40Display]" DescriptionLocId="AI.LaunchCondition.NoNT40" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="VersionNT" Description="[ProductName] cannot be installed on [WindowsType9XDisplay]" DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="DefaultBuild"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiRegsComponent">
+    <ROW Registry="CA62D813A4E74FA2AAE86A7D7B7B1493" Root="-1" Key="Software\Caphyon\Advanced Installer\Prereqs\[ProductCode]\[ProductVersion]" Name="CA62D813A4E74FA2AAE86A7D7B7B1493" Value="1" Component_="CA62D813A4E74FA2AAE86A7D7B7B1493"/>
+    <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>
+    <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
+    <ATTRIBUTE name="UsedTheme" value="classic"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiUpgradeComponent">
+    <ROW UpgradeCode="[|UpgradeCode]" VersionMin="0.0.1" VersionMax="[|ProductVersion]" Attributes="257" ActionProperty="OLDPRODUCTS"/>
+    <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.PreReqComponent">
+    <ROW PrereqKey="CA62D813A4E74FA2AAE86A7D7B7B1493" DisplayName="Visual C++ Redistributable for Visual Studio 2013 x64" VersionMin="12.0" SetupFileUrl="http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe" Location="1" ExactSize="7188536" WinNTVersions="Windows 9x/ME/NT/2000/XP/Vista/Windows 7/Windows 8 x86/Windows 8.1 x86" Operator="1" NoUiComLine="/q /norestart" Options="x" MD5="c7187ac06dafd0628587f86742945601" TargetName="Visual C++ Redistributable for Visual Studio 2013?vcredist_x64.exe" Type="1" Feature="CA62D813A4E74FA2AAE86A7D7B7B1493"/>
+    <ATTRIBUTE name="PrereqsOrder" value="CA62D813A4E74FA2AAE86A7D7B7B1493"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.PreReqSearchComponent">
+    <ROW SearchKey="CA62D813A4E74FA2AAE86A7D7B7B1493Version" Prereq="CA62D813A4E74FA2AAE86A7D7B7B1493" SearchType="2" SearchString="HKLM\SOFTWARE\Microsoft\DevDiv\VC\Servicing\12.0\RuntimeMinimum\Version" VerMin="12.0.21005" Order="1" Property="PreReqSearch_CA62D813A4E74FA2AAE86A7D7B7B1493"/>
+  </COMPONENT>
+</DOCUMENT>

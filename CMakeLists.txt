@@ -58,7 +58,6 @@ else()
   endif()
 endif()
 
-
 include(CTest)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # works for Unix MakeFiles (also ninja)
 set(BUILD_SHARED_LIBS OFF)
@@ -232,4 +231,5 @@ if(MSVC OR XCODE)
 endif()
 
 
-include(package)
+include(add_installers)
+# include(package)

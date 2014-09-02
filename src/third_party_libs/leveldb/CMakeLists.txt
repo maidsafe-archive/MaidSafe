@@ -229,8 +229,6 @@ if(MaidsafeTesting)
   endmacro()
 
   leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/autocompact_test.cc
-                ${CMAKE_CURRENT_SOURCE_DIR}/db/corruption_test.cc
-                ${CMAKE_CURRENT_SOURCE_DIR}/db/db_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/dbformat_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/filename_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/db/log_test.cc
@@ -248,9 +246,13 @@ if(MaidsafeTesting)
                 ${CMAKE_CURRENT_SOURCE_DIR}/util/coding_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/util/crc32c_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/util/env_test.cc)
-  if(NOT MSVC)
-    leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/c_test.c)
+  if(UNIX AND NOT APPLE)
+     leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/corruption_test.cc)
   endif()
+  if(NOT MSVC)  
+    leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/c_test.c
+                  ${CMAKE_CURRENT_SOURCE_DIR}/db/db_test.cc)
+  ENDIF()
 
   ms_add_executable(leveldb_benchmark "." ${CMAKE_CURRENT_SOURCE_DIR}/db/db_bench.cc)
   set_target_properties(leveldb_benchmark PROPERTIES FOLDER "Third Party/LevelDB")
