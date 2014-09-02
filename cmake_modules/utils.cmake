@@ -214,11 +214,30 @@ endfunction()
 # camel-case name of the exe.  (e.g. the exe 'test_common', will have APPLICATION_NAME=TestCommon
 # unless 'test_commonName' is set, in which case it will have APPLICATION_NAME=${test_commonName})
 function(ms_add_executable Exe FolderName)
-  foreach(File ${ARGN})
+  # Remove duplicates from the list and compare the newly cleaned list with the
+  # passed list. If the lengths are different, then send an error with information
+  # about the duplication.
+  #
+  # Duplication can cause problems with ms_add_gtest as it is not duplicate-safe.
+  # However, we should not silently ignore it, it may be a symptom of typos
+  # by the developer.
+  set(Files ${ARGN})
+  set(DeduplicatedFiles ${Files})
+  list(REMOVE_DUPLICATES DeduplicatedFiles)
+  list(LENGTH DeduplicatedFiles DeduplicatedFilesLength)
+  list(LENGTH Files FilesLength)
+  if(NOT DeduplicatedFilesLength EQUAL FilesLength)
+    set(FormattedDuplicateFilesList)
+    foreach(File ${Files})
+      set(FormattedDuplicateFilesList "${FormattedDuplicateFilesList}\n${File}")
+    endforeach()
+    message(SEND_ERROR "Duplicate source files found:${FormattedDuplicateFilesList}")
+  endif()
+  foreach(File ${Files})
     check_license_block(${File})
   endforeach()
   set(AllExesForCurrentProject ${AllExesForCurrentProject} ${Exe} PARENT_SCOPE)
-  add_executable(${Exe} ${ARGN})
+  add_executable(${Exe} ${Files})
   if(${Exe}Name)
     set(AppName ${${Exe}Name})
   else()
