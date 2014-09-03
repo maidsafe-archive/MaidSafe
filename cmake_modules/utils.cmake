@@ -188,8 +188,33 @@ function(check_license_block File)
 endfunction()
 
 
+# As suggested in pull request https://github.com/maidsafe/MaidSafe/pull/140 from
+# https://github.com/smspillaz, issue a developer warning if duplicate files are added to a target.
+# While this *shouldn't* cause any significant problems, it could be a symptom of a bug in the
+# current CMakeLists.txt
+function(ms_check_for_duplicates TargetName)
+  set(Files ${ARGN})
+  list(LENGTH Files FilesLength)
+  string(LENGTH "${CMAKE_CURRENT_SOURCE_DIR}/" SourceDirLength)
+  while(FilesLength)
+    list(GET Files 0 File)
+    math(EXPR ExpectedLength ${FilesLength}-1)
+    list(REMOVE_ITEM Files ${File})
+    list(LENGTH Files FilesLength)
+    if(NOT FilesLength EQUAL ExpectedLength)
+      string(SUBSTRING "${File}" ${SourceDirLength} -1 File)
+      set(DuplicateFiles "${DuplicateFiles}\n\t${File}")
+    endif()
+  endwhile()
+  if(DuplicateFiles)
+    message(AUTHOR_WARNING "\n\nDuplicate source files found for target '${TargetName}':${DuplicateFiles}\n\n")
+  endif()
+endfunction()
+
+
 # Adds a static library with CMake Target name of "${Lib}".
 function(ms_add_static_library Lib)
+  ms_check_for_duplicates(${Lib} ${ARGN})
   foreach(File ${ARGN})
     check_license_block(${File})
   endforeach()
@@ -214,9 +239,11 @@ endfunction()
 # camel-case name of the exe.  (e.g. the exe 'test_common', will have APPLICATION_NAME=TestCommon
 # unless 'test_commonName' is set, in which case it will have APPLICATION_NAME=${test_commonName})
 function(ms_add_executable Exe FolderName)
+  ms_check_for_duplicates(${Exe} ${ARGN})
   foreach(File ${ARGN})
     check_license_block(${File})
   endforeach()
+
   set(AllExesForCurrentProject ${AllExesForCurrentProject} ${Exe} PARENT_SCOPE)
   add_executable(${Exe} ${ARGN})
   if(${Exe}Name)
