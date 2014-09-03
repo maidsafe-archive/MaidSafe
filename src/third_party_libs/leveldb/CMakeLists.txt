@@ -246,9 +246,9 @@ if(MaidsafeTesting)
                 ${CMAKE_CURRENT_SOURCE_DIR}/util/coding_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/util/crc32c_test.cc
                 ${CMAKE_CURRENT_SOURCE_DIR}/util/env_test.cc)
-  if(UNIX AND NOT APPLE)
-     leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/corruption_test.cc)
-  endif()
+#   if(UNIX AND NOT APPLE)
+#     leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/corruption_test.cc)
+#   endif()
   if(NOT MSVC)  
     leveldb_tests(${CMAKE_CURRENT_SOURCE_DIR}/db/c_test.c
                   ${CMAKE_CURRENT_SOURCE_DIR}/db/db_test.cc)
