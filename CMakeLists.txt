@@ -27,7 +27,12 @@ else()
   cmake_minimum_required(VERSION 2.8.12.1 FATAL_ERROR)
 endif()
 
-if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
+# Prefer out-of-source builds (i.e. the build root being outside of the source root), but allow for
+# building in a folder immediately inside the source root (not one of the existing source folders).
+if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}" OR
+   "${CMAKE_BINARY_DIR}" MATCHES "${CMAKE_SOURCE_DIR}/cmake_modules" OR
+   "${CMAKE_BINARY_DIR}" MATCHES "${CMAKE_SOURCE_DIR}/src" OR
+   "${CMAKE_BINARY_DIR}" MATCHES "${CMAKE_SOURCE_DIR}/tools")
   set(Msg "\n\nThis project doesn't allow \"in-source builds\".\nYou must run CMake from a folder outside")
   set(Msg "${Msg} the root of this project.\nFor more details about configuring the project see\n")
   if(WIN32)
