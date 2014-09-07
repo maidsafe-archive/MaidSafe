@@ -147,7 +147,7 @@ endif()
 # gtest_build_tests option to ON.  You can do it by running ccmake
 # or specifying the -Dgtest_build_tests=ON flag when running cmake.
 
-if (gtest_build_tests)
+if(gtest_build_tests)
   # This must be set in the root directory for the tests to be run by
   # 'make test' or ctest.
   enable_testing()
@@ -162,8 +162,8 @@ if(UNIX AND NOT APPLE)
   cxx_test(gtest_repeat_test gtest)
   cxx_test(gtest_stress_test gtest)
   cxx_test(gtest_throw_on_failure_ex_test gtest)
-ENDIF()
-  cxx_test(gtest-filepath_test "gtest_main;gtest_no_maidsafe_log")
+endif()
+  # cxx_test(gtest-filepath_test "gtest_main;gtest_no_maidsafe_log")
   cxx_test(gtest-linked_ptr_test "gtest_main;gtest_no_maidsafe_log")
   cxx_test(gtest-listener_test "gtest_main;gtest_no_maidsafe_log")
   cxx_test(gtest_main_unittest "gtest_main;gtest_no_maidsafe_log")
