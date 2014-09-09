@@ -55,7 +55,7 @@ set(DevLibDepends maidsafe_common
                   sqlite)
 list(REMOVE_ITEM DevLibDepends BoostContext BoostCoroutine BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)
 
-set(SourceFile ${CMAKE_CURRENT_BINARY_DIR}_depends.cc)
+set(SourceFile ${CMAKE_CURRENT_BINARY_DIR}/GeneratedSources/monolithic.cc)
 set(CMAKE_DEBUG_POSTFIX -d)
 add_library(maidsafe STATIC ${SourceFile})
 set_target_properties(maidsafe PROPERTIES FOLDER "MaidSafe/Monolithic")
