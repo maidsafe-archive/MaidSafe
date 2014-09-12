@@ -142,7 +142,6 @@ include(find_stack_protector_strong)
 include(maidsafe_find_just_thread)
 include(maidsafe_find_python)
 include(maidsafe_find_git)
-include(maidsafe_find_openmp)
 
 
 if(APPLE)
