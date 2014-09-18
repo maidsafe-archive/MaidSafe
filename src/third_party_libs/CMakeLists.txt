@@ -38,7 +38,6 @@ endif()
 
 
 include(add_boost)
-add_subdirectory(cereal)
 add_subdirectory(cryptopp)
 set(gmock_build_tests ON CACHE BOOL "Build all of Google Mock's own tests.")
 set(gtest_build_tests ON CACHE BOOL "Build gtest's sample programs.")
