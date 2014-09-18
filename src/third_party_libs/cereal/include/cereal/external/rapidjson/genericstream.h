@@ -34,11 +34,18 @@ namespace rapidjson {
         return (int)is_->tellg();
       }
 
+#ifdef _MSC_VER
+# pragma warning(push)
+# pragma warning(disable : 4127)
+#endif
       // Not implemented
       void Put(Ch)       { RAPIDJSON_ASSERT(false); }
       void Flush()       { RAPIDJSON_ASSERT(false); }
       Ch* PutBegin()     { RAPIDJSON_ASSERT(false); return 0; }
       size_t PutEnd(Ch*) { RAPIDJSON_ASSERT(false); return 0; }
+#ifdef _MSC_VER
+# pragma warning(pop)
+#endif
 
       std::istream * is_;
   };
@@ -74,11 +81,18 @@ namespace rapidjson {
         return (int)os_.tellp();
       }
 
+#ifdef _MSC_VER
+# pragma warning(push)
+# pragma warning(disable : 4127)
+#endif
       // Not implemented
       char Peek() const    { RAPIDJSON_ASSERT(false); }
       char Take()          { RAPIDJSON_ASSERT(false); }
       char* PutBegin()     { RAPIDJSON_ASSERT(false); return 0; }
       size_t PutEnd(char*) { RAPIDJSON_ASSERT(false); return 0; }
+#ifdef _MSC_VER
+# pragma warning(pop)
+#endif
 
     private:
       std::ostream& os_;
