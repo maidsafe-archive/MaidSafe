@@ -21,11 +21,7 @@
 #==================================================================================================#
 
 
-if(APPLE)
-  cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
-else()
-  cmake_minimum_required(VERSION 2.8.12.1 FATAL_ERROR)
-endif()
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   set(Msg "\n\nThis project doesn't allow \"in-source builds\".\nYou must run CMake from a folder outside")

@@ -21,7 +21,7 @@
 #==================================================================================================#
 
 
-cmake_minimum_required(VERSION 2.8.12.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 project(Cryptopp)
 
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_setup.cmake)

@@ -41,13 +41,6 @@ set(SfmlSHA1 c27bdffdc4bedb5f6a20db03ceca715d42aa5752)
 
 
 set(SfmlSuccess TRUE)
-
-# Disable SFML on Windows with CMAKE < 3.0.0 as the tar extract fails
-if(WIN32 AND NOT "${CMAKE_VERSION}" VERSION_GREATER 2.8.12.2)
-  set(SfmlSuccess FALSE)
-  message(WARNING "\nCMake version 3.0.0 or higher is required for SFML on Windows.\n")
-endif()
-
 if("${HAVE_LIBC++}")
   set(SfmlSuccess FALSE)
   message(WARNING "\nSFML not available with libc++.\n")
