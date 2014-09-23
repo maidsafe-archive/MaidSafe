@@ -43,7 +43,7 @@ find_program(CCACHE "ccache")
 if (CCACHE)
     message( STATUS "Using ccache")
   SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache) 
+  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE)
 
 
@@ -106,7 +106,7 @@ endif()
 
 if(UNIX)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lpthread")
-  if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+  if(${CMAKE_CXX_COMPILER_ID} MATCHES "^(Apple)?Clang$")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LibCXX} ${LibCXXAbi}")
   if(CCACHE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Qunused-arguments")
