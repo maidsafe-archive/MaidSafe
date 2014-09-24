@@ -374,7 +374,7 @@ endfunction()
 
 
 function(ms_test_summary_output)
-  list(LENGTH ALL_GTESTS GtestCount)
+  list(LENGTH AllGtests GtestCount)
   message(STATUS "${MAIDSAFE_TEST_TYPE_MESSAGE}${GtestCount} Google test(s) enabled.")
 endfunction()
 

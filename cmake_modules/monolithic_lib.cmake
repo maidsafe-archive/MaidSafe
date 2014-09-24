@@ -118,8 +118,9 @@ if(OSLIBS)
  target_link_libraries(maidsafe PUBLIC ${OSLIBS})
 endif()
 
-add_custom_command(OUTPUT  ${SourceFile}
-    COMMAND ${CMAKE_COMMAND} -E touch ${SourceFile}
+add_custom_command(OUTPUT ${SourceFile}
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/GeneratedSources"
+    COMMAND ${CMAKE_COMMAND} -E touch "${SourceFile}"
     DEPENDS ${DevLibDepends})
 
 if(MSVC)
