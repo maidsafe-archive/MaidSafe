@@ -104,6 +104,13 @@ function(ms_add_gtests TestTarget)
 endfunction()
 
 
+if(NOT DEFINED SkipReturnCodeValue)
+  message(AUTHOR_WARNING "\n'SkipReturnCodeValue' is undefined, but should be set to a value between 0 and 255 inclusive.\n")
+elseif(NOT (SkipReturnCodeValue GREATER -1 AND SkipReturnCodeValue LESS 256))
+  message(AUTHOR_WARNING "\n'SkipReturnCodeValue' is set to ${SkipReturnCodeValue}, but should be between 0 and 255 inclusive.\n")
+endif()
+
+
 macro(get_network_test_arg)
   if(BOOTSTRAP)
     string(TOLOWER "${BOOTSTRAP}" Bootstrap)
@@ -378,5 +385,6 @@ function(add_maidsafe_test GtestFixtureName GtestName FullGtestName TestExecutab
     message(AUTHOR_WARNING "${GtestName} should be named \"BEH_...\" or \"FUNC_...\" (with an optional \"DISABLED_\" prepended).")
     message("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
   endif()
+  set_property(TEST ${FullGtestName} PROPERTY SKIP_RETURN_CODE ${SkipReturnCodeValue})
   set(AllGtests ${AllGtests} ${FullGtestName} PARENT_SCOPE)
 endfunction()

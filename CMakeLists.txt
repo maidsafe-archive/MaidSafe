@@ -159,8 +159,12 @@ option(USE_JUST_THREADS "If ON, try to find and use the just::thread library (Wi
 include(standard_flags)
 
 
-# Prepare CTestCustom.cmake
 if(MaidsafeTesting)
+  # 'SkipReturnCodeValue' is used as the exit code when running disabled GTests.
+  # It must be between 0 and 255 inclusive.  (Bash returns 127 if a command is not found).
+  set(SkipReturnCodeValue 127)
+
+  # Prepare CTestCustom.cmake
   set(CTestCustomFile "${CMAKE_BINARY_DIR}/CTestCustom.cmake")
   file(WRITE ${CTestCustomFile} "")
   ms_add_coverage_exclude(\\\\.pb\\\\.)
