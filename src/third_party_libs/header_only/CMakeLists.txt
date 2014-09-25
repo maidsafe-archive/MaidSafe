@@ -21,16 +21,20 @@
 #==================================================================================================#
 
 
-project(cereal)
+file(GLOB Libs RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/*")
+foreach(Lib ${Libs})
+  if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${Lib}")
+    add_library(${Lib} INTERFACE)
+    target_include_directories(${Lib} INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}")
 
-add_library(cereal INTERFACE)
-target_include_directories(cereal INTERFACE ${PROJECT_SOURCE_DIR}/include)
-
-# For multi-config IDEs, add custom target to make cereal's files visible
-if(CMAKE_CONFIGURATION_TYPES)
-  file(GLOB_RECURSE GlobbedSrcs "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
-  add_custom_target(CerealFiles
-      COMMENT "NOTE: This is not a target which can be built; just a list of headers for Cereal."
-      SOURCES ${GlobbedSrcs})
-  set_target_properties(CerealFiles PROPERTIES FOLDER "Third Party/Cereal")
-endif()
+    # For multi-config IDEs, add custom target to make library's files visible
+    if(CMAKE_CONFIGURATION_TYPES)
+      file(GLOB_RECURSE GlobbedSrcs "${CMAKE_CURRENT_SOURCE_DIR}/${Lib}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/${Lib}/*.hpp")
+      ms_underscores_to_camel_case(${Lib} CamelCaseLib)
+      add_custom_target(${CamelCaseLib}Files
+          COMMENT "NOTE: This is not a target which can be built; just a list of headers for ${CamelCaseLib}."
+          SOURCES ${GlobbedSrcs})
+      set_target_properties(${CamelCaseLib}Files PROPERTIES FOLDER "Third Party/${CamelCaseLib}")
+    endif()
+  endif()
+endforeach()
