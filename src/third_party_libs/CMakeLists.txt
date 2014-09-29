@@ -21,8 +21,8 @@
 #==================================================================================================#
 
 
-ms_get_branch(Branch)
-set(Msg "Configuring third party projects on ${Branch} branch of super-project")
+ms_get_branch_and_commit(Branch Commit)
+set(Msg "Configuring third party projects on ${Branch} of super-project at commit ${Commit}")
 string(REGEX REPLACE . "-" Underscore ${Msg})
 message("${HR}\n${Msg}\n${Underscore}")
 

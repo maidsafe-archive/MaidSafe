@@ -137,7 +137,7 @@ target_compile_options(cryptopp
     >
     $<$<BOOL:${UNIX}>:-std=c++11 ${LibCXX}>
   PRIVATE
-    $<$<BOOL:${MSVC}>:/EHsc /W3 /wd4068>
+    $<$<BOOL:${MSVC}>:/EHsc /W3 /wd4068 /wd4996>
     $<$<BOOL:${UNIX}>:
         -w -fPIC -O2
         $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-tautological-compare -Wno-c++11-narrowing>
