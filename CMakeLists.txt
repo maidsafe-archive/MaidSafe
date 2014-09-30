@@ -21,7 +21,7 @@
 #==================================================================================================#
 
 
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   set(Msg "\n\nThis project doesn't allow \"in-source builds\".\nYou must run CMake from a folder outside")
@@ -185,6 +185,9 @@ endif()
 
 # Add third party libs and each sub-module
 add_subdirectory(src/third_party_libs)
+if(${CMAKE_VERSION} VERSION_LESS 3.0)
+  include_directories("${CMAKE_SOURCE_DIR}/src/third_party_libs/header_only")
+endif()
 foreach(SubModule ${SubModules})
   add_subdirectory(src/${SubModule})
 endforeach()

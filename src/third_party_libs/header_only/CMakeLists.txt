@@ -24,8 +24,10 @@
 file(GLOB Libs RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/*")
 foreach(Lib ${Libs})
   if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${Lib}")
-    add_library(${Lib} INTERFACE)
-    target_include_directories(${Lib} INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}")
+    if(NOT ${CMAKE_VERSION} VERSION_LESS 3.0)
+      add_library(${Lib} INTERFACE)
+      target_include_directories(${Lib} INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
 
     # For multi-config IDEs, add custom target to make library's files visible
     if(CMAKE_CONFIGURATION_TYPES)
