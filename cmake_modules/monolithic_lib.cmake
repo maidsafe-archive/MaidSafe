@@ -77,6 +77,7 @@ file(APPEND "${HeadersHelper}" "file(COPY \${CryptoHeaders} DESTINATION \"${Mono
 file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/cereal\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/sqlite/include/sqlite3.h\" DESTINATION \"${MonolithicIncludes}/sqlite\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/leveldb/include/\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${MaidsafeGeneratedSourcesDir}/nfs/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
 
 if("${CMAKE_BUILD_TYPE}" STREQUAL Release OR CMAKE_CONFIGURATION_TYPES)
   add_custom_command(TARGET maidsafe POST_BUILD COMMAND ${CMAKE_COMMAND} -DMonolithicIncludes="${MonolithicIncludes}" -P "${HeadersHelper}")

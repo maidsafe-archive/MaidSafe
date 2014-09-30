@@ -66,7 +66,7 @@ set(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION ON)
 set(EXPORT_COMPILE_COMMANDS ON)
 set(HR "================================================================================")
 
-
+set(MaidsafeGeneratedSourcesDir ${CMAKE_BINARY_DIR}/GeneratedSources)
 set(SubModules
       common
       passport
