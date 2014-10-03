@@ -37,7 +37,7 @@ public:
 	Writer(Stream& stream, int precision = 20, Allocator* allocator = 0, size_t levelDepth = kDefaultLevelDepth) :
 		stream_(stream), level_stack_(allocator, levelDepth * sizeof(Level))
   {
-#if _MSC_VER
+#ifdef _MSC_VER
     (void) sprintf_s(double_format, sizeof(double_format), "%%0.%dg", precision);
     (void) sprintf_s( long_double_format, sizeof( long_double_format ), "%%0.%dLg", precision );
 #else
@@ -211,8 +211,8 @@ protected:
 	//! \todo Optimization with custom double-to-string converter.
 	void WriteDouble(double d) {
 		char buffer[100];
-#if _MSC_VER
-		int ret = sprintf_s(buffer, sizeof(buffer), double_format, d);
+#ifdef _MSC_VER
+    int ret = sprintf_s(buffer, sizeof(buffer), double_format, d);
 #else
 		int ret = snprintf(buffer, sizeof(buffer), double_format, d);
 #endif
@@ -223,8 +223,8 @@ protected:
 
 	void WriteLongDouble(long double d) {
 		char buffer[256];
-#if _MSC_VER
-		int ret = sprintf_s(buffer, sizeof(buffer), long_double_format, d);
+#ifdef _MSC_VER
+    int ret = sprintf_s(buffer, sizeof(buffer), long_double_format, d);
 #else
 		int ret = snprintf(buffer, sizeof(buffer), long_double_format, d);
 #endif
@@ -235,8 +235,8 @@ protected:
 
 	void WriteLongLong(long long d) {
 		char buffer[256];
-#if _MSC_VER
-		int ret = sprintf_s(buffer, sizeof(buffer), "%lld", d);
+#ifdef _MSC_VER
+    int ret = sprintf_s(buffer, sizeof(buffer), "%lld", d);
 #else
 		int ret = snprintf(buffer, sizeof(buffer), "%lld", d);
 #endif
@@ -247,8 +247,8 @@ protected:
 
 	void WriteULongLong(unsigned long long d) {
 		char buffer[256];
-#if _MSC_VER
-		int ret = sprintf_s(buffer, sizeof(buffer), "%llu", d);
+#ifdef _MSC_VER
+    int ret = sprintf_s(buffer, sizeof(buffer), "%llu", d);
 #else
 		int ret = snprintf(buffer, sizeof(buffer), "%llu", d);
 #endif
