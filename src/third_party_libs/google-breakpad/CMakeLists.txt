@@ -36,7 +36,7 @@ if(UNIX)
 	src/common/mac/macho_id.cc
 	src/common/mac/macho_utilities.cc
 	src/common/mac/macho_walker.cc
-	src/common/mac/string_utilities.cc    
+	src/common/mac/string_utilities.cc
 )
   else()
     set(SOURCES ${SOURCES}
@@ -83,7 +83,7 @@ endif()
 add_library(breakpad STATIC ${SOURCES})
 
 if(UNIX AND NOT APPLE)
-  if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+  if(${CMAKE_CXX_COMPILER_ID} MATCHES "^(Apple)?Clang$")
     set_target_properties(breakpad PROPERTIES COMPILE_FLAGS "-fPIC -stdlib=libc++ -std=c++11")
   else()
     set_target_properties(breakpad PROPERTIES COMPILE_FLAGS "-fPIC -std=c++11")
