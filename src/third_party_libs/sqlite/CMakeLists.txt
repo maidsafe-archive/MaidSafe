@@ -32,7 +32,7 @@ target_compile_definitions(sqlite PRIVATE SQLITE_OMIT_LOAD_EXTENSION)
 if(MSVC)
   target_link_libraries(sqlite ${JustThread_LIBRARIES})
 else()
-  target_link_libraries(sqlite ${JustThread_LIBRARIES} -lpthread)
+  target_link_libraries(sqlite ${JustThread_LIBRARIES} -pthread)
 endif()
 
 set(AllStaticLibsForCurrentProject sqlite)

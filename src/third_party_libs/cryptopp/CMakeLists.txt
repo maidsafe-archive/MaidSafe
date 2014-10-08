@@ -135,7 +135,7 @@ target_compile_options(cryptopp
         $<$<CONFIG:MinSizeRel>:/MD>
         $<$<CONFIG:RelWithDebInfo>:/O2 /GL /MD /Zi>
     >
-    $<$<BOOL:${UNIX}>:-std=c++11 ${LibCXX}>
+    $<$<BOOL:${UNIX}>:-std=c++11 -pthread ${LibCXX}>
   PRIVATE
     $<$<BOOL:${MSVC}>:/EHsc /W3 /wd4068 /wd4996>
     $<$<BOOL:${UNIX}>:
