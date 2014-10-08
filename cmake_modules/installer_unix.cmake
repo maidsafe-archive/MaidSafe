@@ -66,7 +66,6 @@ elseif("${TargetType}" STREQUAL "Dev")
   file(COPY ${CryptoHeaders} DESTINATION "${InstallerDir}/opt/maidsafe/include/cryptopp")
   file(COPY "${SUPER_PROJECT_SOURCE_DIR}/src/third_party_libs/cereal" DESTINATION "${InstallerDir}/opt/maidsafe/include/cereal")
   file(COPY "${SUPER_PROJECT_SOURCE_DIR}/src/third_party_libs/sqlite/include/sqlite3.h" DESTINATION "${InstallerDir}/opt/maidsafe/include/sqlite/")
-  file(COPY "${SUPER_PROJECT_SOURCE_DIR}/src/third_party_libs/leveldb/include/" DESTINATION "${InstallerDir}/opt/maidsafe/include/")
   file(COPY ${TargetLibs} DESTINATION "${InstallerDir}/opt/maidsafe/lib/")
 
   set(Description "MaidSafe Developer Environment")
