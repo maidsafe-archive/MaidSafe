@@ -64,7 +64,7 @@ set(AllGTestTests ${AllGTestTests} PARENT_SCOPE)
 # call it again here.
 config_compiler_and_linker()  # from ${gtest_dir}/cmake/internal_utils.cmake
 
-# if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+# if(${CMAKE_CXX_COMPILER_ID} MATCHES "^(Apple)?Clang$")
 #   add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
 #   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -ldl -lcxxrt")
 # endif()
@@ -149,20 +149,20 @@ if (gmock_build_tests)
 
   ############################################################
   # C++ tests built with non-standard compiler flags.
-# 
+#
 #   cxx_library(gmock_main_no_exception "${cxx_no_exception}"
 #     "${gtest_dir}/src/gtest-all.cc" src/gmock-all.cc src/gmock_main.cc)
 #   cxx_library(gmock_main_no_rtti "${cxx_no_rtti}"
 #     "${gtest_dir}/src/gtest-all.cc" src/gmock-all.cc src/gmock_main.cc)
 #   cxx_library(gmock_main_use_own_tuple "${cxx_use_own_tuple}"
 #     "${gtest_dir}/src/gtest-all.cc" src/gmock-all.cc src/gmock_main.cc)
-# 
+#
 #   cxx_test_with_flags(gmock-more-actions_no_exception_test "${cxx_no_exception}"
 #     gmock_main_no_exception test/gmock-more-actions_test.cc)
-# 
+#
 #   cxx_test_with_flags(gmock_no_rtti_test "${cxx_no_rtti}"
 #     gmock_main_no_rtti test/gmock-spec-builders_test.cc)
-# 
+#
 #   cxx_test_with_flags(gmock_use_own_tuple_test "${cxx_use_own_tuple}"
 #     gmock_main_use_own_tuple test/gmock-spec-builders_test.cc)
   set(AllGMockTests ${AllGMockGTestTests} PARENT_SCOPE)

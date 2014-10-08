@@ -38,13 +38,13 @@ endif()
 
 
 include(add_boost)
+add_subdirectory(header_only)
 add_subdirectory(cryptopp)
 set(gmock_build_tests ON CACHE BOOL "Build all of Google Mock's own tests.")
 set(gtest_build_tests ON CACHE BOOL "Build gtest's sample programs.")
 add_subdirectory(googlemock)
 mark_as_advanced(FORCE b2Path gmock_build_tests gtest_build_samples gtest_build_tests gtest_disable_pthreads gtest_force_shared_crt)
 add_subdirectory(protobuf)
-add_subdirectory(leveldb)
 add_subdirectory(sqlite)
 
 
@@ -53,7 +53,7 @@ if(MaidsafeTesting)
   # Crypto++
   set(CamelCaseProjectName ThirdParty)
   set(AllExesForCurrentProject cryptest protobuf_lite_tests protobuf_tests ${AllSQLiteTests}
-      ${AllGMockTests} ${AllGTestTests} ${AllLeveldbTests} leveldb_benchmark)
+      ${AllGMockTests} ${AllGTestTests})
   ms_add_project_experimental()
   set(Timeout 60)
   ms_update_test_timeout(Timeout)
@@ -106,14 +106,4 @@ if(MaidsafeTesting)
     set_tests_properties(${GTestTest} PROPERTIES TIMEOUT ${Timeout} LABELS "ThirdParty;Behavioural;GTest")
   endforeach()
 
-  # LevelDB
-  foreach(LeveldbTest ${AllLeveldbTests})
-    string(REPLACE "test_leveldb_" "LevelDB " TestName ${LeveldbTest})
-    add_test(NAME "\"${TestName}\"" COMMAND ${LeveldbTest})
-    set_tests_properties("\"${TestName}\"" PROPERTIES TIMEOUT ${Timeout} LABELS "ThirdParty;Behavioural;LevelDB")
-    ms_add_memcheck_ignore("${TestName}")
-  endforeach()
-  set(Timeout 300)
-  ms_update_test_timeout(Timeout)
-  set_tests_properties("\"LevelDB autocompact\"" "\"LevelDB issue178\"" "\"LevelDB table\"" PROPERTIES TIMEOUT ${Timeout} LABELS "ThirdParty;Behavioural;LevelDB")
 endif()
