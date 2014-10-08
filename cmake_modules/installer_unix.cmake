@@ -64,7 +64,7 @@ elseif("${TargetType}" STREQUAL "Dev")
   file(COPY "${BoostSourceDir}/boost" DESTINATION "${InstallerDir}/opt/maidsafe/include/")
   file(GLOB CryptoHeaders "${SUPER_PROJECT_SOURCE_DIR}/src/third_party_libs/cryptopp/*.h")
   file(COPY ${CryptoHeaders} DESTINATION "${InstallerDir}/opt/maidsafe/include/cryptopp")
-  file(COPY "${SUPER_PROJECT_SOURCE_DIR}/src/third_party_libs/cereal" DESTINATION "${InstallerDir}/opt/maidsafe/include/cereal")
+  file(COPY "${SUPER_PROJECT_SOURCE_DIR}/src/third_party_libs/header_only/cereal" DESTINATION "${InstallerDir}/opt/maidsafe/include/cereal")
   file(COPY "${SUPER_PROJECT_SOURCE_DIR}/src/third_party_libs/sqlite/include/sqlite3.h" DESTINATION "${InstallerDir}/opt/maidsafe/include/sqlite/")
   file(COPY ${TargetLibs} DESTINATION "${InstallerDir}/opt/maidsafe/lib/")
 

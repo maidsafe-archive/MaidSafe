@@ -40,7 +40,7 @@ endif()
 # ${gtest_BINARY_DIR}.
 # Language "C" is required for find_package(Threads).
 project(gtest CXX C)
-cmake_minimum_required(VERSION 2.8.12.1)
+cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
 
 if (COMMAND set_up_hermetic_build)
   set_up_hermetic_build()
@@ -84,7 +84,7 @@ target_compile_definitions(gtest
     GTEST_USE_OWN_TUPLE=0
   PUBLIC
     USE_MAIDSAFE_LOG=1
-    $<$<AND:$<BOOL:${UNIX}>,$<CXX_COMPILER_ID:Clang>>:_FILE_OFFSET_BITS=64>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:_FILE_OFFSET_BITS=64>
 )
 target_compile_definitions(gtest_no_maidsafe_log
   INTERFACE
@@ -93,7 +93,7 @@ target_compile_definitions(gtest_no_maidsafe_log
     GTEST_USE_OWN_TUPLE=0
   PUBLIC
     USE_MAIDSAFE_LOG=0
-    $<$<AND:$<BOOL:${UNIX}>,$<CXX_COMPILER_ID:Clang>>:_FILE_OFFSET_BITS=64>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:_FILE_OFFSET_BITS=64>
 )
 
 # These next 4 commands are a workaround to avoid having to link maidsafe_common via a target_link_libraries call.

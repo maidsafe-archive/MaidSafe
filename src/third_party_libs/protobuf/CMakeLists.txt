@@ -45,7 +45,7 @@ target_compile_options(protobuf_lite
         $<$<CONFIG:MinSizeRel>:/MD>
         $<$<CONFIG:RelWithDebInfo>:/O2 /GL /MD /Zi>
     >
-    $<$<BOOL:${UNIX}>:-std=c++11 ${LibCXX}>
+    $<$<BOOL:${UNIX}>:-std=c++11 -fPIC ${LibCXX}>
   PRIVATE
     $<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4244 /wd4267 /wd4800 /wd4996>
     $<$<BOOL:${UNIX}>:-w>

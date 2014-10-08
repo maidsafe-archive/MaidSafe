@@ -21,7 +21,7 @@
 #==================================================================================================#
 
 
-cmake_minimum_required(VERSION 2.8.12.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
 project(Cryptopp)
 
 include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_setup.cmake)
@@ -120,7 +120,7 @@ include(../../../cmake_modules/standard_flags.cmake)
 
 target_compile_definitions(cryptopp
   PUBLIC
-    $<$<AND:$<BOOL:${UNIX}>,$<CXX_COMPILER_ID:Clang>>:CRYPTOPP_DISABLE_ASM CRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION>
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:CRYPTOPP_DISABLE_ASM CRYPTOPP_DISABLE_UNCAUGHT_EXCEPTION>
     $<$<AND:$<BOOL:${JUST_THREAD_DEADLOCK_CHECK}>,$<CONFIG:Debug>>:_JUST_THREAD_DEADLOCK_CHECK>
   PRIVATE
     $<$<BOOL:${MSVC}>:_WINDOWS USE_PRECOMPILED_HEADERS WIN32 _VC80_UPGRADE=0x0710>
@@ -140,7 +140,7 @@ target_compile_options(cryptopp
     $<$<BOOL:${MSVC}>:/EHsc /W3 /wd4068 /wd4996>
     $<$<BOOL:${UNIX}>:
         -w -fPIC -O2
-        $<$<CXX_COMPILER_ID:Clang>:-Wno-tautological-compare -Wno-c++11-narrowing>
+        $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-tautological-compare -Wno-c++11-narrowing>
         $<$<CXX_COMPILER_ID:GNU>:-pipe -finline-functions>
     >
 )
@@ -156,13 +156,13 @@ target_compile_options(cryptest
     $<$<BOOL:${MSVC}>:/EHsc /W3>
     $<$<BOOL:${UNIX}>:
         -w -fPIC
-        $<$<CXX_COMPILER_ID:Clang>:-Wno-tautological-compare -Wno-c++11-narrowing>
+        $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-tautological-compare -Wno-c++11-narrowing>
         $<$<CXX_COMPILER_ID:GNU>:-O2 -pipe -finline-functions>
     >
 )
 
 if(UNIX)
-  if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+  if(${CMAKE_CXX_COMPILER_ID} MATCHES "^(Apple)?Clang$")
     if(HAVE_LIBC++)
       set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LibCXX} -ldl")
     endif()
