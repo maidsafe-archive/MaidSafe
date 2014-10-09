@@ -48,7 +48,7 @@ if(Cbfs_FOUND)
   file(APPEND ${ExportFile} "set(CbfsGUIDNetwork \"${CbfsGUIDNetwork}\")\n\n")
 endif()
 
-set(AllTargets ${AllStaticLibs} local_drive drive leveldb sqlite cryptopp protobuf_lite protoc gmock gtest)
+set(AllTargets ${AllStaticLibs} local_drive drive sqlite cryptopp protobuf_lite protoc gmock gtest)
 if(NOT ${CMAKE_VERSION} VERSION_LESS 3.0)
   list(APPEND AllTargets cereal)
 endif()
