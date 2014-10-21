@@ -45,7 +45,7 @@ endif()
 project(maidsafe)
 if(CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES} ReleaseNoInline CACHE INTERNAL "" FORCE)
-else() 
+else()
   if(NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type given.  Setting and caching CMAKE_BUILD_TYPE to Debug.")
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Type of build; options are: Debug, Release, RelWithDebInfo, or MinSizeRel." FORCE)
@@ -54,6 +54,7 @@ else()
   endif()
 endif()
 
+
 include(CTest)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # works for Unix MakeFiles (also ninja)
 set(BUILD_SHARED_LIBS OFF)
@@ -61,6 +62,7 @@ set(CMAKE_ERROR_DEPRECATED ON)
 set(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION ON)
 set(EXPORT_COMPILE_COMMANDS ON)
 set(HR "================================================================================")
+
 
 set(MaidsafeGeneratedSourcesDir ${CMAKE_BINARY_DIR}/GeneratedSources)
 set(SubModules
@@ -80,6 +82,7 @@ foreach(SubModule ${SubModules})
   set(${SubModule}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/${SubModule})
 endforeach()
 
+
 # Check the submodules are initialised
 foreach(SubModule ${SubModules})
   if(NOT EXISTS "${CMAKE_SOURCE_DIR}/src/${SubModule}/.git")
@@ -92,8 +95,8 @@ endforeach()
 
 
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
-
 include(version)
+
 
 # Set Maidsafe Testing to OFF if package build defined.
 if(PACKAGE_BUILD)
@@ -234,4 +237,3 @@ endif()
 
 
 include(add_installers)
-# include(package)
