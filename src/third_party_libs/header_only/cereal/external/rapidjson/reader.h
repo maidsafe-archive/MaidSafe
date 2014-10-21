@@ -433,6 +433,10 @@ private:
   { return c < 256; }
 #endif
 
+#ifdef _MSC_VER
+# pragma warning(push)
+# pragma warning(disable : 4702)
+#endif
 	// Parse string, handling the prefix and suffix double quotes and escaping.
 	template<unsigned parseFlags, typename Stream, typename Handler>
 	void ParseString(Stream& stream, Handler& handler) {
@@ -530,6 +534,9 @@ private:
 		}
 #undef RAPIDJSON_PUT
 	}
+#ifdef _MSC_VER
+# pragma warning(pop)
+#endif
 
 	template<unsigned parseFlags, typename Stream, typename Handler>
 	void ParseNumber(Stream& stream, Handler& handler) {
