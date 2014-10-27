@@ -25,6 +25,7 @@
 #==================================================================================================#
 
 
+# Handle MSVC linker flags
 if(MSVC)
   set_property(TARGET ${AllStaticLibsForCurrentProject} APPEND_STRING PROPERTY STATIC_LIBRARY_FLAGS_RELEASE " /LTCG /WX ")
   set_property(TARGET ${AllStaticLibsForCurrentProject} APPEND_STRING PROPERTY STATIC_LIBRARY_FLAGS_DEBUG " /WX ")
@@ -39,21 +40,27 @@ if(MSVC)
 endif()
 
 
-find_program(CCACHE "ccache")
-if (CCACHE)
-    message( STATUS "Using ccache")
-  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-  SET_PROPERTY(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
-endif(CCACHE)
-
-
 # Avoid including anything else twice
-if(STANDARD_FLAGS_INCLUDED)
+if(StandardFlagsIncluded)
   return()
 else()
-  set(STANDARD_FLAGS_INCLUDED TRUE)
+  set(StandardFlagsIncluded TRUE)
 endif()
 
+
+# Handle ccache
+if(${CMAKE_CXX_COMPILER_ID} MATCHES "^(Apple)?Clang$" OR ${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
+  find_program(CcacheExe ccache)
+  if(CcacheExe)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+  else()
+    message(STATUS "ccache not found - consider using ccache to speed up recompilation.")
+  endif()
+endif()
+
+
+# Handle libc++
 if(HAVE_LIBC++)
   set(LibCXX "-stdlib=libc++")
 endif()
@@ -61,11 +68,21 @@ if(HAVE_LIBC++ABI)
   set(LibCXXAbi "-lc++abi")
 endif()
 
+
+# Add coverage flags
 if(COVERAGE)
-  set(CoverageFlags -pg -fprofile-arcs -ftest-coverage)
+  if(UNIX)
+    set(CoverageFlags -pg -fprofile-arcs -ftest-coverage)
+    string(REPLACE ";" " " Flags "${CoverageFlags}")
+    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} ${Flags}")
+    find_program(CTEST_COVERAGE_COMMAND NAMES gcov)
+  else()
+    set(CoverageFlags)
+  endif()
 else()
   set(CoverageFlags)
 endif()
+
 
 # Configure a ReleaseNoInline build type
 if(MSVC)
@@ -78,11 +95,13 @@ set(CMAKE_CXX_FLAGS_RELEASENOINLINE "${CMAKE_CXX_FLAGS_RELEASE} ${RELEASENOINLIN
 set(CMAKE_EXE_LINKER_FLAGS_RELEASENOINLINE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
 mark_as_advanced(RELEASENOINLINE_FLAGS CMAKE_C_FLAGS_RELEASENOINLINE CMAKE_CXX_FLAGS_RELEASENOINLINE CMAKE_EXE_LINKER_FLAGS_RELEASENOINLINE)
 
+
 # Configure a DebugLibStdcxx build type (includes checked iterators)
 if(UNIX AND NOT HAVE_LIBC++)
   set(CMAKE_CXX_FLAGS_DEBUGLIBSTDCXX "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG")
 endif()
 mark_as_advanced(CMAKE_CXX_FLAGS_DEBUGLIBSTDCXX)
+
 
 if(NO_UBSAN OR CMAKE_BUILD_TYPE STREQUAL "Release")
   message(STATUS "Undefined behaviour sanitiser is disabled.")
@@ -98,25 +117,20 @@ else()
   message(STATUS "Undefined behaviour sanitiser not available in this compiler.")
 endif()
 
+
+if(${CMAKE_CXX_COMPILER_ID} MATCHES "^(Apple)?Clang$")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LibCXX} ${LibCXXAbi} -lpthread")
+  if(CcacheExe)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments")
+  endif()
+elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+  # Workaround for GCC bug https://bugs.launchpad.net/ubuntu/+source/gcc-defaults/+bug/1228201
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed -pthread")
+endif()
+
+
 # Needs to come after everything else
 if(HAVE_FLAG_SANITIZE_BLACKLIST AND NOT NO_UBSAN)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SANITIZE_BLACKLIST_FLAG}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SANITIZE_BLACKLIST_FLAG}")
-endif()
-
-if(UNIX)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lpthread")
-  if(${CMAKE_CXX_COMPILER_ID} MATCHES "^(Apple)?Clang$")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LibCXX} ${LibCXXAbi}")
-  if(CCACHE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Qunused-arguments")
-  endif(CCACHE)
-  elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    # Workaround for GCC bug https://bugs.launchpad.net/ubuntu/+source/gcc-defaults/+bug/1228201
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed")
-  endif()
-  if(COVERAGE)
-    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
-    find_program(CTEST_COVERAGE_COMMAND NAMES gcov)
-  endif()
 endif()
