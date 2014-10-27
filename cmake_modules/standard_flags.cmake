@@ -41,10 +41,10 @@ endif()
 
 
 # Avoid including anything else twice
-if(STANDARD_FLAGS_INCLUDED)
+if(StandardFlagsIncluded)
   return()
 else()
-  set(STANDARD_FLAGS_INCLUDED TRUE)
+  set(StandardFlagsIncluded TRUE)
 endif()
 
 
