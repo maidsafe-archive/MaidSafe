@@ -40,3 +40,8 @@ foreach(Lib ${Libs})
     endif()
   endif()
 endforeach()
+
+file(GLOB_RECURSE CerealHeaders "${CMAKE_CURRENT_SOURCE_DIR}/cereal/*.h*")
+foreach(CerealHeader ${CerealHeaders})
+  configure_file(${CerealHeader} ${CerealHeader})
+endforeach()
