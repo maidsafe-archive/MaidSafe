@@ -49,7 +49,7 @@ endif()
 set(CTEST_BUILD_NAME "@CamelCaseProjectName@ ${CTEST_CONFIGURATION_TYPE} @TargetPlatform@${MachineBuildType}, ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 
 set_property(GLOBAL PROPERTY SubProject @CamelCaseProjectName@)
-set_property(GLOBAL PROPERTY Label @CamelCaseProjectName@)
+set_property(GLOBAL PROPERTY Label @CamelCaseProjectName@;@TASK_LABEL@)
 
 ctest_start(Experimental TRACK Experimental)
 ctest_submit(FILES "${CTEST_SOURCE_DIRECTORY}/Project.xml" RETRY_COUNT 3 RETRY_DELAY 5)
