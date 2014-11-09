@@ -93,6 +93,7 @@ add_custom_command(TARGET protobuf_test_plugin PRE_BUILD
 add_executable(protobuf_tests ${TestsAllFiles})
 target_include_directories(protobuf_tests PRIVATE ${GeneratedProtoRootDir} ${BoostSourceDir})
 target_compile_options(protobuf_tests PRIVATE $<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4100 /wd4125 /wd4127 /wd4146 /wd4244 /wd4267 /wd4305 /wd4307 /wd4800 /wd4996> $<$<BOOL:${UNIX}>:-w>)
+target_compile_definitions(protobuf_tests PRIVATE $<$<BOOL:${MSVC}>:BOOST_ALL_NO_LIB>)
 target_link_libraries(protobuf_tests proto_compiler gtest_main gtest_no_maidsafe_log ${BoostFilesystemLibs} ${BoostSystemLibs})
 add_dependencies(protobuf_tests protobuf_test_plugin)
 
