@@ -42,10 +42,11 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   message(FATAL_ERROR "CMake should have crashed - this is a failsafe in case the call used to trigger the crash gets fixed.")
 endif()
 
+
 project(maidsafe)
 if(CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES} ReleaseNoInline CACHE INTERNAL "" FORCE)
-else() 
+else()
   if(NOT CMAKE_BUILD_TYPE)
     message(STATUS "No build type given.  Setting and caching CMAKE_BUILD_TYPE to Debug.")
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Type of build; options are: Debug, Release, RelWithDebInfo, or MinSizeRel." FORCE)
@@ -54,13 +55,14 @@ else()
   endif()
 endif()
 
-include(CTest)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # works for Unix MakeFiles (also ninja)
 set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_ERROR_DEPRECATED ON)
 set(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION ON)
 set(EXPORT_COMPILE_COMMANDS ON)
 set(HR "================================================================================")
+
 
 set(MaidsafeGeneratedSourcesDir ${CMAKE_BINARY_DIR}/GeneratedSources)
 set(SubModules
@@ -80,6 +82,7 @@ foreach(SubModule ${SubModules})
   set(${SubModule}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/${SubModule})
 endforeach()
 
+
 # Check the submodules are initialised
 foreach(SubModule ${SubModules})
   if(NOT EXISTS "${CMAKE_SOURCE_DIR}/src/${SubModule}/.git")
@@ -92,7 +95,6 @@ endforeach()
 
 
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
-
 include(version)
 
 
@@ -108,15 +110,6 @@ ms_check_compiler()
 ms_get_target_platform()
 ms_get_target_architecture()
 unset(AllStaticLibs CACHE)
-
-
-# Adds a target 'CleanCoverage' on Unix.  When this target is built, it removes
-# all .gcda files from the build directory and its subdirectories
-if(UNIX)
-  find_file(CleanCoverageFile clean_coverage.cmake cmake_modules)
-  add_custom_target(CleanCoverage COMMAND ${CMAKE_COMMAND} -DSearchDir=${CMAKE_BINARY_DIR} -P ${CleanCoverageFile})
-  option(COVERAGE "If ON, targets will be built with coverage flags included." OFF)
-endif()
 
 
 # Add build types for the Address, Memory, Thread and Undefined Behaviour Sanitizers
@@ -154,9 +147,21 @@ include(standard_flags)
 
 
 if(INCLUDE_TESTS)
+  include(CTest)
+
+  # Adds a target 'CleanCoverage' on Unix.  When this target is built, it removes
+  # all .gcda files from the build directory and its subdirectories
+  if(UNIX)
+    find_file(CleanCoverageFile clean_coverage.cmake cmake_modules)
+    add_custom_target(CleanCoverage COMMAND ${CMAKE_COMMAND} -DSearchDir=${CMAKE_BINARY_DIR} -P ${CleanCoverageFile})
+    option(COVERAGE "If ON, targets will be built with coverage flags included." OFF)
+  endif()
+
+
   # 'SkipReturnCodeValue' is used as the exit code when running disabled GTests.
   # It must be between 0 and 255 inclusive.  (Bash returns 127 if a command is not found).
   set(SkipReturnCodeValue 127)
+
 
   # Prepare CTestCustom.cmake
   set(CTestCustomFile "${CMAKE_BINARY_DIR}/CTestCustom.cmake")
