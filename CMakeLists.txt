@@ -95,13 +95,6 @@ set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 
 include(version)
 
-# Set Maidsafe Testing to OFF if package build defined.
-if(PACKAGE_BUILD)
-  set(MaidsafeTesting OFF)
-else()
-  set(MaidsafeTesting ON)
-endif()
-
 
 # Force all libraries and exes to be built to the top-level build dir.
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -140,6 +133,7 @@ include(maidsafe_find_python)
 include(maidsafe_find_git)
 
 
+option(INCLUDE_TESTS "Whether to include test targets or not" ON)
 if(APPLE)
   option(HAVE_LIBC++ "If ON, '-stdlib=libc++' is added to the compile and link flags" ON)
 else()
@@ -159,7 +153,7 @@ option(USE_JUST_THREADS "If ON, try to find and use the just::thread library (Wi
 include(standard_flags)
 
 
-if(MaidsafeTesting)
+if(INCLUDE_TESTS)
   # 'SkipReturnCodeValue' is used as the exit code when running disabled GTests.
   # It must be between 0 and 255 inclusive.  (Bash returns 127 if a command is not found).
   set(SkipReturnCodeValue 127)
@@ -197,7 +191,7 @@ message("${HR}")
 
 
 # Tidy CTestCustom.cmake and apply pre- and post-test commands
-if(MaidsafeTesting)
+if(INCLUDE_TESTS)
   file(STRINGS ${CTestCustomFile} CTestCustomContents)
   list(REMOVE_DUPLICATES CTestCustomContents)
   list(SORT CTestCustomContents)
