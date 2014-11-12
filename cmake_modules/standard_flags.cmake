@@ -112,7 +112,7 @@ elseif(HAVE_UNDEFINED_BEHAVIOR_SANITIZER AND HAVE_FLAG_SANITIZE_BLACKLIST)
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS_UBSAN}")
   message(STATUS "Undefined behaviour sanitiser is enabled. Use -DNO_UBSAN=TRUE to prevent.")
   # Multiply all test timeouts by a factor of 1.
-  ms_set_global_test_timeout_factor(1)
+  # ms_set_global_test_timeout_factor(1)
 else()
   message(STATUS "Undefined behaviour sanitiser not available in this compiler.")
 endif()
