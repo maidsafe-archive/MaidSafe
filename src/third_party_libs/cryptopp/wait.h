@@ -17,6 +17,10 @@
 
 #include "hrtimer.h"
 
+#if defined(__ANDROID__)
+# include <sys/select.h>
+#endif
+
 NAMESPACE_BEGIN(CryptoPP)
 
 class Tracer

@@ -33,10 +33,23 @@ target_compile_definitions(protobuf_lite
     HAVE_ZLIB=0
     $<$<AND:$<BOOL:${JUST_THREAD_DEADLOCK_CHECK}>,$<CONFIG:Debug>>:_JUST_THREAD_DEADLOCK_CHECK>
     $<$<BOOL:${MSVC}>:NOMINMAX>
+    $<$<AND:$<BOOL:${UNIX}>,$<BOOL:${ANDROID_BUILD}>>:
+    	__ARM_ARCH_5__
+		  __ARM_ARCH_5T__
+		  __ARM_ARCH_5E__
+		  __ARM_ARCH_5TE__
+		  __ANDROID__
+		  __arm__
+		  _REENTRANT
+		  _GLIBCXX__PTHREADS		    
+		  ANDROID
+		  NDEBUG
+    >
   PRIVATE
     $<$<BOOL:${UNIX}>:HAVE_PTHREAD>
     $<$<STREQUAL:"${CMAKE_BUILD_TYPE}","Tsan">:THREAD_SANITIZER>
 )
+
 target_compile_options(protobuf_lite
   PUBLIC
     $<$<BOOL:${MSVC}>:
@@ -55,8 +68,20 @@ if(TARGET check_sanitizer_blacklist)
   add_dependencies(protobuf_lite check_sanitizer_blacklist)
 endif()
 
+if(UNIX AND ANDROID_BUILD)
+	target_include_directories(protobuf_lite PUBLIC
+			"${ANDROID_NDK_ROOT}/platforms/android-9/arch-arm/usr/include" 
+			"${ANDROID_NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/include"
+			"${ANDROID_NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/include")
+endif()
+
 add_library(protobuf STATIC ${ProtobufAllFiles})
-target_compile_options(protobuf PRIVATE $<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4244 /wd4267 /wd4800 /wd4996> $<$<BOOL:${UNIX}>:-w>)
+target_compile_options(
+	protobuf
+PRIVATE
+	$<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4244 /wd4267 /wd4800 /wd4996>
+	$<$<BOOL:${UNIX}>:-w>
+)
 target_link_libraries(protobuf protobuf_lite)
 
 add_library(proto_compiler ${ProtocAllFiles})
@@ -65,10 +90,61 @@ target_compile_options(proto_compiler PRIVATE $<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4
 target_link_libraries(proto_compiler protobuf)
 
 add_executable(protoc ${ProtocMain})
-target_compile_options(protoc PRIVATE $<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4244 /wd4267 /wd4800 /wd4996> $<$<BOOL:${UNIX}>:-w>)
+target_compile_definitions(protoc
+  PUBLIC
+    $<$<AND:$<BOOL:${UNIX}>,$<BOOL:${ANDROID_BUILD}>>:
+    	__ARM_ARCH_5__
+		  __ARM_ARCH_5T__
+		  __ARM_ARCH_5E__
+		  __ARM_ARCH_5TE__
+		  __ANDROID__
+		  __arm__
+		  _REENTRANT
+		  _GLIBCXX__PTHREADS		    
+		  ANDROID
+		  NDEBUG
+    >
+)
+target_compile_options(protoc PRIVATE 
+	$<$<BOOL:${MSVC}>:/W3 /wd4018 /wd4244 /wd4267 /wd4800 /wd4996> 
+	$<$<BOOL:${UNIX}>:-w
+		$<$<BOOL:${ANDROID_BUILD}>:
+	    -fexceptions
+			-frtti
+			-ffunction-sections
+			-funwind-tables
+			-Wno-psabi
+			-march=armv5te
+			-mtune=xscale
+			-msoft-float
+			-mthumb
+			-Os
+			-fomit-frame-pointer
+			-fno-strict-aliasing
+			-finline-limit=64
+			-Wa,--noexecstack
+			-O2
+			-g
+			-fvisibility=hidden
+			-fvisibility-inlines-hidden
+			-fdata-sections
+		>
+	>
+)
+if(UNIX AND ANDROID_BUILD)
+	target_include_directories(protoc PUBLIC
+			"${ANDROID_NDK_ROOT}/platforms/android-9/arch-arm/usr/include" 
+			"${ANDROID_NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/include"
+			"${ANDROID_NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/include")
+endif()
+
 target_link_libraries(protoc proto_compiler protobuf_lite)
 if(UNIX)
-  target_link_libraries(protoc -lpthread)
+	if(ANDROID_BUILD)
+	  target_link_libraries(protoc ${PLATFORM_STL_LIBRARY})
+  else()
+  	target_link_libraries(protoc -lpthread)
+  endif()
 endif()
 
 
