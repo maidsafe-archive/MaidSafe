@@ -102,7 +102,7 @@ if(NOT DEFINED MEMORY_CHECK)
   endif()
 endif()
 if(MEMORY_CHECK)
-  ms_set_global_test_timeout_factor(20)
+  ms_set_global_test_timeout_factor(3)
 endif()
 
 if(UNIX)
