@@ -37,7 +37,7 @@
 #endif
 
 #if defined(__GNUC__) && defined(__linux__)
-#define CRYPTOPP_BYTESWAP_AVAILABLE
+//#define CRYPTOPP_BYTESWAP_AVAILABLE
 #include <byteswap.h>
 #endif
 

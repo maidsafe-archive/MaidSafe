@@ -40,21 +40,22 @@
 
 using gcc : android
 :
-@AndroidNDKSrcDir@/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-g++
+@AndroidNDKSrcDir@/bin/arm-linux-androideabi-g++
 :
-<archiver>@AndroidNDKSrcDir@/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ar
+<archiver>@AndroidNDKSrcDir@/bin/arm-linux-androideabi-ar
 <compileflags>-fexceptions
 <compileflags>-frtti
 <compileflags>-fPIC
 <compileflags>-std=c++11
 <compileflags>-ffunction-sections
 <compileflags>-funwind-tables
-<compileflags>-D__ARM_ARCH_5__
-<compileflags>-D__ARM_ARCH_5T__
-<compileflags>-D__ARM_ARCH_5E__
-<compileflags>-D__ARM_ARCH_5TE__
+<compileflags>-D__ARM_ARCH_7A__
+#<compileflags>-D__ARM_ARCH_5__
+#<compileflags>-D__ARM_ARCH_5T__
+#<compileflags>-D__ARM_ARCH_5E__
+#<compileflags>-D__ARM_ARCH_5TE__
 <compileflags>-Wno-psabi
-<compileflags>-march=armv5te
+<compileflags>-march=armv7-a
 <compileflags>-mtune=xscale
 <compileflags>-msoft-float
 <compileflags>-mthumb
@@ -62,15 +63,15 @@ using gcc : android
 <compileflags>-fomit-frame-pointer
 <compileflags>-fno-strict-aliasing
 <compileflags>-finline-limit=64
-<compileflags>-I@AndroidNDKSrcDir@/platforms/android-9/arch-arm/usr/include
+<compileflags>-I@AndroidNDKSrcDir@/include/c++/4.8
 <compileflags>-Wa,--noexecstack
 <compileflags>-DANDROID
 <compileflags>-D__ANDROID__
 <compileflags>-DNDEBUG
 <compileflags>-O2
 <compileflags>-g
-<compileflags>-I@AndroidNDKSrcDir@/sources/cxx-stl/gnu-libstdc++/4.8/include
-<compileflags>-I@AndroidNDKSrcDir@/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi/include
+<compileflags>-I@AndroidNDKSrcDir@/sysroot/usr/include
+# <compileflags>-I@AndroidNDKSrcDir@/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi/include
 # @Moss - Above are the 'oficial' android flags
 <architecture>arm
 <compileflags>-fvisibility=hidden
