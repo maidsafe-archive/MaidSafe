@@ -207,6 +207,8 @@ if(MSVC)
     list(APPEND b2Args toolset=msvc-11.0)
   elseif(MSVC12)
     list(APPEND b2Args toolset=msvc-12.0)
+  elseif(MSVC14)
+    list(APPEND b2Args toolset=msvc-14.0)
   endif()
   list(APPEND b2Args
               define=_BIND_TO_CURRENT_MFC_VERSION=1
@@ -259,6 +261,8 @@ foreach(Component ${BoostComponents})
       set(CompilerName vc110)
     elseif(MSVC12)
       set(CompilerName vc120)
+    elseif(MSVC14)
+      set(CompilerName vc140)
     endif()
     string(REGEX MATCH "[0-9]_[0-9][0-9]" Version "${BoostFolderName}")
     set_target_properties(Boost${CamelCaseComponent} PROPERTIES
