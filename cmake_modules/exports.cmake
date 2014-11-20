@@ -49,7 +49,7 @@ if(Cbfs_FOUND)
 endif()
 
 set(AllTargets ${AllStaticLibs} local_drive drive sqlite cryptopp protobuf_lite protoc gmock gtest)
-if(NOT ${CMAKE_VERSION} VERSION_LESS 3.0)
+if(NOT CMAKE_VERSION VERSION_LESS "3.0")
   list(APPEND AllTargets cereal)
 endif()
 if(Cbfs_FOUND)

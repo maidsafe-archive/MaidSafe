@@ -23,7 +23,7 @@
 
 cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
 
-if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
+if(CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
   set(Msg "\n\nThis project doesn't allow \"in-source builds\".\nYou must run CMake from a folder outside")
   set(Msg "${Msg} the root of this project.\nFor more details about configuring the project see\n")
   if(WIN32)
@@ -99,8 +99,9 @@ include(version)
 
 
 # Force all libraries and exes to be built to the top-level build dir.
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 
 # Include helper functions, check compiler version, and get target platform details
@@ -184,7 +185,7 @@ endif()
 
 # Add third party libs and each sub-module
 add_subdirectory(src/third_party_libs)
-if(${CMAKE_VERSION} VERSION_LESS 3.0)
+if(CMAKE_VERSION VERSION_LESS "3.0")
   include_directories("${CMAKE_SOURCE_DIR}/src/third_party_libs/header_only")
 endif()
 foreach(SubModule ${SubModules})
@@ -229,6 +230,10 @@ if(MSVC OR XCODE)
   source_group("root\\cmake_modules" FILES ${ModuleFiles})
 
   add_custom_target(CMakeFiles SOURCES ${RootFiles} src/third_party_libs/CMakeLists.txt ${ModuleFiles})
+
+  foreach(ConfigType ${CMAKE_CONFIGURATION_TYPES})
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${ConfigType})
+  endforeach()
 endif()
 
 

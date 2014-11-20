@@ -57,7 +57,7 @@ macro(config_compiler_and_linker)
     # Newlines inside flags variables break CMake's NMake generator.
     # TODO(vladl@google.com): Add -RTCs and -RTCu to debug builds.
     set(cxx_base_flags "-GS -W4 -WX -wd4127 -wd4251 -wd4275 -nologo -Zi") # -J  (Changes the default char type from signed char to unsigned char, and the char type is zero-extended when it is widened to an int type.)
-    if (MSVC_VERSION LESS 1400)
+    if (MSVC_VERSION LESS "1400")
       # Suppress spurious warnings MSVC 7.1 sometimes issues.
       # Forcing value to bool.
       set(cxx_base_flags "${cxx_base_flags} -wd4800")

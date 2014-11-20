@@ -50,7 +50,7 @@ elseif(HAVE_FLAG_MEMORY_SANITIZER)
 endif()
 
 if(NOT MEMORY_SANITIZER_FLAG)
-  if("${CMAKE_BUILD_TYPE}" STREQUAL "Msan")
+  if(CMAKE_BUILD_TYPE STREQUAL "Msan")
     message(FATAL_ERROR "\nYou have specified \"Msan\" as the build type, but Memory Sanitiser is not supported on this platform with the chosen compiler.\n")
   endif()
   return()
