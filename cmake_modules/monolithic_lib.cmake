@@ -55,7 +55,7 @@ set(DevLibDepends maidsafe_common
                   sqlite)
 list(REMOVE_ITEM DevLibDepends BoostContext BoostCoroutine BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)
 
-set(SourceFile ${CMAKE_CURRENT_BINARY_DIR}_depends.cc)
+set(SourceFile ${CMAKE_CURRENT_BINARY_DIR}/GeneratedSources/monolithic.cc)
 set(CMAKE_DEBUG_POSTFIX -d)
 add_library(maidsafe STATIC ${SourceFile})
 set_target_properties(maidsafe PROPERTIES FOLDER "MaidSafe/Monolithic")
@@ -74,9 +74,9 @@ file(APPEND "${HeadersHelper}" "file(COPY \"${api_SOURCE_DIR}/include/maidsafe\"
 file(APPEND "${HeadersHelper}" "file(COPY \"${BoostSourceDir}/boost\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(GLOB CryptoHeaders \"${Cryptopp_SOURCE_DIR}/*.h\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \${CryptoHeaders} DESTINATION \"${MonolithicIncludes}/cryptopp\")\n")
-file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/cereal\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/header_only/cereal\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/sqlite/include/sqlite3.h\" DESTINATION \"${MonolithicIncludes}/sqlite\")\n")
-file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/leveldb/include/\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${MaidsafeGeneratedSourcesDir}/nfs/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
 
 if("${CMAKE_BUILD_TYPE}" STREQUAL Release OR CMAKE_CONFIGURATION_TYPES)
   add_custom_command(TARGET maidsafe POST_BUILD COMMAND ${CMAKE_COMMAND} -DMonolithicIncludes="${MonolithicIncludes}" -P "${HeadersHelper}")
@@ -87,15 +87,15 @@ foreach(Lib ${DevLibDepends})
     if(POLICY CMP0026)
       cmake_policy(PUSH)
       cmake_policy(SET CMP0026 OLD)
-	endif()
+    endif()
     foreach(Config ${CMAKE_CONFIGURATION_TYPES})
       string(TOUPPER ${Config} ConfigUppercase)
       get_target_property(LibLocation${Config} ${Lib} LOCATION_${ConfigUppercase})
       list(APPEND LibLocations${Config} "${LibLocation${Config}}")
     endforeach()
-	if(POLICY CMP0026)
+    if(POLICY CMP0026)
       cmake_policy(POP)
-	endif()
+    endif()
   else()
     list(APPEND LibLocations "$<TARGET_FILE:${Lib}>")
   endif()
@@ -118,8 +118,9 @@ if(OSLIBS)
  target_link_libraries(maidsafe PUBLIC ${OSLIBS})
 endif()
 
-add_custom_command(OUTPUT  ${SourceFile}
-    COMMAND ${CMAKE_COMMAND} -E touch ${SourceFile}
+add_custom_command(OUTPUT ${SourceFile}
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/GeneratedSources"
+    COMMAND ${CMAKE_COMMAND} -E touch "${SourceFile}"
     DEPENDS ${DevLibDepends})
 
 if(MSVC)

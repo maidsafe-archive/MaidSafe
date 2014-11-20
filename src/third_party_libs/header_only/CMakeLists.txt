@@ -21,45 +21,22 @@
 #==================================================================================================#
 
 
-project(sqlite)
+file(GLOB Libs RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/*")
+foreach(Lib ${Libs})
+  if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${Lib}")
+    if(NOT ${CMAKE_VERSION} VERSION_LESS 3.0)
+      add_library(${Lib} INTERFACE)
+      target_include_directories(${Lib} INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
 
-include(${CMAKE_SOURCE_DIR}/cmake_modules/standard_setup.cmake)
-
-add_library(sqlite STATIC ${PROJECT_SOURCE_DIR}/include/sqlite3.h ${PROJECT_SOURCE_DIR}/src/sqlite3.c)
-ms_target_include_system_dirs(sqlite PUBLIC ${PROJECT_SOURCE_DIR}/include)
-target_compile_definitions(sqlite PRIVATE SQLITE_OMIT_LOAD_EXTENSION)
-
-if(MSVC)
-  target_link_libraries(sqlite ${JustThread_LIBRARIES})
-elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "^(Apple)?Clang$")
-  target_link_libraries(sqlite ${JustThread_LIBRARIES} -lpthread)
-elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
-  target_link_libraries(sqlite ${JustThread_LIBRARIES} -pthread)
-endif()
-
-set(AllStaticLibsForCurrentProject sqlite)
-if(INCLUDE_TESTS)
-  ms_add_executable(sqlite_test "." ${PROJECT_SOURCE_DIR}/src/sqlite_test.cc)
-#   ms_add_executable(speedtest1 "." ${PROJECT_SOURCE_DIR}/src/speedtest1.cc)
-#   ms_add_executable(wordcount "." ${PROJECT_SOURCE_DIR}/src/wordcount.c)
-#   ms_add_executable(crashtest1 "." ${PROJECT_SOURCE_DIR}/src/crashtest1.cc)
-#   ms_add_executable(threadtest1 "." ${PROJECT_SOURCE_DIR}/src/threadtest1.c)
-#   ms_add_executable(threadtest2 "." ${PROJECT_SOURCE_DIR}/src/threadtest2.c)
-#   ms_add_executable(threadtest3 "." ${PROJECT_SOURCE_DIR}/src/threadtest3.c)
-
-#   target_include_directories(threadtest3 PRIVATE ${PROJECT_SOURCE_DIR}/src)
-  set(AllExesForCurrentProject sqlite_test)
-  foreach(Exe ${AllExesForCurrentProject})
-    target_compile_definitions(${Exe} PRIVATE SQLITE_ENABLE_RTREE)
-    target_link_libraries(${Exe} sqlite maidsafe_test ${BoostFilesystemLibs})
-  endforeach()
-
-  include(../../../cmake_modules/standard_flags.cmake)
-
-  set(AllSQLiteTests sqlite_test CACHE INTERNAL "Full list of SQLite tests.")
-endif()
-
-set_target_properties(sqlite ${AllExesForCurrentProject} PROPERTIES FOLDER "Third Party/SQLite")
-
-install(TARGETS sqlite COMPONENT Development CONFIGURATIONS Debug Release ARCHIVE DESTINATION lib)
-install(FILES ${PROJECT_SOURCE_DIR}/include/sqlite.h COMPONENT Development DESTINATION include/maidsafe/third_party_libs/sqlite)
+    # For multi-config IDEs, add custom target to make library's files visible
+    if(CMAKE_CONFIGURATION_TYPES)
+      file(GLOB_RECURSE GlobbedSrcs "${CMAKE_CURRENT_SOURCE_DIR}/${Lib}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/${Lib}/*.hpp")
+      ms_underscores_to_camel_case(${Lib} CamelCaseLib)
+      add_custom_target(${CamelCaseLib}Files
+          COMMENT "NOTE: This is not a target which can be built; just a list of headers for ${CamelCaseLib}."
+          SOURCES ${GlobbedSrcs})
+      set_target_properties(${CamelCaseLib}Files PROPERTIES FOLDER "Third Party/${CamelCaseLib}")
+    endif()
+  endif()
+endforeach()

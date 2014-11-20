@@ -88,16 +88,20 @@ function(ms_check_compiler)
   else()
     set(CheckCompilerVersion "${CombinedOutput}" CACHE INTERNAL "")
   endif()
-  if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "18")  # i.e for MSVC < Visual Studio 12
+  if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 18)  # i.e for MSVC < Visual Studio 12
       message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of Visual Studio less than 12.")
     endif()
-  elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.3")
+  elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.3)
       message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of Clang less than 3.3")
     endif()
-  elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.8")
+  elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL AppleClang)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.1)
+      message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of AppleClang less than 5.1")
+    endif()
+  elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
       message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of GCC less than 4.8")
     endif()
   endif()
@@ -243,7 +247,6 @@ function(ms_add_executable Exe FolderName)
   foreach(File ${ARGN})
     check_license_block(${File})
   endforeach()
-
   set(AllExesForCurrentProject ${AllExesForCurrentProject} ${Exe} PARENT_SCOPE)
   add_executable(${Exe} ${ARGN})
   if(${Exe}Name)
@@ -280,7 +283,7 @@ endfunction()
 
 
 function(ms_add_style_test)
-  if(NOT MaidsafeTesting)
+  if(NOT INCLUDE_TESTS)
     return()
   endif()
   set(ExcludeRegexes *.pb.* *qt_push_headers.h *qt_pop_headers.h)
@@ -295,7 +298,7 @@ function(ms_add_style_test)
   endforeach()
   set(ThisTestName ${CamelCaseProjectName}StyleCheck)
   add_test(${ThisTestName} python ${maidsafe_SOURCE_DIR}/tools/cpplint.py ${AllFiles})
-  set_property(TEST ${ThisTestName} PROPERTY LABELS ${CamelCaseProjectName} CodingStyle)
+  set_property(TEST ${ThisTestName} PROPERTY LABELS ${CamelCaseProjectName} CodingStyle ${TASK_LABEL})
 endfunction()
 
 
@@ -343,7 +346,7 @@ function(ms_add_test_for_multiple_definition_errors)
 
   set(ThisTestName ${CamelCaseProjectName}MultipleDefinitionsCheck)
   add_test(NAME ${ThisTestName} COMMAND ${ExeName})
-  set_property(TEST ${ThisTestName} PROPERTY LABELS ${CamelCaseProjectName} MultipleDefinitions)
+  set_property(TEST ${ThisTestName} PROPERTY LABELS ${CamelCaseProjectName} MultipleDefinitions ${TASK_LABEL})
 endfunction()
 
 
@@ -370,7 +373,7 @@ endfunction()
 
 
 function(ms_test_summary_output)
-  list(LENGTH ALL_GTESTS GtestCount)
+  list(LENGTH AllGtests GtestCount)
   message(STATUS "${MAIDSAFE_TEST_TYPE_MESSAGE}${GtestCount} Google test(s) enabled.")
 endfunction()
 
@@ -572,7 +575,7 @@ function(ms_setup_ci_scripts)
       set(MachineType kWindowsVista)
     elseif(${TargetPlatform} STREQUAL "Linux")
       set(MachineType kLinux)
-    elseif(${TargetPlatform} STREQUAL "OSX10.8" OR ${TargetPlatform} STREQUAL "OSX10.9")
+    elseif(${TargetPlatform} MATCHES "^OSX[0-9]+[.][0-9]+")
       set(MachineType kMac)
     else()
       set(MachineType Unsupported)
@@ -609,9 +612,6 @@ endfunction()
 
 # Gets and caches the target platform name
 function(ms_get_target_platform)
-  if(TargetPlatform)
-    return()
-  endif()
   if(WIN32)
     # See http://en.wikipedia.org/wiki/Comparison_of_Windows_versions
     if(CMAKE_SYSTEM_VERSION VERSION_EQUAL 6.2)
@@ -637,6 +637,9 @@ function(ms_get_target_platform)
       elseif(CMAKE_SYSTEM_VERSION VERSION_LESS 14)
         # OS X v10.9 "Mavericks"
         set(Platform OSX10.9)
+      elseif(CMAKE_SYSTEM_VERSION VERSION_LESS 15)
+        # OS X v10.10 "Yosemite"
+        set(Platform OSX10.10)
       else()
         set(Platform Unsupported)
       endif()
@@ -749,7 +752,8 @@ function(ms_get_target_architecture)
 
     #error cmake_ARCH unknown
     ")
-    file(WRITE "${CMAKE_BINARY_DIR}/arch.c" "${archdetect_c_code}")
+    set(TempTestFile "${CMAKE_BINARY_DIR}/arch.c")
+    file(WRITE "${TempTestFile}" "${archdetect_c_code}")
     enable_language(C)
 
     # Detect the architecture in a rather creative way...
@@ -763,9 +767,10 @@ function(ms_get_target_architecture)
     try_run(run_result_unused
             compile_result_unused
             "${CMAKE_BINARY_DIR}"
-            "${CMAKE_BINARY_DIR}/arch.c"
+            "${TempTestFile}"
             COMPILE_OUTPUT_VARIABLE ARCH
             CMAKE_FLAGS CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES})
+    file(REMOVE "${TempTestFile}")
 
     # Parse the architecture name from the compiler output
     string(REGEX MATCH "cmake_ARCH ([a-zA-Z0-9_]+)" ARCH "${ARCH}")
@@ -776,7 +781,7 @@ function(ms_get_target_architecture)
     # If we are compiling with an unknown architecture this variable should
     # already be set to "unknown" but in the case that it's empty (i.e. due
     # to a typo in the code), then set it to unknown
-    if (NOT ARCH)
+    if(NOT ARCH)
       set(ARCH unknown)
     endif()
   endif()
@@ -909,18 +914,32 @@ function(ms_set_meta_files_custom_commands OutputFile InputFile MetaFiles Output
 endfunction()
 
 
-function(ms_get_branch BranchName)
-  execute_process(COMMAND "${Git_EXECUTABLE}" rev-parse --abbrev-ref HEAD
+macro(ms_get_branch_and_commit BranchName CommitName)
+  execute_process(COMMAND "${Git_EXECUTABLE}" rev-parse --sq --abbrev-ref HEAD
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                   RESULT_VARIABLE Result
-                  OUTPUT_VARIABLE Output
+                  OUTPUT_VARIABLE ${BranchName}
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(NOT Result EQUAL 0)
+    set(${BranchName} "unknown")
+  endif()
+
+  execute_process(COMMAND "${Git_EXECUTABLE}" rev-parse --sq --short HEAD
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                  RESULT_VARIABLE Result
+                  OUTPUT_VARIABLE ${CommitName}
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
   if(Result EQUAL 0)
-    set(${BranchName} "'${Output}'" PARENT_SCOPE)
+    execute_process(COMMAND "${Git_EXECUTABLE}" diff-index --ignore-submodules --quiet HEAD
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                    RESULT_VARIABLE Result)
+    if(NOT Result EQUAL 0)
+      set(${CommitName} "${${CommitName}} (dirty)")
+    endif()
   else()
-    set(${BranchName} "unknown" PARENT_SCOPE)
+    set(${CommitName} "unknown")
   endif()
-endfunction()
+endmacro()
 
 
 # This removes the contents between all C++ block comments (i.e. /* ... */) for a C++ file whose
