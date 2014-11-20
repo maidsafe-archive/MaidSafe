@@ -49,7 +49,7 @@ add_subdirectory(sqlite)
 
 
 # Add third party tests
-if(MaidsafeTesting)
+if(INCLUDE_TESTS)
   # Crypto++
   set(CamelCaseProjectName ThirdParty)
   set(AllExesForCurrentProject cryptest protobuf_lite_tests protobuf_tests ${AllSQLiteTests}

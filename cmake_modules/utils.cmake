@@ -283,7 +283,7 @@ endfunction()
 
 
 function(ms_add_style_test)
-  if(NOT MaidsafeTesting)
+  if(NOT INCLUDE_TESTS)
     return()
   endif()
   set(ExcludeRegexes *.pb.* *qt_push_headers.h *qt_pop_headers.h)

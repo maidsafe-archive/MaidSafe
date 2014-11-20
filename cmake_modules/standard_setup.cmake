@@ -38,21 +38,22 @@ endif()
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 
 
-set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: All.  ")
-if(NOT MAIDSAFE_TEST_TYPE)
-  set(MAIDSAFE_TEST_TYPE "ALL" CACHE string "Choose the type of TEST, options are: ALL, BEH, FUNC" FORCE)
-else()
-  if(${MAIDSAFE_TEST_TYPE} MATCHES BEH)
-    set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Behavioural.  ")
-  elseif(${MAIDSAFE_TEST_TYPE} MATCHES FUNC)
-    set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Functional.  ")
+if(INCLUDE_TESTS)
+  set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: All.  ")
+  if(NOT MAIDSAFE_TEST_TYPE)
+    set(MAIDSAFE_TEST_TYPE "ALL" CACHE string "Choose the type of TEST, options are: ALL, BEH, FUNC" FORCE)
   else()
-    set(MAIDSAFE_TEST_TYPE "ALL" CACHE string "Choose the type of TEST, options are: ALL BEH FUNC" FORCE)
+    if(${MAIDSAFE_TEST_TYPE} MATCHES BEH)
+      set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Behavioural.  ")
+    elseif(${MAIDSAFE_TEST_TYPE} MATCHES FUNC)
+      set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Functional.  ")
+    else()
+      set(MAIDSAFE_TEST_TYPE "ALL" CACHE string "Choose the type of TEST, options are: ALL BEH FUNC" FORCE)
+    endif()
   endif()
+  enable_testing()
 endif()
 
-
-enable_testing()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
@@ -75,10 +76,6 @@ include(utils)
 ms_check_licenses()
 
 
-# Avoid running MemCheck on Style Check tests
-ms_add_memcheck_ignore(${CamelCaseProjectName}StyleCheck)
-
-
 # All other libraries search
 if(UNIX)
   set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /usr/lib/i386-linux-gnu/ /usr/lib/x86_64-linux-gnu/ /usr/lib/)
@@ -90,29 +87,35 @@ if(UNIX)
 endif()
 
 
-set(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 50000)
-set(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE 50000)
-set(CTEST_CONTINUOUS_DURATION 600)
-set(CTEST_CONTINUOUS_MINIMUM_INTERVAL 10)
-set(CTEST_START_WITH_EMPTY_BINARY_DIRECTORY true)
+if(INCLUDE_TESTS)
+  # Avoid running MemCheck on Style Check tests
+  ms_add_memcheck_ignore(${CamelCaseProjectName}StyleCheck)
 
-if(NOT DEFINED MEMORY_CHECK)
-  if($ENV{MEMORY_CHECK})
-    set(MEMORY_CHECK ON)
+  set(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 50000)
+  set(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE 50000)
+  set(CTEST_CONTINUOUS_DURATION 600)
+  set(CTEST_CONTINUOUS_MINIMUM_INTERVAL 10)
+  set(CTEST_START_WITH_EMPTY_BINARY_DIRECTORY true)
+
+  if(NOT DEFINED MEMORY_CHECK)
+    if($ENV{MEMORY_CHECK})
+      set(MEMORY_CHECK ON)
+    endif()
   endif()
-endif()
-if(MEMORY_CHECK)
-  ms_set_global_test_timeout_factor(20)
+  if(MEMORY_CHECK)
+    ms_set_global_test_timeout_factor(20)
+  endif()
+
+  if(UNIX)
+    unset(MEMORYCHECK_SUPPRESSIONS_FILE CACHE)
+    find_file(MEMORYCHECK_SUPPRESSIONS_FILE NAMES MemCheck.supp PATHS ${PROJECT_SOURCE_DIR} DOC "File that contains suppressions for the memory checker")
+    set(MEMORYCHECK_COMMAND_OPTIONS "--tool=memcheck --quiet --verbose --trace-children=yes --demangle=yes --num-callers=50 --show-below-main=yes --leak-check=full --show-reachable=yes --track-origins=yes --gen-suppressions=all")
+  endif()
+
+  unset(MAKECOMMAND CACHE)
+  include(CTest)
+  include(add_gtests)
 endif()
 
-if(UNIX)
-  unset(MEMORYCHECK_SUPPRESSIONS_FILE CACHE)
-  find_file(MEMORYCHECK_SUPPRESSIONS_FILE NAMES MemCheck.supp PATHS ${PROJECT_SOURCE_DIR} DOC "File that contains suppressions for the memory checker")
-  set(MEMORYCHECK_COMMAND_OPTIONS "--tool=memcheck --quiet --verbose --trace-children=yes --demangle=yes --num-callers=50 --show-below-main=yes --leak-check=full --show-reachable=yes --track-origins=yes --gen-suppressions=all")
-endif()
-
-unset(MAKECOMMAND CACHE)
-include(CTest)
-include(add_gtests)
 
 set(CPACK_STRIP_FILES TRUE)
