@@ -83,7 +83,7 @@ endif()
 add_library(breakpad STATIC ${SOURCES})
 
 if(UNIX AND NOT APPLE)
-  if(${CMAKE_CXX_COMPILER_ID} MATCHES "^(Apple)?Clang$")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
     set_target_properties(breakpad PROPERTIES COMPILE_FLAGS "-fPIC -stdlib=libc++ -std=c++11")
   else()
     set_target_properties(breakpad PROPERTIES COMPILE_FLAGS "-fPIC -std=c++11")

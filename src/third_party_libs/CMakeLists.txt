@@ -91,7 +91,7 @@ if(INCLUDE_TESTS)
   # GMock
   foreach(GMockTest ${AllGMockTests})
     add_test(NAME ${GMockTest} COMMAND ${GMockTest})
-    if("${GMockTest}" STREQUAL "gmock-matchers_test")
+    if(GMockTest STREQUAL "gmock-matchers_test")
       set(ExtendedTimeout 60)
       ms_update_test_timeout(ExtendedTimeout)
       set_tests_properties(gmock-matchers_test PROPERTIES TIMEOUT ${ExtendedTimeout} LABELS "ThirdParty;Behavioural;GMock;${TASK_LABEL}")

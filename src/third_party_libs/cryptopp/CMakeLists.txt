@@ -162,7 +162,7 @@ target_compile_options(cryptest
 )
 
 if(UNIX)
-  if(${CMAKE_CXX_COMPILER_ID} MATCHES "^(Apple)?Clang$")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
     if(HAVE_LIBC++)
       set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LibCXX} -ldl")
     endif()

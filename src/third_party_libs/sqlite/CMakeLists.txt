@@ -31,9 +31,9 @@ target_compile_definitions(sqlite PRIVATE SQLITE_OMIT_LOAD_EXTENSION)
 
 if(MSVC)
   target_link_libraries(sqlite ${JustThread_LIBRARIES})
-elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "^(Apple)?Clang$")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
   target_link_libraries(sqlite ${JustThread_LIBRARIES} -lpthread)
-elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   target_link_libraries(sqlite ${JustThread_LIBRARIES} -pthread)
 endif()
 
