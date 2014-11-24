@@ -21,15 +21,15 @@
 #==================================================================================================#
 
 
-if(NOT "${Config}" STREQUAL Release)
+if(NOT Config STREQUAL "Release")
   message(FATAL_ERROR "Invalid build configuration.  ${TargetName} is only available for Release builds.")
 endif()
 
-if("${TargetType}" STREQUAL Dev)
+if(TargetType STREQUAL "Dev")
   message("Building Monolithic target in Debug mode")
   execute_process(COMMAND ${CMAKE_COMMAND} --build ${SUPER_PROJECT_BINARY_DIR} --target maidsafe --config Debug -- /M:7
                   RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
-  if(NOT "${ResVar}" EQUAL 0)
+  if(NOT ResVar EQUAL "0")
     message(FATAL_ERROR "Failed - ${OutVar}")
   endif()
 endif()
@@ -48,9 +48,9 @@ else()
   set(PACKAGE_TYPE x86)
 endif()
 
-if(${CMAKE_SYSTEM_VERSION} STREQUAL 6.1)
+if(CMAKE_SYSTEM_VERSION STREQUAL "6.1")
   set(UDSystemVersion Win7)
-elseif(${CMAKE_SYSTEM_VERSION} STREQUAL 6.2)
+elseif(CMAKE_SYSTEM_VERSION STREQUAL "6.2")
   set(UDSystemVersion Win8)
 else()
   message(FATAL_ERROR "Operating system version not found.")
@@ -82,7 +82,7 @@ message("Creating installer package. This may take a while...")
 execute_process(COMMAND "${AdvancedInstaller}" /execute ${TargetType}.aip ${InstallerConfigFileWinPath}
                 WORKING_DIRECTORY "${InstallerDir}"
                 RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
-if(NOT "${ResVar}" EQUAL 0)
+if(NOT ResVar EQUAL "0")
   message(FATAL_ERROR "Failed - ${OutVar}")
 endif()
 

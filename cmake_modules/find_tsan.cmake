@@ -63,7 +63,7 @@ elseif(HAVE_FLAG_THREAD_SANITIZER)
   # Older deprecated flag for TSan
   set(THREAD_SANITIZER_FLAG_FLAG "-fthread-sanitizer")
 else()
-  if("${CMAKE_BUILD_TYPE}" STREQUAL "Tsan")
+  if(CMAKE_BUILD_TYPE STREQUAL "Tsan")
     message(FATAL_ERROR "\nYou have specified \"Tsan\" as the build type, but Thread Sanitiser is not supported on this platform with the chosen compiler.\n")
   endif()
   set(HAVE_THREAD_SANITIZER FALSE)

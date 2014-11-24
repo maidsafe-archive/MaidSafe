@@ -108,8 +108,9 @@ include(version)
 
 
 # Force all libraries and exes to be built to the top-level build dir.
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 
 # Include helper functions, check compiler version, and get target platform details
@@ -193,7 +194,7 @@ endif()
 
 # Add third party libs and each sub-module
 add_subdirectory(src/third_party_libs)
-if(${CMAKE_VERSION} VERSION_LESS 3.0)
+if(CMAKE_VERSION VERSION_LESS "3.0")
   include_directories("${CMAKE_SOURCE_DIR}/src/third_party_libs/header_only")
 endif()
 foreach(SubModule ${SubModules})
@@ -238,6 +239,10 @@ if(MSVC OR XCODE)
   source_group("root\\cmake_modules" FILES ${ModuleFiles})
 
   add_custom_target(CMakeFiles SOURCES ${RootFiles} src/third_party_libs/CMakeLists.txt ${ModuleFiles})
+
+  foreach(ConfigType ${CMAKE_CONFIGURATION_TYPES})
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${ConfigType})
+  endforeach()
 endif()
 
 

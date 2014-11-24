@@ -213,7 +213,7 @@ endif()
 #   #                       PROPERTIES
 #   #                       COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
 #
-#   if (NOT MSVC OR NOT MSVC_VERSION EQUAL 1600)
+#   if (NOT MSVC OR NOT MSVC_VERSION EQUAL "1600")
 #     # The C++ Standard specifies tuple_element<int, class>.
 #     # Yet MSVC 10's <utility> declares tuple_element<size_t, class>.
 #     # That declaration conflicts with our own standard-conforming
