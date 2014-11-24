@@ -184,10 +184,10 @@ endif()
 
 
 # Add third party libs and each sub-module
-add_subdirectory(src/third_party_libs)
 if(CMAKE_VERSION VERSION_LESS "3.0")
   include_directories("${CMAKE_SOURCE_DIR}/src/third_party_libs/header_only")
 endif()
+add_subdirectory(src/third_party_libs)
 foreach(SubModule ${SubModules})
   add_subdirectory(src/${SubModule})
 endforeach()
