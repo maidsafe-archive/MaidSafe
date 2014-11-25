@@ -226,7 +226,7 @@ elseif(UNIX)
 	if(${ANDROID_BUILD})
 		set(AndroidNDKSrcDir "${ANDROID_NDK_ROOT}")
     configure_file("${CMAKE_SOURCE_DIR}/tools/android/user-config.jam.in" "${BoostSourceDir}/tools/build/v2/user-config.jam")
-    list(APPEND b2Args toolset=gcc-android target-os=linux link=static threading=multi --layout=versioned)
+    list(APPEND b2Args toolset=gcc-android target-os=linux link=static threading=multi --layout=tagged)
   else()
 		list(APPEND b2Args variant=release cxxflags=-fPIC cxxflags=-std=c++11 -sNO_BZIP2=1 --layout=tagged)
 		# Need to configure the toolset based on whatever version CMAKE_CXX_COMPILER is

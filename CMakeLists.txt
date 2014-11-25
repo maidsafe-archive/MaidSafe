@@ -32,9 +32,11 @@ cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
 #set(PLATFORM_TRIPLET           "arm-linux-androideabi")
 #set(PLATFORM_PROC_PREFIX       "armeabi-v7a")
 
-#set(PLATFORM_PREFIX            "/home/spandan/virtualization/e/active/android-ndk-crystax-standalone-toolchain-beta-4.8/sysroot")
-set(PLATFORM_PREFIX            "/home/spandan/virtualization/e/active/android-ndk-crystax-standalone-toolchain-4.8-14/sysroot")
 #set(PLATFORM_PREFIX            "/home/spandan/virtualization/e/active/android-ndk-r10c/platforms/android-21/arch-arm")
+#set(PLATFORM_PREFIX            "/home/spandan/virtualization/e/active/android-ndk-crystax-standalone-toolchain-beta-4.8/sysroot")
+
+#set(PLATFORM_PREFIX            "/home/spandan/virtualization/e/active/android-ndk-crystax-standalone-toolchain-4.8-14/sysroot")
+set(PLATFORM_PREFIX            "/home/spandan/virtualization/e/active/android-ndk-crystax-standalone-toolchain-4.8-21/sysroot")
 
 #set(PLATFORM_TOOL_PREFIX       "/home/viv/Dev/android-ndk-r10b/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64")
 #set(PLATFORM_STL_PREFIX        "/home/viv/Dev/android-ndk-r10b/sources/cxx-stl/gnu-libstdc++/4.8")
