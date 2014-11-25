@@ -35,8 +35,8 @@
 #==================================================================================================#
 
 
-set(BoostVersion 1.55.0)
-set(BoostSHA1 cef9a0cc7084b1d639e06cd3bc34e4251524c840)
+set(BoostVersion 1.57.0)
+set(BoostSHA1 e151557ae47afd1b43dc3fac46f8b04a8fe51c12)
 
 
 
@@ -148,7 +148,6 @@ if(Found LESS "0" OR NOT IS_DIRECTORY "${BoostSourceDir}")
   file(REMOVE_RECURSE ${BoostExtractFolder})
 endif()
 
-
 # Build b2 (bjam) if required
 unset(b2Path CACHE)
 find_program(b2Path NAMES b2 PATHS ${BoostSourceDir} NO_DEFAULT_PATH)
@@ -171,15 +170,6 @@ if(NOT b2Path)
   endif()
 endif()
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${BoostSourceDir}/Build)
-
-# Apply patched files
-if(NOT BoostVersion STREQUAL "1.55.0")
-  message(FATAL_ERROR "Remove patched files from the source tree and delete corresponding 'configure_file' commands in this 'add_boost' CMake file.")
-endif()
-configure_file(patches/boost_1_55/boost/atomic/detail/cas128strong.hpp ${BoostSourceDir}/boost/atomic/detail/cas128strong.hpp COPYONLY)
-configure_file(patches/boost_1_55/boost/atomic/detail/gcc-atomic.hpp ${BoostSourceDir}/boost/atomic/detail/gcc-atomic.hpp COPYONLY)
-configure_file(patches/boost_1_55/boost/intrusive/detail/has_member_function_callable_with.hpp ${BoostSourceDir}/boost/intrusive/detail/has_member_function_callable_with.hpp COPYONLY)
-configure_file(patches/boost_1_55/boost/signals2/detail/variadic_slot_invoker.hpp ${BoostSourceDir}/boost/signals2/detail/variadic_slot_invoker.hpp COPYONLY)
 
 # Expose BoostSourceDir to parent scope
 set(BoostSourceDir ${BoostSourceDir} PARENT_SCOPE)
