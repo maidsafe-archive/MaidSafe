@@ -358,9 +358,14 @@ function(ms_add_project_experimental)
     configure_file(${CMAKE_SOURCE_DIR}/cmake_modules/run_experimental.cmake.in
                    ${CMAKE_CURRENT_BINARY_DIR}/run_experimental_${CTEST_CONFIGURATION_TYPE}.cmake
                    @ONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/cmake_modules/run_check.cmake.in
+                   ${CMAKE_CURRENT_BINARY_DIR}/run_check_${CTEST_CONFIGURATION_TYPE}.cmake
+                   @ONLY)
   endforeach()
   add_custom_target(Exper${CamelCaseProjectName} COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION> -S ${CMAKE_CURRENT_BINARY_DIR}/run_experimental_$<CONFIGURATION>.cmake -V)
   set_target_properties(Exper${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/Experimentals")
+  add_custom_target(Check${CamelCaseProjectName} COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION> -S ${CMAKE_CURRENT_BINARY_DIR}/run_check_$<CONFIGURATION>.cmake -V)
+  set_target_properties(Check${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/Checks")
 endfunction()
 
 
