@@ -42,7 +42,7 @@ elseif(HAVE_FLAG_ADDRESS_SANITIZER)
 endif()
 
 if(NOT ADDRESS_SANITIZER_FLAG)
-  if("${CMAKE_BUILD_TYPE}" STREQUAL "Asan")
+  if(CMAKE_BUILD_TYPE STREQUAL "Asan")
     message(FATAL_ERROR "\nYou have specified \"Asan\" as the build type, but Address Sanitiser is not supported on this platform with the chosen compiler.\n")
   endif()
   return()

@@ -58,7 +58,7 @@ list(REMOVE_ITEM DevLibDepends BoostContext BoostCoroutine BoostGraphParallel Bo
 set(SourceFile ${CMAKE_CURRENT_BINARY_DIR}/GeneratedSources/monolithic.cc)
 set(CMAKE_DEBUG_POSTFIX -d)
 add_library(maidsafe STATIC ${SourceFile})
-set_target_properties(maidsafe PROPERTIES FOLDER "MaidSafe/Monolithic")
+set_target_properties(maidsafe PROPERTIES FOLDER "MaidSafe/Libraries/Monolithic")
 
 set(MonolithicIncludes "${CMAKE_BINARY_DIR}/MonolithicIncludes")
 
@@ -78,7 +78,7 @@ file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_
 file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/sqlite/include/sqlite3.h\" DESTINATION \"${MonolithicIncludes}/sqlite\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${MaidsafeGeneratedSourcesDir}/nfs/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
 
-if("${CMAKE_BUILD_TYPE}" STREQUAL Release OR CMAKE_CONFIGURATION_TYPES)
+if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_CONFIGURATION_TYPES)
   add_custom_command(TARGET maidsafe POST_BUILD COMMAND ${CMAKE_COMMAND} -DMonolithicIncludes="${MonolithicIncludes}" -P "${HeadersHelper}")
 endif()
 

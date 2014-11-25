@@ -49,7 +49,7 @@ add_subdirectory(sqlite)
 
 
 # Add third party tests
-if(MaidsafeTesting)
+if(INCLUDE_TESTS)
   # Crypto++
   set(CamelCaseProjectName ThirdParty)
   set(AllExesForCurrentProject cryptest protobuf_lite_tests protobuf_tests ${AllSQLiteTests}
@@ -91,7 +91,7 @@ if(MaidsafeTesting)
   # GMock
   foreach(GMockTest ${AllGMockTests})
     add_test(NAME ${GMockTest} COMMAND ${GMockTest})
-    if("${GMockTest}" STREQUAL "gmock-matchers_test")
+    if(GMockTest STREQUAL "gmock-matchers_test")
       set(ExtendedTimeout 60)
       ms_update_test_timeout(ExtendedTimeout)
       set_tests_properties(gmock-matchers_test PROPERTIES TIMEOUT ${ExtendedTimeout} LABELS "ThirdParty;Behavioural;GMock;${TASK_LABEL}")

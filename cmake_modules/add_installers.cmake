@@ -26,7 +26,7 @@
 
 
 
-if(NOT CMAKE_CONFIGURATION_TYPES AND NOT ${CMAKE_BUILD_TYPE} STREQUAL Release)
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE STREQUAL "Release")
   message(STATUS "Installers unavailable with ${CMAKE_BUILD_TYPE} configuration")
   return()
 endif()

@@ -22,7 +22,7 @@
 
 
 # Assert that configuration is Release for all but DevDebug target
-if(NOT "${Config}" STREQUAL Release AND NOT "${TargetType}" STREQUAL "DevDebug")
+if(NOT Config STREQUAL "Release" AND NOT TargetType STREQUAL "DevDebug")
   message(FATAL_ERROR "Invalid build configuration.  ${TargetName} is only availale for Release builds.")
 endif()
 
@@ -42,7 +42,7 @@ separate_arguments(TargetExes UNIX_COMMAND "${TargetExes}")
 
 # Clear installer folder and execute relevant file/folder commands
 file(REMOVE_RECURSE "${InstallerDir}")
-if("${TargetType}" STREQUAL "Farmer")
+if(TargetType STREQUAL "Farmer")
   set(PostInstall "${SUPER_PROJECT_SOURCE_DIR}/src/vault_manager/installer/linux/scripts/ubuntu/post_install")
   file(COPY ${TargetExes} DESTINATION "${InstallerDir}/opt/maidsafe")
   file(COPY "${SUPER_PROJECT_SOURCE_DIR}/src/vault_manager/installer/linux/scripts/ubuntu/vault_manager" DESTINATION "${InstallerDir}/etc/init.d/")
@@ -52,7 +52,7 @@ if("${TargetType}" STREQUAL "Farmer")
   list(APPEND FpmDebFlags --description "${Description}" --after-install "${PostInstall}")
   list(APPEND FpmRpmFlags --description "${Description}" --after-install "${PostInstall}")
 
-elseif("${TargetType}" STREQUAL "Dev")
+elseif(TargetType STREQUAL "Dev")
   file(COPY "${SUPER_PROJECT_SOURCE_DIR}/src/common/include/maidsafe" DESTINATION "${InstallerDir}/opt/maidsafe/include/")
   file(COPY "${SUPER_PROJECT_SOURCE_DIR}/src/passport/include/maidsafe" DESTINATION "${InstallerDir}/opt/maidsafe/include/")
   file(COPY "${SUPER_PROJECT_SOURCE_DIR}/src/rudp/include/maidsafe" DESTINATION "${InstallerDir}/opt/maidsafe/include//")
@@ -72,13 +72,13 @@ elseif("${TargetType}" STREQUAL "Dev")
   list(APPEND FpmDebFlags -d build-essential -d libfuse-dev -d libicu-dev --description "${Description}")
   list(APPEND FpmRpmFlags -d build-essential -d libfuse-dev -d libicu-dev --description "${Description}")
 
-elseif("${TargetType}" STREQUAL "Utilities")
+elseif(TargetType STREQUAL "Utilities")
   file(COPY ${TargetExes} DESTINATION "${InstallerDir}/opt/maidsafe/tests")
   set(Description "MaidSafe Core system tests and utilities")
   list(APPEND FpmDebFlags --description "${Description}")
   list(APPEND FpmRpmFlags --description "${Description}")
-  
-elseif("${TargetType}" STREQUAL "DevDebug")
+
+elseif(TargetType STREQUAL "DevDebug")
   file(COPY ${TargetLibs} DESTINATION "${InstallerDir}/opt/maidsafe/usr/lib/")
   set(Description "MaidSafe Developer Environment (Debug symbols included)")
   list(APPEND FpmDebFlags -d build-essential -d libfuse-dev -d libicu-dev --description "${Description}")
