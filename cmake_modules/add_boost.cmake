@@ -174,6 +174,12 @@ if(NOT b2Path)
 endif()
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${BoostSourceDir}/Build)
 
+# Apply patched files
+if(NOT BoostVersion STREQUAL "1.57.0")
+  message(FATAL_ERROR "Remove patched files from the source tree and delete corresponding 'configure_file' commands in this 'add_boost' CMake file.")
+endif()
+configure_file(patches/boost_1_57/boost/thread/pthread/thread_data.hpp ${BoostSourceDir}/boost/thread/pthread/thread_data.hpp COPYONLY)
+
 # Expose BoostSourceDir to parent scope
 set(BoostSourceDir ${BoostSourceDir} PARENT_SCOPE)
 
@@ -215,12 +221,13 @@ elseif(APPLE)
   list(APPEND b2Args variant=release toolset=clang cxxflags=-fPIC cxxflags=-std=c++11 cxxflags=-stdlib=libc++
                      linkflags=-stdlib=libc++ architecture=combined address-model=32_64 --layout=tagged)
 elseif(UNIX)
-	if(${ANDROID_BUILD})
+  list(APPEND b2Args --layout=tagged)
+	if(ANDROID_BUILD)
 		set(AndroidNDKSrcDir "${ANDROID_NDK_ROOT}")
-    configure_file("${CMAKE_SOURCE_DIR}/tools/android/user-config.jam.in" "${BoostSourceDir}/tools/build/v2/user-config.jam")
-    list(APPEND b2Args toolset=gcc-android target-os=linux link=static threading=multi --layout=tagged)
+    configure_file("${CMAKE_SOURCE_DIR}/tools/android/user-config.jam.in" "${BoostSourceDir}/tools/build/src/user-config.jam")
+    list(APPEND b2Args toolset=gcc-android target-os=linux)
   else()
-    list(APPEND b2Args variant=release cxxflags=-fPIC cxxflags=-std=c++11 -sNO_BZIP2=1 --layout=tagged)
+    list(APPEND b2Args variant=release cxxflags=-fPIC cxxflags=-std=c++11 -sNO_BZIP2=1)
     # Need to configure the toolset based on whatever version CMAKE_CXX_COMPILER is
     string(REGEX MATCH "[0-9]+\\.[0-9]+" ToolsetVer "${CMAKE_CXX_COMPILER_VERSION}")
     if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
