@@ -64,7 +64,7 @@ set(AllGTestTests ${AllGTestTests} PARENT_SCOPE)
 # call it again here.
 config_compiler_and_linker()  # from ${gtest_dir}/cmake/internal_utils.cmake
 
-# if(${CMAKE_CXX_COMPILER_ID} MATCHES "^(Apple)?Clang$")
+# if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
 #   add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
 #   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -ldl -lcxxrt")
 # endif()
