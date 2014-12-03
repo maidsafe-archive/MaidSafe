@@ -365,7 +365,7 @@ add_dependencies(boost_process boost_system)
 # Package                                                                                          #
 #==================================================================================================#
 if(MSVC)
-  foreach(BoostLib BoostChrono BoostDateTime BoostFilesystem BoostLocale BoostProgramOptions BoostRegex BoostSystem BoostThread)
+  foreach(BoostLib BoostChrono BoostDateTime BoostFilesystem BoostProgramOptions BoostSystem BoostThread)
     get_target_property(Location ${BoostLib} IMPORTED_LOCATION_DEBUG)
     install(FILES ${Location} COMPONENT Development CONFIGURATIONS Debug DESTINATION lib)
     get_target_property(Location ${BoostLib} IMPORTED_LOCATION_RELEASE)
