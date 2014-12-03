@@ -50,7 +50,7 @@ endif()
 
 set(AllTargets ${AllStaticLibs} local_drive drive sqlite cryptopp protobuf_lite protoc gmock gtest)
 if(NOT CMAKE_VERSION VERSION_LESS "3.0")
-  list(APPEND AllTargets cereal)
+  list(APPEND AllTargets asio cereal)
 endif()
 if(Cbfs_FOUND)
   list(APPEND AllTargets cbfs_driver)
