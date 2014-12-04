@@ -318,21 +318,22 @@ add_dependencies(boost_wave boost_chrono boost_date_time boost_filesystem boost_
 
 
 
-# Set up download step for the currently-unofficial Boost.Process
+# Set up external project for the currently-unofficial Boost.Process and Boost.Expected
 ExternalProject_Add(
     boost_process
     PREFIX ${CMAKE_BINARY_DIR}/boost_process
     DOWNLOAD_COMMAND ""
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
-    BUILD_IN_SOURCE ON
     INSTALL_COMMAND ""
-    LOG_DOWNLOAD ON
-    LOG_UPDATE ON
-    LOG_CONFIGURE ON
-    LOG_BUILD ON
-    LOG_TEST ON
-    LOG_INSTALL ON
+    )
+ExternalProject_Add(
+    boost_expected
+    PREFIX ${CMAKE_BINARY_DIR}/boost_expected
+    DOWNLOAD_COMMAND ""
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
     )
 
 # Copy the folders/files to the main boost source dir
@@ -340,24 +341,41 @@ ExternalProject_Add_Step(
     boost_process
     copy_boost_process_dir
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost_process/boost/process ${BoostSourceDir}/boost/process
-    COMMENT "Copying Boost.Process boost dir..."
+    COMMENT "Copying boost/process dir..."
     DEPENDERS configure
     )
 ExternalProject_Add_Step(
     boost_process
     copy_boost_process_hpp
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost_process/boost/process.hpp ${BoostSourceDir}/boost
-    COMMENT "Copying Boost.Process header..."
+    COMMENT "Copying boost/process.hpp..."
     DEPENDERS configure
     )
 ExternalProject_Add_Step(
     boost_process
     copy_libs_process_dir
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost_process/libs/process ${BoostSourceDir}/libs/process
-    COMMENT "Copying Boost.Process libs dir..."
+    COMMENT "Copying libs/process dir..."
     DEPENDERS configure
     )
+
+ExternalProject_Add_Step(
+    boost_expected
+    copy_boost_expected_dir
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost_expected/boost/expected ${BoostSourceDir}/boost/expected
+    COMMENT "Copying boost/expected dir..."
+    DEPENDERS configure
+    )
+ExternalProject_Add_Step(
+    boost_expected
+    copy_boost_functional_dir
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost_expected/boost/functional ${BoostSourceDir}/boost/functional
+    COMMENT "Copying boost/functional dir..."
+    DEPENDERS configure
+    )
+
 set_target_properties(boost_process PROPERTIES LABELS Boost FOLDER "Third Party/Boost")
+set_target_properties(boost_expected PROPERTIES LABELS Boost FOLDER "Third Party/Boost")
 add_dependencies(boost_process boost_system)
 
 
