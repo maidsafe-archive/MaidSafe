@@ -227,7 +227,6 @@ add_subdirectory(src/third_party_libs)
 foreach(SubModule ${SubModules})
   add_subdirectory(src/${SubModule})
 endforeach()
-target_include_directories(maidsafe_common PUBLIC ${CMAKE_SOURCE_DIR}/src/third_party_libs/header_only)  # TODO(Viv) - Remove with MAID-514
 include(exports)
 
 message("${HR}")
