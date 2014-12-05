@@ -74,6 +74,8 @@ file(APPEND "${HeadersHelper}" "file(COPY \"${api_SOURCE_DIR}/include/maidsafe\"
 file(APPEND "${HeadersHelper}" "file(COPY \"${BoostSourceDir}/boost\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(GLOB CryptoHeaders \"${Cryptopp_SOURCE_DIR}/*.h\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \${CryptoHeaders} DESTINATION \"${MonolithicIncludes}/cryptopp\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/header_only/asio.hpp\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/header_only/asio\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/header_only/cereal\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/sqlite/include/sqlite3.h\" DESTINATION \"${MonolithicIncludes}/sqlite\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${MaidsafeGeneratedSourcesDir}/nfs/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")

@@ -31,7 +31,7 @@ foreach(Lib ${Libs})
 
     # For multi-config IDEs, add custom target to make library's files visible
     if(CMAKE_CONFIGURATION_TYPES)
-      file(GLOB_RECURSE GlobbedSrcs "${CMAKE_CURRENT_SOURCE_DIR}/${Lib}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/${Lib}/*.hpp")
+      file(GLOB_RECURSE GlobbedSrcs "${CMAKE_CURRENT_SOURCE_DIR}/${Lib}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/${Lib}/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/${Lib}/*.ipp")
       ms_underscores_to_camel_case(${Lib} CamelCaseLib)
       add_custom_target(${CamelCaseLib}Files
           COMMENT "NOTE: This is not a target which can be built; just a list of headers for ${CamelCaseLib}."
@@ -40,3 +40,5 @@ foreach(Lib ${Libs})
     endif()
   endif()
 endforeach()
+
+target_link_libraries(asio INTERFACE ${BoostCoroutineLibs} ${BoostContextLibs} ${BoostSystemLibs})
