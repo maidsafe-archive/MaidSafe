@@ -41,4 +41,6 @@ foreach(Lib ${Libs})
   endif()
 endforeach()
 
-target_link_libraries(asio INTERFACE ${BoostCoroutineLibs} ${BoostContextLibs} ${BoostSystemLibs})
+if(NOT CMAKE_VERSION VERSION_LESS "3.0")
+  target_link_libraries(asio INTERFACE ${BoostCoroutineLibs} ${BoostContextLibs} ${BoostSystemLibs})
+endif()
