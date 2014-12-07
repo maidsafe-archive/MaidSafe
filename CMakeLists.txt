@@ -26,7 +26,7 @@ cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
 # Prefer out-of-source builds (i.e. the build root being outside of the source root), but allow for
 # building in a folder immediately inside the source root (not one of the existing source folders).
 set(SourceDir ${CMAKE_SOURCE_DIR})
-foreach(SpecialChar ^ $ . [ ] * + ? | ( ))
+foreach(SpecialChar "^" "$" "." "[" "]" "*" "+" "?" "|" "(" ")")
   string(REPLACE "${SpecialChar}" "\\${SpecialChar}" SourceDir "${SourceDir}")
 endforeach()
 if(CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR OR
