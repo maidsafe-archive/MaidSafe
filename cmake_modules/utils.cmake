@@ -25,7 +25,7 @@
 #==================================================================================================#
 
 
-#include(add_protoc_command)
+include(add_protoc_command)
 
 
 # Oddly cmake is fairly limited in standard platform defines
@@ -117,20 +117,20 @@ endfunction()
 macro(ms_glob_dir BaseName Dir SourceGroupName)
   string(REPLACE "${PROJECT_SOURCE_DIR}/src" "${PROJECT_SOURCE_DIR}/include" ApiDir ${Dir})
   file(GLOB ${BaseName}Api ${ApiDir}/*.h)
-#  set(ProtoRootDir ${PROJECT_SOURCE_DIR}/src)
-#  string(REPLACE "${ProtoRootDir}" "" ProtoRelativeDir "${Dir}")
-#  ms_add_protoc_command(${BaseName} "${ProtoRootDir}" "${ProtoRelativeDir}")
+  set(ProtoRootDir ${PROJECT_SOURCE_DIR}/src)
+  string(REPLACE "${ProtoRootDir}" "" ProtoRelativeDir "${Dir}")
+  ms_add_protoc_command(${BaseName} "${ProtoRootDir}" "${ProtoRelativeDir}")
   file(GLOB ${BaseName}Sources ${Dir}/*.cc)
   file(GLOB ${BaseName}Headers ${Dir}/*.h)
   set(${BaseName}AllFiles ${${BaseName}Api} ${${BaseName}Sources} ${${BaseName}Headers}
-#   ${${BaseName}Protos}
+    ${${BaseName}Protos}
   )
   set(${BaseName}SourceGroupName "${SourceGroupName} ")
   string(REPLACE "\\ " "\\" ${BaseName}SourceGroupName "${${BaseName}SourceGroupName}")
   source_group("${${BaseName}SourceGroupName}API Files" FILES ${${BaseName}Api})
   source_group("${${BaseName}SourceGroupName}Source Files" FILES ${${BaseName}Sources})
   source_group("${${BaseName}SourceGroupName}Header Files" FILES ${${BaseName}Headers})
-#  source_group("${${BaseName}SourceGroupName}Proto Files" FILES ${${BaseName}Protos})
+  source_group("${${BaseName}SourceGroupName}Proto Files" FILES ${${BaseName}Protos})
 endmacro()
 
 

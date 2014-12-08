@@ -51,74 +51,74 @@
 
 
 function(ms_add_protoc_command BaseName ProtoRootDir ProtoRelativeDir)
-#  set(${BaseName}ProtoSources "" PARENT_SCOPE)
-#  set(${BaseName}ProtoHeaders "" PARENT_SCOPE)
-#  set(${BaseName}Protos "" PARENT_SCOPE)
-#  set(GeneratedProtoRootDir ${CMAKE_BINARY_DIR}/GeneratedProtoFiles)
+  set(${BaseName}ProtoSources "" PARENT_SCOPE)
+  set(${BaseName}ProtoHeaders "" PARENT_SCOPE)
+  set(${BaseName}Protos "" PARENT_SCOPE)
+  set(GeneratedProtoRootDir ${CMAKE_BINARY_DIR}/GeneratedProtoFiles)
 
-#  # Get list of .proto files
-#  file(GLOB ProtoFiles RELATIVE ${ProtoRootDir} ${ProtoRootDir}/${ProtoRelativeDir}/*.proto)
+  # Get list of .proto files
+  file(GLOB ProtoFiles RELATIVE ${ProtoRootDir} ${ProtoRootDir}/${ProtoRelativeDir}/*.proto)
   
-#  # Search for and remove old generated .pb.cc and .pb.h files in the output dir
-#  file(GLOB ExistingPbFiles
-#       RELATIVE ${GeneratedProtoRootDir}
-#       ${GeneratedProtoRootDir}/${ProtoRelativeDir}/*.pb.*)
-#  list(LENGTH ExistingPbFiles ExistingPbFilesCount)
-#  string(REGEX REPLACE "([^;]*)\\.proto" "\\1.pb.cc;\\1.pb.h" GeneratedFiles "${ProtoFiles}")
-#  if(ExistingPbFilesCount)
-#    if(GeneratedFiles)
-#      list(REMOVE_ITEM ExistingPbFiles ${GeneratedFiles})
-#    endif()
-#    foreach(ExistingPbFile ${ExistingPbFiles})
-#      file(REMOVE ${GeneratedProtoRootDir}/${ExistingPbFile})
-#      message(STATUS "Removed ${ExistingPbFile}")
-#    endforeach()
-#  endif()
+  # Search for and remove old generated .pb.cc and .pb.h files in the output dir
+  file(GLOB ExistingPbFiles
+       RELATIVE ${GeneratedProtoRootDir}
+       ${GeneratedProtoRootDir}/${ProtoRelativeDir}/*.pb.*)
+  list(LENGTH ExistingPbFiles ExistingPbFilesCount)
+  string(REGEX REPLACE "([^;]*)\\.proto" "\\1.pb.cc;\\1.pb.h" GeneratedFiles "${ProtoFiles}")
+  if(ExistingPbFilesCount)
+    if(GeneratedFiles)
+      list(REMOVE_ITEM ExistingPbFiles ${GeneratedFiles})
+    endif()
+    foreach(ExistingPbFile ${ExistingPbFiles})
+      file(REMOVE ${GeneratedProtoRootDir}/${ExistingPbFile})
+      message(STATUS "Removed ${ExistingPbFile}")
+    endforeach()
+  endif()
   
-#  if(NOT ProtoFiles)
-#    return()
-#  endif()
+  if(NOT ProtoFiles)
+    return()
+  endif()
 
-#  # Set up protoc arguments
-#  set(ProtocArgs "--proto_path=${ProtoRootDir}")
-#  set(ProtoImportDirs ${ARGN})
-#  foreach(ProtoImportDir ${ProtoImportDirs})
-#    list(APPEND ProtocArgs "--proto_path=${ProtoImportDir}")
-#  endforeach()
-#  list(REMOVE_DUPLICATES ProtocArgs)
-#  list(APPEND ProtocArgs "--cpp_out=${GeneratedProtoRootDir}")
-#  if(MSVC)
-#    list(APPEND ProtocArgs "--error_format=msvs")
-#  else()
-#    list(APPEND ProtocArgs "--error_format=gcc")
-#  endif()
+  # Set up protoc arguments
+  set(ProtocArgs "--proto_path=${ProtoRootDir}")
+  set(ProtoImportDirs ${ARGN})
+  foreach(ProtoImportDir ${ProtoImportDirs})
+    list(APPEND ProtocArgs "--proto_path=${ProtoImportDir}")
+  endforeach()
+  list(REMOVE_DUPLICATES ProtocArgs)
+  list(APPEND ProtocArgs "--cpp_out=${GeneratedProtoRootDir}")
+  if(MSVC)
+    list(APPEND ProtocArgs "--error_format=msvs")
+  else()
+    list(APPEND ProtocArgs "--error_format=gcc")
+  endif()
 
-#  # Add custom command to generate CC and header files
-#  unset(GeneratedProtoFiles)
-#  unset(GeneratedProtoSources)
-#  unset(GeneratedProtoHeaders)
-#  file(MAKE_DIRECTORY ${GeneratedProtoRootDir})
-#  foreach(ProtoFile ${ProtoFiles})
-#    get_filename_component(ProtoFileNameWe ${ProtoFile} NAME_WE)
-#    set(GeneratedSource ${GeneratedProtoRootDir}/${ProtoRelativeDir}/${ProtoFileNameWe}.pb.cc)
-#    set(GeneratedHeader ${GeneratedProtoRootDir}/${ProtoRelativeDir}/${ProtoFileNameWe}.pb.h)
-#    list(APPEND GeneratedProtoSources "${GeneratedSource}")
-#    list(APPEND GeneratedProtoHeaders "${GeneratedHeader}")
-#    list(APPEND Protos "${ProtoRootDir}/${ProtoFile}")
-#    add_custom_command(OUTPUT ${GeneratedSource} ${GeneratedHeader}
-#                       COMMAND $<TARGET_FILE:protoc> ${ProtocArgs} ${ProtoRootDir}/${ProtoFile}
-#                       DEPENDS protoc ${ProtoRootDir}/${ProtoFile}
-#                       COMMENT "Generated files from ${ProtoFileNameWe}.proto"
-#                       VERBATIM)
-#  endforeach()
+  # Add custom command to generate CC and header files
+  unset(GeneratedProtoFiles)
+  unset(GeneratedProtoSources)
+  unset(GeneratedProtoHeaders)
+  file(MAKE_DIRECTORY ${GeneratedProtoRootDir})
+  foreach(ProtoFile ${ProtoFiles})
+    get_filename_component(ProtoFileNameWe ${ProtoFile} NAME_WE)
+    set(GeneratedSource ${GeneratedProtoRootDir}/${ProtoRelativeDir}/${ProtoFileNameWe}.pb.cc)
+    set(GeneratedHeader ${GeneratedProtoRootDir}/${ProtoRelativeDir}/${ProtoFileNameWe}.pb.h)
+    list(APPEND GeneratedProtoSources "${GeneratedSource}")
+    list(APPEND GeneratedProtoHeaders "${GeneratedHeader}")
+    list(APPEND Protos "${ProtoRootDir}/${ProtoFile}")
+    add_custom_command(OUTPUT ${GeneratedSource} ${GeneratedHeader}
+                       COMMAND $<TARGET_FILE:protoc> ${ProtocArgs} ${ProtoRootDir}/${ProtoFile}
+                       DEPENDS protoc ${ProtoRootDir}/${ProtoFile}
+                       COMMENT "Generated files from ${ProtoFileNameWe}.proto"
+                       VERBATIM)
+  endforeach()
 
-#  set_source_files_properties(${GeneratedProtoSources} ${GeneratedProtoHeaders} PROPERTIES GENERATED TRUE)
-#  if(MSVC)
-#    set_source_files_properties(${GeneratedProtoSources} PROPERTIES COMPILE_FLAGS "/W0")
-#  else()
-#    set_source_files_properties(${GeneratedProtoSources} PROPERTIES COMPILE_FLAGS "-w")
-#  endif()
-#  set(${BaseName}ProtoSources ${GeneratedProtoSources} PARENT_SCOPE)
-#  set(${BaseName}ProtoHeaders ${GeneratedProtoHeaders} PARENT_SCOPE)
-#  set(${BaseName}Protos ${Protos} ${GeneratedProtoSources} ${GeneratedProtoHeaders} PARENT_SCOPE)
+  set_source_files_properties(${GeneratedProtoSources} ${GeneratedProtoHeaders} PROPERTIES GENERATED TRUE)
+  if(MSVC)
+    set_source_files_properties(${GeneratedProtoSources} PROPERTIES COMPILE_FLAGS "/W0")
+  else()
+    set_source_files_properties(${GeneratedProtoSources} PROPERTIES COMPILE_FLAGS "-w")
+  endif()
+  set(${BaseName}ProtoSources ${GeneratedProtoSources} PARENT_SCOPE)
+  set(${BaseName}ProtoHeaders ${GeneratedProtoHeaders} PARENT_SCOPE)
+  set(${BaseName}Protos ${Protos} ${GeneratedProtoSources} ${GeneratedProtoHeaders} PARENT_SCOPE)
 endfunction()
