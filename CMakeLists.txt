@@ -25,6 +25,12 @@ cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
 
 ##############################################
 if(ANDROID_BUILD)
+  if(NOT ANDROID_API_LEVEL)
+    message(FATAL_ERROR "Missing ANDROID_API_LEVEL")
+  endif()
+  if(NOT ANDROID_NDK_TOOLCHAIN_ROOT)
+    message(FATAL_ERROR "Missing ANDROID_NDK_TOOLCHAIN_ROOT")
+  endif()
   set(PLATFORM_PREFIX            "${ANDROID_NDK_TOOLCHAIN_ROOT}/sysroot")
   set(PLATFORM_FLAGS             "-fPIC -Wno-psabi --sysroot=${PLATFORM_PREFIX}")
   set(CMAKE_C_COMPILER           "${ANDROID_NDK_TOOLCHAIN_ROOT}/bin/arm-linux-androideabi-gcc")
