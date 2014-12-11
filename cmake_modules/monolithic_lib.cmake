@@ -58,7 +58,7 @@ list(REMOVE_ITEM DevLibDepends BoostContext BoostCoroutine BoostGraphParallel Bo
 set(SourceFile ${MaidsafeGeneratedSourcesDir}/monolithic.cc)
 set(CMAKE_DEBUG_POSTFIX -d)
 add_library(maidsafe STATIC ${SourceFile})
-set_target_properties(maidsafe PROPERTIES FOLDER "MaidSafe/Monolithic")
+set_target_properties(maidsafe PROPERTIES FOLDER "MaidSafe/Libraries/Monolithic")
 
 set(MonolithicIncludes "${CMAKE_BINARY_DIR}/MonolithicIncludes")
 
@@ -74,11 +74,13 @@ file(APPEND "${HeadersHelper}" "file(COPY \"${api_SOURCE_DIR}/include/maidsafe\"
 file(APPEND "${HeadersHelper}" "file(COPY \"${BoostSourceDir}/boost\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(GLOB CryptoHeaders \"${Cryptopp_SOURCE_DIR}/*.h\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \${CryptoHeaders} DESTINATION \"${MonolithicIncludes}/cryptopp\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/header_only/asio.hpp\" DESTINATION \"${MonolithicIncludes}\")\n")
+file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/header_only/asio\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/header_only/cereal\" DESTINATION \"${MonolithicIncludes}\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${CMAKE_SOURCE_DIR}/src/third_party_libs/sqlite/include/sqlite3.h\" DESTINATION \"${MonolithicIncludes}/sqlite\")\n")
 file(APPEND "${HeadersHelper}" "file(COPY \"${MaidsafeGeneratedSourcesDir}/nfs/include/maidsafe\" DESTINATION \"${MonolithicIncludes}\")\n")
 
-if("${CMAKE_BUILD_TYPE}" STREQUAL Release OR CMAKE_CONFIGURATION_TYPES)
+if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_CONFIGURATION_TYPES)
   add_custom_command(TARGET maidsafe POST_BUILD COMMAND ${CMAKE_COMMAND} -DMonolithicIncludes="${MonolithicIncludes}" -P "${HeadersHelper}")
 endif()
 

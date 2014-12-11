@@ -112,10 +112,10 @@ foreach(Line ${ProjectContents})
     endif()
   endif()
   if(UseCurrentLine)
-    if("${CurrentPlatformType}" STREQUAL "x64")
-      if("${CurrentMode}" STREQUAL "Debug")
+    if("x${CurrentPlatformType}" STREQUAL "xx64")
+      if(CurrentMode STREQUAL "Debug")
         string(REGEX REPLACE "\\.\\\\Debug([\\/])" ".\\\\x64\\\\Debug\\1" Line "${Line}")
-      elseif("${CurrentMode}" STREQUAL "Release")
+      elseif(CurrentMode STREQUAL "Release")
         string(REGEX REPLACE "\\.\\\\Release([\\/])" ".\\\\x64\\\\Release\\1" Line "${Line}")
       endif()
     endif()
@@ -167,15 +167,15 @@ if(x64)
   execute_process(COMMAND msbuild /M:7 /P:Configuration=Debug,Platform=x64 CbFS_VS2013.sln
                   WORKING_DIRECTORY "${CbfsRootDir}/SourceCode/CBFS/CPP"
                   RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
-  if(NOT "${ResVar}" EQUAL 0)
-    message(FATAL_ERROR "Failed to run command msbuild /M:7 /P:Configuration=Debug,Platform=x64 CbFS_VS2013.sln from within \"${CbfsRootDir}/SourceCode/CBFS/CPP\"\n\n${OutVar}") 
+  if(NOT ResVar EQUAL "0")
+    message(FATAL_ERROR "Failed to run command msbuild /M:7 /P:Configuration=Debug,Platform=x64 CbFS_VS2013.sln from within \"${CbfsRootDir}/SourceCode/CBFS/CPP\"\n\n${OutVar}")
   endif()
-  
+
   message("Building 64-bit Release version")
   execute_process(COMMAND msbuild /M:7 /P:Configuration=Release,Platform=x64 CbFS_VS2013.sln
                   WORKING_DIRECTORY "${CbfsRootDir}/SourceCode/CBFS/CPP"
                   RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
-  if(NOT "${ResVar}" EQUAL 0)
+  if(NOT ResVar EQUAL "0")
     message(FATAL_ERROR "Failed to run command msbuild /M:7 /P:Configuration=Release,Platform=x64 CbFS_VS2013.sln from within \"${CbfsRootDir}/SourceCode/CBFS/CPP\"\n\n${OutVar}")
   endif()
 endif()
@@ -184,15 +184,15 @@ message("Building 32-bit Debug version")
 execute_process(COMMAND msbuild /M:7 /P:Configuration=Debug,Platform=Win32 CbFS_VS2013.sln
                 WORKING_DIRECTORY "${CbfsRootDir}/SourceCode/CBFS/CPP"
                 RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
-if(NOT "${ResVar}" EQUAL 0)
-  message(FATAL_ERROR "Failed to run command msbuild /M:7 /P:Configuration=Debug,Platform=Win32 CbFS_VS2013.sln from within \"${CbfsRootDir}/SourceCode/CBFS/CPP\"\n\n${OutVar}") 
+if(NOT ResVar EQUAL "0")
+  message(FATAL_ERROR "Failed to run command msbuild /M:7 /P:Configuration=Debug,Platform=Win32 CbFS_VS2013.sln from within \"${CbfsRootDir}/SourceCode/CBFS/CPP\"\n\n${OutVar}")
 endif()
 
 message("Building 32-bit Release version")
 execute_process(COMMAND msbuild /M:7 /P:Configuration=Release,Platform=Win32 CbFS_VS2013.sln
                 WORKING_DIRECTORY "${CbfsRootDir}/SourceCode/CBFS/CPP"
                 RESULT_VARIABLE ResVar OUTPUT_VARIABLE OutVar)
-if(NOT "${ResVar}" EQUAL 0)
+if(NOT ResVar EQUAL "0")
   message(FATAL_ERROR "Failed to run command msbuild /M:7 /P:Configuration=Release,Platform=Win32 CbFS_VS2013.sln from within \"${CbfsRootDir}/SourceCode/CBFS/CPP\"\n\n${OutVar}")
 endif()
 
