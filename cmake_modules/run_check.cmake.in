@@ -1,6 +1,6 @@
 #==================================================================================================#
 #                                                                                                  #
-#  Copyright 2013 MaidSafe.net limited                                                             #
+#  Copyright 2014 MaidSafe.net limited                                                             #
 #                                                                                                  #
 #  This MaidSafe Software is licensed to you under (1) the MaidSafe.net Commercial License,        #
 #  version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which    #
@@ -20,43 +20,29 @@
 #                                                                                                  #
 #==================================================================================================#
 #                                                                                                  #
-#  Script used to run Continuous Integration tests on all submodules of MaidSafe.                  #
-#                                                                                                  #
-@Documentation@#
-#                                                                                                  #
-#  By default, all test types other than Experimental run against 'next' branch for the super-     #
-#  project and all submodules.  To change them all to run against a different branch, set the      #
-#  variable BRANCH using '-D' command line argument.                                               #
-#                                                                                                  #
-#  Example usage: From MaidSafe build dir, run:                                                    #
-#    ctest -S CI_Continuous_Release.cmake                                                          #
-#    ctest -S CI_Nightly_Debug.cmake -DBRANCH=master                                               #
+#  Module used to run all tests on single submodules without submitting results to the dashboard.  #
 #                                                                                                  #
 #==================================================================================================#
 
 
-set(DashboardModel @DashType@)
-set(MachineType @MachineType@)
-set(TargetPlatform @TargetPlatform@)
-set(UsingMsBuild @UsingMsBuild@)
-set(CTEST_CONFIGURATION_TYPE @TestConfType@)
-set(CTEST_SITE "@ThisSite@")
+set(CTEST_CONFIGURATION_TYPE @CTEST_CONFIGURATION_TYPE@)
 set(CTEST_CMAKE_GENERATOR "@CMAKE_GENERATOR@")
-set(CMAKE_C_COMPILER "@CMAKE_C_COMPILER@")
-set(CMAKE_CXX_COMPILER "@CMAKE_CXX_COMPILER@")
 set(CMAKE_CXX_COMPILER_ID "@CMAKE_CXX_COMPILER_ID@")
 set(CMAKE_CXX_COMPILER_VERSION "@CMAKE_CXX_COMPILER_VERSION@")
 set(CTEST_CMAKE_COMMAND "@CMAKE_COMMAND@")
-# If the build tool is "make", CTest invokes this using "make -i" which ignores errors and causes
-# failing builds to appear to succeed.  Therefore we remove the "-i" arg here.
-string(REGEX MATCH "/make$" IsMake "${CMAKE_MAKE_PROGRAM}")
-if(IsMake)
-  set(PathOfMake "${CMAKE_MAKE_PROGRAM}")
-endif()
-set(CTEST_GIT_COMMAND "@Git_EXECUTABLE@")
-set(CTEST_PYTHON_EXECUTABLE "@PYTHON_EXECUTABLE@")
 set(CTEST_SOURCE_DIRECTORY "@CMAKE_SOURCE_DIR@")
-set(CTEST_BINARY_DIRECTORY "@CMAKE_BINARY_DIR@/build_CI_@DashType@_@TestConfType@")
-set(ExtraConfigureArgs "@CMakeArgs@;-DRUNNING_AS_CTEST_SCRIPT=TRUE;-DWEEKLY=@IsWeekly@")
+set(CTEST_BINARY_DIRECTORY "@CMAKE_BINARY_DIR@")
 
-include("@CMAKE_BINARY_DIR@/ContinuousIntegration/run_ci.cmake")
+# Avoid non-ascii characters in tool output.
+set(ENV{LC_ALL} C)
+
+ctest_start(Check)
+ctest_configure(RETURN_VALUE ReturnCode)
+if(NOT ReturnCode EQUAL "0")
+  message(FATAL_ERROR "Failed to configure @CamelCaseProjectName@.")
+endif()
+ctest_build(TARGET All@CamelCaseProjectName@ RETURN_VALUE ReturnCode NUMBER_ERRORS ErrorCount)
+if(NOT ReturnCode EQUAL "0" OR NOT ErrorCount EQUAL "0")
+  message(FATAL_ERROR "Failed to build @CamelCaseProjectName@.")
+endif()
+ctest_test(INCLUDE_LABEL @CamelCaseProjectName@$)
