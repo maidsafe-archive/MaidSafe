@@ -415,7 +415,7 @@ union no_trivial_expected_storage<void, E>
   ~no_trivial_expected_storage() {};
 };
 
-BOOST_CONSTEXPR struct only_set_valid_t{} only_set_valid{};
+BOOST_CONSTEXPR static struct only_set_valid_t{} only_set_valid{};
 
 template <typename T, typename E >
 struct trivial_expected_base
@@ -653,7 +653,7 @@ namespace expected_detail
 template <typename T>
 struct is_expected : std::false_type {};
 template <class T, class E>
-struct is_expected<expected<T,E> > : std::true_type {};
+struct is_expected<expected<T,E>> : std::true_type {};
 
 template <typename ValueType, typename ErrorType>
 class expected
@@ -866,7 +866,7 @@ public:
 
   template <class U, class... Args
 #if !defined BOOST_EXPECTED_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS
-    , T_REQUIRES(std::is_constructible<value_type, std::initializer_list<U> >::value)
+    , T_REQUIRES(std::is_constructible<value_type, std::initializer_list<U>>::value)
 #endif
     >
   BOOST_CONSTEXPR explicit expected(in_place_t, std::initializer_list<U> il, Args&&... args)
@@ -884,7 +884,7 @@ public:
 
   template <class U, class... Args
 #if !defined BOOST_EXPECTED_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS
-    , T_REQUIRES(std::is_constructible<value_type, std::initializer_list<U> >::value)
+    , T_REQUIRES(std::is_constructible<value_type, std::initializer_list<U>>::value)
 #endif
     >
   BOOST_CONSTEXPR explicit expected(expect_t, std::initializer_list<U> il, Args&&... args)
@@ -985,7 +985,8 @@ public:
   }
 #endif
 
-#if ! defined BOOST_EXPECTED_NO_CXX11_MOVE_ACCESSORS
+#if ! defined BOOST_EXPECTED_NO_CXX11_RVALUE_REFERENCE_FOR_THIS
+
   BOOST_CONSTEXPR value_type const& value() const&
   {
     return valid()
@@ -996,12 +997,12 @@ public:
         )
       ;
   }
-  BOOST_CONSTEXPR value_type& value() &
+  BOOST_EXPECTED_CONSTEXPR_IF_MOVE_ACCESSORS value_type& value() &
   {
     if (!valid()) error::rethrow<error_type>(contained_err());
     return contained_val();
   }
-  BOOST_CONSTEXPR value_type&& value() &&
+  BOOST_EXPECTED_CONSTEXPR_IF_MOVE_ACCESSORS value_type&& value() &&
   {
     if (!valid()) error::rethrow<error_type>(contained_err());
     return std::move(contained_val());
@@ -1025,17 +1026,17 @@ public:
       ;
   }
 #endif
-#if ! defined BOOST_EXPECTED_NO_CXX11_MOVE_ACCESSORS
+#if ! defined BOOST_EXPECTED_NO_CXX11_RVALUE_REFERENCE_FOR_THIS
   BOOST_CONSTEXPR value_type const& operator*() const& BOOST_NOEXCEPT
   {
     return contained_val();
   }
 
-  BOOST_CONSTEXPR value_type& operator*() & BOOST_NOEXCEPT
+  BOOST_EXPECTED_CONSTEXPR_IF_MOVE_ACCESSORS value_type& operator*() & BOOST_NOEXCEPT
   {
     return contained_val();
   }
-  BOOST_CONSTEXPR value_type&& operator*() && BOOST_NOEXCEPT
+  BOOST_EXPECTED_CONSTEXPR_IF_MOVE_ACCESSORS value_type&& operator*() && BOOST_NOEXCEPT
   {
     return constexpr_move(contained_val());
   }
@@ -1062,16 +1063,16 @@ public:
     return dataptr();
   }
 
-#if ! defined BOOST_EXPECTED_NO_CXX11_MOVE_ACCESSORS
+#if ! defined BOOST_EXPECTED_NO_CXX11_RVALUE_REFERENCE_FOR_THIS
   BOOST_CONSTEXPR error_type const& error() const& BOOST_NOEXCEPT
   {
     return contained_err();
   }
-  BOOST_CONSTEXPR error_type& error() & BOOST_NOEXCEPT
+  BOOST_EXPECTED_CONSTEXPR_IF_MOVE_ACCESSORS error_type& error() & BOOST_NOEXCEPT
   {
     return contained_err();
   }
-  BOOST_CONSTEXPR error_type&& error() && BOOST_NOEXCEPT
+  BOOST_EXPECTED_CONSTEXPR_IF_MOVE_ACCESSORS error_type&& error() && BOOST_NOEXCEPT
   {
     return constexpr_move(contained_err());
   }
@@ -1087,13 +1088,13 @@ public:
 #endif
 
 
-#if ! defined BOOST_EXPECTED_NO_CXX11_MOVE_ACCESSORS
+#if ! defined BOOST_EXPECTED_NO_CXX11_RVALUE_REFERENCE_FOR_THIS
   BOOST_CONSTEXPR unexpected_type<error_type> get_unexpected() const& BOOST_NOEXCEPT
   {
     return unexpected_type<error_type>(contained_err());
   }
 
-  BOOST_CONSTEXPR unexpected_type<error_type> get_unexpected() && BOOST_NOEXCEPT
+  BOOST_EXPECTED_CONSTEXPR_IF_MOVE_ACCESSORS unexpected_type<error_type> get_unexpected() && BOOST_NOEXCEPT
   {
     return unexpected_type<error_type>(constexpr_move(contained_err()));
   }
@@ -1411,7 +1412,7 @@ public:
 
   template <typename F>
   this_type catch_error(F&& f,
-    REQUIRES(std::is_same<typename std::result_of<F(error_type)>::type, unexpected_type<error_type> >::value))
+    REQUIRES(std::is_same<typename std::result_of<F(error_type)>::type, unexpected_type<error_type>>::value))
   {
 #if ! defined BOOST_NO_CXX14_CONSTEXPR
     if(!valid())
@@ -2258,9 +2259,9 @@ BOOST_FORCEINLINE expected<T, std::exception_ptr> make_expected_from_exception(E
 
 template <class T, class E>
 BOOST_FORCEINLINE BOOST_CONSTEXPR
-expected<T, decay_t<E> > make_expected_from_error(E e) BOOST_NOEXCEPT
+expected<T, decay_t<E>> make_expected_from_error(E e) BOOST_NOEXCEPT
 {
-  return expected<T, decay_t<E> >(make_unexpected(e));
+  return expected<T, decay_t<E>>(make_unexpected(e));
 }
 
 template <typename F>
