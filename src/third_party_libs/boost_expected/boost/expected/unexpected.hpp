@@ -165,11 +165,11 @@ namespace boost
     return !(x < y);
   }
 
-  inline BOOST_CONSTEXPR bool operator<(const unexpected_type<std::exception_ptr>& x, const unexpected_type<std::exception_ptr>& y)
+  inline BOOST_CONSTEXPR bool operator<(const unexpected_type<std::exception_ptr>& /*x*/, const unexpected_type<std::exception_ptr>& /*y*/)
   {
     return false;
   }
-  inline BOOST_CONSTEXPR bool operator>(const unexpected_type<std::exception_ptr>& x, const unexpected_type<std::exception_ptr>& y)
+  inline BOOST_CONSTEXPR bool operator>(const unexpected_type<std::exception_ptr>& /*x*/, const unexpected_type<std::exception_ptr>& /*y*/)
   {
     return false;
   }
