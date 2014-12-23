@@ -31,6 +31,13 @@
 #==================================================================================================#
 
 
+if(HaveAlreadyRunFindGit)
+  return()
+else()
+  set(HaveAlreadyRunFindGit ON)
+endif()
+
+
 if(Git_EXECUTABLE)
   # Check the exe path is still correct
   execute_process(COMMAND ${Git_EXECUTABLE} --version RESULT_VARIABLE ResultVar OUTPUT_QUIET ERROR_QUIET)
