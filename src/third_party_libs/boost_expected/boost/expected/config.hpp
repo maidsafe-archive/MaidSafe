@@ -10,19 +10,13 @@
 #include <boost/config.hpp>
 
 
-# if defined __clang__
-#  if (__clang_major__ < 2) || (__clang_major__ == 2) && (__clang_minor__ < 9)
-#   define BOOST_EXPECTED_NO_CXX11_RVALUE_REFERENCE_FOR_THIS
-#  endif
-# elif defined __GNUC__
-#  if (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__ < 40801) || !defined(__GXX_EXPERIMENTAL_CXX0X__)
-#   define BOOST_EXPECTED_NO_CXX11_RVALUE_REFERENCE_FOR_THIS
-#  endif
-# elif defined BOOST_NO_CXX11_REF_QUALIFIERS
+#if defined BOOST_NO_CXX11_REF_QUALIFIERS
 #  define BOOST_EXPECTED_NO_CXX11_RVALUE_REFERENCE_FOR_THIS
-# endif
+#endif
 
-# if defined __clang__
+# if __cplusplus < 201400
+#  define BOOST_EXPECTED_NO_CXX11_MOVE_ACCESSORS
+# elif defined __clang__
 #  if (__clang_major__ < 3) || (__clang_major__ == 3) && (__clang_minor__ < 5)
 #   define BOOST_EXPECTED_NO_CXX11_MOVE_ACCESSORS
 #  endif

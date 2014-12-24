@@ -36,18 +36,19 @@ namespace boost
       error_(std::move(e))
     {
     }
-#if ! defined BOOST_EXPECTED_NO_CXX11_MOVE_ACCESSORS
+#if ! defined BOOST_EXPECTED_NO_CXX11_RVALUE_REFERENCE_FOR_THIS
+
     BOOST_CONSTEXPR
     BOOST_FORCEINLINE ErrorType const& value() const&
     {
       return error_;
     }
-    BOOST_CONSTEXPR
+    BOOST_EXPECTED_CONSTEXPR_IF_MOVE_ACCESSORS
     BOOST_FORCEINLINE ErrorType& value() &
     {
       return error_;
     }
-    BOOST_CONSTEXPR
+    BOOST_EXPECTED_CONSTEXPR_IF_MOVE_ACCESSORS
     BOOST_FORCEINLINE ErrorType& value() &&
     {
       return constexpr_move(error_);
@@ -66,7 +67,7 @@ namespace boost
   };
 
   template <class E>
-  BOOST_FORCEINLINE BOOST_CONSTEXPR unexpected_type<decay_t<E> > make_unexpected(E&& ex)
+  BOOST_FORCEINLINE BOOST_CONSTEXPR unexpected_type<decay_t<E>> make_unexpected(E&& ex)
   {
     return unexpected_type<decay_t<E>> (std::forward<E>(ex));
   }
@@ -164,11 +165,11 @@ namespace boost
     return !(x < y);
   }
 
-  inline BOOST_CONSTEXPR bool operator<(const unexpected_type<std::exception_ptr>& x, const unexpected_type<std::exception_ptr>& y)
+  inline BOOST_CONSTEXPR bool operator<(const unexpected_type<std::exception_ptr>& /*x*/, const unexpected_type<std::exception_ptr>& /*y*/)
   {
     return false;
   }
-  inline BOOST_CONSTEXPR bool operator>(const unexpected_type<std::exception_ptr>& x, const unexpected_type<std::exception_ptr>& y)
+  inline BOOST_CONSTEXPR bool operator>(const unexpected_type<std::exception_ptr>& /*x*/, const unexpected_type<std::exception_ptr>& /*y*/)
   {
     return false;
   }
@@ -203,7 +204,7 @@ namespace boost
   template <typename E>
   struct is_unexpected : std::false_type {};
   template <typename E>
-  struct is_unexpected<unexpected_type<E> > : std::true_type {};
+  struct is_unexpected<unexpected_type<E>> : std::true_type {};
 
   BOOST_FORCEINLINE unexpected_type<std::exception_ptr> make_unexpected_from_current_exception()
   {
