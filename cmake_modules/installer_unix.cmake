@@ -44,7 +44,7 @@ separate_arguments(TargetExes UNIX_COMMAND "${TargetExes}")
 file(REMOVE_RECURSE "${InstallerDir}")
 if(TargetType STREQUAL "Farmer")
   set(PostInstall "${SUPER_PROJECT_SOURCE_DIR}/src/vault_manager/installer/linux/scripts/ubuntu/post_install")
-  file(COPY ${TargetExes} DESTINATION "${InstallerDir}/opt/maidsafe")
+  file(COPY ${TargetExes} DESTINATION "${InstallerDir}/opt/maidsafe/sbin")
   file(COPY "${SUPER_PROJECT_SOURCE_DIR}/src/vault_manager/installer/linux/scripts/ubuntu/vault_manager" DESTINATION "${InstallerDir}/etc/init.d/")
   file(COPY "${PostInstall}" DESTINATION "${SUPER_PROJECT_BINARY_DIR}/post_install")
 
