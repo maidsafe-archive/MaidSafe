@@ -115,7 +115,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # Include helper functions, check compiler version, and get target platform details
 include(utils)
-extra_platforms()
+ms_extra_platforms()
 ms_check_compiler()
 ms_get_target_platform()
 ms_get_target_architecture()
