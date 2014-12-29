@@ -29,7 +29,7 @@ include(add_protoc_command)
 
 
 # Oddly cmake is fairly limited in standard platform defines
-function(extra_platforms)
+function(ms_extra_platforms)
   if(UNIX AND NOT APPLE)
     message(STATUS "This system is called ${CMAKE_SYSTEM_NAME}.")
     if(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
@@ -133,7 +133,7 @@ endmacro()
 
 
 # Checks that the given file includes an appropriate license block at the top.
-function(check_license_block File)
+function(ms_check_license_block File)
   set(MaidSafeCopyrightBlock
       ""
       "    This MaidSafe Software is licensed to you under (1) the MaidSafe.net Commercial License,"
@@ -217,11 +217,14 @@ endfunction()
 
 
 # Adds a static library with CMake Target name of "${Lib}".
+#
+# All files to be added (sources, headers, others) should be listed after 'Lib'
 function(ms_add_static_library Lib)
   ms_check_for_duplicates(${Lib} ${ARGN})
   foreach(File ${ARGN})
-    check_license_block(${File})
+    ms_check_license_block(${File})
   endforeach()
+  # Check for correct naming convention
   string(REGEX MATCH "^maidsafe_[a-z]" Found "${Lib}")
   string(TOLOWER ${Lib} LibLowerCase)
   if(NOT Found OR NOT Lib STREQUAL LibLowerCase)
@@ -237,15 +240,20 @@ endfunction()
 
 
 # Adds an executable with CMake Target name of "${Exe}".
-# "${FolderName}" defines the folder in which the executable appears if the
-# chosen IDE supports folders for projects.  The exe will have the preprocessor definition
-# APPLICATION_NAME=${AppName}.  AppName is the value of ${Exe}Name if it exists, otherwise it's the
-# camel-case name of the exe.  (e.g. the exe 'test_common', will have APPLICATION_NAME=TestCommon
-# unless 'test_commonName' is set, in which case it will have APPLICATION_NAME=${test_commonName})
+#
+# "${FolderName}" defines the folder in which the executable appears if the chosen IDE supports
+# folders for projects.
+#
+# All files to be added (sources, headers, others) should be listed after 'FolderName'
+#
+# The exe will have the preprocessor definition APPLICATION_NAME=${AppName}.  AppName is the value
+# of ${Exe}Name if it exists, otherwise it's the camel-case name of the exe.  (e.g. the exe
+# 'test_common', will have APPLICATION_NAME=TestCommon unless 'test_commonName' is set, in which
+# case it will have APPLICATION_NAME=${test_commonName})
 function(ms_add_executable Exe FolderName)
   ms_check_for_duplicates(${Exe} ${ARGN})
   foreach(File ${ARGN})
-    check_license_block(${File})
+    ms_check_license_block(${File})
   endforeach()
   set(AllExesForCurrentProject ${AllExesForCurrentProject} ${Exe} PARENT_SCOPE)
   add_executable(${Exe} ${ARGN})
