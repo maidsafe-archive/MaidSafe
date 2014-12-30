@@ -31,7 +31,7 @@ namespace rapidjson {
       }
 
       size_t Tell() const {
-        return (int)is_->tellg();
+        return static_cast<int>(is_->tellg());
       }
 
 #ifdef _MSC_VER
@@ -78,7 +78,7 @@ namespace rapidjson {
       }
 
       size_t Tell() const {
-        return (int)os_.tellp();
+        return static_cast<int>(os_.tellp());
       }
 
 #ifdef _MSC_VER
