@@ -75,8 +75,10 @@ endfunction()
 # Create Custom Installer Targets
 foreach(Type ${Types})
   foreach(ExeDepend ${${Type}ExeDepends})
-    safe_path($<TARGET_FILE:${ExeDepend}> SafePath)
-    list(APPEND ${Type}Exes ${SafePath})
+    if(TARGET ${ExeDepend})
+      safe_path($<TARGET_FILE:${ExeDepend}> SafePath)
+      list(APPEND ${Type}Exes ${SafePath})
+    endif()
   endforeach()
 
   add_custom_target(${${Type}Name}
