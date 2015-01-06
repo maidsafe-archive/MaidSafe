@@ -32,7 +32,13 @@ if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 # Installer Types
-set(Types Farmer Dev Utilities)
+if(INCLUDE_TESTS)
+  set(Types Farmer Dev Utilities)
+else()
+# Temporarily disable Utilities target while it only contains tests
+# Remove this exclusion when Utilities includes tools as well as tests
+  set(Types Farmer Dev)
+endif()
 
 include(monolithic_lib)
 
