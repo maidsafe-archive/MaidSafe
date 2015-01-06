@@ -25,6 +25,8 @@
 #  Variables required by this module are:                                                          #
 #    Qt5RequiredLibs - List of Qt5 Libs needed.                                                    #
 #      example: set(Qt5RequiredLibs Qt5Core Qt5Gui Qt5Widgets)                                     #
+#    Qt5RequiredVersion - Version of Qt5 needed.                                                   #
+#      example: set(Qt5RequiredVersion 5.3.2)                                                      #
 #                                                                                                  #
 #  Variables set by this module are:                                                               #
 #    Qt5TargetLibs - Formatted Qt5 Target Link libs                                                #
