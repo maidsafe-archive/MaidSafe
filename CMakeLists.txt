@@ -52,6 +52,13 @@ if(CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR OR
 endif()
 
 
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_modules)
+# Setup android build if required
+if(ANDROID_BUILD)
+  include(android_setup)
+endif()
+
+
 project(maidsafe)
 if(CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES} ReleaseNoInline CACHE INTERNAL "" FORCE)
@@ -103,13 +110,8 @@ foreach(SubModule ${SubModules})
 endforeach()
 
 
-set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
+#set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 include(version)
-
-# Setup android build if required
-if(ANDROID_BUILD)
-  include(android_setup)
-endif()
 
 
 # Force all libraries and exes to be built to the top-level build dir.
