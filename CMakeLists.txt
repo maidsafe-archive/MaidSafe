@@ -23,58 +23,6 @@
 
 cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
 
-##############################################
-if(ANDROID_BUILD)
-  if(NOT ANDROID_API_LEVEL)
-    message(FATAL_ERROR "Missing ANDROID_API_LEVEL")
-  endif()
-  if(NOT ANDROID_NDK_TOOLCHAIN_ROOT)
-    message(FATAL_ERROR "Missing ANDROID_NDK_TOOLCHAIN_ROOT")
-  endif()
-
-  if(ANDROID_API_LEVEL LESS 16)
-    set(PlatformFlags )
-    set(ExeLinkerFlags )
-  else()
-    set(PlatformFlags "-fPIE")
-    set(ExeLinkerFlags "-pie -rdynamic")
-  endif()
-
-  set(PLATFORM_PREFIX            "${ANDROID_NDK_TOOLCHAIN_ROOT}/sysroot")
-  set(PLATFORM_FLAGS             "${PlatformFlags} -fPIC -Wno-psabi --sysroot=${PLATFORM_PREFIX}")
-  set(CMAKE_C_COMPILER           "${ANDROID_NDK_TOOLCHAIN_ROOT}/bin/arm-linux-androideabi-gcc")
-  set(CMAKE_CXX_COMPILER         "${ANDROID_NDK_TOOLCHAIN_ROOT}/bin/arm-linux-androideabi-g++")
-  set(CMAKE_C_FLAGS              "${PLATFORM_FLAGS} -march=armv7-a -mfloat-abi=softfp -mfpu=neon" CACHE STRING "")
-  set(CMAKE_CXX_FLAGS            "${PLATFORM_FLAGS} -march=armv7-a -mfloat-abi=softfp -mfpu=neon" CACHE STRING "")
-  set(CMAKE_EXE_LINKER_FLAGS     "${ExeLinkerFlags}")
-  set(CMAKE_SHARED_LINKER_FLAGS  "-Wl,--fix-cortex-a8" CACHE STRING "")
-endif()
-#set(ANDROID                    ON)
-#set(PLATFORM_EMBEDDED          ON)
-#set(PLATFORM_NAME              "Android")
-#set(PLATFORM_TRIPLET           "arm-linux-androideabi")
-#set(PLATFORM_PROC_PREFIX       "armeabi-v7a")
-#set(PLATFORM_PREFIX            "/home/spandan/virtualization/e/active/android-ndk-r10c/platforms/android-21/arch-arm")
-#set(PLATFORM_PREFIX            "/home/spandan/virtualization/e/active/android-ndk-crystax-standalone-toolchain-beta-4.8/sysroot")
-#set(PLATFORM_PREFIX            "/home/spandan/virtualization/e/active/android-ndk-crystax-standalone-toolchain-4.8-14/sysroot")
-#set(PLATFORM_TOOL_PREFIX       "/home/viv/Dev/android-ndk-r10b/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64")
-#set(PLATFORM_STL_PREFIX        "/home/viv/Dev/android-ndk-r10b/sources/cxx-stl/gnu-libstdc++/4.8")
-#set(PLATFORM_PORTS_PREFIX      "${CMAKE_SOURCE_DIR}/ports/Android21-ARMv7a")
-#set(PLATFORM_STL_LIBRARY       "${PLATFORM_STL_PREFIX}/libs/armeabi-v7a/libgnustl_static.a")
-#set(CMAKE_SYSTEM_NAME          "Linux" CACHE STRING "Target system.")
-#set(CMAKE_SYSTEM_PROCESSOR     "ARMv7a" CACHE STRING "Target processor.")
-#set(CMAKE_FIND_ROOT_PATH       "${PLATFORM_PORTS_PREFIX};${PLATFORM_PREFIX}")
-#set(CMAKE_FIND_ROOT_PATH       "/home/spandan/virtualization/e/active/android-ndk-r8-crystax-1/platforms/android-14/arch-arm")
-#set(CMAKE_C_FLAGS_RELEASE      "-Ofast -flto" CACHE STRING "")
-#set(CMAKE_CXX_FLAGS_RELEASE    "-Ofast -flto" CACHE STRING "")
-#set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-#set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-#set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-#set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
-#include_directories(SYSTEM ${PLATFORM_STL_PREFIX}/include )
-#include_directories(SYSTEM ${PLATFORM_STL_PREFIX}/libs/armeabi-v7a/include )
-##############################################
-
 # Prefer out-of-source builds (i.e. the build root being outside of the source root), but allow for
 # building in a folder immediately inside the source root (not one of the existing source folders).
 set(SourceDir ${CMAKE_SOURCE_DIR})
@@ -157,6 +105,11 @@ endforeach()
 
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 include(version)
+
+# Setup android build if required
+if(ANDROID_BUILD)
+  include(android_setup)
+endif()
 
 
 # Force all libraries and exes to be built to the top-level build dir.
