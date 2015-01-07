@@ -40,9 +40,9 @@
 
 using gcc : android
 :
-@AndroidNDKSrcDir@/bin/arm-linux-androideabi-g++
+@CMAKE_CXX_COMPILER@
 :
-<archiver>@AndroidNDKSrcDir@/bin/arm-linux-androideabi-ar
+<archiver>@ANDROID_NDK_TOOLCHAIN_ROOT@/bin/arm-linux-androideabi-ar
 <compileflags>-fexceptions
 <compileflags>-frtti
 <compileflags>-fPIC
@@ -50,12 +50,8 @@ using gcc : android
 <compileflags>-ffunction-sections
 <compileflags>-funwind-tables
 <compileflags>-D__ARM_ARCH_7A__
-#<compileflags>-D__ARM_ARCH_5__
-#<compileflags>-D__ARM_ARCH_5T__
-#<compileflags>-D__ARM_ARCH_5E__
-#<compileflags>-D__ARM_ARCH_5TE__
 <compileflags>-Wno-psabi
-<compileflags>-march=armv7-a
+<compileflags>-march=@ANDROID_DEVICE_ARCH@
 <compileflags>-mtune=xscale
 <compileflags>-msoft-float
 <compileflags>-mthumb
@@ -63,16 +59,14 @@ using gcc : android
 <compileflags>-fomit-frame-pointer
 <compileflags>-fno-strict-aliasing
 <compileflags>-finline-limit=64
-<compileflags>-I@AndroidNDKSrcDir@/include/c++/4.8
+<compileflags>-I@ANDROID_NDK_TOOLCHAIN_ROOT@/include/c++/@ANDROID_GCC_VERSION@
+<compileflags>-I@ANDROID_NDK_TOOLCHAIN_ROOT@/sysroot/usr/include
 <compileflags>-Wa,--noexecstack
 <compileflags>-DANDROID
 <compileflags>-D__ANDROID__
 <compileflags>-DNDEBUG
 <compileflags>-O2
 <compileflags>-g
-<compileflags>-I@AndroidNDKSrcDir@/sysroot/usr/include
-# <compileflags>-I@AndroidNDKSrcDir@/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi/include
-# @Moss - Above are the 'oficial' android flags
 <architecture>arm
 <compileflags>-fvisibility=hidden
 <compileflags>-fvisibility-inlines-hidden
