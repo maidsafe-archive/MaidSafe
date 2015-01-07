@@ -52,10 +52,9 @@ if(CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR OR
 endif()
 
 
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_modules)
 # Setup android build if required
 if(ANDROID_BUILD)
-  include(android_setup)
+  include("${CMAKE_SOURCE_DIR}/cmake_modules/android_setup.cmake")
 endif()
 
 
@@ -110,7 +109,7 @@ foreach(SubModule ${SubModules})
 endforeach()
 
 
-#set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
+set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 include(version)
 
 
