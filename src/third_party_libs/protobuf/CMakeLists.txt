@@ -9,11 +9,6 @@ if(HAVE_UNDEFINED_BEHAVIOR_SANITIZER)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sanitize=undefined")
 endif()
 
-set(CMAKE_DEBUG_POSTFIX -d)
-set(CMAKE_RELWITHDEBINFO_POSTFIX -rwdi)
-set(CMAKE_MINSIZEREL_POSTFIX -msr)
-set(CMAKE_RELEASENOINLINE_POSTFIX -rni)
-
 project(Protobuf)
 
 include(files.cmake)
@@ -22,6 +17,7 @@ include(files.cmake)
 #==================================================================================================#
 # Define libraries and protoc executable                                                           #
 #==================================================================================================#
+ms_set_postfixes()
 add_library(protobuf_lite STATIC ${ProtobufLiteAllFiles})
 ms_target_include_system_dirs(protobuf_lite PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_compile_definitions(protobuf_lite
