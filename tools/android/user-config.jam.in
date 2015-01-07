@@ -51,7 +51,7 @@ using gcc : android
 <compileflags>-funwind-tables
 <compileflags>-D__ARM_ARCH_7A__
 <compileflags>-Wno-psabi
-<compileflags>-march=@ANDROID_DEVICE_ARCH@
+<compileflags>-march=armv7-a
 <compileflags>-mtune=xscale
 <compileflags>-msoft-float
 <compileflags>-mthumb

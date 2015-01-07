@@ -48,6 +48,12 @@ if(Cbfs_FOUND)
   file(APPEND ${ExportFile} "set(CbfsGUIDNetwork \"${CbfsGUIDNetwork}\")\n\n")
 endif()
 
+if(ANDROID_BUILD)
+  file(APPEND ${ExportFile} "set(ANDROID_BUILD \"${ANDROID_BUILD}\")\n")
+  file(APPEND ${ExportFile} "set(ANDROID_API_LEVEL \"${ANDROID_API_LEVEL}\")\n")
+  file(APPEND ${ExportFile} "set(ANDROID_NDK_TOOLCHAIN_ROOT \"${ANDROID_NDK_TOOLCHAIN_ROOT}\")\n\n")
+endif()
+
 set(AllTargets ${AllStaticLibs} local_drive drive sqlite cryptopp protobuf_lite protoc gmock gtest)
 if(NOT CMAKE_VERSION VERSION_LESS "3.0")
   list(APPEND AllTargets asio cereal)
