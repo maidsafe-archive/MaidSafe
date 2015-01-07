@@ -25,6 +25,8 @@
 #  Variables required by this module are:                                                          #
 #    Qt5RequiredLibs - List of Qt5 Libs needed.                                                    #
 #      example: set(Qt5RequiredLibs Qt5Core Qt5Gui Qt5Widgets)                                     #
+#    Qt5RequiredVersion - Version of Qt5 needed.                                                   #
+#      example: set(Qt5RequiredVersion 5.3.2)                                                      #
 #                                                                                                  #
 #  Variables set by this module are:                                                               #
 #    Qt5TargetLibs - Formatted Qt5 Target Link libs                                                #
@@ -36,7 +38,9 @@
 #==================================================================================================#
 
 # Required Qt version
-set(Qt5RequiredVersion 5.2.0)
+if(NOT Qt5RequiredVersion)
+  set(Qt5RequiredVersion 5.2.0)
+endif()
 
 # Check for valid input variables
 list(LENGTH Qt5RequiredLibs Qt5RequiredLibsLength)
@@ -52,6 +56,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
+
+# Fix for apple gl.h path
+if(APPLE AND ${CMAKE_SYSTEM_VERSION} STREQUAL "14.0.0")
+  set(_qt5gui_OPENGL_INCLUDE_DIR "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers")
+endif()
 
 # Find the Qt libraries
 if(QT_BIN_DIR)
