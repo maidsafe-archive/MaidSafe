@@ -57,11 +57,6 @@ endif()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
-set(CMAKE_DEBUG_POSTFIX -d)
-set(CMAKE_RELWITHDEBINFO_POSTFIX -rwdi)
-set(CMAKE_MINSIZEREL_POSTFIX -msr)
-set(CMAKE_RELEASENOINLINE_POSTFIX -rni)
-
 if(UNIX)
   set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ")
   set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
@@ -74,6 +69,7 @@ set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 include(check_licenses)
 include(utils)
 ms_check_licenses()
+ms_set_postfixes()
 
 
 # All other libraries search
