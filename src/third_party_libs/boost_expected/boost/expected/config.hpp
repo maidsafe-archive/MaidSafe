@@ -74,10 +74,8 @@
 #  define BOOST_EXPECTED_NO_CXX11_UNRESTRICTED_UNIONS
 # endif
 
-# if defined _MSC_VER
-#  if _MSC_VER < 1900 // VS14
-#   define BOOST_EXPECTED_USE_STD_ADDRESSOF
-#  endif
+# if defined BOOST_NO_CXX11_CONSTEXPR
+#  define BOOST_EXPECTED_USE_STD_ADDRESSOF
 # endif
 
 
