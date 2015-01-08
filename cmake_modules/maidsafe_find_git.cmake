@@ -46,6 +46,11 @@ if(Git_EXECUTABLE)
     get_filename_component(GitFolder ${Git_EXECUTABLE} PATH)
     list(APPEND CMAKE_SYSTEM_PREFIX_PATH ${GitFolder})
     return()
+  else()
+    # The exe path is wrong (git may been moved/reinstalled to a new location), so clean up old vars.
+    unset(Git_EXECUTABLE CACHE)
+    unset(GIT_EXECUTABLE CACHE)
+    unset(GITCOMMAND CACHE)
   endif()
 endif()
 
