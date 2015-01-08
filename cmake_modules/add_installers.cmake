@@ -32,7 +32,13 @@ if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 # Installer Types
-set(Types Farmer Dev Utilities)
+if(INCLUDE_TESTS)
+  set(Types Farmer Dev Utilities)
+else()
+# Temporarily disable Utilities target while it only contains tests
+# Remove this exclusion when Utilities includes tools as well as tests
+  set(Types Farmer Dev)
+endif()
 
 include(monolithic_lib)
 
@@ -75,8 +81,10 @@ endfunction()
 # Create Custom Installer Targets
 foreach(Type ${Types})
   foreach(ExeDepend ${${Type}ExeDepends})
-    safe_path($<TARGET_FILE:${ExeDepend}> SafePath)
-    list(APPEND ${Type}Exes ${SafePath})
+    if(TARGET ${ExeDepend})
+      safe_path($<TARGET_FILE:${ExeDepend}> SafePath)
+      list(APPEND ${Type}Exes ${SafePath})
+    endif()
   endforeach()
 
   add_custom_target(${${Type}Name}

@@ -65,6 +65,15 @@ function(ms_extra_platforms)
 endfunction()
 
 
+# Sets the postfixes to be used with all MaidSafe libraries
+macro(ms_set_postfixes)
+  set(CMAKE_DEBUG_POSTFIX -d)
+  set(CMAKE_RELWITHDEBINFO_POSTFIX -rwdi)
+  set(CMAKE_MINSIZEREL_POSTFIX -msr)
+  set(CMAKE_RELEASENOINLINE_POSTFIX -rni)
+endmacro()
+
+
 function(ms_check_compiler)
   # If the path to the CMAKE_CXX_COMPILER doesn't change, CMake doesn't detect a version change
   # in the compiler.  We cache the output of running the compiler with '--version' and check
