@@ -59,7 +59,7 @@ using gcc : android
 <compileflags>-fomit-frame-pointer
 <compileflags>-fno-strict-aliasing
 <compileflags>-finline-limit=64
-<compileflags>-I@ANDROID_NDK_TOOLCHAIN_ROOT@/include/c++/@ANDROID_GCC_VERSION@
+<compileflags>-I@ANDROID_NDK_TOOLCHAIN_ROOT@/include/c++/@AndroidGccVersion@
 <compileflags>-I@ANDROID_NDK_TOOLCHAIN_ROOT@/sysroot/usr/include
 <compileflags>-Wa,--noexecstack
 <compileflags>-DANDROID
