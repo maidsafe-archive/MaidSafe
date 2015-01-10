@@ -22,6 +22,16 @@
 namespace boost {
 namespace detail {
 
+#if defined BOOST_EXPECTED_USE_STD_ADDRESSOF
+
+template <typename T>
+BOOST_CONSTEXPR T* static_addressof(T& ref)
+{
+  return std::addressof(ref);
+}
+
+#else
+
 template <typename T>
 struct has_overloaded_addressof
 {
@@ -47,6 +57,8 @@ BOOST_CONSTEXPR T* static_addressof(T& ref,
 {
   return std::addressof(ref);
 }
+
+#endif
 
 } // namespace detail
 } // namespace boost

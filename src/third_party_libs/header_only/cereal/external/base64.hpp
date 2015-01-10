@@ -27,6 +27,11 @@
 
 #include <string>
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
+
 namespace base64
 {
   static const std::string chars =
@@ -129,4 +134,9 @@ namespace base64
     return ret;
   }
 } // base64
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+
 #endif // CEREAL_EXTERNAL_BASE64_HPP_

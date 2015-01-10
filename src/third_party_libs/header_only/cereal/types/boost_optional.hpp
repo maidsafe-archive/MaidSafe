@@ -39,7 +39,7 @@ namespace cereal
    template <class Archive, class Optioned> inline
       void save(Archive & ar, boost::optional<Optioned> const & optional)
    {
-      bool initFlag = (bool)optional;
+      bool initFlag = static_cast<bool>(optional);
       if (initFlag)
       {
          ar(_CEREAL_NVP("initialized", true));

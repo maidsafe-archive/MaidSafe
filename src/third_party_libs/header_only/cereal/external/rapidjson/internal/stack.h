@@ -1,6 +1,11 @@
 #ifndef RAPIDJSON_INTERNAL_STACK_H_
 #define RAPIDJSON_INTERNAL_STACK_H_
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
+
 namespace rapidjson {
 namespace internal {
 
@@ -78,5 +83,9 @@ private:
 
 } // namespace internal
 } // namespace rapidjson
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #endif // RAPIDJSON_STACK_H_
