@@ -100,14 +100,6 @@ if(JustThread_FOUND)
   ms_target_include_system_dirs(cryptopp PUBLIC ${JustThread_INCLUDE_DIR})
 endif()
 
-
-#if(UNIX AND ANDROID_BUILD)
-#  target_include_directories(cryptopp PUBLIC
-#      "${ANDROID_NDK_ROOT}/include/c++/4.9"
-#      "${ANDROID_NDK_ROOT}/sysroot/usr/include")
-##			"${ANDROID_NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/include")
-#endif()
-
 set_target_properties(cryptopp cryptest PROPERTIES FOLDER "Third Party/Crypto++")
 
 
