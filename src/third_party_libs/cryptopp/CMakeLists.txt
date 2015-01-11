@@ -99,7 +99,6 @@ ms_target_include_system_dirs(cryptopp INTERFACE ${PROJECT_SOURCE_DIR}/.. PRIVAT
 if(JustThread_FOUND)
   ms_target_include_system_dirs(cryptopp PUBLIC ${JustThread_INCLUDE_DIR})
 endif()
-
 set_target_properties(cryptopp cryptest PROPERTIES FOLDER "Third Party/Crypto++")
 
 
@@ -126,18 +125,6 @@ target_compile_definitions(cryptopp
   PRIVATE
     $<$<BOOL:${MSVC}>:_WINDOWS USE_PRECOMPILED_HEADERS WIN32 _VC80_UPGRADE=0x0710>
     $<$<CONFIG:Release>:NDEBUG>
-    $<$<AND:$<BOOL:${UNIX}>,$<BOOL:${ANDROID_BUILD}>>:
-    	__ARM_ARCH_5__
-		  __ARM_ARCH_5T__
-		  __ARM_ARCH_5E__
-		  __ARM_ARCH_5TE__
-		  __ANDROID__
-		  __arm__
-		  _REENTRANT
-		  _GLIBCXX__PTHREADS		    
-		  ANDROID
-		  NDEBUG
-    >
 )
 
 target_compile_options(cryptopp
@@ -155,27 +142,6 @@ target_compile_options(cryptopp
         -w -fPIC -O2
         $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-Wno-tautological-compare -Wno-c++11-narrowing>
         $<$<CXX_COMPILER_ID:GNU>:-pipe -finline-functions>
-        $<$<BOOL:${ANDROID_BUILD}>:
-		      -fexceptions
-				  -frtti
-				  -ffunction-sections
-				  -funwind-tables
-				  -Wno-psabi
-				  -march=armv5te
-				  -mtune=xscale
-				  -msoft-float
-				  -mthumb
-				  -Os
-				  -fomit-frame-pointer
-				  -fno-strict-aliasing
-				  -finline-limit=64
-				  -Wa,--noexecstack
-				  -O2
-				  -g
-				  -fvisibility=hidden
-				  -fvisibility-inlines-hidden
-				  -fdata-sections
-        >
     >
 )
 
