@@ -57,9 +57,7 @@ macro(ms_android_setup_flags)
 
   set(ExeLinkerFlags "-L${ANDROID_NDK_TOOLCHAIN_ROOT}/arm-linux-androideabi/lib/armv7-a -lstdc++")
 
-  if(AndroidApiLevel LESS 16)
-    set(PlatformFlags )
-  else()
+  if(NOT AndroidApiLevel LESS 16)
     set(PlatformFlags "-fPIE")
     set(ExeLinkerFlags "${ExeLinkerFlags} -pie -rdynamic")
   endif()
