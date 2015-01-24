@@ -29,6 +29,10 @@ add_library(sqlite STATIC ${PROJECT_SOURCE_DIR}/include/sqlite3.h ${PROJECT_SOUR
 ms_target_include_system_dirs(sqlite PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_compile_definitions(sqlite PRIVATE SQLITE_OMIT_LOAD_EXTENSION)
 
+if(ANDROID_BUILD)
+  set_source_files_properties(${PROJECT_SOURCE_DIR}/src/sqlite3.c PROPERTIES COMPILE_FLAGS -Wp,-w)
+endif()
+
 if(MSVC)
   target_link_libraries(sqlite ${JustThread_LIBRARIES})
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")

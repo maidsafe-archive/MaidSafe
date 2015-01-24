@@ -728,9 +728,9 @@
 # endif // !defined(ASIO_HAS_EVENTFD)
 # if !defined(ASIO_HAS_TIMERFD)
 #  if defined(ASIO_HAS_EPOLL)
-#   if (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 8)
-#    define ASIO_HAS_TIMERFD 1
-#   endif // (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 8)
+#   if defined(__ANDROID__) || (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 8)
+#     define ASIO_HAS_TIMERFD 1
+#   endif // (__ANDROID__) || (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 8)
 #  endif // defined(ASIO_HAS_EPOLL)
 # endif // !defined(ASIO_HAS_TIMERFD)
 #endif // defined(__linux__)

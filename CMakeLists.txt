@@ -52,7 +52,17 @@ if(CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR OR
 endif()
 
 
+# Setup android build if required
+if(ANDROID_BUILD)
+  include("${CMAKE_SOURCE_DIR}/cmake_modules/android_setup.cmake")
+endif()
+
+
 project(maidsafe)
+if(ANDROID_BUILD)
+  ms_android_setup_flags()
+endif()
+
 if(CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES} ReleaseNoInline CACHE INTERNAL "" FORCE)
 else()
