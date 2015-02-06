@@ -31,6 +31,7 @@ set(CTEST_PROJECT_SUBPROJECTS
     ThirdParty
     Common
     Passport
+    Crux
     Rudp
     Routing
     Nfs
@@ -39,4 +40,5 @@ set(CTEST_PROJECT_SUBPROJECTS
     Vault
     VaultManager
     Api
+    Launcher
     )
