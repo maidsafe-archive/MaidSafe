@@ -188,7 +188,7 @@ protected:
   }
 
   template <>
-  bool characterOk<char>( Ch )
+  bool characterOk<char>( char )
   {
     return true;
   }
