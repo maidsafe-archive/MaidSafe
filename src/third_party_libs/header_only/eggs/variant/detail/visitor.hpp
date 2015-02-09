@@ -102,6 +102,7 @@ namespace eggs { namespace variants { namespace detail
         static void call(void* ptr)
         {
             static_cast<T*>(ptr)->~T();
+            static_cast<void>(ptr);  // To squash C4100 warning on MSVC 2013
         }
     };
 
