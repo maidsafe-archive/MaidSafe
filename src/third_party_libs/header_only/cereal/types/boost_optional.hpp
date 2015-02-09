@@ -37,31 +37,31 @@ namespace cereal
 {
    //! Saving for boost::optional
    template <class Archive, class Optioned> inline
-      void save(Archive & ar, boost::optional<Optioned> const & optional)
+      void CEREAL_SAVE_FUNCTION_NAME(Archive & ar, boost::optional<Optioned> const & optional)
    {
       bool initFlag = static_cast<bool>(optional);
       if (initFlag)
       {
-         ar(_CEREAL_NVP("initialized", true));
-         ar(_CEREAL_NVP("value", optional.get()));
+         ar(CEREAL_NVP_("initialized", true));
+         ar(CEREAL_NVP_("value", optional.get()));
       }
       else
       {
-         ar(_CEREAL_NVP("initialized", false));
+         ar(CEREAL_NVP_("initialized", false));
       }
    }
 
    //! Loading for boost::optional
    template <class Archive, class Optioned> inline
-      void load(Archive & ar, boost::optional<Optioned> & optional)
+      void CEREAL_LOAD_FUNCTION_NAME(Archive & ar, boost::optional<Optioned> & optional)
    {
 
       bool initFlag;
-      ar(_CEREAL_NVP("initialized", initFlag));
+      ar(CEREAL_NVP_("initialized", initFlag));
       if (initFlag)
       {
          Optioned val;
-         ar(_CEREAL_NVP("value", val));
+         ar(CEREAL_NVP_("value", val));
          optional = val;
       }
       else
