@@ -130,10 +130,10 @@ target_compile_definitions(cryptopp
 target_compile_options(cryptopp
   PUBLIC
     $<$<BOOL:${MSVC}>:
-        $<$<CONFIG:Release>:/O2 /GL /MD>
+        $<$<CONFIG:Release>:/O2 /MD>
         $<$<CONFIG:Debug>:/Od /MDd /Zi> # /Oi
         $<$<CONFIG:MinSizeRel>:/MD>
-        $<$<CONFIG:RelWithDebInfo>:/O2 /GL /MD /Zi>
+        $<$<CONFIG:RelWithDebInfo>:/O2 /MD /Zi>
     >
     $<$<BOOL:${UNIX}>:-std=c++11 -pthread ${LibCXX}>
   PRIVATE
