@@ -107,9 +107,9 @@ target_link_libraries(gtest maidsafe_common)
 
 if(MSVC)
   set_target_properties(gtest PROPERTIES
-                        STATIC_LIBRARY_FLAGS_RELEASE " /LTCG "
-                        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO " /LTCG "
-                        STATIC_LIBRARY_FLAGS_RELEASENOINLINE " /LTCG ")
+                        STATIC_LIBRARY_FLAGS_RELEASE ""
+                        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO ""
+                        STATIC_LIBRARY_FLAGS_RELEASENOINLINE "")
 endif()
 
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
