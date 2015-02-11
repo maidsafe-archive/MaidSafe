@@ -28,15 +28,8 @@ race:include/c++/*/future
 # /home/ned/build_maidsafe/boost_1_55_0_Clang_3_4_0/boost_1_55_0/boost/asio/ip/impl/basic_endpoint.hpp:35
 race:std::basic_ostream<char, std::char_traits<char> >& boost::asio::ip::operator<< <char, std::char_traits<char>, boost::asio::ip::udp>(std::basic_ostream<char, std::char_traits<char> >&, boost::asio::ip::basic_endpoint<boost::asio::ip::udp> const&)
 
-# 2014-04-01 ned: Probably logging induced noise
-race:maidsafe::rudp::detail::ConnectionManager::DebugString
-
 # 2014-04-04 ned: Ignore this race in libstdc++
 race:std::ctype<char>::do_widen(char const*, char const*, char*) const
-
-# 2014-04-07 ned: Logging induced noise
-# /home/qa1/MaidSafe-Testing/MaidSafe/src/rudp/src/maidsafe/rudp/managed_connections.cc:792
-race:maidsafe::rudp::ManagedConnections::DebugString() const
 
 # 2014-04-09 ned: Gmock noise
 # /home/qa1/MaidSafe-Testing/MaidSafe/src/third_party_libs/googlemock/gtest/src/gtest.cc:2761
