@@ -88,12 +88,6 @@ config_compiler_and_linker()  # from ${gtest_dir}/cmake/internal_utils.cmake
 cxx_library(gmock "${cxx_strict}" src/gmock-all.cc)
 ms_target_include_system_dirs(gmock PUBLIC ${PROJECT_SOURCE_DIR}/include PRIVATE ${PROJECT_SOURCE_DIR})
 target_link_libraries(gmock gtest)
-if(MSVC)
-  set_target_properties(gmock PROPERTIES
-                        STATIC_LIBRARY_FLAGS_RELEASE " /LTCG "
-                        STATIC_LIBRARY_FLAGS_RELWITHDEBINFO " /LTCG "
-                        STATIC_LIBRARY_FLAGS_RELEASENOINLINE " /LTCG ")
-endif()
 
 cxx_library(gmock_main "${cxx_strict}" src/gmock_main.cc)
 target_link_libraries(gmock_main gmock)
