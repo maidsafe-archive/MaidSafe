@@ -26,6 +26,7 @@
 
 
 set(MaidSafeLibs
+    maidsafe_launcher
     maidsafe_api
     maidsafe_vault_manager
     maidsafe_drive_launcher
@@ -36,7 +37,7 @@ set(MaidSafeLibs
     maidsafe_encrypt
     maidsafe_network_viewer
     maidsafe_routing
-    maidsafe_rudp
+    maidsafe_crux
     maidsafe_passport
     maidsafe_common
     boost_chrono

@@ -32,7 +32,6 @@ set(CTEST_PROJECT_SUBPROJECTS
     Common
     Passport
     Crux
-    Rudp
     Routing
     Nfs
     Encrypt
