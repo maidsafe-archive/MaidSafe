@@ -19,7 +19,7 @@
 #endif
 
 #ifndef EGGS_CXX11_STATIC_CONSTEXPR
-#  if defined(_MSC_FULL_VER)
+#  if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 190000000
 #    define EGGS_CXX11_STATIC_CONSTEXPR static const
 #  else
 #    define EGGS_CXX11_STATIC_CONSTEXPR static constexpr
@@ -40,7 +40,7 @@
 
 /// defaulted functions support
 #ifndef EGGS_CXX11_HAS_DEFAULTED_FUNCTIONS
-#  if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 190021730
+#  if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 190000000
 #    define EGGS_CXX11_HAS_DEFAULTED_FUNCTIONS 0
 #  else
 #    define EGGS_CXX11_HAS_DEFAULTED_FUNCTIONS 1
@@ -50,7 +50,7 @@
 
 /// deleted functions support
 #ifndef EGGS_CXX11_HAS_DELETED_FUNCTIONS
-#  if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 190021730
+#  if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 180000000
 #    define EGGS_CXX11_HAS_DELETED_FUNCTIONS 0
 #  else
 #    define EGGS_CXX11_HAS_DELETED_FUNCTIONS 1
@@ -60,7 +60,7 @@
 
 /// noexcept support
 #ifndef EGGS_CXX11_NOEXCEPT
-#  if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 190021730
+#  if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 190000000
 #    define EGGS_CXX11_NOEXCEPT
 #  else
 #    define EGGS_CXX11_NOEXCEPT noexcept
@@ -69,7 +69,7 @@
 #endif
 
 #ifndef EGGS_CXX11_NOEXCEPT_IF
-#  if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 190021730
+#  if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 190000000
 #    define EGGS_CXX11_NOEXCEPT_IF(...)
 #  else
 #    define EGGS_CXX11_NOEXCEPT_IF(...) noexcept(__VA_ARGS__)
@@ -78,7 +78,7 @@
 #endif
 
 #ifndef EGGS_CXX11_NOEXCEPT_EXPR
-#  if defined(_MSC_FULL_VER)
+#  if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 190000000
 #    define EGGS_CXX11_NOEXCEPT_EXPR(...) false
 #  else
 #    define EGGS_CXX11_NOEXCEPT_EXPR(...) noexcept(__VA_ARGS__)
@@ -120,6 +120,26 @@
 #  define EGGS_CXX11_HAS_SFINAE_FOR_EXPRESSIONS_DEFINED
 #endif
 
+/// overloading on std::initializer_list support
+#ifndef EGGS_CXX11_HAS_INITIALIZER_LIST_OVERLOADING
+#  if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 190022512
+#    define EGGS_CXX11_HAS_INITIALIZER_LIST_OVERLOADING 0
+#  else
+#    define EGGS_CXX11_HAS_INITIALIZER_LIST_OVERLOADING 1
+#  endif
+#  define EGGS_CXX11_HAS_INITIALIZER_LIST_OVERLOADING_DEFINED
+#endif
+
+/// overloading on template arguments support
+#ifndef EGGS_CXX11_HAS_TEMPLATE_ARGUMENT_OVERLOADING
+#  if defined(_MSC_FULL_VER) && _MSC_FULL_VER < 190022512
+#    define EGGS_CXX11_HAS_TEMPLATE_ARGUMENT_OVERLOADING 0
+#  else
+#    define EGGS_CXX11_HAS_TEMPLATE_ARGUMENT_OVERLOADING 1
+#  endif
+#  define EGGS_CXX11_HAS_TEMPLATE_ARGUMENT_OVERLOADING_DEFINED
+#endif
+
 /// variable templates support
 #ifndef EGGS_CXX14_HAS_VARIABLE_TEMPLATES
 #  if __cplusplus < 201402L
@@ -146,7 +166,7 @@
 
 /// std::integer_sequence support
 #ifndef EGGS_CXX14_STD_HAS_INTEGER_SEQUENCE
-#  if __cplusplus < 201402L
+#  if __cplusplus < 201402L && _CPPLIB_VER < 650
 #    define EGGS_CXX14_STD_HAS_INTEGER_SEQUENCE 0
 #  else
 #    define EGGS_CXX14_STD_HAS_INTEGER_SEQUENCE 1
@@ -168,7 +188,7 @@
 #ifndef EGGS_CXX11_STD_HAS_IS_TRIVIALLY_COPYABLE
 #  if defined(__GLIBCXX__)
 #    define EGGS_CXX11_STD_HAS_IS_TRIVIALLY_COPYABLE 0
-#  elif defined (_CPPLIB_VER)
+#  elif defined (_CPPLIB_VER) && _CPPLIB_VER < 650
 #    define EGGS_CXX11_STD_HAS_IS_TRIVIALLY_COPYABLE 0
 #  else
 #    define EGGS_CXX11_STD_HAS_IS_TRIVIALLY_COPYABLE 1

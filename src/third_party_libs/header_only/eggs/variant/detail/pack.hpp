@@ -107,7 +107,7 @@ namespace eggs { namespace variants { namespace detail
 
     template <typename ...Ts>
     struct all_of<pack<Ts...>>
-      : all_of<pack_c<bool, Ts::value...>>
+      : all_of<pack_c<bool, (Ts::value)...>>
     {};
 
     template <typename ...Vs>
@@ -123,7 +123,7 @@ namespace eggs { namespace variants { namespace detail
 
     template <typename ...Ts>
     struct any_of<pack<Ts...>>
-      : any_of<pack_c<bool, Ts::value...>>
+      : any_of<pack_c<bool, (Ts::value)...>>
     {};
 
     template <typename T, typename Ts>

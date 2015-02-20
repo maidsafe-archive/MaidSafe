@@ -102,7 +102,6 @@ namespace eggs { namespace variants { namespace detail
         static void call(void* ptr)
         {
             static_cast<T*>(ptr)->~T();
-            static_cast<void>(ptr);  // To squash C4100 warning on MSVC 2013
         }
     };
 
@@ -192,14 +191,27 @@ namespace eggs { namespace variants { namespace detail
 #endif
 
     template <typename R>
-    struct _void_guard
-    {};
+    struct _invoke_guard
+    {
+        template <typename ...Ts>
+        EGGS_CXX11_CONSTEXPR R operator()(Ts&&... vs) const
+            EGGS_CXX11_NOEXCEPT_IF(EGGS_CXX11_NOEXCEPT_EXPR(
+                _invoke(std::forward<Ts>(vs)...)))
+        {
+            return _invoke(std::forward<Ts>(vs)...);
+        }
+    };
 
     template <>
-    struct _void_guard<void>
+    struct _invoke_guard<void>
     {
-        template <typename T>
-        void operator,(T const&) const EGGS_CXX11_NOEXCEPT {}
+        template <typename ...Ts>
+        EGGS_CXX14_CONSTEXPR void operator()(Ts&&... vs) const
+            EGGS_CXX11_NOEXCEPT_IF(EGGS_CXX11_NOEXCEPT_EXPR(
+                _invoke(std::forward<Ts>(vs)...)))
+        {
+            _invoke(std::forward<Ts>(vs)...);
+        }
     };
 
     template <typename Variant>
@@ -220,88 +232,115 @@ namespace eggs { namespace variants { namespace detail
       : pack<Ts&&...>
     {};
 
-    template <typename R, typename F, typename Ms, typename Vs>
+    template <
+        typename R, typename F, typename Ms
+      , typename IsConst, typename Vs
+    >
     struct _apply;
 
     template <typename R, typename F, typename ...Ms>
-    struct _apply<R, F, pack<Ms...>, pack<>>
-      : visitor<_apply<R, F, pack<Ms...>, pack<>>, R(F, Ms..., void*)>
-      , visitor<_apply<R, F, pack<Ms...>, pack<>>, R(F, Ms..., void const*)>
+    struct _apply<R, F, pack<Ms...>, std::false_type, pack<>>
+      : visitor<
+            _apply<R, F, pack<Ms...>, std::false_type, pack<>>
+          , R(F, Ms..., void*)
+        >
     {
-        template <typename T>
+        template <
+            typename T
+          , typename U = typename std::remove_cv<
+                typename std::remove_reference<T>::type>::type
+        >
         static R call(F f, Ms... ms, void* ptr)
         {
-            using value_type = typename std::remove_cv<
-                typename std::remove_reference<T>::type>::type;
-            return _void_guard<R>(), _invoke(
+            return _invoke_guard<R>{}(
                 std::forward<F>(f), std::forward<Ms>(ms)...
-              , std::forward<T>(*static_cast<value_type*>(ptr)));
+              , std::forward<T>(*static_cast<U*>(ptr)));
         }
+    };
 
-        template <typename T>
+    template <typename R, typename F, typename ...Ms>
+    struct _apply<R, F, pack<Ms...>, std::true_type, pack<>>
+      : visitor<
+            _apply<R, F, pack<Ms...>, std::true_type, pack<>>
+          , R(F, Ms..., void const*)
+        >
+    {
+        template <
+            typename T
+          , typename U = typename std::remove_cv<
+                typename std::remove_reference<T>::type>::type const
+        >
         static R call(F f, Ms... ms, void const* ptr)
         {
-            using value_type = typename std::remove_cv<
-                typename std::remove_reference<T>::type>::type const;
-            return _void_guard<R>(), _invoke(
+            return _invoke_guard<R>{}(
                 std::forward<F>(f), std::forward<Ms>(ms)...
-              , std::forward<T>(*static_cast<value_type*>(ptr)));
+              , std::forward<T>(*static_cast<U*>(ptr)));
         }
-
-        //~ workaround for gcc and msvc issues with multiple inherited operator()
-        //~ \see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61726
-        //~ \see https://connect.microsoft.com/VisualStudio/feedback/details/914574
-        using visitor<_apply, R(F, Ms..., void*)>::operator();
-        using visitor<_apply, R(F, Ms..., void const*)>::operator();
     };
 
     template <typename R, typename F, typename ...Ms, typename V, typename ...Vs>
-    struct _apply<R, F, pack<Ms...>, pack<V, Vs...>>
-      : visitor<_apply<R, F, pack<Ms...>, pack<V, Vs...>>, R(F, Ms..., void*, V, Vs...)>
-      , visitor<_apply<R, F, pack<Ms...>, pack<V, Vs...>>, R(F, Ms..., void const*, V, Vs...)>
+    struct _apply<R, F, pack<Ms...>, std::false_type, pack<V, Vs...>>
+      : visitor<
+            _apply<R, F, pack<Ms...>, std::false_type, pack<V, Vs...>>
+          , R(F, Ms..., void*, V, Vs...)
+        >
     {
-        template <typename T>
+        template <
+            typename T
+          , typename U = typename std::remove_cv<
+                typename std::remove_reference<T>::type>::type
+          , typename IsConst = typename std::is_const<
+                typename std::remove_reference<V>::type>::type
+        >
         static R call(F f, Ms... ms, void* ptr, V v, Vs... vs)
         {
-            using value_type = typename std::remove_cv<
-                typename std::remove_reference<T>::type>::type;
             return bool(v)
-              ? _apply<R, F, pack<Ms..., T>, pack<Vs...>>{}(
+              ? _apply<R, F, pack<Ms..., T>, IsConst, pack<Vs...>>{}(
                     _qualified_pack<V>{}, v.which()
                   , std::forward<F>(f), std::forward<Ms>(ms)...
-                  , std::forward<T>(*static_cast<value_type*>(ptr))
+                  , std::forward<T>(*static_cast<U*>(ptr))
                   , v.target(), std::forward<Vs>(vs)...
                 )
               : throw bad_variant_access{};
         }
-
-        template <typename T>
-        static R call(F f, Ms... ms, void const* ptr, V v, Vs... vs)
-        {
-            using value_type = typename std::remove_cv<
-                typename std::remove_reference<T>::type>::type const;
-            return bool(v)
-              ? _apply<R, F, pack<Ms..., T>, pack<Vs...>>{}(
-                    _qualified_pack<V>{}, v.which()
-                  , std::forward<F>(f), std::forward<Ms>(ms)...
-                  , std::forward<T>(*static_cast<value_type*>(ptr))
-                  , v.target(), std::forward<Vs>(vs)...
-                )
-              : throw bad_variant_access{};
-        }
-
-        //~ workaround for gcc and msvc issues with multiple inherited operator()
-        //~ \see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61726
-        //~ \see https://connect.microsoft.com/VisualStudio/feedback/details/914574
-        using visitor<_apply, R(F, Ms..., void*, V, Vs...)>::operator();
-        using visitor<_apply, R(F, Ms..., void const*, V, Vs...)>::operator();
     };
 
-    template <typename R, typename F, typename V, typename ...Vs>
+    template <typename R, typename F, typename ...Ms, typename V, typename ...Vs>
+    struct _apply<R, F, pack<Ms...>, std::true_type, pack<V, Vs...>>
+      : visitor<
+            _apply<R, F, pack<Ms...>, std::true_type, pack<V, Vs...>>
+          , R(F, Ms..., void const*, V, Vs...)
+        >
+    {
+        template <
+            typename T
+          , typename U = typename std::remove_cv<
+                typename std::remove_reference<T>::type>::type const
+          , typename IsConst = typename std::is_const<
+                typename std::remove_reference<V>::type>::type
+        >
+        static R call(F f, Ms... ms, void const* ptr, V v, Vs... vs)
+        {
+            return bool(v)
+              ? _apply<R, F, pack<Ms..., T>, IsConst, pack<Vs...>>{}(
+                    _qualified_pack<V>{}, v.which()
+                  , std::forward<F>(f), std::forward<Ms>(ms)...
+                  , std::forward<T>(*static_cast<U*>(ptr))
+                  , v.target(), std::forward<Vs>(vs)...
+                )
+              : throw bad_variant_access{};
+        }
+    };
+
+    template <
+        typename R, typename F, typename V, typename ...Vs
+      , typename IsConst = typename std::is_const<
+            typename std::remove_reference<V>::type>::type
+    >
     R apply(F&& f, V&& v, Vs&&... vs)
     {
         return bool(v)
-          ? _apply<R, F&&, pack<>, pack<Vs&&...>>{}(
+          ? _apply<R, F&&, pack<>, IsConst, pack<Vs&&...>>{}(
                 _qualified_pack<V&&>{}, v.which()
               , std::forward<F>(f), v.target(), std::forward<Vs>(vs)...
             )
