@@ -323,7 +323,7 @@ endfunction()
 # The test is simply to build the target successfully.  To exclude platform-specific files, add
 # their relative paths (as they'd appear inside a #include statement) to a variable 'Exclusions'.
 function(ms_add_test_for_multiple_definition_errors)
-  file(GLOB_RECURSE ApiFiles RELATIVE "${PROJECT_SOURCE_DIR}/include" "${PROJECT_SOURCE_DIR}/include/maidsafe/${PROJECT_NAME}/*.h")
+  file(GLOB_RECURSE ApiFiles RELATIVE "${PROJECT_SOURCE_DIR}/include" "${PROJECT_SOURCE_DIR}/include/maidsafe/${PROJECT_NAME}/*.h" "${PROJECT_SOURCE_DIR}/include/maidsafe/${PROJECT_NAME}/*.hpp")
   if(Exclusions)
     list(REMOVE_ITEM ApiFiles ${Exclusions})
   endif()
