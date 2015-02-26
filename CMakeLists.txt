@@ -59,9 +59,12 @@ endif()
 
 
 project(maidsafe)
+
+
 if(ANDROID_BUILD)
   ms_android_setup_flags()
 endif()
+
 
 if(CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES} ReleaseNoInline CACHE INTERNAL "" FORCE)
@@ -87,6 +90,7 @@ set(MaidsafeGeneratedSourcesDir ${CMAKE_BINARY_DIR}/GeneratedSources)
 set(SubModules
       common
       passport
+      crux
       rudp
       routing
       encrypt

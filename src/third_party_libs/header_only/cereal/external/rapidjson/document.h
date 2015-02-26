@@ -817,9 +817,7 @@ typedef GenericDocument<UTF8<> > Document;
 
 } // namespace rapidjson
 
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#elif defined(_MSC_VER)
+#ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 

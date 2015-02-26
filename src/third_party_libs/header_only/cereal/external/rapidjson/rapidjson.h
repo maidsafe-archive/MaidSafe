@@ -193,7 +193,7 @@ public:
 	{
 		RAPIDJSON_ASSERT(buffer != 0);
 		RAPIDJSON_ASSERT(size > sizeof(ChunkHeader));
-        chunkHead_ = (ChunkHeader*)buffer;
+		chunkHead_ = (ChunkHeader*)buffer;
 		chunkHead_->capacity = size - sizeof(ChunkHeader);
 		chunkHead_->size = 0;
 		chunkHead_->next = 0;
@@ -209,7 +209,7 @@ public:
 
 	//! Deallocates all memory chunks, excluding the user-supplied buffer.
 	void Clear() {
-        while(chunkHead_ != 0 && chunkHead_ != (ChunkHeader *)userBuffer_) {
+		while(chunkHead_ != 0 && chunkHead_ != (ChunkHeader *)userBuffer_) {
 			ChunkHeader* next = chunkHead_->next;
 			baseAllocator_->Free(chunkHead_);
 			chunkHead_ = next;
@@ -243,8 +243,8 @@ public:
 		if (chunkHead_->size + size > chunkHead_->capacity)
 			AddChunk(chunk_capacity_ > size ? chunk_capacity_ : size);
 
-        char *buffer = (char *)(chunkHead_ + 1) + chunkHead_->size;
-        RAPIDJSON_ASSERT(((uintptr_t)buffer & 3) == 0);	// returned buffer is aligned to 4
+		char *buffer = (char *)(chunkHead_ + 1) + chunkHead_->size;
+		RAPIDJSON_ASSERT(((uintptr_t)buffer & 3) == 0);	// returned buffer is aligned to 4
 		chunkHead_->size += size;
 
 		return buffer;
