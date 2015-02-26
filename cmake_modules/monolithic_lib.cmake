@@ -38,7 +38,7 @@ set(DevLibDepends maidsafe_common
                   protobuf_lite
                   protobuf
                   sqlite)
-list(REMOVE_ITEM DevLibDepends BoostContext BoostCoroutine BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)
+list(REMOVE_ITEM DevLibDepends BoostContext BoostPython BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)
 
 set(SourceFile "${MaidsafeGeneratedSourcesDir}/monolithic.cc")
 ms_set_postfixes()
