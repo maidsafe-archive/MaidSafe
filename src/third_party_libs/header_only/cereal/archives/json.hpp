@@ -52,6 +52,7 @@ namespace cereal
 #include <cereal/external/rapidjson/document.h>
 #include <cereal/external/base64.hpp>
 
+#include <cassert>
 #include <limits>
 #include <sstream>
 #include <stack>
@@ -592,7 +593,9 @@ namespace cereal
       {
         search();
 
-        val = itsIteratorStack.back().value().GetUint();
+        auto value(itsIteratorStack.back().value().GetUint());
+        assert(value <= std::numeric_limits<T>::max());
+        val = static_cast<T>(value);
         ++itsIteratorStack.back();
       }
 
@@ -632,7 +635,7 @@ namespace cereal
       template <class T> inline
       typename std::enable_if<sizeof(T) == sizeof(std::uint64_t) && !std::is_signed<T>::value, void>::type
       loadLong(T & lu){ loadValue( reinterpret_cast<std::uint64_t&>( lu ) ); }
-            
+
     public:
       //! Serialize a long if it would not be caught otherwise
       template <class T> inline
