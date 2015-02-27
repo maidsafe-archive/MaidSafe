@@ -228,7 +228,7 @@ elseif(UNIX)
   else()
     list(APPEND b2Args variant=release cxxflags=-fPIC cxxflags=-std=c++11)
     # Need to configure the toolset based on whatever version CMAKE_CXX_COMPILER is
-    string(REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" ToolsetVer "${CMAKE_CXX_COMPILER_VERSION}")
+    string(REGEX MATCH "[0-9]+\\.[0-9]+" ToolsetVer "${CMAKE_CXX_COMPILER_VERSION}")
     if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
       list(APPEND b2Args toolset=clang-${ToolsetVer})
       if(HAVE_LIBC++)
