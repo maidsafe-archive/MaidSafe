@@ -261,6 +261,11 @@ foreach(Component ${BoostComponents})
       )
   ms_underscores_to_camel_case(${Component} CamelCaseComponent)
   add_library(Boost${CamelCaseComponent} STATIC IMPORTED GLOBAL)
+  if(Component STREQUAL "test")
+    set(ComponentLibName unit_test_framework)
+  else()
+    set(ComponentLibName ${Component})
+  endif()
   if(MSVC)
     if(MSVC11)
       set(CompilerName vc110)
@@ -271,15 +276,15 @@ foreach(Component ${BoostComponents})
     endif()
     string(REGEX MATCH "[0-9]_[0-9][0-9]" Version "${BoostFolderName}")
     set_target_properties(Boost${CamelCaseComponent} PROPERTIES
-                          IMPORTED_LOCATION_DEBUG ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-gd-${Version}.lib
-                          IMPORTED_LOCATION_MINSIZEREL ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
-                          IMPORTED_LOCATION_RELEASE ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
-                          IMPORTED_LOCATION_RELWITHDEBINFO ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
-                          IMPORTED_LOCATION_RELEASENOINLINE ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
+                          IMPORTED_LOCATION_DEBUG ${BoostSourceDir}/stage/lib/libboost_${ComponentLibName}-${CompilerName}-mt-gd-${Version}.lib
+                          IMPORTED_LOCATION_MINSIZEREL ${BoostSourceDir}/stage/lib/libboost_${ComponentLibName}-${CompilerName}-mt-${Version}.lib
+                          IMPORTED_LOCATION_RELEASE ${BoostSourceDir}/stage/lib/libboost_${ComponentLibName}-${CompilerName}-mt-${Version}.lib
+                          IMPORTED_LOCATION_RELWITHDEBINFO ${BoostSourceDir}/stage/lib/libboost_${ComponentLibName}-${CompilerName}-mt-${Version}.lib
+                          IMPORTED_LOCATION_RELEASENOINLINE ${BoostSourceDir}/stage/lib/libboost_${ComponentLibName}-${CompilerName}-mt-${Version}.lib
                           LINKER_LANGUAGE CXX)
   else()
     set_target_properties(Boost${CamelCaseComponent} PROPERTIES
-                          IMPORTED_LOCATION ${BoostSourceDir}/stage/lib/libboost_${Component}-mt.a
+                          IMPORTED_LOCATION ${BoostSourceDir}/stage/lib/libboost_${ComponentLibName}-mt.a
                           LINKER_LANGUAGE CXX)
   endif()
   set_target_properties(boost_${Component} Boost${CamelCaseComponent} PROPERTIES

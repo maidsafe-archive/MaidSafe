@@ -36,10 +36,10 @@ target_compile_definitions(protobuf_lite
 target_compile_options(protobuf_lite
   PUBLIC
     $<$<BOOL:${MSVC}>:
-        $<$<CONFIG:Release>:/O2 /GL /MD>
+        $<$<CONFIG:Release>:/O2 /MD>
         $<$<CONFIG:Debug>:/Od /MDd /Zi>
         $<$<CONFIG:MinSizeRel>:/MD>
-        $<$<CONFIG:RelWithDebInfo>:/O2 /GL /MD /Zi>
+        $<$<CONFIG:RelWithDebInfo>:/O2 /MD /Zi>
     >
     $<$<BOOL:${UNIX}>:-std=c++11 -fPIC ${LibCXX}>
   PRIVATE

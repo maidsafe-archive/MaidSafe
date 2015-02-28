@@ -91,7 +91,6 @@ set(SubModules
       common
       passport
       crux
-      rudp
       routing
       encrypt
       nfs
