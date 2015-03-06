@@ -92,7 +92,7 @@ set(SubModules
       passport
       crux
       routing
-      encrypt
+      #encrypt
       #nfs
       vault)
       #vault_manager
