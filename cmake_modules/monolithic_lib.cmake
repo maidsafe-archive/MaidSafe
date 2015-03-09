@@ -29,11 +29,11 @@ set(DevLibDepends maidsafe_common
                   maidsafe_passport
                   maidsafe_crux
                   maidsafe_routing
-                  maidsafe_encrypt
-                  maidsafe_api
-                  maidsafe_nfs_core
-                  maidsafe_nfs_client
-                  maidsafe_launcher
+                  #maidsafe_encrypt
+                  #maidsafe_api
+                  #maidsafe_nfs_core
+                  #maidsafe_nfs_client
+                  #maidsafe_launcher
                   ${AllBoostLibs}
                   cryptopp
                   protobuf_lite
