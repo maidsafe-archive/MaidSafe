@@ -167,9 +167,9 @@ function(ms_check_license_block File)
      PROJECT_NAME STREQUAL "nfs" OR
      PROJECT_NAME STREQUAL "passport" OR
      PROJECT_NAME STREQUAL "routing" OR
-     PROJECT_NAME STREQUAL "rudp" OR
      PROJECT_NAME STREQUAL "vault" OR
-     PROJECT_NAME STREQUAL "vault_manager")
+     PROJECT_NAME STREQUAL "vault_manager" OR
+     PROJECT_NAME STREQUAL "launcher")
     if(EXISTS "${File}")
       file(STRINGS ${File} CopyrightBlock LIMIT_COUNT 17)
     endif()

@@ -19,9 +19,6 @@
 [submodule "src/routing"]
 	path = src/routing
 	url = git@github.com:maidsafe/MaidSafe-Routing
-[submodule "src/rudp"]
-	path = src/rudp
-	url = git@github.com:maidsafe/MaidSafe-RUDP
 [submodule "src/vault"]
 	path = src/vault
 	url = git@github.com:maidsafe/MaidSafe-Vault
