@@ -30,7 +30,6 @@ ms_underscores_to_camel_case(${PROJECT_NAME} CamelCaseProjectName)
 
 if(NOT PROJECT_NAME STREQUAL "Cryptopp" AND
    NOT PROJECT_NAME STREQUAL "sqlite" AND
-   NOT PROJECT_NAME STREQUAL "network_viewer" AND
    NOT PROJECT_NAME STREQUAL "launcher_ui")
   ms_get_branch_and_commit(Branch Commit)
   set(Msg "Configuring MaidSafe ${CamelCaseProjectName} project on ${Branch} at commit ${Commit}")
