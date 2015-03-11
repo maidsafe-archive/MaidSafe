@@ -21,13 +21,18 @@
 #==================================================================================================#
 
 
-if(APPLE)
-  cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
-else()
-  cmake_minimum_required(VERSION 2.8.12.1 FATAL_ERROR)
-endif()
+cmake_minimum_required(VERSION 2.8.12.2 FATAL_ERROR)
 
-if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
+# Prefer out-of-source builds (i.e. the build root being outside of the source root), but allow for
+# building in a folder immediately inside the source root (not one of the existing source folders).
+set(SourceDir ${CMAKE_SOURCE_DIR})
+foreach(SpecialChar "^" "$" "." "[" "]" "*" "+" "?" "|" "(" ")")
+  string(REPLACE "${SpecialChar}" "\\${SpecialChar}" SourceDir "${SourceDir}")
+endforeach()
+if(CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR OR
+   CMAKE_BINARY_DIR MATCHES "${SourceDir}/cmake_modules" OR
+   CMAKE_BINARY_DIR MATCHES "${SourceDir}/src" OR
+   CMAKE_BINARY_DIR MATCHES "${SourceDir}/tools")
   set(Msg "\n\nThis project doesn't allow \"in-source builds\".\nYou must run CMake from a folder outside")
   set(Msg "${Msg} the root of this project.\nFor more details about configuring the project see\n")
   if(WIN32)
@@ -46,15 +51,33 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
   message(FATAL_ERROR "CMake should have crashed - this is a failsafe in case the call used to trigger the crash gets fixed.")
 endif()
 
-project(maidsafe)
-if(CMAKE_CONFIGURATION_TYPES)
-  set(CMAKE_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES} ReleaseNoInline CACHE INTERNAL "" FORCE)
-elseif(NOT CMAKE_BUILD_TYPE)
-  message(STATUS "No build type given.  Setting CMAKE_BUILD_TYPE to Debug.")
-  set(CMAKE_BUILD_TYPE Debug)
+
+# Setup android build if required
+if(ANDROID_BUILD)
+  include("${CMAKE_SOURCE_DIR}/cmake_modules/android_setup.cmake")
 endif()
 
-include(CTest)
+
+project(maidsafe)
+
+
+if(ANDROID_BUILD)
+  ms_android_setup_flags()
+endif()
+
+
+if(CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES} ReleaseNoInline CACHE INTERNAL "" FORCE)
+else()
+  if(NOT CMAKE_BUILD_TYPE)
+    message(STATUS "No build type given.  Setting and caching CMAKE_BUILD_TYPE to Debug.")
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Type of build; options are: Debug, Release, RelWithDebInfo, or MinSizeRel." FORCE)
+  else()
+    message(STATUS "Build type set to ${CMAKE_BUILD_TYPE}")
+  endif()
+endif()
+
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # works for Unix MakeFiles (also ninja)
 set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_ERROR_DEPRECATED ON)
@@ -63,9 +86,11 @@ set(EXPORT_COMPILE_COMMANDS ON)
 set(HR "================================================================================")
 
 
+set(MaidsafeGeneratedSourcesDir ${CMAKE_BINARY_DIR}/GeneratedSources)
 set(SubModules
       common
       passport
+      crux
       rudp
       routing
       encrypt
@@ -73,12 +98,14 @@ set(SubModules
       vault
       vault_manager
       drive
-      api)
+      api
+      launcher)
 # Set all submodules' source dir before calling add_subdirectory to avoid
 # having to run CMake twice in a clean build tree.
 foreach(SubModule ${SubModules})
   set(${SubModule}_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/${SubModule})
 endforeach()
+
 
 # Check the submodules are initialised
 foreach(SubModule ${SubModules})
@@ -92,38 +119,22 @@ endforeach()
 
 
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
-
 include(version)
-
-# Set Maidsafe Testing to OFF if package build defined.
-if(PACKAGE_BUILD)
-  set(MaidsafeTesting OFF)
-else()
-  set(MaidsafeTesting ON)
-endif()
 
 
 # Force all libraries and exes to be built to the top-level build dir.
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 
 # Include helper functions, check compiler version, and get target platform details
 include(utils)
-extra_platforms()
+ms_extra_platforms()
 ms_check_compiler()
 ms_get_target_platform()
 ms_get_target_architecture()
 unset(AllStaticLibs CACHE)
-
-
-# Adds a target 'CleanCoverage' on Unix.  When this target is built, it removes
-# all .gcda files from the build directory and its subdirectories
-if(UNIX)
-  find_file(CleanCoverageFile clean_coverage.cmake cmake_modules)
-  add_custom_target(CleanCoverage COMMAND ${CMAKE_COMMAND} -DSearchDir=${CMAKE_BINARY_DIR} -P ${CleanCoverageFile})
-  option(COVERAGE "If ON, targets will be built with coverage flags included." OFF)
-endif()
 
 
 # Add build types for the Address, Memory, Thread and Undefined Behaviour Sanitizers
@@ -138,8 +149,9 @@ include(find_stack_protector_strong)
 include(maidsafe_find_just_thread)
 include(maidsafe_find_python)
 include(maidsafe_find_git)
-include(maidsafe_find_openmp)
 
+
+option(INCLUDE_TESTS "Whether to include test targets or not" ON)
 if(APPLE)
   option(HAVE_LIBC++ "If ON, '-stdlib=libc++' is added to the compile and link flags" ON)
 else()
@@ -154,15 +166,52 @@ elseif(DEFINED LOGGING)
 endif()
 option(VLOGGING "Whether to use Visualiser logging or not" OFF)
 option(USE_BOOST_CACHE "If ON, try to download, extract and build boost to a single cache directory for all MaidSafe clones" OFF)
-option(BOOST_DISABLE_ASSERTS "If ON, all BOOST_ASSERTs are disabled" ON)
+option(BOOST_DISABLE_ASSERTS "If ON, all BOOST_ASSERTs and BOOST_VERIFYs are disabled" OFF)
 option(USE_JUST_THREADS "If ON, try to find and use the just::thread library (Windows or gcc 4.7 only)" OFF)
 include(standard_flags)
 
 
+if(INCLUDE_TESTS)
+  include(CTest)
+
+  # Adds a target 'CleanCoverage' on Unix.  When this target is built, it removes
+  # all .gcda files from the build directory and its subdirectories
+  if(UNIX)
+    find_file(CleanCoverageFile clean_coverage.cmake cmake_modules)
+    add_custom_target(CleanCoverage COMMAND ${CMAKE_COMMAND} -DSearchDir=${CMAKE_BINARY_DIR} -P ${CleanCoverageFile})
+    option(COVERAGE "If ON, targets will be built with coverage flags included." OFF)
+  endif()
+
+
+  # 'SkipReturnCodeValue' is used as the exit code when running disabled GTests.
+  # It must be between 0 and 255 inclusive.  (Bash returns 127 if a command is not found).
+  set(SkipReturnCodeValue 127)
+
+
+  # Prepare CTestCustom.cmake
+  set(CTestCustomFile "${CMAKE_BINARY_DIR}/CTestCustom.cmake")
+  file(WRITE ${CTestCustomFile} "")
+  ms_add_coverage_exclude(\\\\.pb\\\\.)
+  ms_add_coverage_exclude(tests/)
+  ms_add_coverage_exclude(boost/)
+  ms_add_coverage_exclude(src/third_party_libs/)
+  ms_add_coverage_exclude(GeneratedProtoFiles/)
+  ms_add_coverage_exclude(main\\\\.cc)
+endif()
+
+
+if(BOOTSTRAP)
+  message(STATUS "BOOTSTRAP set as '${BOOTSTRAP}'.")
+else()
+  message(STATUS "BOOTSTRAP not set.")
+endif()
+
+
+# Add third party libs and each sub-module
+if(CMAKE_VERSION VERSION_LESS "3.0")
+  include_directories("${CMAKE_SOURCE_DIR}/src/third_party_libs/header_only")
+endif()
 add_subdirectory(src/third_party_libs)
-
-
-# Add each sub-module
 foreach(SubModule ${SubModules})
   add_subdirectory(src/${SubModule})
 endforeach()
@@ -170,29 +219,20 @@ include(exports)
 
 message("${HR}")
 
-if(UNIX)
-  if(COVERAGE)
-    message(STATUS "Coverage ON")
-  else()
-    message(STATUS "Coverage OFF.  To enable, re-run CMake with -DCOVERAGE=ON")
-  endif()
+
+# Tidy CTestCustom.cmake and apply pre- and post-test commands
+if(INCLUDE_TESTS)
+  file(STRINGS ${CTestCustomFile} CTestCustomContents)
+  list(REMOVE_DUPLICATES CTestCustomContents)
+  list(SORT CTestCustomContents)
+  string(REPLACE ";" "\n" CTestCustomContents "${CTestCustomContents}")
+  file(WRITE ${CTestCustomFile} "${CTestCustomContents}\n")
 endif()
 
-message(STATUS "To include all GTests,                   cmake . -DMAIDSAFE_TEST_TYPE=ALL")
-message(STATUS "To include only behavioural GTests,      cmake . -DMAIDSAFE_TEST_TYPE=BEH")
-message(STATUS "To include only functional GTests,       cmake . -DMAIDSAFE_TEST_TYPE=FUNC")
-message("${HR}")
-
-
-# Tidy CTestCustom.cmake
-file(STRINGS ${CMAKE_BINARY_DIR}/CTestCustom.cmake CTestCustomContents)
-list(REMOVE_DUPLICATES CTestCustomContents)
-list(SORT CTestCustomContents)
-string(REPLACE ";" "\n" CTestCustomContents "${CTestCustomContents}")
-file(WRITE ${CMAKE_BINARY_DIR}/CTestCustom.cmake "${CTestCustomContents}\n")
 
 ms_cleanup_temp_dir()
 ms_rename_outdated_built_exes()
+message(STATUS "To see values of cached CMake variables, run 'cmake . -N -LH'")
 
 
 unset(MAKECOMMAND CACHE)
@@ -214,11 +254,11 @@ if(MSVC OR XCODE)
   source_group("root\\cmake_modules" FILES ${ModuleFiles})
 
   add_custom_target(CMakeFiles SOURCES ${RootFiles} src/third_party_libs/CMakeLists.txt ${ModuleFiles})
+
+  foreach(ConfigType ${CMAKE_CONFIGURATION_TYPES})
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${ConfigType})
+  endforeach()
 endif()
 
 
-# Package
-if(${PACKAGE_BUILD})
-  include(package)
-  include(CPack)
-endif()
+include(add_installers)

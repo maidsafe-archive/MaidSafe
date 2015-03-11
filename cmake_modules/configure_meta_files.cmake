@@ -26,16 +26,16 @@ set(HaveCacheable FALSE)
 foreach(MetaFile ${MetaFiles})
   # Get file path relative to ${CMAKE_CURRENT_BINARY_DIR}/copied_message_types
   string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}/copied_message_types/" "" FileName "${MetaFile}")
-  
+
   # Construct warning string
   set(DevWarning "// Modify in <sub-project>/cmake/${FileName} if required, not here.")
   string(LENGTH "${DevWarning}" DevWarningLength)
-  if(DevWarningLength GREATER 100)
+  if(DevWarningLength GREATER "100")
     set(DevWarning "${DevWarning}     // NOLINT\n")
   else()
     set(DevWarning "${DevWarning}\n")
   endif()
-  
+
   # Read contents
   file(STRINGS "${MetaFile}" AllTypes)
 
@@ -65,7 +65,7 @@ foreach(MetaFile ${MetaFiles})
              Contents "${MessageType}")
       string(REGEX MATCHALL "[^:]+" ContentsList "${Contents}")
       list(GET ContentsList 0 ClassType)
-      if(NOT "${ClassType}" STREQUAL "struct" AND NOT "${ClassType}" STREQUAL "class")
+      if(NOT ClassType STREQUAL "struct" AND NOT ClassType STREQUAL "class")
         set(ErrorMsg "\nError on line ${LineNumber} of <sub-project>/cmake/${FileName}\nContents ")
         set(ErrorMsg "${ErrorMsg}tag is '${ClassType}', but must be either 'struct' or 'class'.")
         message(FATAL_ERROR "${ErrorMsg}")
@@ -91,7 +91,7 @@ foreach(MetaFile ${MetaFiles})
       list(LENGTH AllClasses AllClassesLengthAfter)
       if(AllClassesLengthBefore EQUAL AllClassesLengthAfter)
         string(LENGTH "${Fwd}" FwdLength)
-        if(FwdLength GREATER 100)
+        if(FwdLength GREATER "100")
           set(Fwd "${Fwd}  // NOLINT")
         endif()
         list(APPEND Fwds "${Fwd}\n")
@@ -118,7 +118,7 @@ foreach(MetaFile ${MetaFiles})
       list(APPEND Typedef "    maidsafe::routing::${RoutingReceiverType}Id,\n")
       list(APPEND Typedef "    ${QualifiedClassName}>\n")
       list(APPEND Typedef "        ${Action}From${SourcePersona}To${DestinationPersona};\n\n")
-    
+
       list(APPEND Typedefs "${Typedef}")
     endif()
   endforeach()
@@ -155,7 +155,7 @@ foreach(DestinationPersona ${DestinationPersonas})
   list(APPEND Variant "// Auto-generated typedef.\n")
   list(APPEND Variant "// Modify in <sub-project>/cmake/*.message_types.meta if required, not here.\n")
   list(APPEND Variant "typedef boost::variant<\n    ${AllMessageTypedefs}> ${DestinationPersona}ServiceMessages;\n\n")
-  
+
   list(APPEND Variant "// Auto-generated function.\n")
   list(APPEND Variant "// Modify in <sub-project>/cmake/*.message_types.meta if required, not here.\n")
   list(APPEND Variant "template<>\n")

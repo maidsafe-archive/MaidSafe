@@ -28,3 +28,9 @@
 [submodule "src/vault_manager"]
 	path = src/vault_manager
 	url = git@github.com:maidsafe/MaidSafe-Vault-Manager
+[submodule "src/launcher"]
+	path = src/launcher
+	url = git@github.com:maidsafe/MaidSafe-Launcher
+[submodule "src/crux"]
+	path = src/crux
+	url = git@github.com:maidsafe/MaidSafe-CRUX

@@ -238,7 +238,7 @@ def work(cmd):
 
 def RunNetwork(number_of_vaults):
   pool = multiprocessing.Pool(processes=number_of_vaults)
-  pool.map(work, [FindFile('TESTcommon', os.curdir)] * number_of_vaults)
+  pool.map(work, [FindFile('test_common', os.curdir)] * number_of_vaults)
 
 
 def main():

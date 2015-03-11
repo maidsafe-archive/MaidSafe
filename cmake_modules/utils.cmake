@@ -29,7 +29,7 @@ include(add_protoc_command)
 
 
 # Oddly cmake is fairly limited in standard platform defines
-function(extra_platforms)
+function(ms_extra_platforms)
   if(UNIX AND NOT APPLE)
     message(STATUS "This system is called ${CMAKE_SYSTEM_NAME}.")
     if(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
@@ -65,16 +65,30 @@ function(extra_platforms)
 endfunction()
 
 
+# Sets the postfixes to be used with all MaidSafe libraries
+macro(ms_set_postfixes)
+  set(CMAKE_DEBUG_POSTFIX -d)
+  set(CMAKE_RELWITHDEBINFO_POSTFIX -rwdi)
+  set(CMAKE_MINSIZEREL_POSTFIX -msr)
+  set(CMAKE_RELEASENOINLINE_POSTFIX -rni)
+endmacro()
+
+
 function(ms_check_compiler)
   # If the path to the CMAKE_CXX_COMPILER doesn't change, CMake doesn't detect a version change
   # in the compiler.  We cache the output of running the compiler with '--version' and check
   # on each subsequent configure that the output is identical.  Note, with MSVC the command
   # fails ('--version' is an unrecognised arg), but still outputs the comiler version.
+  #
+  # This check (but not the minimum version check) can be skipped by setting the variable
+  # IGNORE_COMPILER_VERSION_CHANGE to ON, but we strongly discourage doing this.  It is arguably
+  # useful if you want to upgrade your compiler version on a very frequent basis (e.g. updating and
+  # building Clang from source daily).
   execute_process(COMMAND ${CMAKE_CXX_COMPILER} --version
                   OUTPUT_VARIABLE OutputVar ERROR_VARIABLE ErrorVar)
   string(REPLACE "\n" ";" CombinedOutput "${OutputVar}${ErrorVar}")
-  if(CheckCompilerVersion)
-    if(NOT "${CheckCompilerVersion}" STREQUAL "${CombinedOutput}")
+  if(CheckCompilerVersion AND NOT IGNORE_COMPILER_VERSION_CHANGE)
+    if(NOT CheckCompilerVersion STREQUAL CombinedOutput)
       set(Msg "\n\nThe C++ compiler \"${CMAKE_CXX_COMPILER}\" has changed since the previous run of CMake.")
       set(Msg "${Msg}  This requires a clean build folder, so either delete all contents from this")
       set(Msg "${Msg}  folder, or create a new one and run CMake from there.\n\n")
@@ -83,15 +97,19 @@ function(ms_check_compiler)
   else()
     set(CheckCompilerVersion "${CombinedOutput}" CACHE INTERNAL "")
   endif()
-  if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "18")  # i.e for MSVC < Visual Studio 12
+  if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xMSVC")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 18)  # i.e for MSVC < Visual Studio 12
       message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of Visual Studio less than 12.")
     endif()
-  elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.3")
       message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of Clang less than 3.3")
     endif()
-  elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.1")
+      message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of AppleClang less than 5.1")
+    endif()
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.8")
       message(FATAL_ERROR "\nIn order to use C++11 features, this library cannot be built using a version of GCC less than 4.8")
     endif()
@@ -123,11 +141,102 @@ macro(ms_glob_dir BaseName Dir SourceGroupName)
 endmacro()
 
 
+# Checks that the given file includes an appropriate license block at the top.
+function(ms_check_license_block File)
+  set(MaidSafeCopyrightBlock
+      ""
+      "    This MaidSafe Software is licensed to you under (1) the MaidSafe.net Commercial License,"
+      "    version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which"
+      "    licence you accepted on initial access to the Software (the \"Licences\")."
+      ""
+      "    By contributing code to the MaidSafe Software, or to this project generally, you agree to be"
+      "    bound by the terms of the MaidSafe Contributor Agreement, version 1.0, found in the root"
+      "    directory of this project at LICENSE, COPYING and CONTRIBUTOR respectively and also"
+      "    available at: http://www.maidsafe.net/licenses"
+      ""
+      "    Unless required by applicable law or agreed to in writing, the MaidSafe Software distributed"
+      "    under the GPL Licence is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS"
+      "    OF ANY KIND, either express or implied."
+      ""
+      "    See the Licences for the specific language governing permissions and limitations relating to"
+      "    use of the MaidSafe Software.                                                                 */")
+  if(PROJECT_NAME STREQUAL "api" OR
+     PROJECT_NAME STREQUAL "common" OR
+     PROJECT_NAME STREQUAL "drive" OR
+     PROJECT_NAME STREQUAL "encrypt" OR
+     PROJECT_NAME STREQUAL "nfs" OR
+     PROJECT_NAME STREQUAL "passport" OR
+     PROJECT_NAME STREQUAL "routing" OR
+     PROJECT_NAME STREQUAL "rudp" OR
+     PROJECT_NAME STREQUAL "vault" OR
+     PROJECT_NAME STREQUAL "vault_manager")
+    if(EXISTS "${File}")
+      file(STRINGS ${File} CopyrightBlock LIMIT_COUNT 17)
+    endif()
+    list(LENGTH CopyrightBlock CopyrightBlockLength)
+    unset(Found)
+    unset(ExcludeFromCheck)
+    if(CopyrightBlockLength GREATER "0")
+      list(GET CopyrightBlock 0 FirstLine)
+      list(REMOVE_AT CopyrightBlock 0)
+      if(FirstLine STREQUAL "// NoCheck")
+        set(ExcludeFromCheck ON)
+      else()
+        string(REGEX MATCH "^/\\*  Copyright 20[01][0-9] MaidSafe.net limited$" Found "${FirstLine}")
+      endif()
+    endif()
+    if(NOT CopyrightBlockLength EQUAL "17" OR NOT Found OR NOT CopyrightBlock STREQUAL MaidSafeCopyrightBlock)
+      string(REPLACE "${PROJECT_SOURCE_DIR}/" "" RelativePath "${File}")
+      string(REGEX MATCH "\\.pb\\.(h|cc)$" IsProtobuf "${File}")
+      string(REGEX MATCH "\\.meta$" IsMeta "${File}")
+      if(NOT IsProtobuf AND NOT IsMeta AND EXISTS "${File}" AND NOT ExcludeFromCheck)
+        set(Msg "\nThe copyright block at the top of \"${RelativePath}\" is missing or incorrect.\n")
+        set(Msg "${Msg}If this is a MaidSafe file, please add the correct copyright block.\n")
+        set(Msg "${Msg}If this isn't a MaidSafe file, please add '// NoCheck' as the first line ")
+        set(Msg "${Msg}in this file to avoid it being checked.\n\n")
+        message(AUTHOR_WARNING "${Msg}")
+      endif()
+    endif()
+  endif()
+endfunction()
+
+
+# As suggested in pull request https://github.com/maidsafe/MaidSafe/pull/140 from
+# https://github.com/smspillaz, issue a developer warning if duplicate files are added to a target.
+# While this *shouldn't* cause any significant problems, it could be a symptom of a bug in the
+# current CMakeLists.txt
+function(ms_check_for_duplicates TargetName)
+  set(Files ${ARGN})
+  list(LENGTH Files FilesLength)
+  string(LENGTH "${CMAKE_CURRENT_SOURCE_DIR}/" SourceDirLength)
+  while(FilesLength)
+    list(GET Files 0 File)
+    math(EXPR ExpectedLength ${FilesLength}-1)
+    list(REMOVE_ITEM Files ${File})
+    list(LENGTH Files FilesLength)
+    if(NOT FilesLength EQUAL ExpectedLength)
+      string(SUBSTRING "${File}" ${SourceDirLength} -1 File)
+      set(DuplicateFiles "${DuplicateFiles}\n\t${File}")
+    endif()
+  endwhile()
+  if(DuplicateFiles)
+    message(AUTHOR_WARNING "\n\nDuplicate source files found for target '${TargetName}':${DuplicateFiles}\n\n")
+  endif()
+endfunction()
+
+
 # Adds a static library with CMake Target name of "${Lib}".
+#
+# All files to be added (sources, headers, others) should be listed after 'Lib'
 function(ms_add_static_library Lib)
+  ms_check_for_duplicates(${Lib} ${ARGN})
+  foreach(File ${ARGN})
+    ms_check_license_block(${File})
+  endforeach()
+  # Check for correct naming convention
   string(REGEX MATCH "^maidsafe_[a-z]" Found "${Lib}")
   string(TOLOWER ${Lib} LibLowerCase)
-  if(NOT Found OR NOT "${Lib}" STREQUAL "${LibLowerCase}")
+  if(NOT Found OR NOT Lib STREQUAL LibLowerCase)
     set(Msg "\nYou have called ms_add_static_library with lib name of \"${Lib}\".")
     set(Msg "${Msg}  MaidSafe lib names should be lowercase starting with \"maidsafe_\".\n")
     message(AUTHOR_WARNING "${Msg}")
@@ -140,12 +249,21 @@ endfunction()
 
 
 # Adds an executable with CMake Target name of "${Exe}".
-# "${FolderName}" defines the folder in which the executable appears if the
-# chosen IDE supports folders for projects.  The exe will have the preprocessor definition
-# APPLICATION_NAME=${AppName}.  AppName is the value of ${Exe}Name if it exists, otherwise it's the
-# camel-case name of the exe.  (e.g. the exe 'test_common', will have APPLICATION_NAME=TestCommon
-# unless 'test_commonName' is set, in which case it will have APPLICATION_NAME=${test_commonName})
+#
+# "${FolderName}" defines the folder in which the executable appears if the chosen IDE supports
+# folders for projects.
+#
+# All files to be added (sources, headers, others) should be listed after 'FolderName'
+#
+# The exe will have the preprocessor definition APPLICATION_NAME=${AppName}.  AppName is the value
+# of ${Exe}Name if it exists, otherwise it's the camel-case name of the exe.  (e.g. the exe
+# 'test_common', will have APPLICATION_NAME=TestCommon unless 'test_commonName' is set, in which
+# case it will have APPLICATION_NAME=${test_commonName})
 function(ms_add_executable Exe FolderName)
+  ms_check_for_duplicates(${Exe} ${ARGN})
+  foreach(File ${ARGN})
+    ms_check_license_block(${File})
+  endforeach()
   set(AllExesForCurrentProject ${AllExesForCurrentProject} ${Exe} PARENT_SCOPE)
   add_executable(${Exe} ${ARGN})
   if(${Exe}Name)
@@ -156,7 +274,7 @@ function(ms_add_executable Exe FolderName)
   target_compile_definitions(${Exe} PRIVATE COMPANY_NAME=MaidSafe APPLICATION_NAME=${AppName})
   set_target_properties(${Exe} PROPERTIES LABELS ${CamelCaseProjectName} FOLDER "MaidSafe/Executables/${FolderName}")
   string(REPLACE "Tests/" "" TEST_FOLDER_NAME ${FolderName})
-  if(NOT ${TEST_FOLDER_NAME} STREQUAL ${FolderName})
+  if(NOT TEST_FOLDER_NAME STREQUAL FolderName)
     SET(TEST_FOLDER_NAME ${TEST_FOLDER_NAME} PARENT_SCOPE)
   endif()
 endfunction()
@@ -164,12 +282,12 @@ endfunction()
 
 # Workaround for the Xcode's missing ability to pass -isystem to the compiler.
 function(ms_target_include_system_dirs Target)
-  if(XCODE OR (UNIX AND NOT ${CMAKE_VERSION} VERSION_LESS 3.0))
+  if(XCODE OR (UNIX AND NOT CMAKE_VERSION VERSION_LESS "3.0"))
     foreach(Arg ${ARGN})
       string(REGEX MATCH "\\$<" IsGeneratorExpression "${Arg}")
-      if("${Arg}" STREQUAL "PRIVATE" OR "${Arg}" STREQUAL "PUBLIC" OR "${Arg}" STREQUAL "INTERFACE")
+      if(Arg STREQUAL "PRIVATE" OR Arg STREQUAL "PUBLIC" OR Arg STREQUAL "INTERFACE")
         set(Scope ${Arg})
-      elseif(NOT "${IsGeneratorExpression}" STREQUAL "")
+      elseif(NOT IsGeneratorExpression STREQUAL "")
         message(AUTHOR_WARNING "This function doesn't handle generator expressions; skipping ${Arg}")
       else()
         target_compile_options(${Target} ${Scope} -isystem${Arg})
@@ -182,7 +300,7 @@ endfunction()
 
 
 function(ms_add_style_test)
-  if(NOT MaidsafeTesting)
+  if(NOT INCLUDE_TESTS)
     return()
   endif()
   set(ExcludeRegexes *.pb.* *qt_push_headers.h *qt_pop_headers.h)
@@ -197,7 +315,55 @@ function(ms_add_style_test)
   endforeach()
   set(ThisTestName ${CamelCaseProjectName}StyleCheck)
   add_test(${ThisTestName} python ${maidsafe_SOURCE_DIR}/tools/cpplint.py ${AllFiles})
-  set_property(TEST ${ThisTestName} PROPERTY LABELS ${CamelCaseProjectName} CodingStyle)
+  set_property(TEST ${ThisTestName} PROPERTY LABELS ${CamelCaseProjectName} CodingStyle ${TASK_LABEL})
+endfunction()
+
+
+# Adds a target which includes all public headers for project in two different translation units.
+# The test is simply to build the target successfully.  To exclude platform-specific files, add
+# their relative paths (as they'd appear inside a #include statement) to a variable 'Exclusions'.
+function(ms_add_test_for_multiple_definition_errors)
+  file(GLOB_RECURSE ApiFiles RELATIVE "${PROJECT_SOURCE_DIR}/include" "${PROJECT_SOURCE_DIR}/include/maidsafe/${PROJECT_NAME}/*.h" "${PROJECT_SOURCE_DIR}/include/maidsafe/${PROJECT_NAME}/*.hpp")
+  if(Exclusions)
+    list(REMOVE_ITEM ApiFiles ${Exclusions})
+  endif()
+  set(HeaderIncludingAllApiFiles "${CMAKE_CURRENT_BINARY_DIR}/all_apis.h")
+  set(Contents "// NoCheck\n// This file is auto-generated by CMake ('ms_add_test_for_multiple_definition_errors' function in\n// utils.cmake)\n")
+  foreach(ApiFile ${ApiFiles})
+    set(Contents "${Contents}#include \"${ApiFile}\"\n")
+  endforeach()
+  file(WRITE "${HeaderIncludingAllApiFiles}.copy" "${Contents}")
+  configure_file("${HeaderIncludingAllApiFiles}.copy" "${HeaderIncludingAllApiFiles}" COPYONLY)
+
+  set(Contents "// NoCheck\n#include \"all_apis.h\"")
+  configure_file("${CMAKE_SOURCE_DIR}/cmake_modules/generic_contents.in" "${CMAKE_CURRENT_BINARY_DIR}/translation_unit_one.cc")
+
+  set(Contents "// NoCheck\n#include \"all_apis.h\"\nint main() { return 0; }")
+  configure_file("${CMAKE_SOURCE_DIR}/cmake_modules/generic_contents.in" "${CMAKE_CURRENT_BINARY_DIR}/translation_unit_two.cc")
+
+  string(REGEX MATCH "test_[a-z_]+" MainTestExe "${AllExesForCurrentProject}")
+  get_target_property(Folder ${MainTestExe} FOLDER)
+  string(REPLACE "MaidSafe/Executables/" "" Folder "${Folder}")
+
+  set(ExeName test_${PROJECT_NAME}_multiple_definitions)
+  ms_add_executable(${ExeName} "${Folder}"
+                    "${HeaderIncludingAllApiFiles};${CMAKE_CURRENT_BINARY_DIR}/translation_unit_one.cc;${CMAKE_CURRENT_BINARY_DIR}/translation_unit_two.cc")
+  target_include_directories(${ExeName} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/src)
+
+  # Link all libs for that project not excluded from ALL_BUILD to pull in their flags and public include paths
+  unset(LinkLibs)
+  foreach(Lib ${AllStaticLibsForCurrentProject})
+    get_target_property(IsExcludedFromAll ${Lib} EXCLUDE_FROM_ALL)
+    if(NOT IsExcludedFromAll)
+      list(APPEND LinkLibs ${Lib})
+    endif()
+  endforeach()
+  target_link_libraries(${ExeName} ${LinkLibs})
+  set(AllExesForCurrentProject ${AllExesForCurrentProject} PARENT_SCOPE)
+
+  set(ThisTestName ${CamelCaseProjectName}MultipleDefinitionsCheck)
+  add_test(NAME ${ThisTestName} COMMAND ${ExeName})
+  set_property(TEST ${ThisTestName} PROPERTY LABELS ${CamelCaseProjectName} MultipleDefinitions ${TASK_LABEL})
 endfunction()
 
 
@@ -209,29 +375,38 @@ function(ms_add_project_experimental)
     configure_file(${CMAKE_SOURCE_DIR}/cmake_modules/run_experimental.cmake.in
                    ${CMAKE_CURRENT_BINARY_DIR}/run_experimental_${CTEST_CONFIGURATION_TYPE}.cmake
                    @ONLY)
+    configure_file(${CMAKE_SOURCE_DIR}/cmake_modules/run_check.cmake.in
+                   ${CMAKE_CURRENT_BINARY_DIR}/run_check_${CTEST_CONFIGURATION_TYPE}.cmake
+                   @ONLY)
   endforeach()
   add_custom_target(Exper${CamelCaseProjectName} COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION> -S ${CMAKE_CURRENT_BINARY_DIR}/run_experimental_$<CONFIGURATION>.cmake -V)
   set_target_properties(Exper${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/Experimentals")
+  add_custom_target(Check${CamelCaseProjectName} COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION> -S ${CMAKE_CURRENT_BINARY_DIR}/run_check_$<CONFIGURATION>.cmake -V)
+  set_target_properties(Check${CamelCaseProjectName} PROPERTIES FOLDER "MaidSafe/Checks")
+endfunction()
+
+
+# Adds the style test, multiple definitions test, and Exper target
+function(ms_add_default_tests)
+  ms_add_style_test()
+  ms_add_test_for_multiple_definition_errors()
+  ms_add_project_experimental()
 endfunction()
 
 
 function(ms_test_summary_output)
-  list(LENGTH ALL_GTESTS GtestCount)
-  list(LENGTH AllCatchTests AllCatchTestsCount)
-  list(LENGTH HiddenCatchTests HiddenCatchTestsCount)
+  list(LENGTH AllGtests GtestCount)
   message(STATUS "${MAIDSAFE_TEST_TYPE_MESSAGE}${GtestCount} Google test(s) enabled.")
-  message(STATUS "${AllCatchTestsCount} Catch test(s) enabled.")
-  message(STATUS "${HiddenCatchTestsCount} Catch test(s) disabled.")
 endfunction()
 
 
 function(ms_add_coverage_exclude Regex)
-  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_COVERAGE_EXCLUDE \${CTEST_CUSTOM_COVERAGE_EXCLUDE} \"${Regex}\")\n")
+  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "set(CTEST_CUSTOM_COVERAGE_EXCLUDE \${CTEST_CUSTOM_COVERAGE_EXCLUDE} \"${Regex}\")\n")
 endfunction()
 
 
 function(ms_add_memcheck_ignore TestName)
-  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "SET(CTEST_CUSTOM_MEMCHECK_IGNORE \${CTEST_CUSTOM_MEMCHECK_IGNORE} \"${TestName}\")\n")
+  file(APPEND ${CMAKE_BINARY_DIR}/CTestCustom.cmake "set(CTEST_CUSTOM_MEMCHECK_IGNORE \${CTEST_CUSTOM_MEMCHECK_IGNORE} \"${TestName}\")\n")
 endfunction()
 
 
@@ -251,7 +426,7 @@ endfunction()
 # a directory named 'old' in the build tree root.  This avoids accidentally running outdated
 # executables in the case of renaming a CMake Target.
 function(ms_rename_outdated_built_exes)
-  if(NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+  if(NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     return()
   endif()
 
@@ -278,7 +453,9 @@ function(ms_rename_outdated_built_exes)
 
   foreach(BuiltExe ${BuiltExes})
     get_filename_component(BuiltExeNameWe ${BuiltExe} NAME_WE)
-    if(NOT TARGET ${BuiltExeNameWe} AND NOT ${BuiltExeNameWe} MATCHES "CompilerIdC[X]?[X]?$")
+    # Accommodate debug postfix in SFML examples
+    string(REGEX REPLACE "-d$" "" BuiltExeNameWithoutDebugPostfix "${BuiltExeNameWe}")
+    if(NOT TARGET ${BuiltExeNameWe} AND NOT TARGET ${BuiltExeNameWithoutDebugPostfix} AND NOT BuiltExeNameWe MATCHES "CompilerIdC[X]?[X]?$")
       string(REGEX MATCH "build_qt" InQtBuildDir ${BuiltExe})
       string(REGEX MATCH "src/boost" InBoostBuildDir ${BuiltExe})
       string(REGEX MATCH "old/" AlreadyArchived ${BuiltExe})
@@ -286,7 +463,7 @@ function(ms_rename_outdated_built_exes)
         get_filename_component(BuiltExePath ${BuiltExe} PATH)
         file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/old/${BuiltExePath})
         file(RENAME ${CMAKE_BINARY_DIR}/${BuiltExe} ${CMAKE_BINARY_DIR}/old/${BuiltExe})
-        if(${BuiltExePath} STREQUAL ".")
+        if(BuiltExePath STREQUAL ".")
           set(OldName ${BuiltExe})
           get_filename_component(BuiltExeName ${BuiltExe} NAME)
           set(NewName "./old/${BuiltExeName}")
@@ -329,8 +506,6 @@ function(ms_cleanup_temp_dir)
   # Find MaidSafe-specific directories
   ms_get_temp_dir()
   file(GLOB MaidSafeTempDirs ${TempDir}/MaidSafe_Test*)
-  file(GLOB SigmoidTempDirs ${TempDir}/Sigmoid_Test*)
-  list(APPEND MaidSafeTempDirs ${SigmoidTempDirs})
   list(LENGTH MaidSafeTempDirs DirCount)
   if(NOT DirCount)
     return()
@@ -341,7 +516,7 @@ function(ms_cleanup_temp_dir)
     file(TIMESTAMP ${MaidSafeTempDir} TempDirTimestamp "%j")
     string(TIMESTAMP Now "%j")
     math(EXPR AgeOfDir ${Now}-${TempDirTimestamp})
-    if(AgeOfDir GREATER 1)
+    if(AgeOfDir GREATER "1")
       list(APPEND DirsForRemoval ${MaidSafeTempDir})
     endif()
   endforeach()
@@ -375,7 +550,9 @@ function(ms_get_command_line_args)
       else()
         set(CacheVarType :${CacheVarType})
       endif()
-      file(TO_CMAKE_PATH ${${CacheVar}} ${CacheVar})
+      if(${CacheVar})
+        file(TO_CMAKE_PATH ${${CacheVar}} ${CacheVar})
+      endif()
       set(CMakeArgs ${CMakeArgs} "-D${CacheVar}${CacheVarType}=${${CacheVar}}")
     endif()
   endforeach()
@@ -400,7 +577,7 @@ function(ms_setup_ci_scripts)
                     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                     RESULT_VARIABLE ResultVar
                     ERROR_FILE ${CMAKE_BINARY_DIR}/clone_ci_error.txt)
-    if(ResultVar EQUAL 0)
+    if(ResultVar EQUAL "0")
       file(REMOVE ${CMAKE_BINARY_DIR}/clone_ci_error.txt)
     else()
       set(Msg "Failed to clone ContinuousIntegration.  CI test scripts will be unavailable.")
@@ -414,21 +591,21 @@ function(ms_setup_ci_scripts)
     find_program(HostnameCommand NAMES hostname)
     execute_process(COMMAND ${HostnameCommand} OUTPUT_VARIABLE Hostname OUTPUT_STRIP_TRAILING_WHITESPACE)
     set(ThisSite "${Hostname}")
-    if(${TargetPlatform} STREQUAL "Win8")
+    if(TargetPlatform STREQUAL "Win8")
       set(MachineType kWindows8)
-    elseif(${TargetPlatform} STREQUAL "Win7")
+    elseif(TargetPlatform STREQUAL "Win7")
       set(MachineType kWindows7)
-    elseif(${TargetPlatform} STREQUAL "Vista")
+    elseif(TargetPlatform STREQUAL "Vista")
       set(MachineType kWindowsVista)
-    elseif(${TargetPlatform} STREQUAL "Linux")
+    elseif(TargetPlatform STREQUAL "Linux")
       set(MachineType kLinux)
-    elseif(${TargetPlatform} STREQUAL "OSX10.8" OR ${TargetPlatform} STREQUAL "OSX10.9")
+    elseif(TargetPlatform MATCHES "^OSX[0-9]+[.][0-9]+")
       set(MachineType kMac)
     else()
       set(MachineType Unsupported)
     endif()
     string(TOLOWER "${CMAKE_MAKE_PROGRAM}" MakeProgram)
-    if("${MakeProgram}" MATCHES "msbuild")
+    if(MakeProgram MATCHES "msbuild")
       set(UsingMsBuild TRUE)
     else()
       set(UsingMsBuild FALSE)
@@ -443,7 +620,7 @@ function(ms_setup_ci_scripts)
     endif()
     foreach(TestConfType ${TestConfTypes})
       foreach(DashType Experimental Continuous Nightly Weekly)
-        if(${DashType} STREQUAL Weekly)
+        if(DashType STREQUAL Weekly)
           set(IsWeekly ON)
         else()
           set(IsWeekly OFF)
@@ -459,18 +636,15 @@ endfunction()
 
 # Gets and caches the target platform name
 function(ms_get_target_platform)
-  if(TargetPlatform)
-    return()
-  endif()
   if(WIN32)
     # See http://en.wikipedia.org/wiki/Comparison_of_Windows_versions
-    if(CMAKE_SYSTEM_VERSION VERSION_EQUAL 6.2)
+    if(CMAKE_SYSTEM_VERSION VERSION_EQUAL "6.2")
       # Windows 8
       set(Platform Win8)
-    elseif(CMAKE_SYSTEM_VERSION VERSION_EQUAL 6.1)
+    elseif(CMAKE_SYSTEM_VERSION VERSION_EQUAL "6.1")
       # Windows 7, Windows Server 2008 R2, Windows Home Server 2011
       set(Platform Win7)
-    elseif(CMAKE_SYSTEM_VERSION VERSION_EQUAL 6.0)
+    elseif(CMAKE_SYSTEM_VERSION VERSION_EQUAL "6.0")
       # Windows Server 2008
       set(Platform Vista)
     else()
@@ -479,14 +653,17 @@ function(ms_get_target_platform)
   elseif(UNIX)
     if(APPLE)
       # See http://en.wikipedia.org/wiki/Darwin_%28operating_system%29
-      if(CMAKE_SYSTEM_VERSION VERSION_LESS 12)
+      if(CMAKE_SYSTEM_VERSION VERSION_LESS "12")
         set(Platform Unsupported)
-      elseif(CMAKE_SYSTEM_VERSION VERSION_LESS 13)
+      elseif(CMAKE_SYSTEM_VERSION VERSION_LESS "13")
         # OS X v10.8 "Mountain Lion"
         set(Platform OSX10.8)
-      elseif(CMAKE_SYSTEM_VERSION VERSION_LESS 14)
+      elseif(CMAKE_SYSTEM_VERSION VERSION_LESS "14")
         # OS X v10.9 "Mavericks"
         set(Platform OSX10.9)
+      elseif(CMAKE_SYSTEM_VERSION VERSION_LESS "15")
+        # OS X v10.10 "Yosemite"
+        set(Platform OSX10.10)
       else()
         set(Platform Unsupported)
       endif()
@@ -521,13 +698,13 @@ function(ms_get_target_architecture)
     # Architecture defaults to i386 or ppc on OS X 10.5 and earlier, depending on the CPU type detected at runtime.
     # On OS X 10.6+ the default is x86_64 if the CPU supports it, i386 otherwise.
     foreach(osx_arch ${CMAKE_OSX_ARCHITECTURES})
-      if("${osx_arch}" STREQUAL "ppc" AND ppc_support)
+      if(osx_arch STREQUAL "ppc" AND ppc_support)
         set(osx_arch_ppc TRUE)
-      elseif("${osx_arch}" STREQUAL "i386")
+      elseif(osx_arch STREQUAL "i386")
         set(osx_arch_i386 TRUE)
-      elseif("${osx_arch}" STREQUAL "x86_64")
+      elseif(osx_arch STREQUAL "x86_64")
         set(osx_arch_x86_64 TRUE)
-      elseif("${osx_arch}" STREQUAL "ppc64" AND ppc_support)
+      elseif(osx_arch STREQUAL "ppc64" AND ppc_support)
         set(osx_arch_ppc64 TRUE)
       else()
         message(FATAL_ERROR "Invalid OS X arch name: ${osx_arch}")
@@ -599,7 +776,8 @@ function(ms_get_target_architecture)
 
     #error cmake_ARCH unknown
     ")
-    file(WRITE "${CMAKE_BINARY_DIR}/arch.c" "${archdetect_c_code}")
+    set(TempTestFile "${CMAKE_BINARY_DIR}/arch.c")
+    file(WRITE "${TempTestFile}" "${archdetect_c_code}")
     enable_language(C)
 
     # Detect the architecture in a rather creative way...
@@ -613,9 +791,10 @@ function(ms_get_target_architecture)
     try_run(run_result_unused
             compile_result_unused
             "${CMAKE_BINARY_DIR}"
-            "${CMAKE_BINARY_DIR}/arch.c"
+            "${TempTestFile}"
             COMPILE_OUTPUT_VARIABLE ARCH
             CMAKE_FLAGS CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES})
+    file(REMOVE "${TempTestFile}")
 
     # Parse the architecture name from the compiler output
     string(REGEX MATCH "cmake_ARCH ([a-zA-Z0-9_]+)" ARCH "${ARCH}")
@@ -626,7 +805,7 @@ function(ms_get_target_architecture)
     # If we are compiling with an unknown architecture this variable should
     # already be set to "unknown" but in the case that it's empty (i.e. due
     # to a typo in the code), then set it to unknown
-    if (NOT ARCH)
+    if(NOT ARCH)
       set(ARCH unknown)
     endif()
   endif()
@@ -694,11 +873,11 @@ function(ms_get_dependencies Target OptimizedDeps DebugDeps UseImported)
       list(APPEND AllDebugs "\"${DebugLocation}\"")
     elseif(Dep AND NOT ${UseImported})
       string(REGEX REPLACE "\\$<\\$<NOT:\\$<CONFIG:DEBUG>>:([^>]+)>" "\\1" ReleaseDependency ${Dep})
-      if(NOT "${ReleaseDependency}" STREQUAL "${Dep}")
+      if(NOT ReleaseDependency STREQUAL Dep)
         list(APPEND AllReleases "\"${ReleaseDependency}\"")
       else()
         string(REGEX REPLACE "\\$<\\$<CONFIG:DEBUG>:([^>]+)>" "\\1" DebugDependency ${Dep})
-        if("${DebugDependency}" STREQUAL "${Dep}")
+        if(DebugDependency STREQUAL Dep)
           set(ErrorMessage "\n\nExpected to find Release or Debug configuration:\nDep -        ${Dep}")
           set(ErrorMessage "${ErrorMessage}\nReleaseDependency - ${ReleaseDependency}\nDebugDependency -   ${DebugDependency}\n")
           message(FATAL_ERROR "${ErrorMessage}")
@@ -759,18 +938,32 @@ function(ms_set_meta_files_custom_commands OutputFile InputFile MetaFiles Output
 endfunction()
 
 
-function(ms_get_branch BranchName)
-  execute_process(COMMAND "${Git_EXECUTABLE}" rev-parse --abbrev-ref HEAD
+macro(ms_get_branch_and_commit BranchName CommitName)
+  execute_process(COMMAND "${Git_EXECUTABLE}" rev-parse --sq --abbrev-ref HEAD
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                   RESULT_VARIABLE Result
-                  OUTPUT_VARIABLE Output
+                  OUTPUT_VARIABLE ${BranchName}
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
-  if(Result EQUAL 0)
-    set(${BranchName} "'${Output}'" PARENT_SCOPE)
-  else()
-    set(${BranchName} "unknown" PARENT_SCOPE)
+  if(NOT Result EQUAL "0")
+    set(${BranchName} "unknown")
   endif()
-endfunction()
+
+  execute_process(COMMAND "${Git_EXECUTABLE}" rev-parse --sq --short HEAD
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                  RESULT_VARIABLE Result
+                  OUTPUT_VARIABLE ${CommitName}
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(Result EQUAL "0")
+    execute_process(COMMAND "${Git_EXECUTABLE}" diff-index --ignore-submodules --quiet HEAD
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                    RESULT_VARIABLE Result)
+    if(NOT Result EQUAL "0")
+      set(${CommitName} "${${CommitName}} (dirty)")
+    endif()
+  else()
+    set(${CommitName} "unknown")
+  endif()
+endmacro()
 
 
 # This removes the contents between all C++ block comments (i.e. /* ... */) for a C++ file whose
@@ -806,10 +999,10 @@ endfunction()
 
 # Sets a factor by which all test timeouts are multiplied.  'TimeoutFactor' must be > 1 and need not be an integer.
 function(ms_set_global_test_timeout_factor TimeoutFactor)
-  if(NOT 1 LESS ${TimeoutFactor})
+  if(NOT "1" LESS TimeoutFactor)
     message(FATAL_ERROR "'TimeoutFactor' (${TimeoutFactor}) is not > 1")
   endif()
-  if(GlobalTestTimeoutFactor AND NOT "${TimeoutFactor}" GREATER "${GlobalTestTimeoutFactor}")
+  if(GlobalTestTimeoutFactor AND NOT TimeoutFactor GREATER GlobalTestTimeoutFactor)
     # We won't decrease the existing factor.
     return()
   endif()

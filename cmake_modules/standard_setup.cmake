@@ -28,9 +28,12 @@
 ms_check_compiler()
 ms_underscores_to_camel_case(${PROJECT_NAME} CamelCaseProjectName)
 
-if(NOT PROJECT_NAME STREQUAL Cryptopp AND NOT PROJECT_NAME STREQUAL leveldb AND NOT PROJECT_NAME STREQUAL network_viewer)
-  ms_get_branch(Branch)
-  set(Msg "Configuring MaidSafe ${CamelCaseProjectName} project on ${Branch} branch")
+if(NOT PROJECT_NAME STREQUAL "Cryptopp" AND
+   NOT PROJECT_NAME STREQUAL "sqlite" AND
+   NOT PROJECT_NAME STREQUAL "network_viewer" AND
+   NOT PROJECT_NAME STREQUAL "launcher_ui")
+  ms_get_branch_and_commit(Branch Commit)
+  set(Msg "Configuring MaidSafe ${CamelCaseProjectName} project on ${Branch} at commit ${Commit}")
   string(REGEX REPLACE . "-" Underscore ${Msg})
   message("${HR}\n${Msg}\n${Underscore}")
 endif()
@@ -38,28 +41,24 @@ endif()
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 
 
-set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: All.  ")
-if(NOT MAIDSAFE_TEST_TYPE)
-  set(MAIDSAFE_TEST_TYPE "ALL" CACHE string "Choose the type of TEST, options are: ALL, BEH, FUNC" FORCE)
-else()
-  if(${MAIDSAFE_TEST_TYPE} MATCHES BEH)
-    set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Behavioural.  ")
-  elseif(${MAIDSAFE_TEST_TYPE} MATCHES FUNC)
-    set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Functional.  ")
+if(INCLUDE_TESTS)
+  set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: All.  ")
+  if(NOT MAIDSAFE_TEST_TYPE)
+    set(MAIDSAFE_TEST_TYPE "ALL" CACHE string "Choose the type of TEST, options are: ALL, BEH, FUNC" FORCE)
   else()
-    set(MAIDSAFE_TEST_TYPE "ALL" CACHE string "Choose the type of TEST, options are: ALL BEH FUNC" FORCE)
+    if(MAIDSAFE_TEST_TYPE MATCHES "BEH")
+      set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Behavioural.  ")
+    elseif(MAIDSAFE_TEST_TYPE MATCHES "FUNC")
+      set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Functional.  ")
+    else()
+      set(MAIDSAFE_TEST_TYPE "ALL" CACHE string "Choose the type of TEST, options are: ALL BEH FUNC" FORCE)
+    endif()
   endif()
+  enable_testing()
 endif()
 
-
-enable_testing()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-
-set(CMAKE_DEBUG_POSTFIX -d)
-set(CMAKE_RELWITHDEBINFO_POSTFIX -rwdi)
-set(CMAKE_MINSIZEREL_POSTFIX -msr)
-set(CMAKE_RELEASENOINLINE_POSTFIX -rni)
 
 if(UNIX)
   set(CMAKE_INCLUDE_SYSTEM_FLAG_C "-isystem ")
@@ -72,23 +71,8 @@ set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 
 include(check_licenses)
 include(utils)
-include(add_catch_tests)
 ms_check_licenses()
-
-
-# Create CTestCustom.cmake to avoid inclusion of coverage results from test files, protocol buffer files and main.cc files
-file(WRITE ${PROJECT_BINARY_DIR}/CTestCustom.cmake "\n")
-ms_add_coverage_exclude(\\\\.pb\\\\.)
-ms_add_coverage_exclude(tests/)
-ms_add_coverage_exclude(boost/)
-ms_add_coverage_exclude(catch/)
-ms_add_coverage_exclude(src/third_party_libs/)
-ms_add_coverage_exclude(GeneratedProtoFiles/)
-ms_add_coverage_exclude(main\\\\.cc)
-
-
-# Avoid running MemCheck on Style Check tests
-ms_add_memcheck_ignore(${CamelCaseProjectName}StyleCheck)
+ms_set_postfixes()
 
 
 # All other libraries search
@@ -97,34 +81,43 @@ if(UNIX)
   set(CMAKE_THREAD_PREFER_PTHREAD true)
   find_package(Threads REQUIRED)
   if(NOT APPLE)
-    set(SYS_LIB ${CMAKE_THREAD_LIBS_INIT} rt)
+    if(NOT ANDROID_BUILD)
+      set(RtLibrary rt)
+    endif()
+    set(SYS_LIB ${CMAKE_THREAD_LIBS_INIT} ${RtLibrary})
   endif()
 endif()
 
 
-set(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 50000)
-set(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE 50000)
-set(CTEST_CONTINUOUS_DURATION 600)
-set(CTEST_CONTINUOUS_MINIMUM_INTERVAL 10)
-set(CTEST_START_WITH_EMPTY_BINARY_DIRECTORY true)
+if(INCLUDE_TESTS)
+  # Avoid running MemCheck on Style Check tests
+  ms_add_memcheck_ignore(${CamelCaseProjectName}StyleCheck)
 
-if(NOT DEFINED MEMORY_CHECK)
-  if($ENV{MEMORY_CHECK})
-    set(MEMORY_CHECK ON)
+  set(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE 50000)
+  set(CTEST_CUSTOM_MAXIMUM_FAILED_TEST_OUTPUT_SIZE 50000)
+  set(CTEST_CONTINUOUS_DURATION 600)
+  set(CTEST_CONTINUOUS_MINIMUM_INTERVAL 10)
+  set(CTEST_START_WITH_EMPTY_BINARY_DIRECTORY true)
+
+  if(NOT DEFINED MEMORY_CHECK)
+    if($ENV{MEMORY_CHECK})
+      set(MEMORY_CHECK ON)
+    endif()
   endif()
-endif()
-if(MEMORY_CHECK)
-  ms_set_global_test_timeout_factor(20)
+  if(MEMORY_CHECK)
+    ms_set_global_test_timeout_factor(20)
+  endif()
+
+  if(UNIX)
+    unset(MEMORYCHECK_SUPPRESSIONS_FILE CACHE)
+    find_file(MEMORYCHECK_SUPPRESSIONS_FILE NAMES MemCheck.supp PATHS ${PROJECT_SOURCE_DIR} DOC "File that contains suppressions for the memory checker")
+    set(MEMORYCHECK_COMMAND_OPTIONS "--tool=memcheck --quiet --verbose --trace-children=yes --demangle=yes --num-callers=50 --show-below-main=yes --leak-check=full --show-reachable=yes --track-origins=yes --gen-suppressions=all")
+  endif()
+
+  unset(MAKECOMMAND CACHE)
+  include(CTest)
+  include(add_gtests)
 endif()
 
-if(UNIX)
-  unset(MEMORYCHECK_SUPPRESSIONS_FILE CACHE)
-  find_file(MEMORYCHECK_SUPPRESSIONS_FILE NAMES MemCheck.supp PATHS ${PROJECT_SOURCE_DIR} DOC "File that contains suppressions for the memory checker")
-  set(MEMORYCHECK_COMMAND_OPTIONS "--tool=memcheck --quiet --verbose --trace-children=yes --demangle=yes --num-callers=50 --show-below-main=yes --leak-check=full --show-reachable=yes --track-origins=yes --gen-suppressions=all")
-endif()
-
-unset(MAKECOMMAND CACHE)
-include(CTest)
-include(add_gtests)
 
 set(CPACK_STRIP_FILES TRUE)

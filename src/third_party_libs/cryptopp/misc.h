@@ -36,7 +36,7 @@
 #include <mem.h>
 #endif
 
-#if defined(__GNUC__) && defined(__linux__)
+#if defined(__GNUC__) && defined(__linux__) && !defined(__ANDROID__)
 #define CRYPTOPP_BYTESWAP_AVAILABLE
 #include <byteswap.h>
 #endif

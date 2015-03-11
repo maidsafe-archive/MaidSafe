@@ -72,11 +72,11 @@ using testing::ReturnRefOfCopy;
 using testing::SetArgPointee;
 using testing::SetArgumentPointee;
 
-#if !GTEST_OS_WINDOWS_MOBILE
+#if !defined GTEST_OS_WINDOWS_MOBILE || !GTEST_OS_WINDOWS_MOBILE
 using testing::SetErrnoAndReturn;
 #endif
 
-#if GTEST_HAS_PROTOBUF_
+#if defined GTEST_HAS_PROTOBUF_ && GTEST_HAS_PROTOBUF_
 using testing::internal::TestMessage;
 #endif  // GTEST_HAS_PROTOBUF_
 
@@ -323,9 +323,9 @@ TEST(DefaultValueOfReferenceDeathTest, GetReturnsBuiltInDefaultValueWhenUnset) {
 // Tests that ActionInterface can be implemented by defining the
 // Perform method.
 
-typedef int MyFunction(bool, int);
+typedef int MyGlobalFunction(bool, int);
 
-class MyActionImpl : public ActionInterface<MyFunction> {
+class MyActionImpl : public ActionInterface<MyGlobalFunction> {
  public:
   virtual int Perform(const tuple<bool, int>& args) {
     return get<0>(args) ? get<1>(args) : 0;
@@ -338,7 +338,7 @@ TEST(ActionInterfaceTest, CanBeImplementedByDefiningPerform) {
 }
 
 TEST(ActionInterfaceTest, MakeAction) {
-  Action<MyFunction> action = MakeAction(new MyActionImpl);
+  Action<MyGlobalFunction> action = MakeAction(new MyActionImpl);
 
   // When exercising the Perform() method of Action<F>, we must pass
   // it a tuple whose size and type are compatible with F's argument
@@ -351,12 +351,12 @@ TEST(ActionInterfaceTest, MakeAction) {
 // Tests that Action<F> can be contructed from a pointer to
 // ActionInterface<F>.
 TEST(ActionTest, CanBeConstructedFromActionInterface) {
-  Action<MyFunction> action(new MyActionImpl);
+  Action<MyGlobalFunction> action(new MyActionImpl);
 }
 
 // Tests that Action<F> delegates actual work to ActionInterface<F>.
 TEST(ActionTest, DelegatesWorkToActionInterface) {
-  const Action<MyFunction> action(new MyActionImpl);
+  const Action<MyGlobalFunction> action(new MyActionImpl);
 
   EXPECT_EQ(5, action.Perform(make_tuple(true, 5)));
   EXPECT_EQ(0, action.Perform(make_tuple(false, 1)));
@@ -364,8 +364,8 @@ TEST(ActionTest, DelegatesWorkToActionInterface) {
 
 // Tests that Action<F> can be copied.
 TEST(ActionTest, IsCopyable) {
-  Action<MyFunction> a1(new MyActionImpl);
-  Action<MyFunction> a2(a1);  // Tests the copy constructor.
+  Action<MyGlobalFunction> a1(new MyActionImpl);
+  Action<MyGlobalFunction> a2(a1);  // Tests the copy constructor.
 
   // a1 should continue to work after being copied from.
   EXPECT_EQ(5, a1.Perform(make_tuple(true, 5)));
@@ -396,7 +396,7 @@ class IsNotZero : public ActionInterface<bool(int)> {  // NOLINT
   }
 };
 
-#if !GTEST_OS_SYMBIAN
+#if !defined GTEST_OS_SYMBIAN || !GTEST_OS_SYMBIAN
 // Compiling this test on Nokia's Symbian compiler fails with:
 //  'Result' is not a member of class 'testing::internal::Function<int>'
 //  (point of instantiation: '@unnamed@gmock_actions_test_cc@::
@@ -518,7 +518,7 @@ TEST(ReturnTest, IsCovariant) {
 // gmock-actions.h for more information.
 class FromType {
  public:
-  FromType(bool* is_converted) : converted_(is_converted) {}
+  explicit FromType(bool* is_converted) : converted_(is_converted) {}
   bool* converted() const { return converted_; }
 
  private:
@@ -529,7 +529,8 @@ class FromType {
 
 class ToType {
  public:
-  ToType(const FromType& x) { *x.converted() = true; }
+  // Must allow implicit conversion due to use in ImplicitCast_<T>.
+  ToType(const FromType& x) { *x.converted() = true; }  // NOLINT
 };
 
 TEST(ReturnTest, ConvertsArgumentWhenConverted) {
@@ -541,7 +542,7 @@ TEST(ReturnTest, ConvertsArgumentWhenConverted) {
   converted = false;
   action.Perform(tuple<>());
   EXPECT_FALSE(converted) << "Action must NOT convert its argument "
-                          << "when performed." ;
+                          << "when performed.";
 }
 
 class DestinationType {};
@@ -633,15 +634,19 @@ TEST(DoDefaultTest, ReturnsBuiltInDefaultValueByDefault) {
   EXPECT_EQ(0, mock.IntFunc(true));
 }
 
-// Tests that DoDefault() aborts the process when there is no built-in
-// default value for the return type.
+// Tests that DoDefault() throws (when exceptions are enabled) or aborts
+// the process when there is no built-in default value for the return type.
 TEST(DoDefaultDeathTest, DiesForUnknowType) {
   MockClass mock;
   EXPECT_CALL(mock, Foo())
       .WillRepeatedly(DoDefault());
+#if GTEST_HAS_EXCEPTIONS
+  EXPECT_ANY_THROW(mock.Foo());
+#else
   EXPECT_DEATH_IF_SUPPORTED({
     mock.Foo();
   }, "");
+#endif
 }
 
 // Tests that using DoDefault() inside a composite action leads to a
@@ -714,7 +719,7 @@ TEST(SetArgPointeeTest, SetsTheNthPointee) {
   EXPECT_EQ('a', ch);
 }
 
-#if !((GTEST_GCC_VER_ && GTEST_GCC_VER_ < 40000) || GTEST_OS_SYMBIAN)
+#if !((GTEST_GCC_VER_ && GTEST_GCC_VER_ < 40000) || (defined GTEST_OS_SYMBIAN && GTEST_OS_SYMBIAN))
 // Tests that SetArgPointee<N>() accepts a string literal.
 // GCC prior to v4.0 and the Symbian compiler do not support this.
 TEST(SetArgPointeeTest, AcceptsStringLiteral) {
@@ -792,7 +797,7 @@ TEST(SetArgPointeeTest, AcceptsWideCharPointer) {
 # endif
 }
 
-#if GTEST_HAS_PROTOBUF_
+#if defined GTEST_HAS_PROTOBUF_ && GTEST_HAS_PROTOBUF_
 
 // Tests that SetArgPointee<N>(proto_buffer) sets the v1 protobuf
 // variable pointed to by the N-th (0-based) argument to proto_buffer.
@@ -911,7 +916,7 @@ TEST(SetArgumentPointeeTest, SetsTheNthPointee) {
   EXPECT_EQ('a', ch);
 }
 
-#if GTEST_HAS_PROTOBUF_
+#if defined GTEST_HAS_PROTOBUF_ && GTEST_HAS_PROTOBUF_
 
 // Tests that SetArgumentPointee<N>(proto_buffer) sets the v1 protobuf
 // variable pointed to by the N-th (0-based) argument to proto_buffer.
@@ -1026,68 +1031,12 @@ class VoidNullaryFunctor {
   void operator()() { g_done = true; }
 };
 
-bool Unary(int x) { return x < 0; }
-
-const char* Plus1(const char* s) { return s + 1; }
-
-void VoidUnary(int /* n */) { g_done = true; }
-
-bool ByConstRef(const std::string& s) { return s == "Hi"; }
-
-const double g_double = 0;
-bool ReferencesGlobalDouble(const double& x) { return &x == &g_double; }
-
-std::string ByNonConstRef(std::string& s) { return s += "+"; }  // NOLINT
-
-struct UnaryFunctor {
-  int operator()(bool x) { return x ? 1 : -1; }
-};
-
-const char* Binary(const char* input, short n) { return input + n; }  // NOLINT
-
-void VoidBinary(int, char) { g_done = true; }
-
-int Ternary(int x, char y, short z) { return x + y + z; }  // NOLINT
-
-void VoidTernary(int, char, bool) { g_done = true; }
-
-int SumOf4(int a, int b, int c, int d) { return a + b + c + d; }
-
-void VoidFunctionWithFourArguments(char, int, float, double) { g_done = true; }
-
-int SumOf5(int a, int b, int c, int d, int e) { return a + b + c + d + e; }
-
-struct SumOf5Functor {
-  int operator()(int a, int b, int c, int d, int e) {
-    return a + b + c + d + e;
-  }
-};
-
-int SumOf6(int a, int b, int c, int d, int e, int f) {
-  return a + b + c + d + e + f;
-}
-
-struct SumOf6Functor {
-  int operator()(int a, int b, int c, int d, int e, int f) {
-    return a + b + c + d + e + f;
-  }
-};
-
 class Foo {
  public:
   Foo() : value_(123) {}
 
   int Nullary() const { return value_; }
-  short Unary(long x) { return static_cast<short>(value_ + x); }  // NOLINT
-  std::string Binary(const std::string& str, char c) const { return str + c; }
-  int Ternary(int x, bool y, char z) { return value_ + x + y*z; }
-  int SumOf4(int a, int b, int c, int d) const {
-    return a + b + c + d + value_;
-  }
-  int SumOf5(int a, int b, int c, int d, int e) { return a + b + c + d + e; }
-  int SumOf6(int a, int b, int c, int d, int e, int f) {
-    return a + b + c + d + e + f;
-  }
+
  private:
   int value_;
 };
@@ -1190,7 +1139,7 @@ TEST(AssignTest, CompatibleTypes) {
   EXPECT_DOUBLE_EQ(5, x);
 }
 
-#if !GTEST_OS_WINDOWS_MOBILE
+#if !defined GTEST_OS_WINDOWS_MOBILE || !GTEST_OS_WINDOWS_MOBILE
 
 class SetErrnoAndReturnTest : public testing::Test {
  protected:
@@ -1226,7 +1175,8 @@ TEST(ByRefTest, IsCopyable) {
   const std::string s1 = "Hi";
   const std::string s2 = "Hello";
 
-  ::testing::internal::ReferenceWrapper<const std::string> ref_wrapper = ByRef(s1);
+  ::testing::internal::ReferenceWrapper<const std::string> ref_wrapper =
+      ByRef(s1);
   const std::string& r1 = ref_wrapper;
   EXPECT_EQ(&s1, &r1);
 
@@ -1235,7 +1185,8 @@ TEST(ByRefTest, IsCopyable) {
   const std::string& r2 = ref_wrapper;
   EXPECT_EQ(&s2, &r2);
 
-  ::testing::internal::ReferenceWrapper<const std::string> ref_wrapper1 = ByRef(s1);
+  ::testing::internal::ReferenceWrapper<const std::string> ref_wrapper1 =
+      ByRef(s1);
   // Copies ref_wrapper1 to ref_wrapper.
   ref_wrapper = ref_wrapper1;
   const std::string& r3 = ref_wrapper;

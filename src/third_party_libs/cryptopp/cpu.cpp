@@ -7,6 +7,10 @@
 #include "cpu.h"
 #include "misc.h"
 #include <algorithm>
+#include <atomic>
+#include <memory>
+#include <mutex>
+#include <thread>
 
 #ifndef CRYPTOPP_MS_STYLE_INLINE_ASSEMBLY
 #include <signal.h>
@@ -142,54 +146,67 @@ static bool TrySSE2()
 #endif
 }
 
-bool g_x86DetectionDone = false;
 bool g_hasISSE = false, g_hasSSE2 = false, g_hasSSSE3 = false, g_hasMMX = false, g_hasAESNI = false, g_hasCLMUL = false, g_isP4 = false;
 word32 g_cacheLineSize = CRYPTOPP_L1_CACHE_LINE_SIZE;
 
 void DetectX86Features()
 {
-	word32 cpuid[4], cpuid1[4];
-	if (!CpuId(0, cpuid))
-		return;
-	if (!CpuId(1, cpuid1))
-		return;
+  static std::once_flag detection_done_flag;
+  static std::atomic<bool> detection_done(false);
 
-	g_hasMMX = (cpuid1[3] & (1 << 23)) != 0;
-	if ((cpuid1[3] & (1 << 26)) != 0)
-		g_hasSSE2 = TrySSE2();
-	g_hasSSSE3 = g_hasSSE2 && (cpuid1[2] & (1<<9));
-	g_hasAESNI = g_hasSSE2 && (cpuid1[2] & (1<<25));
-	g_hasCLMUL = g_hasSSE2 && (cpuid1[2] & (1<<1));
+  auto deleter([&](char* c) {
+    delete c;
+    detection_done.store(true);
+  });
 
-	if ((cpuid1[3] & (1 << 25)) != 0)
-		g_hasISSE = true;
-	else
-	{
-		word32 cpuid2[4];
-		CpuId(0x080000000, cpuid2);
-		if (cpuid2[0] >= 0x080000001)
-		{
-			CpuId(0x080000001, cpuid2);
-			g_hasISSE = (cpuid2[3] & (1 << 22)) != 0;
-		}
-	}
+  std::call_once(detection_done_flag, [&] {
+    // This unique_ptr guarantees that 'detection_done == true' on exiting the call_once lambda.
+    const std::unique_ptr<char, decltype(deleter)> scoped_setter(new char, deleter);
 
-	std::swap(cpuid[2], cpuid[3]);
-	if (memcmp(cpuid+1, "GenuineIntel", 12) == 0)
-	{
-		g_isP4 = ((cpuid1[0] >> 8) & 0xf) == 0xf;
-		g_cacheLineSize = 8 * GETBYTE(cpuid1[1], 1);
-	}
-	else if (memcmp(cpuid+1, "AuthenticAMD", 12) == 0)
-	{
-		CpuId(0x80000005, cpuid);
-		g_cacheLineSize = GETBYTE(cpuid[2], 0);
-	}
+    word32 cpuid[4], cpuid1[4];
+	  if (!CpuId(0, cpuid))
+		  return;
+	  if (!CpuId(1, cpuid1))
+		  return;
 
-	if (!g_cacheLineSize)
-		g_cacheLineSize = CRYPTOPP_L1_CACHE_LINE_SIZE;
+	  g_hasMMX = (cpuid1[3] & (1 << 23)) != 0;
+	  if ((cpuid1[3] & (1 << 26)) != 0)
+		  g_hasSSE2 = TrySSE2();
+	  g_hasSSSE3 = g_hasSSE2 && (cpuid1[2] & (1<<9));
+	  g_hasAESNI = g_hasSSE2 && (cpuid1[2] & (1<<25));
+	  g_hasCLMUL = g_hasSSE2 && (cpuid1[2] & (1<<1));
 
-	g_x86DetectionDone = true;
+	  if ((cpuid1[3] & (1 << 25)) != 0)
+		  g_hasISSE = true;
+	  else
+	  {
+		  word32 cpuid2[4];
+		  CpuId(0x080000000, cpuid2);
+		  if (cpuid2[0] >= 0x080000001)
+		  {
+			  CpuId(0x080000001, cpuid2);
+			  g_hasISSE = (cpuid2[3] & (1 << 22)) != 0;
+		  }
+	  }
+
+	  std::swap(cpuid[2], cpuid[3]);
+	  if (memcmp(cpuid+1, "GenuineIntel", 12) == 0)
+	  {
+		  g_isP4 = ((cpuid1[0] >> 8) & 0xf) == 0xf;
+		  g_cacheLineSize = 8 * GETBYTE(cpuid1[1], 1);
+	  }
+	  else if (memcmp(cpuid+1, "AuthenticAMD", 12) == 0)
+	  {
+		  CpuId(0x80000005, cpuid);
+		  g_cacheLineSize = GETBYTE(cpuid[2], 0);
+	  }
+
+	  if (!g_cacheLineSize)
+		  g_cacheLineSize = CRYPTOPP_L1_CACHE_LINE_SIZE;
+  });
+
+  while (!detection_done)
+    std::this_thread::yield();
 }
 
 #endif

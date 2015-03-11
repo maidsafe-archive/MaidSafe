@@ -36,7 +36,7 @@ if(UNIX)
 	src/common/mac/macho_id.cc
 	src/common/mac/macho_utilities.cc
 	src/common/mac/macho_walker.cc
-	src/common/mac/string_utilities.cc    
+	src/common/mac/string_utilities.cc
 )
   else()
     set(SOURCES ${SOURCES}
@@ -72,7 +72,7 @@ elseif(WIN32)
   )
   #ADD_DEFINITIONS(/Zc:wchar_t-)
   add_definitions(/D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "_UNICODE" /D "UNICODE" /EHsc)
-  set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2 /Ot /Oy /GL /D \"NDEBUG\" /MT /Gy /Zi")
+  set(CMAKE_CXX_FLAGS_RELEASE "/O2 /Ob2 /Ot /Oy /D \"NDEBUG\" /MT /Gy /Zi")
   if(CMAKE_CL_64)
     set(CMAKE_CXX_FLAGS_DEBUG "/Od /Ot /Oy /D \"_DEBUG\" /D \"DEBUG\" /MTd /c /Zi /TP")
   else()
@@ -83,7 +83,7 @@ endif()
 add_library(breakpad STATIC ${SOURCES})
 
 if(UNIX AND NOT APPLE)
-  if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
     set_target_properties(breakpad PROPERTIES COMPILE_FLAGS "-fPIC -stdlib=libc++ -std=c++11")
   else()
     set_target_properties(breakpad PROPERTIES COMPILE_FLAGS "-fPIC -std=c++11")

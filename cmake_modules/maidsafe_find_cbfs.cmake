@@ -76,11 +76,21 @@ else()
   set(CbfsRequired ${CbfsRequired})
   set(CBFS_ROOT_DIR
         "C:/Program Files/EldoS/Callback File System"
-        "D:/Program Files/EldoS/Callback File System"
-        "E:/Program Files/EldoS/Callback File System"
-        "C:/Program Files (x86)/EldoS/Callback File System"
-        "D:/Program Files (x86)/EldoS/Callback File System"
-        "E:/Program Files (x86)/EldoS/Callback File System")
+        "C:/Program Files (x86)/EldoS/Callback File System")
+
+  set(RegistryEntries "[HKEY_CURRENT_USER\\Software\\Eldos\\CallbackFS;InstallPath]")
+  execute_process(COMMAND wmic useraccount get name,sid OUTPUT_VARIABLE OutVar OUTPUT_STRIP_TRAILING_WHITESPACE)
+  string(REGEX MATCHALL "S-1-5[-0-9]+" UsersSecurityIDs "${OutVar}")
+  foreach(UsersSecurityID ${UsersSecurityIDs})
+    list(APPEND RegistryEntries "[HKEY_USERS\\${UsersSecurityID}\\Software\\Eldos\\CallbackFS;InstallPath]")
+  endforeach()
+
+  foreach(RegistryEntry ${RegistryEntries})
+    get_filename_component(CbfsRootDir "${RegistryEntry}" ABSOLUTE)
+    if(EXISTS "${CbfsRootDir}")
+      list(APPEND CBFS_ROOT_DIR "${CbfsRootDir}")
+    endif()
+  endforeach()
 endif()
 
 # Prepare to find CBFS libs and headers
@@ -157,28 +167,27 @@ endfunction()
 
 string(REGEX MATCH "/SourceCode" IsLicenced "${CbfsLibrary}")
 if(IsLicenced)
-  file(STRINGS "${CbfsIncludeDir}/../dotNet/AssemblyInfo.cpp" CbfsVersionLine REGEX "AssemblyVersionAttribute")
-  string(REGEX MATCH "5\\.[0-9]+\\.[0-9]+" CbfsVersion "${CbfsVersionLine}")
+  set(CbfsChangesFilePath "${CbfsIncludeDir}/../../../changes.txt")
 else()
   if(CMAKE_CL_64)
     set(CbfsChangesFilePath "${CbfsIncludeDir}/../../../../../changes.txt")
   else()
     set(CbfsChangesFilePath "${CbfsIncludeDir}/../../../../changes.txt")
   endif()
-  get_cbfs_version_from_file("${CbfsChangesFilePath}" CbfsVersion)
 endif()
+get_cbfs_version_from_file("${CbfsChangesFilePath}" CbfsVersion)
 
 ms_get_todays_temp_folder()
 set(DownloadedFile "${TodaysTempFolder}/cbfs_changes.txt")
 if(NOT EXISTS "${DownloadedFile}")
-  file(DOWNLOAD https://www.eldos.com/files/files/cbfs5/changes.txt "${DownloadedFile}" TIMEOUT 10)
+  file(DOWNLOAD https://www.eldos.com/files/files/cbfs5/changes.txt "${DownloadedFile}" TIMEOUT 30)
 endif()
 get_cbfs_version_from_file("${DownloadedFile}" LatestCbfsVersion)
 
 string(REGEX MATCH "^[0-9]" CbfsMajorVersion "${CbfsVersion}")
-if(NOT "${CbfsMajorVersion}" EQUAL 5)
+if(NOT CbfsMajorVersion EQUAL "5")
   message(FATAL_ERROR "Failed to find Callback File System Version 5.")
-elseif(LatestCbfsVersion AND NOT "${CbfsVersion}" VERSION_EQUAL "${LatestCbfsVersion}")
+elseif(LatestCbfsVersion AND NOT CbfsVersion VERSION_EQUAL LatestCbfsVersion)
   message(WARNING "You have CBFS version ${CbfsVersion} installed, but version ${LatestCbfsVersion} is available.")
 endif()
 
@@ -204,7 +213,7 @@ else()
     # Clone MaidSafe-Drive-Private
     execute_process(COMMAND ${Git_EXECUTABLE} clone git@github.com:maidsafe/MaidSafe-Drive-Private.git
                     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                    TIMEOUT 20
+                    TIMEOUT 60
                     RESULT_VARIABLE ResultVar
                     OUTPUT_VARIABLE OutputVar
                     ERROR_VARIABLE ErrorVar)
@@ -222,27 +231,27 @@ else()
     endif()
     # Hash check file
     file(SHA512 ${LicenseFile} CbfsSHA512)
-    if(NOT ${CbfsSHA512} STREQUAL ${ExpectedSHA512})
+    if(NOT CbfsSHA512 STREQUAL ExpectedSHA512)
       file(RENAME ${CMAKE_BINARY_DIR}/MaidSafe-Drive-Private ${CMAKE_BINARY_DIR}/MaidSafe-Drive-Private-Failed)
       message(FATAL_ERROR "Failed hash check in MaidSafe-Drive-Private.")
     endif()
   else()
     # Hash check file
     file(SHA512 ${LicenseFile} CbfsSHA512)
-    if(NOT ${CbfsSHA512} STREQUAL ${ExpectedSHA512})
+    if(NOT CbfsSHA512 STREQUAL ExpectedSHA512)
       # Try pulling to get updated key file
       execute_process(COMMAND ${Git_EXECUTABLE} pull
                       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/MaidSafe-Drive-Private
-                      TIMEOUT 20
+                      TIMEOUT 60
                       RESULT_VARIABLE ResultVar
                       OUTPUT_VARIABLE OutputVar
                       ERROR_VARIABLE ErrorVar)
-      if(NOT ${ResultVar} EQUAL 0)
+      if(NOT ResultVar EQUAL "0")
         message(FATAL_ERROR "Failed to pull in MaidSafe-Drive-Private.\n\n${OutputVar}\n\n${ErrorVar}\n\n")
       endif()
       # Hash check updated file
       file(SHA512 ${LicenseFile} CbfsSHA512)
-      if(NOT ${CbfsSHA512} STREQUAL ${ExpectedSHA512})
+      if(NOT CbfsSHA512 STREQUAL ExpectedSHA512)
         file(RENAME ${CMAKE_BINARY_DIR}/MaidSafe-Drive-Private ${CMAKE_BINARY_DIR}/MaidSafe-Drive-Private-Failed)
         message(FATAL_ERROR "Failed hash check in MaidSafe-Drive-Private.")
       endif()

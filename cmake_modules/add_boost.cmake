@@ -35,8 +35,8 @@
 #==================================================================================================#
 
 
-set(BoostVersion 1.55.0)
-set(BoostSHA1 cef9a0cc7084b1d639e06cd3bc34e4251524c840)
+set(BoostVersion 1.57.0)
+set(BoostSHA1 e151557ae47afd1b43dc3fac46f8b04a8fe51c12)
 
 
 
@@ -85,6 +85,9 @@ endif()
 if(CMAKE_CL_64)
   set(BoostSourceDir "${BoostSourceDir}_Win64")
 endif()
+if(${ANDROID_BUILD})
+  set(BoostSourceDir "${BoostFolderName}_Android_v${AndroidApiLevel}_${CMAKE_CXX_COMPILER_ID}_${CMAKE_CXX_COMPILER_VERSION}")
+endif()
 string(REPLACE "." "_" BoostSourceDir ${BoostSourceDir})
 set(BoostSourceDir "${BoostCacheDir}/${BoostSourceDir}")
 
@@ -98,7 +101,7 @@ if(WIN32)
   string(LENGTH "/${BoostSourceDirName}" BoostSourceDirNameLengthWithSeparator)
   math(EXPR AvailableLength 130-${BoostSourceDirNameLengthWithSeparator})
   string(LENGTH "${BoostSourceDir}" BoostSourceDirLength)
-  if(${BoostSourceDirLength} GREATER 130)
+  if(BoostSourceDirLength GREATER "130")
     set(Msg "\n\nThe path to boost's source is too long to handle all the files which will ")
     set(Msg "${Msg}be created when boost is built.  To avoid this, set the CMake variable ")
     set(Msg "${Msg}USE_BOOST_CACHE to ON and set the variable BOOST_CACHE_DIR to a path ")
@@ -123,7 +126,7 @@ file(DOWNLOAD http://sourceforge.net/projects/boost/files/boost/${BoostVersion}/
 
 # Extract boost if required
 string(FIND "${Status}" "returning early" Found)
-if(Found LESS 0 OR NOT IS_DIRECTORY "${BoostSourceDir}")
+if(Found LESS "0" OR NOT IS_DIRECTORY "${BoostSourceDir}")
   set(BoostExtractFolder "${BoostCacheDir}/boost_unzip")
   file(REMOVE_RECURSE ${BoostExtractFolder})
   file(MAKE_DIRECTORY ${BoostExtractFolder})
@@ -133,7 +136,7 @@ if(Found LESS 0 OR NOT IS_DIRECTORY "${BoostSourceDir}")
                   WORKING_DIRECTORY ${BoostExtractFolder}
                   RESULT_VARIABLE Result
                   )
-  if(NOT Result EQUAL 0)
+  if(NOT Result EQUAL "0")
     message(FATAL_ERROR "Failed extracting boost ${BoostVersion} to ${BoostExtractFolder}")
   endif()
   file(REMOVE ${BoostExtractFolder}/${BoostFolderName}.tar.bz2)
@@ -141,13 +144,12 @@ if(Found LESS 0 OR NOT IS_DIRECTORY "${BoostSourceDir}")
   # Get the path to the extracted folder
   file(GLOB ExtractedDir "${BoostExtractFolder}/*")
   list(LENGTH ExtractedDir n)
-  if(NOT n EQUAL 1 OR NOT IS_DIRECTORY ${ExtractedDir})
+  if(NOT n EQUAL "1" OR NOT IS_DIRECTORY ${ExtractedDir})
     message(FATAL_ERROR "Failed extracting boost ${BoostVersion} to ${BoostExtractFolder}")
   endif()
   file(RENAME ${ExtractedDir} ${BoostSourceDir})
   file(REMOVE_RECURSE ${BoostExtractFolder})
 endif()
-
 
 # Build b2 (bjam) if required
 unset(b2Path CACHE)
@@ -158,28 +160,25 @@ if(NOT b2Path)
     set(b2Bootstrap "bootstrap.bat")
   else()
     set(b2Bootstrap "./bootstrap.sh")
-    if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+    if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
       list(APPEND b2Bootstrap --with-toolset=clang)
-    elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
       list(APPEND b2Bootstrap --with-toolset=gcc)
     endif()
   endif()
   execute_process(COMMAND ${b2Bootstrap} WORKING_DIRECTORY ${BoostSourceDir}
                   RESULT_VARIABLE Result OUTPUT_VARIABLE Output ERROR_VARIABLE Error)
-  if(NOT Result EQUAL 0)
+  if(NOT Result EQUAL "0")
     message(FATAL_ERROR "Failed running ${b2Bootstrap}:\n${Output}\n${Error}\n")
   endif()
 endif()
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${BoostSourceDir}/Build)
 
 # Apply patched files
-if(NOT "${BoostVersion}" STREQUAL "1.55.0")
+if(NOT BoostVersion STREQUAL "1.57.0")
   message(FATAL_ERROR "Remove patched files from the source tree and delete corresponding 'configure_file' commands in this 'add_boost' CMake file.")
 endif()
-configure_file(patches/boost_1_55/boost/atomic/detail/cas128strong.hpp ${BoostSourceDir}/boost/atomic/detail/cas128strong.hpp COPYONLY)
-configure_file(patches/boost_1_55/boost/atomic/detail/gcc-atomic.hpp ${BoostSourceDir}/boost/atomic/detail/gcc-atomic.hpp COPYONLY)
-configure_file(patches/boost_1_55/boost/intrusive/detail/has_member_function_callable_with.hpp ${BoostSourceDir}/boost/intrusive/detail/has_member_function_callable_with.hpp COPYONLY)
-configure_file(patches/boost_1_55/boost/signals2/detail/variadic_slot_invoker.hpp ${BoostSourceDir}/boost/signals2/detail/variadic_slot_invoker.hpp COPYONLY)
+configure_file(patches/boost_1_57/boost/thread/pthread/thread_data.hpp ${BoostSourceDir}/boost/thread/pthread/thread_data.hpp COPYONLY)
 
 # Expose BoostSourceDir to parent scope
 set(BoostSourceDir ${BoostSourceDir} PARENT_SCOPE)
@@ -194,10 +193,10 @@ set(b2Args <SOURCE_DIR>/b2
            -d+2
            --hash
            )
-if("${CMAKE_BUILD_TYPE}" STREQUAL "ReleaseNoInline")
-  list(APPEND b2Args cxxflags="${RELEASENOINLINE_FLAGS}")
+if(CMAKE_BUILD_TYPE STREQUAL "ReleaseNoInline")
+  list(APPEND b2Args "cxxflags=${RELEASENOINLINE_FLAGS}")
 endif()
-if("${CMAKE_BUILD_TYPE}" STREQUAL "DebugLibStdcxx")
+if(CMAKE_BUILD_TYPE STREQUAL "DebugLibStdcxx")
   list(APPEND b2Args define=_GLIBCXX_DEBUG)
 endif()
 
@@ -207,29 +206,37 @@ if(MSVC)
     list(APPEND b2Args toolset=msvc-11.0)
   elseif(MSVC12)
     list(APPEND b2Args toolset=msvc-12.0)
+  elseif(MSVC14)
+    list(APPEND b2Args toolset=msvc-14.0)
   endif()
   list(APPEND b2Args
               define=_BIND_TO_CURRENT_MFC_VERSION=1
               define=_BIND_TO_CURRENT_CRT_VERSION=1
               --layout=versioned
               )
-  if(${TargetArchitecture} STREQUAL "x86_64")
+  if(TargetArchitecture STREQUAL "x86_64")
     list(APPEND b2Args address-model=64)
   endif()
 elseif(APPLE)
   list(APPEND b2Args variant=release toolset=clang cxxflags=-fPIC cxxflags=-std=c++11 cxxflags=-stdlib=libc++
                      linkflags=-stdlib=libc++ architecture=combined address-model=32_64 --layout=tagged)
 elseif(UNIX)
-  list(APPEND b2Args variant=release cxxflags=-fPIC cxxflags=-std=c++11 -sNO_BZIP2=1 --layout=tagged)
-  # Need to configure the toolset based on whatever version CMAKE_CXX_COMPILER is
-  string(REGEX MATCH "[0-9]+\\.[0-9]+" ToolsetVer "${CMAKE_CXX_COMPILER_VERSION}")
-  if(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-    list(APPEND b2Args toolset=clang-${ToolsetVer})
-    if(HAVE_LIBC++)
-      list(APPEND b2Args cxxflags=-stdlib=libc++ linkflags=-stdlib=libc++)
+  list(APPEND b2Args --layout=tagged -sNO_BZIP2=1)
+  if(ANDROID_BUILD)
+    configure_file("${CMAKE_SOURCE_DIR}/tools/android/user-config.jam.in" "${BoostSourceDir}/tools/build/src/user-config.jam")
+    list(APPEND b2Args toolset=gcc-android target-os=linux)
+  else()
+    list(APPEND b2Args variant=release cxxflags=-fPIC cxxflags=-std=c++11)
+    # Need to configure the toolset based on whatever version CMAKE_CXX_COMPILER is
+    string(REGEX MATCH "[0-9]+\\.[0-9]+" ToolsetVer "${CMAKE_CXX_COMPILER_VERSION}")
+    if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
+      list(APPEND b2Args toolset=clang-${ToolsetVer})
+      if(HAVE_LIBC++)
+        list(APPEND b2Args cxxflags=-stdlib=libc++ linkflags=-stdlib=libc++)
+      endif()
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+      list(APPEND b2Args toolset=gcc-${ToolsetVer})
     endif()
-  elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    list(APPEND b2Args toolset=gcc-${ToolsetVer})
   endif()
 endif()
 
@@ -254,30 +261,37 @@ foreach(Component ${BoostComponents})
       )
   ms_underscores_to_camel_case(${Component} CamelCaseComponent)
   add_library(Boost${CamelCaseComponent} STATIC IMPORTED GLOBAL)
+  if(Component STREQUAL "test")
+    set(ComponentLibName unit_test_framework)
+  else()
+    set(ComponentLibName ${Component})
+  endif()
   if(MSVC)
     if(MSVC11)
       set(CompilerName vc110)
     elseif(MSVC12)
       set(CompilerName vc120)
+    elseif(MSVC14)
+      set(CompilerName vc140)
     endif()
     string(REGEX MATCH "[0-9]_[0-9][0-9]" Version "${BoostFolderName}")
     set_target_properties(Boost${CamelCaseComponent} PROPERTIES
-                          IMPORTED_LOCATION_DEBUG ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-gd-${Version}.lib
-                          IMPORTED_LOCATION_MINSIZEREL ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
-                          IMPORTED_LOCATION_RELEASE ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
-                          IMPORTED_LOCATION_RELWITHDEBINFO ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
-                          IMPORTED_LOCATION_RELEASENOINLINE ${BoostSourceDir}/stage/lib/libboost_${Component}-${CompilerName}-mt-${Version}.lib
+                          IMPORTED_LOCATION_DEBUG ${BoostSourceDir}/stage/lib/libboost_${ComponentLibName}-${CompilerName}-mt-gd-${Version}.lib
+                          IMPORTED_LOCATION_MINSIZEREL ${BoostSourceDir}/stage/lib/libboost_${ComponentLibName}-${CompilerName}-mt-${Version}.lib
+                          IMPORTED_LOCATION_RELEASE ${BoostSourceDir}/stage/lib/libboost_${ComponentLibName}-${CompilerName}-mt-${Version}.lib
+                          IMPORTED_LOCATION_RELWITHDEBINFO ${BoostSourceDir}/stage/lib/libboost_${ComponentLibName}-${CompilerName}-mt-${Version}.lib
+                          IMPORTED_LOCATION_RELEASENOINLINE ${BoostSourceDir}/stage/lib/libboost_${ComponentLibName}-${CompilerName}-mt-${Version}.lib
                           LINKER_LANGUAGE CXX)
   else()
     set_target_properties(Boost${CamelCaseComponent} PROPERTIES
-                          IMPORTED_LOCATION ${BoostSourceDir}/stage/lib/libboost_${Component}-mt.a
+                          IMPORTED_LOCATION ${BoostSourceDir}/stage/lib/libboost_${ComponentLibName}-mt.a
                           LINKER_LANGUAGE CXX)
   endif()
   set_target_properties(boost_${Component} Boost${CamelCaseComponent} PROPERTIES
                         LABELS Boost FOLDER "Third Party/Boost" EXCLUDE_FROM_ALL TRUE)
   add_dependencies(Boost${CamelCaseComponent} boost_${Component})
   set(Boost${CamelCaseComponent}Libs Boost${CamelCaseComponent})
-  if("${Component}" STREQUAL "locale")
+  if(Component STREQUAL "locale")
     if(APPLE)
       find_library(IconvLib iconv)
       if(NOT IconvLib)
@@ -293,7 +307,7 @@ foreach(Component ${BoostComponents})
           message(FATAL_ERROR "${Msg}")
         endif()
         set(Boost${CamelCaseComponent}Libs Boost${CamelCaseComponent} ${IconvLib})
-      else()
+      elseif(NOT ANDROID_BUILD)
         find_library(Icui18nLib libicui18n.a)
         find_library(IcuucLib libicuuc.a)
         find_library(IcudataLib libicudata.a)
@@ -324,21 +338,22 @@ add_dependencies(boost_wave boost_chrono boost_date_time boost_filesystem boost_
 
 
 
-# Set up download step for the currently-unofficial Boost.Process
+# Set up external project for the currently-unofficial Boost.Process and Boost.Expected
 ExternalProject_Add(
     boost_process
     PREFIX ${CMAKE_BINARY_DIR}/boost_process
     DOWNLOAD_COMMAND ""
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
-    BUILD_IN_SOURCE ON
     INSTALL_COMMAND ""
-    LOG_DOWNLOAD ON
-    LOG_UPDATE ON
-    LOG_CONFIGURE ON
-    LOG_BUILD ON
-    LOG_TEST ON
-    LOG_INSTALL ON
+    )
+ExternalProject_Add(
+    boost_expected
+    PREFIX ${CMAKE_BINARY_DIR}/boost_expected
+    DOWNLOAD_COMMAND ""
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
     )
 
 # Copy the folders/files to the main boost source dir
@@ -346,29 +361,55 @@ ExternalProject_Add_Step(
     boost_process
     copy_boost_process_dir
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost_process/boost/process ${BoostSourceDir}/boost/process
-    COMMENT "Copying Boost.Process boost dir..."
+    COMMENT "Copying boost/process dir..."
     DEPENDERS configure
     )
 ExternalProject_Add_Step(
     boost_process
     copy_boost_process_hpp
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost_process/boost/process.hpp ${BoostSourceDir}/boost
-    COMMENT "Copying Boost.Process header..."
+    COMMENT "Copying boost/process.hpp..."
     DEPENDERS configure
     )
 ExternalProject_Add_Step(
     boost_process
     copy_libs_process_dir
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost_process/libs/process ${BoostSourceDir}/libs/process
-    COMMENT "Copying Boost.Process libs dir..."
+    COMMENT "Copying libs/process dir..."
     DEPENDERS configure
     )
+
+ExternalProject_Add_Step(
+    boost_expected
+    copy_boost_expected_dir
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost_expected/boost/expected ${BoostSourceDir}/boost/expected
+    COMMENT "Copying boost/expected dir..."
+    DEPENDERS configure
+    )
+ExternalProject_Add_Step(
+    boost_expected
+    copy_boost_functional_dir
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/third_party_libs/boost_expected/boost/functional ${BoostSourceDir}/boost/functional
+    COMMENT "Copying boost/functional dir..."
+    DEPENDERS configure
+    )
+
 set_target_properties(boost_process PROPERTIES LABELS Boost FOLDER "Third Party/Boost")
+set_target_properties(boost_expected PROPERTIES LABELS Boost FOLDER "Third Party/Boost")
 add_dependencies(boost_process boost_system)
 
 
 #==================================================================================================#
 # Package                                                                                          #
 #==================================================================================================#
-install(DIRECTORY ${BoostSourceDir}/stage/lib DESTINATION .)
-install(DIRECTORY ${BoostSourceDir}/boost DESTINATION include/maidsafe/third_party_libs)
+if(MSVC)
+  foreach(BoostLib BoostChrono BoostDateTime BoostFilesystem BoostLocale BoostProgramOptions BoostRegex BoostSystem BoostThread)
+    get_target_property(Location ${BoostLib} IMPORTED_LOCATION_DEBUG)
+    install(FILES ${Location} COMPONENT Development CONFIGURATIONS Debug DESTINATION lib)
+    get_target_property(Location ${BoostLib} IMPORTED_LOCATION_RELEASE)
+    install(FILES ${Location} COMPONENT Development CONFIGURATIONS Release DESTINATION lib)
+  endforeach()
+else()
+  install(DIRECTORY ${BoostSourceDir}/stage/lib/ COMPONENT Development CONFIGURATIONS Debug Release DESTINATION lib)
+endif()
+install(DIRECTORY ${BoostSourceDir}/boost COMPONENT Development DESTINATION include/maidsafe/third_party_libs)

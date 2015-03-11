@@ -43,14 +43,14 @@ namespace compiler {
 namespace cpp {
 
 ServiceGenerator::ServiceGenerator(const ServiceDescriptor* descriptor,
-                                   const string& dllexport_decl)
+                                   const Options& options)
   : descriptor_(descriptor) {
   vars_["classname"] = descriptor_->name();
   vars_["full_name"] = descriptor_->full_name();
-  if (dllexport_decl.empty()) {
+  if (options.dllexport_decl.empty()) {
     vars_["dllexport"] = "";
   } else {
-    vars_["dllexport"] = dllexport_decl + " ";
+    vars_["dllexport"] = options.dllexport_decl + " ";
   }
 }
 
@@ -301,7 +301,7 @@ void ServiceGenerator::GenerateGetPrototype(RequestOrResponse which,
   printer->Print(vars_,
     "    default:\n"
     "      GOOGLE_LOG(FATAL) << \"Bad method index; this should never happen.\";\n"
-    "      return *reinterpret_cast< ::google::protobuf::Message*>(NULL);\n"
+    "      return *static_cast< ::google::protobuf::Message*>(NULL);\n"
     "  }\n"
     "}\n"
     "\n");

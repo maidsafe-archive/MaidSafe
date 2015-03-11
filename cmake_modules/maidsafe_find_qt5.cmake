@@ -25,6 +25,8 @@
 #  Variables required by this module are:                                                          #
 #    Qt5RequiredLibs - List of Qt5 Libs needed.                                                    #
 #      example: set(Qt5RequiredLibs Qt5Core Qt5Gui Qt5Widgets)                                     #
+#    Qt5RequiredVersion - Version of Qt5 needed.                                                   #
+#      example: set(Qt5RequiredVersion 5.3.2)                                                      #
 #                                                                                                  #
 #  Variables set by this module are:                                                               #
 #    Qt5TargetLibs - Formatted Qt5 Target Link libs                                                #
@@ -36,11 +38,13 @@
 #==================================================================================================#
 
 # Required Qt version
-set(Qt5RequiredVersion 5.2.0)
+if(NOT Qt5RequiredVersion)
+  set(Qt5RequiredVersion 5.2.0)
+endif()
 
 # Check for valid input variables
 list(LENGTH Qt5RequiredLibs Qt5RequiredLibsLength)
-if(Qt5RequiredLibsLength EQUAL 0)
+if(Qt5RequiredLibsLength EQUAL "0")
   set(ErrorMessage "${ErrorMessage}Qt5RequiredLibs is currently empty.")
   set(ErrorMessage "${ErrorMessage}\nThis variable needs to be set for this module")
   set(ErrorMessage "${ErrorMessage}\nPlease check maidsafe_find_qt5.cmake for example specification.\n\n")
@@ -52,6 +56,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
+
+# Fix for apple gl.h path
+if(APPLE AND ${CMAKE_SYSTEM_VERSION} STREQUAL "14.0.0")
+  set(_qt5gui_OPENGL_INCLUDE_DIR "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers")
+endif()
 
 # Find the Qt libraries
 if(QT_BIN_DIR)
@@ -66,7 +75,7 @@ foreach(QtLib ${Qt5RequiredLibs})
   find_package(${QtLib} ${Qt5RequiredVersion} QUIET)
   if(${QtLib}_FOUND)
     set(ErrorMessage "${ErrorMessage}  Found ${QtLib}\n")
-    if(NOT ${QtLib} STREQUAL "Qt5LinguistTools")
+    if(NOT QtLib STREQUAL "Qt5LinguistTools")
       string(REPLACE "Qt5" "Qt5::" QtLib ${QtLib})
       list(APPEND Qt5TargetLibs "${QtLib}")
     endif()
@@ -137,7 +146,7 @@ if(MSVC)
     foreach(QtDll ${${QtDlls}})
       get_filename_component(DirPath "${QtDll}" PATH)
       get_filename_component(DirName "${DirPath}" NAME)
-      if(${DirName} STREQUAL "platforms")
+      if(DirName STREQUAL "platforms")
         set(OutputPath "${CMAKE_BINARY_DIR}/${BuildType}")
       else()
         set(OutputPath "${CMAKE_BINARY_DIR}/${BuildType}/plugins")
@@ -157,12 +166,12 @@ if(MSVC)
       set(OutputPath "${CMAKE_BINARY_DIR}/${BuildType}/qml")
       string(REPLACE "${QtQmlPath}" "${OutputPath}" DestPath ${QmlFile})
       get_filename_component(DestPath "${DestPath}" PATH)
-      if(${BuildType} STREQUAL "Debug")
-        if(NOT ${QmlFile} MATCHES "[^d].dll$")
+      if(BuildType STREQUAL "Debug")
+        if(NOT QmlFile MATCHES "[^d].dll$")
           file(COPY ${QmlFile} DESTINATION ${DestPath})
         endif()
       else()
-        if(NOT ${QmlFile} MATCHES "d.dll$")
+        if(NOT QmlFile MATCHES "d.dll$")
           file(COPY ${QmlFile} DESTINATION ${DestPath})
         endif()
       endif()
