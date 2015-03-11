@@ -90,7 +90,7 @@ set(MaidsafeGeneratedSourcesDir ${CMAKE_BINARY_DIR}/GeneratedSources)
 set(SubModules
       common
       passport
-      cruxs
+      crux
       routing
       #encrypt
       #nfs
