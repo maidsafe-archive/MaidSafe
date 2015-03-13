@@ -37,7 +37,7 @@ set(CTEST_PROJECT_SUBPROJECTS
     Encrypt
     #Drive
     Vault
-    #VaultManager
+    VaultManager
     #Api
     #Launcher
     )

@@ -95,7 +95,7 @@ set(SubModules
       encrypt
       #nfs
       vault)
-      #vault_manager
+      vault_manager
       #drive
       #api
       #launcher)
