@@ -34,10 +34,10 @@ set(CTEST_PROJECT_SUBPROJECTS
     Crux
     Routing
     #Nfs
-    #Encrypt
+    Encrypt
     #Drive
     Vault
-    #VaultManager
+    VaultManager
     #Api
     #Launcher
     )

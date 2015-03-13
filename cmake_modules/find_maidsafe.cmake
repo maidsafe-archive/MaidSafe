@@ -35,7 +35,6 @@ set(MaidSafeLibs
     maidsafe_nfs_vault
     maidsafe_nfs_core
     maidsafe_encrypt
-    maidsafe_network_viewer
     maidsafe_routing
     maidsafe_crux
     maidsafe_passport
