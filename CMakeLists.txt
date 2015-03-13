@@ -95,10 +95,10 @@ set(SubModules
       encrypt
       #nfs
       vault
-      vault_manager)
+      vault_manager
       #drive
-      #api
-      #launcher)
+      api
+      launcher)
 # Set all submodules' source dir before calling add_subdirectory to avoid
 # having to run CMake twice in a clean build tree.
 foreach(SubModule ${SubModules})

@@ -38,6 +38,6 @@ set(CTEST_PROJECT_SUBPROJECTS
     #Drive
     Vault
     VaultManager
-    #Api
-    #Launcher
+    Api
+    Launcher
     )
