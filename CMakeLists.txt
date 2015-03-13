@@ -94,8 +94,8 @@ set(SubModules
       routing
       encrypt
       #nfs
-      vault)
-      vault_manager
+      vault
+      vault_manager)
       #drive
       #api
       #launcher)
