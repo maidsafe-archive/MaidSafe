@@ -33,11 +33,11 @@ set(CTEST_PROJECT_SUBPROJECTS
     Passport
     Crux
     Routing
-    Nfs
+    #Nfs
     Encrypt
-    Drive
+    #Drive
     Vault
     VaultManager
-    Api
-    Launcher
+    #Api
+    #Launcher
     )
