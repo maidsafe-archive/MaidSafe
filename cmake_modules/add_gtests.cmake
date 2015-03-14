@@ -164,13 +164,21 @@ function(get_gtest_typedef_types FileContents)
       message(AUTHOR_WARNING "Unexpected parsing failure of gtest aliases.")
       return()
     endif()
-    # We don't need to know the actual types, we ultimately only need a count.  Remove all commas except
-    # those separating the list of types (there could be some inside a type's template args, e.g.
-    # std::pair<int, int> should count as one variable, not two.)  Also remove whitespace.
-    string(REGEX REPLACE "<[^>]*>|[ \t\n]" "" Types "${Types}")
-    # Turn the comma-separated list into a CMake list
-    string(REGEX REPLACE "," ";" Types "${Types}")
-    set(${AliasName}Var ${Types} PARENT_SCOPE)
+    # We don't need to know the actual types, we ultimately only need a count.  Iterate through the
+    # string counting commas which are outside angle brackets.
+    set(AngleBracketDepth 0)
+    set(TypePlaceholders T)
+    string(REGEX REPLACE "(.)" "\\1;" Types "${Types}")
+    foreach(Char ${Types})
+      if(Char STREQUAL "," AND AngleBracketDepth EQUAL 0)
+        list(APPEND TypePlaceholders T)
+      elseif(Char STREQUAL "<")
+        math(EXPR AngleBracketDepth ${AngleBracketDepth}+1)
+      elseif(Char STREQUAL ">")
+        math(EXPR AngleBracketDepth ${AngleBracketDepth}-1)
+      endif()
+    endforeach()
+    set(${AliasName}Var ${TypePlaceholders} PARENT_SCOPE)
   endforeach()
 endfunction()
 
