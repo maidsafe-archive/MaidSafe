@@ -28,6 +28,7 @@
 ms_check_compiler()
 ms_underscores_to_camel_case(${PROJECT_NAME} CamelCaseProjectName)
 
+
 if(NOT PROJECT_NAME STREQUAL "Cryptopp" AND
    NOT PROJECT_NAME STREQUAL "sqlite" AND
    NOT PROJECT_NAME STREQUAL "launcher_ui")
@@ -37,24 +38,28 @@ if(NOT PROJECT_NAME STREQUAL "Cryptopp" AND
   message("${HR}\n${Msg}\n${Underscore}")
 endif()
 
+
 set(CMAKE_MODULE_PATH ${maidsafe_SOURCE_DIR}/cmake_modules)
 
 
 if(INCLUDE_TESTS)
   set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: All.  ")
   if(NOT MAIDSAFE_TEST_TYPE)
-    set(MAIDSAFE_TEST_TYPE "ALL" CACHE string "Choose the type of TEST, options are: ALL, BEH, FUNC" FORCE)
+    set(MAIDSAFE_TEST_TYPE "ALL" CACHE string "Choose the type of TEST, options are: ALL, BEH, FUNC, UNIT, NETWORK" FORCE)
+  elseif(MAIDSAFE_TEST_TYPE STREQUAL "BEH")
+    set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Behavioural.  ")
+  elseif(MAIDSAFE_TEST_TYPE STREQUAL "FUNC")
+    set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Functional.  ")
+  elseif(MAIDSAFE_TEST_TYPE STREQUAL "NETWORK")
+    set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Network.  ")
+  elseif(MAIDSAFE_TEST_TYPE STREQUAL "UNIT")
+    set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Behavioural and Functional.  ")
   else()
-    if(MAIDSAFE_TEST_TYPE MATCHES "BEH")
-      set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Behavioural.  ")
-    elseif(MAIDSAFE_TEST_TYPE MATCHES "FUNC")
-      set(MAIDSAFE_TEST_TYPE_MESSAGE "GTests included: Functional.  ")
-    else()
-      set(MAIDSAFE_TEST_TYPE "ALL" CACHE string "Choose the type of TEST, options are: ALL BEH FUNC" FORCE)
-    endif()
+    set(MAIDSAFE_TEST_TYPE "ALL" CACHE string "Choose the type of TEST, options are: ALL, BEH, FUNC, UNIT, NETWORK" FORCE)
   endif()
   enable_testing()
 endif()
+
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 

@@ -36,16 +36,24 @@
 #  There is basic support for TEST(...), TEST_F(...), TEST_P(...), TYPED_TEST(...) and             #
 #  TYPED_TEST_P(...).                                                                              #
 #                                                                                                  #
-#  All test names should be of the form "BEH_..." or "FUNC_..." (with an optional "DISABLED_"      #
-#  prepended.  Tests named BEH_ will be treated as behavioural tests and will have a CTest         #
-#  timeout of 'BehaviouralTestTimeout' which can be set before invoking this module, or will       #
-#  default to 60s.  Tests named FUNC_ will be treated as functional tests and will have a CTest    #
-#  timeout of 'FunctionalTestTimeout' which can also be set externally, or will default to 600s.   #
+#  All test names should be of the form "BEH_...", "FUNC_..." or "NETWORK_" (with an optional      #
+#  "DISABLED_" prepended.  Tests named BEH_ will be treated as behavioural tests and will have a   #
+#  CTest timeout of 'BehaviouralTestTimeout' which can be set before invoking this module, or      #
+#  will default to 60s.  Tests named FUNC_ will be treated as functional tests and will have a     #
+#  CTest timeout of 'FunctionalTestTimeout' which can also be set externally, or will default to   #
+#  600s.  Tests named NETWORK_ will be treated similarly to those named FUNC_.                     #
 #                                                                                                  #
 #  If 'GlobalTestTimeoutFactor' is defined, all timeouts are multiplied by this value.             #
 #                                                                                                  #
-#  The variable 'MAIDSAFE_TEST_TYPE' can be set to control which test types will be added; BEH     #
-#  for behavioural, FUNC for functional, and anything else for all types.                          #
+#  The variable 'MAIDSAFE_TEST_TYPE' can be set to one of the following values to control which    #
+#  test types will be added;                                                                       #
+#    * BEH      behavioural tests only (tests named "BEH_...")                                     #
+#    * FUNC     functional tests only (tests named "FUNC_...")                                     #
+#    * NETWORK  network tests only (tests named "NETWORK_...")                                     #
+#    * UNIT     behavioural and functional tests only                                              #
+#    * ALL      all tests                                                                          #
+#  If 'MAIDSAFE_TEST_TYPE' is unset, or is set to any value other than the above, it is force set  #
+#  to "ALL".                                                                                       #
 #                                                                                                  #
 #  If the test executables have postfixes included in their names, the variable 'TestPostfix'      #
 #  should be set appropriately.                                                                    #
@@ -395,7 +403,9 @@ endmacro()
 # This adds the test (after checking it is of appropriate type and not explicitly excluded)
 # and sets label and timeout properties.
 function(add_maidsafe_test GtestFixtureName GtestName FullGtestName)
-  if((GtestName MATCHES "${MAIDSAFE_TEST_TYPE}.+") OR (MAIDSAFE_TEST_TYPE MATCHES "ALL"))
+  if(MAIDSAFE_TEST_TYPE STREQUAL "ALL" OR
+     (MAIDSAFE_TEST_TYPE STREQUAL "UNIT" AND GtestName MATCHES "^(DISABLED_)?(BEH_|FUNC_)+") OR
+     (MAIDSAFE_TEST_TYPE STREQUAL "NETWORK" AND GtestName MATCHES "^(DISABLED_)?NETWORK_"))
     add_disabled_test()
     if(NOT IsDisabledTest)
       if(RUNNING_AS_CTEST_SCRIPT)
@@ -409,28 +419,28 @@ function(add_maidsafe_test GtestFixtureName GtestName FullGtestName)
                    --gtest_catch_exceptions=${CATCH_EXCEPTIONS}
                    $<$<BOOL:${NetworkTestArg}>:--bootstrap_file> $<$<BOOL:${NetworkTestArg}>:${NetworkTestArg}>)
     endif()
+    if(MAIDSAFE_TEST_TYPE MATCHES "^ALL$|^UNIT$|^FUNC$" AND GtestName MATCHES "^(DISABLED_)?FUNC_")
+      set_property(TEST ${FullGtestName} PROPERTY LABELS ${CamelCaseProjectName} Functional ${NetworkTestLabel} ${TASK_LABEL})
+      ms_update_test_timeout(FunctionalTestTimeout)
+      set_property(TEST ${FullGtestName} PROPERTY TIMEOUT ${FunctionalTestTimeout})
+    elseif(MAIDSAFE_TEST_TYPE MATCHES "^ALL$|^UNIT$|^BEH$" AND GtestName MATCHES "^(DISABLED_)?BEH_")
+      set_property(TEST ${FullGtestName} PROPERTY LABELS ${CamelCaseProjectName} Behavioural ${NetworkTestLabel} ${TASK_LABEL})
+      ms_update_test_timeout(BehaviouralTestTimeout)
+      set_property(TEST ${FullGtestName} PROPERTY TIMEOUT ${BehaviouralTestTimeout})
+    elseif(MAIDSAFE_TEST_TYPE MATCHES "^ALL$|^NETWORK$" AND GtestName MATCHES "^(DISABLED_)?NETWORK_")
+      set_property(TEST ${FullGtestName} PROPERTY LABELS ${CamelCaseProjectName} Network ${NetworkTestLabel} ${TASK_LABEL})
+      ms_update_test_timeout(FunctionalTestTimeout)
+      set_property(TEST ${FullGtestName} PROPERTY TIMEOUT ${FunctionalTestTimeout})
+    elseif(NOT GtestName MATCHES "^//")
+      message("")
+      message("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+      message("")
+      message(AUTHOR_WARNING "${GtestName} should be named \"BEH_...\", \"FUNC_...\" or \"NETWORK_...\" (with an optional \"DISABLED_\" prepended).")
+      message("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    endif()
+    if(NOT CMAKE_VERSION VERSION_LESS "3.0")
+      set_property(TEST ${FullGtestName} PROPERTY SKIP_RETURN_CODE ${SkipReturnCodeValue})
+    endif()
+    set(AllGtests ${AllGtests} ${FullGtestName} PARENT_SCOPE)
   endif()
-  if(GtestName MATCHES "^FUNC_" OR GtestName MATCHES "^DISABLED_FUNC_")
-    set_property(TEST ${FullGtestName} PROPERTY LABELS ${CamelCaseProjectName} Functional ${NetworkTestLabel} ${TASK_LABEL})
-    ms_update_test_timeout(FunctionalTestTimeout)
-    set_property(TEST ${FullGtestName} PROPERTY TIMEOUT ${FunctionalTestTimeout})
-  elseif(GtestName MATCHES "^BEH_" OR GtestName MATCHES "^DISABLED_BEH_")
-    set_property(TEST ${FullGtestName} PROPERTY LABELS ${CamelCaseProjectName} Behavioural ${NetworkTestLabel} ${TASK_LABEL})
-    ms_update_test_timeout(BehaviouralTestTimeout)
-    set_property(TEST ${FullGtestName} PROPERTY TIMEOUT ${BehaviouralTestTimeout})
-#   elseif(GtestName MATCHES "^PRIV_" OR GtestName MATCHES "^DISABLED_PRIV_")
-#     set_property(TEST ${FullGtestName} PROPERTY LABELS ${CamelCaseProjectName} Private ${NetworkTestLabel} ${TASK_LABEL})
-#     ms_update_test_timeout(PrivateTestTimeout)
-#     set_property(TEST ${FullGtestName} PROPERTY TIMEOUT ${PrivateTestTimeout})
-  elseif(NOT GtestName MATCHES "^//")
-    message("")
-    message("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    message("")
-    message(AUTHOR_WARNING "${GtestName} should be named \"BEH_...\" or \"FUNC_...\" (with an optional \"DISABLED_\" prepended).")
-    message("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-  endif()
-  if(NOT CMAKE_VERSION VERSION_LESS "3.0")
-    set_property(TEST ${FullGtestName} PROPERTY SKIP_RETURN_CODE ${SkipReturnCodeValue})
-  endif()
-  set(AllGtests ${AllGtests} ${FullGtestName} PARENT_SCOPE)
 endfunction()
