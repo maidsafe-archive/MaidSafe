@@ -91,13 +91,12 @@ set(SubModules
       common
       passport
       crux
-      rudp
       routing
       encrypt
-      nfs
+      #nfs
       vault
       vault_manager
-      drive
+      #drive
       api
       launcher)
 # Set all submodules' source dir before calling add_subdirectory to avoid
@@ -166,7 +165,7 @@ elseif(DEFINED LOGGING)
 endif()
 option(VLOGGING "Whether to use Visualiser logging or not" OFF)
 option(USE_BOOST_CACHE "If ON, try to download, extract and build boost to a single cache directory for all MaidSafe clones" OFF)
-option(BOOST_DISABLE_ASSERTS "If ON, all BOOST_ASSERTs are disabled" ON)
+option(BOOST_DISABLE_ASSERTS "If ON, all BOOST_ASSERTs and BOOST_VERIFYs are disabled" OFF)
 option(USE_JUST_THREADS "If ON, try to find and use the just::thread library (Windows or gcc 4.7 only)" OFF)
 include(standard_flags)
 

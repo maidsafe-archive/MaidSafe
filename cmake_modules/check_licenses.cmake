@@ -68,10 +68,9 @@ endfunction()
 
 function(ms_check_licenses)
   string(REGEX MATCH "third_party_libs" ThirdPartyLib "${CMAKE_CURRENT_SOURCE_DIR}")
-  string(REGEX MATCH "routing/tools/network_viewer" NetworkViewer "${CMAKE_CURRENT_SOURCE_DIR}")
   string(REGEX MATCH "launcher/ui" LauncherUi "${CMAKE_CURRENT_SOURCE_DIR}")
   string(REGEX MATCH "crux" Crux "${CMAKE_CURRENT_SOURCE_DIR}")
-  if(ThirdPartyLib OR NetworkViewer OR LauncherUi OR Crux)
+  if(ThirdPartyLib OR LauncherUi OR Crux)
     return()
   endif()
 

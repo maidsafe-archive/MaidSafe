@@ -45,7 +45,6 @@ include(monolithic_lib)
 set(FarmerExeDepends vault vault_manager)
 set(DevLibDepends maidsafe)
 set(UtilitiesExeDepends test_common
-                        test_rudp
                         test_routing
                         test_routing_api
                         test_drive

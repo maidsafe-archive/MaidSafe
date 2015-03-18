@@ -147,22 +147,46 @@ macro(get_network_test_arg)
 endmacro()
 
 
-# Gets all type values from all "typedef testing::Types<type, type, ...> varname" statements.
-# For each varname, a variable named "varname_VAR" is set in parent_scope which contains all
-# the types specified in the template parameters.
+# Gets all type values from all "typedef testing::Types<type, type, ...> varname;" statements and
+# "using varname = testing::Types<type, type, ...>;" statements. For each varname, a variable named
+# "varname_VAR" is set in parent_scope which contains all the types specified in the template parameters.
 function(get_gtest_typedef_types FileContents)
-  string(REGEX MATCHALL "testing::Types[.\n]*[^;]*" Typedefs "${FileContents}")
-  if(NOT Typedefs)
+  # Get all instances of "using var = testing::Types<...>" or "typedef testing::Types<...>"
+  string(REGEX MATCHALL "(using[ \t\n]+([^ \t\n]+)[ \t\n]*=[ \t\n]*|typedef[ \t\n]+)(::)?testing::Types[^;]*" Aliases "${FileContents}")
+  if(NOT Aliases)
     return()
   endif()
-  foreach(Typedef ${Typedefs})
-    string(REGEX REPLACE "testing::Types<+" "" Typedef ${Typedef})
-    string(REGEX REPLACE "\n" "" Typedef ${Typedef})
-    string(REGEX MATCH ">.*" TypedefName ${Typedef})
-    string(REGEX REPLACE ${TypedefName} "" Typedef ${Typedef})
-    string(REGEX REPLACE ["\ >"] "" TypedefName ${TypedefName})
-    string(REGEX REPLACE ,["\ "]* ";" Typedef ${Typedef})
-    set(${TypedefName}Var ${Typedef} PARENT_SCOPE)
+  foreach(Alias ${Aliases})
+    # Fourth matched part will be the list of types.  The alias' name will be the second match for
+    # "using" syntax or the fifth for "typedef" syntax.
+    string(REGEX MATCH "(using[ \t\n]+([^ \t\n]+)[ \t\n]*=[ \t\n]*|typedef[ \t\n]+)(::)?testing::Types[ \t\n]*<(.*)>[ \t\n]*([^;]*)" UnusedVar "${Alias}")
+    set(UsingOrTypedef "${CMAKE_MATCH_1}")
+    set(NameIfUsing "${CMAKE_MATCH_2}")
+    set(NameIfTypedef "${CMAKE_MATCH_5}")
+    set(Types "${CMAKE_MATCH_4}")
+    if(UsingOrTypedef MATCHES "using")
+      set(AliasName "${NameIfUsing}")
+    elseif(UsingOrTypedef MATCHES "typedef")
+      set(AliasName "${NameIfTypedef}")
+    else()
+      message(AUTHOR_WARNING "Unexpected parsing failure of gtest aliases.")
+      return()
+    endif()
+    # We don't need to know the actual types, we ultimately only need a count.  Iterate through the
+    # string counting commas which are outside angle brackets.
+    set(AngleBracketDepth 0)
+    set(TypePlaceholders T)
+    string(REGEX REPLACE "(.)" "\\1;" Types "${Types}")
+    foreach(Char ${Types})
+      if(Char STREQUAL "," AND AngleBracketDepth EQUAL 0)
+        list(APPEND TypePlaceholders T)
+      elseif(Char STREQUAL "<")
+        math(EXPR AngleBracketDepth ${AngleBracketDepth}+1)
+      elseif(Char STREQUAL ">")
+        math(EXPR AngleBracketDepth ${AngleBracketDepth}-1)
+      endif()
+    endforeach()
+    set(${AliasName}Var ${TypePlaceholders} PARENT_SCOPE)
   endforeach()
 endfunction()
 
@@ -183,9 +207,9 @@ function(get_gtest_fixtures_types FileContents)
       string(REGEX REPLACE "[\n\ ]" "" TestType ${TestType})
       string(REGEX MATCH "[^,]+" GtestFixtureName ${TestType})
       string(REGEX REPLACE "${GtestFixtureName}," "" TestType ${TestType})
-      string(REGEX REPLACE "[\)]" "" TypedefName ${TestType})
+      string(REGEX REPLACE "[\)]" "" AliasName ${TestType})
       set(ParamaterCount 0)
-      foreach(TYPE ${${TypedefName}Var})
+      foreach(Type ${${AliasName}Var})
         set(${GtestFixtureName}Types ${${GtestFixtureName}Types} "${GtestFixtureName}/${ParamaterCount}.@@@@@")
         math(EXPR ParamaterCount ${ParamaterCount}+1)
       endforeach()
@@ -271,13 +295,13 @@ function(get_gtest_fixtures_type_parameters FileContents)
     string(REGEX MATCH "[^,]+" GtestFixtureName ${Instantiation})
     set(PartialTestName ${PartialTestName}/${GtestFixtureName})
     string(REGEX REPLACE "${GtestFixtureName}," "" Instantiation ${Instantiation})
-    string(REGEX REPLACE "[\)]" "" TypedefName ${Instantiation})
+    string(REGEX REPLACE "[\)]" "" AliasName ${Instantiation})
     # The 3rd parameter of INSTANTIATE_TYPED_TEST_CASE_P can be either a single type to be run, or a typedef
     # of a testing::Types with several types to be run.  If we can't find a parsed typedef to match we'll
     # assume it's a single type.
-    if(DEFINED ${TypedefName}Var)
+    if(DEFINED ${AliasName}Var)
       set(ParamaterCount 0)
-      foreach(TYPE ${${TypedefName}Var})
+      foreach(Type ${${AliasName}Var})
         set(${GtestFixtureName}TypeParameters ${${GtestFixtureName}TypeParameters} ${PartialTestName}/${ParamaterCount}.@@@@@)
         math(EXPR ParamaterCount ${ParamaterCount}+1)
       endforeach()

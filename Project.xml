@@ -10,28 +10,21 @@
   <SubProject name="CRUX">
     <Dependency name="Common"/>
   </SubProject>
-  <SubProject name="Rudp">
-    <Dependency name="Common"/>
-    <Dependency name="Passport"/>
-  </SubProject>
   <SubProject name="Routing">
     <Dependency name="Common"/>
     <Dependency name="Passport"/>
     <Dependency name="CRUX"/>
-    <Dependency name="Rudp"/>
   </SubProject>
   <SubProject name="Nfs">
     <Dependency name="Common"/>
     <Dependency name="Passport"/>
     <Dependency name="CRUX"/>
-    <Dependency name="Rudp"/>
     <Dependency name="Routing"/>
   </SubProject>
   <SubProject name="Encrypt">
     <Dependency name="Common"/>
     <Dependency name="Passport"/>
     <Dependency name="CRUX"/>
-    <Dependency name="Rudp"/>
     <Dependency name="Routing"/>
     <Dependency name="Nfs"/>
   </SubProject>
@@ -39,7 +32,6 @@
     <Dependency name="Common"/>
     <Dependency name="Passport"/>
     <Dependency name="CRUX"/>
-    <Dependency name="Rudp"/>
     <Dependency name="Routing"/>
     <Dependency name="Nfs"/>
     <Dependency name="Encrypt"/>
@@ -48,7 +40,6 @@
     <Dependency name="Common"/>
     <Dependency name="Passport"/>
     <Dependency name="CRUX"/>
-    <Dependency name="Rudp"/>
     <Dependency name="Routing"/>
     <Dependency name="Nfs"/>
   </SubProject>
@@ -56,7 +47,6 @@
     <Dependency name="Common"/>
     <Dependency name="Passport"/>
     <Dependency name="CRUX"/>
-    <Dependency name="Rudp"/>
     <Dependency name="Routing"/>
     <Dependency name="Nfs"/>
     <Dependency name="Vault"/>
@@ -65,7 +55,6 @@
     <Dependency name="Common"/>
     <Dependency name="Passport"/>
     <Dependency name="CRUX"/>
-    <Dependency name="Rudp"/>
     <Dependency name="Routing"/>
     <Dependency name="Nfs"/>
     <Dependency name="Encrypt"/>
@@ -75,7 +64,6 @@
     <Dependency name="Common"/>
     <Dependency name="Passport"/>
     <Dependency name="CRUX"/>
-    <Dependency name="Rudp"/>
     <Dependency name="Routing"/>
     <Dependency name="Nfs"/>
     <Dependency name="Encrypt"/>
