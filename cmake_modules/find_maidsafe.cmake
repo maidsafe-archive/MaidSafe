@@ -48,7 +48,6 @@ set(MaidSafeLibs
     boost_system
     boost_thread
     cryptopp
-    protobuf
     )
 
 set(FoundMaidSafeIncludes TRUE)
