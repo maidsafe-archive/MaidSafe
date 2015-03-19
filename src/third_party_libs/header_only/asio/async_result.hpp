@@ -2,7 +2,7 @@
 // async_result.hpp
 // ~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -66,7 +66,7 @@ struct async_completion
    */
 #if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
   explicit async_completion(
-      typename remove_reference<Handler>::type& orig_handler)
+      Handler& orig_handler)
     : handler(static_cast<typename conditional<
         is_same<Handler, handler_type>::value,
         handler_type&, Handler&&>::type>(orig_handler)),

@@ -2,7 +2,7 @@
 // detail/win_object_handle_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2011 Boris Schaeling (boris@highscore.de)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -137,7 +137,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(handler);
 
-    ASIO_HANDLER_CREATION((p.p, "object_handle", &impl, "async_wait"));
+    ASIO_HANDLER_CREATION((io_service_.context(), *p.p, "object_handle",
+          &impl, reinterpret_cast<uintmax_t>(impl.wait_handle_), "async_wait"));
 
     start_wait_op(impl, p.p);
     p.v = p.p = 0;

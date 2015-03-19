@@ -2,7 +2,7 @@
 // detail/descriptor_write_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -51,8 +51,13 @@ public:
     buffer_sequence_adapter<asio::const_buffer,
         ConstBufferSequence> bufs(o->buffers_);
 
-    return descriptor_ops::non_blocking_write(o->descriptor_,
+    bool result = descriptor_ops::non_blocking_write(o->descriptor_,
         bufs.buffers(), bufs.count(), o->ec_, o->bytes_transferred_);
+
+    ASIO_HANDLER_REACTOR_OPERATION((*o, "non_blocking_write",
+          o->ec_, o->bytes_transferred_));
+
+    return result;
   }
 
 private:
@@ -85,7 +90,7 @@ public:
     ptr p = { asio::detail::addressof(o->handler_), o, o };
     handler_work<Handler> w(o->handler_);
 
-    ASIO_HANDLER_COMPLETION((o));
+    ASIO_HANDLER_COMPLETION((*o));
 
     // Make a copy of the handler so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a

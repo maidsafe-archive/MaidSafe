@@ -2,7 +2,7 @@
 // detail/reactive_socket_service_base.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -210,7 +210,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(handler);
 
-    ASIO_HANDLER_CREATION((p.p, "socket", &impl, "async_wait"));
+    ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "socket",
+          &impl, impl.socket_, "async_wait"));
 
     int op_type;
     switch (w)
@@ -274,7 +275,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.socket_, buffers, flags, handler);
 
-    ASIO_HANDLER_CREATION((p.p, "socket", &impl, "async_send"));
+    ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "socket",
+          &impl, impl.socket_, "async_send"));
 
     start_op(impl, reactor::write_op, p.p, is_continuation, true,
         ((impl.state_ & socket_ops::stream_oriented)
@@ -297,8 +299,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(handler);
 
-    ASIO_HANDLER_CREATION((p.p, "socket",
-          &impl, "async_send(null_buffers)"));
+    ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "socket",
+          &impl, impl.socket_, "async_send(null_buffers)"));
 
     start_op(impl, reactor::write_op, p.p, is_continuation, false, false);
     p.v = p.p = 0;
@@ -343,7 +345,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.socket_, impl.state_, buffers, flags, handler);
 
-    ASIO_HANDLER_CREATION((p.p, "socket", &impl, "async_receive"));
+    ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "socket",
+          &impl, impl.socket_, "async_receive"));
 
     start_op(impl,
         (flags & socket_base::message_out_of_band)
@@ -370,8 +373,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(handler);
 
-    ASIO_HANDLER_CREATION((p.p, "socket",
-          &impl, "async_receive(null_buffers)"));
+    ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "socket",
+          &impl, impl.socket_, "async_receive(null_buffers)"));
 
     start_op(impl,
         (flags & socket_base::message_out_of_band)
@@ -426,8 +429,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.socket_, buffers, in_flags, out_flags, handler);
 
-    ASIO_HANDLER_CREATION((p.p, "socket",
-          &impl, "async_receive_with_flags"));
+    ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "socket",
+          &impl, impl.socket_, "async_receive_with_flags"));
 
     start_op(impl,
         (in_flags & socket_base::message_out_of_band)
@@ -452,8 +455,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(handler);
 
-    ASIO_HANDLER_CREATION((p.p, "socket", &impl,
-          "async_receive_with_flags(null_buffers)"));
+    ASIO_HANDLER_CREATION((reactor_.context(), *p.p, "socket",
+          &impl, impl.socket_, "async_receive_with_flags(null_buffers)"));
 
     // Clear out_flags, since we cannot give it any other sensible value when
     // performing a null_buffers operation.
@@ -489,6 +492,9 @@ protected:
   ASIO_DECL void start_connect_op(base_implementation_type& impl,
       reactor_op* op, bool is_continuation,
       const socket_addr_type* addr, size_t addrlen);
+
+  // The io_service that owns this socket service.
+  io_service& io_service_;
 
   // The selector that performs event demultiplexing for the service.
   reactor& reactor_;

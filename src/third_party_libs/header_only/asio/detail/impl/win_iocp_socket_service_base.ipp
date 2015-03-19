@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_socket_service_base.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -166,7 +166,8 @@ asio::error_code win_iocp_socket_service_base::close(
 {
   if (is_open(impl))
   {
-    ASIO_HANDLER_OPERATION(("socket", &impl, "close"));
+    ASIO_HANDLER_OPERATION((iocp_service_.context(),
+          "socket", &impl, impl.socket_, "close"));
 
     // Check if the reactor was created, in which case we need to close the
     // socket on the reactor as well to cancel any operations that might be
@@ -200,7 +201,8 @@ asio::error_code win_iocp_socket_service_base::cancel(
     return ec;
   }
 
-  ASIO_HANDLER_OPERATION(("socket", &impl, "cancel"));
+  ASIO_HANDLER_OPERATION((iocp_service_.context(),
+        "socket", &impl, impl.socket_, "cancel"));
 
   if (FARPROC cancel_io_ex_ptr = ::GetProcAddress(
         ::GetModuleHandleA("KERNEL32"), "CancelIoEx"))
@@ -618,7 +620,8 @@ void win_iocp_socket_service_base::close_for_destruction(
 {
   if (is_open(impl))
   {
-    ASIO_HANDLER_OPERATION(("socket", &impl, "close"));
+    ASIO_HANDLER_OPERATION((iocp_service_.context(),
+          "socket", &impl, impl.socket_, "close"));
 
     // Check if the reactor was created, in which case we need to close the
     // socket on the reactor as well to cancel any operations that might be
@@ -670,6 +673,11 @@ win_iocp_socket_service_base::connect_ex_fn
 win_iocp_socket_service_base::get_connect_ex(
     win_iocp_socket_service_base::base_implementation_type& impl, int type)
 {
+#if defined(ASIO_DISABLE_CONNECTEX)
+  (void)impl;
+  (void)type;
+  return 0;
+#else // defined(ASIO_DISABLE_CONNECTEX)
   if (type != ASIO_OS_DEF(SOCK_STREAM)
       && type != ASIO_OS_DEF(SOCK_SEQPACKET))
     return 0;
@@ -693,6 +701,7 @@ win_iocp_socket_service_base::get_connect_ex(
   }
 
   return reinterpret_cast<connect_ex_fn>(ptr == this ? 0 : ptr);
+#endif // defined(ASIO_DISABLE_CONNECTEX)
 }
 
 void* win_iocp_socket_service_base::interlocked_compare_exchange_pointer(

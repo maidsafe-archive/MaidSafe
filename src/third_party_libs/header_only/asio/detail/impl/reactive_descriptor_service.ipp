@@ -2,7 +2,7 @@
 // detail/impl/reactive_descriptor_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -83,7 +83,8 @@ void reactive_descriptor_service::destroy(
 {
   if (is_open(impl))
   {
-    ASIO_HANDLER_OPERATION(("descriptor", &impl, "close"));
+    ASIO_HANDLER_OPERATION((reactor_.context(),
+          "descriptor", &impl, impl.descriptor_, "close"));
 
     reactor_.deregister_descriptor(impl.descriptor_, impl.reactor_data_,
         (impl.state_ & descriptor_ops::possible_dup) == 0);
@@ -123,7 +124,8 @@ asio::error_code reactive_descriptor_service::close(
 {
   if (is_open(impl))
   {
-    ASIO_HANDLER_OPERATION(("descriptor", &impl, "close"));
+    ASIO_HANDLER_OPERATION((reactor_.context(),
+          "descriptor", &impl, impl.descriptor_, "close"));
 
     reactor_.deregister_descriptor(impl.descriptor_, impl.reactor_data_,
         (impl.state_ & descriptor_ops::possible_dup) == 0);
@@ -150,7 +152,8 @@ reactive_descriptor_service::release(
 
   if (is_open(impl))
   {
-    ASIO_HANDLER_OPERATION(("descriptor", &impl, "release"));
+    ASIO_HANDLER_OPERATION((reactor_.context(),
+          "descriptor", &impl, impl.descriptor_, "release"));
 
     reactor_.deregister_descriptor(impl.descriptor_, impl.reactor_data_, false);
     construct(impl);
@@ -169,7 +172,8 @@ asio::error_code reactive_descriptor_service::cancel(
     return ec;
   }
 
-  ASIO_HANDLER_OPERATION(("descriptor", &impl, "cancel"));
+  ASIO_HANDLER_OPERATION((reactor_.context(),
+        "descriptor", &impl, impl.descriptor_, "cancel"));
 
   reactor_.cancel_ops(impl.descriptor_, impl.reactor_data_);
   ec = asio::error_code();

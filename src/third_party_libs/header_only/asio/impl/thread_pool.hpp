@@ -2,7 +2,7 @@
 // impl/thread_pool.hpp
 // ~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -73,7 +73,8 @@ void thread_pool::executor_type::dispatch(
   p.v = p.a.allocate(1);
   p.p = new (p.v) op(tmp, allocator);
 
-  ASIO_HANDLER_CREATION((p.p, "thread_pool", this, "post"));
+  ASIO_HANDLER_CREATION((pool_, *p.p,
+        "thread_pool", this, 0, "dispatch"));
 
   pool_.scheduler_.post_immediate_completion(p.p, false);
   p.v = p.p = 0;
@@ -97,7 +98,8 @@ void thread_pool::executor_type::post(
   p.v = p.a.allocate(1);
   p.p = new (p.v) op(tmp, allocator);
 
-  ASIO_HANDLER_CREATION((p.p, "thread_pool", this, "post"));
+  ASIO_HANDLER_CREATION((pool_, *p.p,
+        "thread_pool", this, 0, "post"));
 
   pool_.scheduler_.post_immediate_completion(p.p, false);
   p.v = p.p = 0;
@@ -121,7 +123,8 @@ void thread_pool::executor_type::defer(
   p.v = p.a.allocate(1);
   p.p = new (p.v) op(tmp, allocator);
 
-  ASIO_HANDLER_CREATION((p.p, "thread_pool", this, "defer"));
+  ASIO_HANDLER_CREATION((pool_, *p.p,
+        "thread_pool", this, 0, "defer"));
 
   pool_.scheduler_.post_immediate_completion(p.p, true);
   p.v = p.p = 0;

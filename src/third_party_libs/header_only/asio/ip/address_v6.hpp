@@ -2,7 +2,7 @@
 // ip/address_v6.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -31,6 +31,8 @@
 
 namespace asio {
 namespace ip {
+
+template <typename> class basic_address_iterator;
 
 /// Implements IP version 6 style addresses.
 /**
@@ -218,6 +220,8 @@ public:
 #endif // !defined(ASIO_NO_DEPRECATED)
 
 private:
+  friend class basic_address_iterator<address_v6>;
+
   // The underlying IPv6 address.
   asio::detail::in6_addr_type addr_;
 
@@ -266,10 +270,16 @@ ASIO_DECL address_v6 make_address_v6(
 enum v4_mapped_t { v4_mapped };
 
 /// Create an IPv4 address from a IPv4-mapped IPv6 address.
+/**
+ * @relates address_v4
+ */
 ASIO_DECL address_v4 make_address_v4(
     v4_mapped_t, const address_v6& v6_addr);
 
 /// Create an IPv4-mapped IPv6 address from an IPv4 address.
+/**
+ * @relates address_v6
+ */
 ASIO_DECL address_v6 make_address_v6(
     v4_mapped_t, const address_v4& v4_addr);
 

@@ -2,7 +2,7 @@
 // detail/win_iocp_socket_service_base.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -227,7 +227,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.cancel_token_, handler);
 
-    ASIO_HANDLER_CREATION((p.p, "socket", &impl, "async_wait"));
+    ASIO_HANDLER_CREATION((io_service_, *p.p, "socket",
+          &impl, impl.socket_, "async_wait"));
 
     switch (w)
     {
@@ -285,7 +286,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.cancel_token_, buffers, handler);
 
-    ASIO_HANDLER_CREATION((p.p, "socket", &impl, "async_send"));
+    ASIO_HANDLER_CREATION((io_service_, *p.p, "socket",
+          &impl, impl.socket_, "async_send"));
 
     buffer_sequence_adapter<asio::const_buffer,
         ConstBufferSequence> bufs(buffers);
@@ -307,8 +309,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.cancel_token_, handler);
 
-    ASIO_HANDLER_CREATION((p.p, "socket",
-          &impl, "async_send(null_buffers)"));
+    ASIO_HANDLER_CREATION((io_service_, *p.p, "socket",
+          &impl, impl.socket_, "async_send(null_buffers)"));
 
     start_reactor_op(impl, select_reactor::write_op, p.p);
     p.v = p.p = 0;
@@ -350,7 +352,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.state_, impl.cancel_token_, buffers, handler);
 
-    ASIO_HANDLER_CREATION((p.p, "socket", &impl, "async_receive"));
+    ASIO_HANDLER_CREATION((io_service_, *p.p, "socket",
+          &impl, impl.socket_, "async_receive"));
 
     buffer_sequence_adapter<asio::mutable_buffer,
         MutableBufferSequence> bufs(buffers);
@@ -372,8 +375,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.cancel_token_, handler);
 
-    ASIO_HANDLER_CREATION((p.p, "socket",
-          &impl, "async_receive(null_buffers)"));
+    ASIO_HANDLER_CREATION((io_service_, *p.p, "socket",
+          &impl, impl.socket_, "async_receive(null_buffers)"));
 
     start_null_buffers_receive_op(impl, flags, p.p);
     p.v = p.p = 0;
@@ -422,8 +425,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.cancel_token_, buffers, out_flags, handler);
 
-    ASIO_HANDLER_CREATION((p.p, "socket",
-          &impl, "async_receive_with_flags"));
+    ASIO_HANDLER_CREATION((io_service_, *p.p, "socket",
+          &impl, impl.socket_, "async_receive_with_flags"));
 
     buffer_sequence_adapter<asio::mutable_buffer,
         MutableBufferSequence> bufs(buffers);
@@ -444,8 +447,8 @@ public:
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.cancel_token_, handler);
 
-    ASIO_HANDLER_CREATION((p.p, "socket", &impl,
-          "async_receive_with_flags(null_buffers)"));
+    ASIO_HANDLER_CREATION((io_service_, *p.p, "socket",
+          &impl, impl.socket_, "async_receive_with_flags(null_buffers)"));
 
     // Reset out_flags since it can be given no sensible value at this time.
     out_flags = 0;
