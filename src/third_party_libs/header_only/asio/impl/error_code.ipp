@@ -2,7 +2,7 @@
 // impl/error_code.ipp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -168,6 +168,8 @@ public:
       return std::errc::operation_not_permitted;
     case no_protocol_option:
       return std::errc::no_protocol_option;
+    case no_such_device:
+      return std::errc::no_such_device;
     case not_connected:
       return std::errc::not_connected;
     case not_socket:

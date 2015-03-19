@@ -2,7 +2,7 @@
 // use_future.hpp
 // ~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -56,9 +56,18 @@ public:
   {
   }
 
-  /// Specify an alternate allocator.
+#if !defined(ASIO_NO_DEPRECATED)
+  /// (Deprecated: Use rebind().) Specify an alternate allocator.
   template <typename OtherAllocator>
   use_future_t<OtherAllocator> operator[](const OtherAllocator& allocator) const
+  {
+    return use_future_t<OtherAllocator>(allocator);
+  }
+#endif // !defined(ASIO_NO_DEPRECATED)
+
+  /// Specify an alternate allocator.
+  template <typename OtherAllocator>
+  use_future_t<OtherAllocator> rebind(const OtherAllocator& allocator) const
   {
     return use_future_t<OtherAllocator>(allocator);
   }

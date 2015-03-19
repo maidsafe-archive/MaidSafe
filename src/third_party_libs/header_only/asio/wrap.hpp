@@ -2,7 +2,7 @@
 // wrap.hpp
 // ~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -419,7 +419,7 @@ public:
     return this->wrapped_(ASIO_MOVE_CAST(Args)(args)...);
   }
 
-#elif defined(ASIO_HAS_STD_TYPE_TRAITS)
+#elif defined(ASIO_HAS_STD_TYPE_TRAITS) && !defined(_MSC_VER)
 
   typename detail::executor_wrapper_result_of0<T>::type operator()()
   {
@@ -449,7 +449,7 @@ public:
   ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_WRAP_CALL_DEF)
 #undef ASIO_PRIVATE_WRAP_CALL_DEF
 
-#else // defined(ASIO_HAS_STD_TYPE_TRAITS)
+#else // defined(ASIO_HAS_STD_TYPE_TRAITS) && !defined(_MSC_VER)
 
   typedef typename detail::executor_wrapper_result_type<T>::result_type_or_void
     result_type_or_void;
@@ -482,7 +482,7 @@ public:
   ASIO_VARIADIC_GENERATE(ASIO_PRIVATE_WRAP_CALL_DEF)
 #undef ASIO_PRIVATE_WRAP_CALL_DEF
 
-#endif // defined(ASIO_HAS_STD_TYPE_TRAITS)
+#endif // defined(ASIO_HAS_STD_TYPE_TRAITS) && !defined(_MSC_VER)
 
 private:
   typedef detail::executor_wrapper_base<T, Executor,

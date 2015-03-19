@@ -2,7 +2,7 @@
 // impl/src.hpp
 // ~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -73,6 +73,8 @@
 #include "asio/ip/impl/address_v4.ipp"
 #include "asio/ip/impl/address_v6.ipp"
 #include "asio/ip/impl/host_name.ipp"
+#include "asio/ip/impl/network_v4.ipp"
+#include "asio/ip/impl/network_v6.ipp"
 #include "asio/ip/detail/impl/endpoint.ipp"
 #include "asio/local/detail/impl/endpoint.ipp"
 

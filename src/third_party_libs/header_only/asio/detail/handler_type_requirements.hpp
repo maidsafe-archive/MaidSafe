@@ -2,7 +2,7 @@
 // detail/handler_type_requirements.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -99,6 +99,16 @@ auto two_arg_handler_test(Handler h, Arg1* a1, Arg2* a2)
 
 template <typename Handler>
 char (&two_arg_handler_test(Handler, ...))[2];
+
+template <typename Handler, typename Arg1, typename Arg2>
+auto two_arg_move_handler_test(Handler h, Arg1* a1, Arg2* a2)
+  -> decltype(
+    sizeof(Handler(ASIO_MOVE_CAST(Handler)(h))),
+    ((h)(*a1, ASIO_MOVE_CAST(Arg2)(*a2))),
+    char(0));
+
+template <typename Handler>
+char (&two_arg_move_handler_test(Handler, ...))[2];
 
 #  define ASIO_HANDLER_TYPE_REQUIREMENTS_ASSERT(expr, msg) \
      static_assert(expr, msg);
@@ -226,6 +236,33 @@ struct handler_type_requirements
         asio::detail::lvref< \
           asio_true_handler_type>()( \
             asio::detail::lvref<const asio::error_code>()), \
+        char(0))> ASIO_UNUSED_TYPEDEF
+
+#define ASIO_MOVE_ACCEPT_HANDLER_CHECK( \
+    handler_type, handler, socket_type) \
+  \
+  typedef ASIO_HANDLER_TYPE(handler_type, \
+      void(asio::error_code, socket_type)) \
+    asio_true_handler_type; \
+  \
+  ASIO_HANDLER_TYPE_REQUIREMENTS_ASSERT( \
+      sizeof(asio::detail::two_arg_move_handler_test( \
+          asio::detail::rvref< \
+            asio_true_handler_type>(), \
+          static_cast<const asio::error_code*>(0), \
+          static_cast<socket_type*>(0))) == 1, \
+      "MoveAcceptHandler type requirements not met") \
+  \
+  typedef asio::detail::handler_type_requirements< \
+      sizeof( \
+        asio::detail::argbyv( \
+          asio::detail::rvref< \
+            asio_true_handler_type>())) + \
+      sizeof( \
+        asio::detail::lvref< \
+          asio_true_handler_type>()( \
+            asio::detail::lvref<const asio::error_code>(), \
+            asio::detail::rvref<socket_type>()), \
         char(0))> ASIO_UNUSED_TYPEDEF
 
 #define ASIO_CONNECT_HANDLER_CHECK( \

@@ -2,7 +2,7 @@
 // detail/impl/strand_executor_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -121,7 +121,8 @@ void strand_executor_service::dispatch(const implementation_type& impl,
   p.v = p.a.allocate(1);
   p.p = new (p.v) op(tmp, allocator);
 
-  ASIO_HANDLER_CREATION((p.p, "strand_executor", this, "dispatch"));
+  ASIO_HANDLER_CREATION((impl->service_->context(), *p.p,
+        "strand_executor", impl.get(), 0, "dispatch"));
 
   // Add the function to the strand and schedule the strand if required.
   bool first = enqueue(impl, p.p);
@@ -149,7 +150,8 @@ void strand_executor_service::post(const implementation_type& impl,
   p.v = p.a.allocate(1);
   p.p = new (p.v) op(tmp, allocator);
 
-  ASIO_HANDLER_CREATION((p.p, "strand_executor", this, "post"));
+  ASIO_HANDLER_CREATION((impl->service_->context(), *p.p,
+        "strand_executor", impl.get(), 0, "post"));
 
   // Add the function to the strand and schedule the strand if required.
   bool first = enqueue(impl, p.p);
@@ -177,7 +179,8 @@ void strand_executor_service::defer(const implementation_type& impl,
   p.v = p.a.allocate(1);
   p.p = new (p.v) op(tmp, allocator);
 
-  ASIO_HANDLER_CREATION((p.p, "strand_executor", this, "defer"));
+  ASIO_HANDLER_CREATION((impl->service_->context(), *p.p,
+        "strand_executor", impl.get(), 0, "defer"));
 
   // Add the function to the strand and schedule the strand if required.
   bool first = enqueue(impl, p.p);

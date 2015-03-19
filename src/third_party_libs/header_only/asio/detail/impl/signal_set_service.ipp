@@ -2,7 +2,7 @@
 // detail/impl/signal_set_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -437,7 +437,8 @@ asio::error_code signal_set_service::cancel(
     signal_set_service::implementation_type& impl,
     asio::error_code& ec)
 {
-  ASIO_HANDLER_OPERATION(("signal_set", &impl, "cancel"));
+  ASIO_HANDLER_OPERATION((io_service_.context(),
+        "signal_set", &impl, 0, "cancel"));
 
   op_queue<operation> ops;
   {

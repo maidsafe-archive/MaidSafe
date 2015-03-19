@@ -2,7 +2,7 @@
 // execution_context.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -212,7 +212,7 @@ public:
    * given service type. If there is no existing implementation of the service,
    * then the io_service will create a new instance of the service.
    *
-   * @param i The io_service object that owns the service.
+   * @param ios The io_service object that owns the service.
    *
    * @return The service interface implementing the specified service type.
    * Ownership of the service interface is not transferred to the caller.
@@ -221,7 +221,7 @@ public:
    * that inherit from io_service::service.
    */
   template <typename Service>
-  friend Service& use_service(io_service& i);
+  friend Service& use_service(io_service& ios);
 
 #if defined(GENERATING_DOCUMENTATION)
 

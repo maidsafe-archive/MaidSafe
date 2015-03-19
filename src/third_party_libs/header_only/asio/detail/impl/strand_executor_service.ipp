@@ -2,7 +2,7 @@
 // detail/impl/strand_executor_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -23,8 +23,8 @@
 namespace asio {
 namespace detail {
 
-strand_executor_service::strand_executor_service(execution_context& context)
-  : execution_context_service_base<strand_executor_service>(context),
+strand_executor_service::strand_executor_service(execution_context& ctx)
+  : execution_context_service_base<strand_executor_service>(ctx),
     mutex_(),
     salt_(0),
     impl_list_(0)

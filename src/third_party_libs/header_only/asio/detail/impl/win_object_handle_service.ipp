@@ -2,7 +2,7 @@
 // detail/impl/win_object_handle_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2011 Boris Schaeling (boris@highscore.de)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -177,7 +177,8 @@ void win_object_handle_service::destroy(
 
   if (is_open(impl))
   {
-    ASIO_HANDLER_OPERATION(("object_handle", &impl, "close"));
+    ASIO_HANDLER_OPERATION((io_service_.context(), "object_handle",
+          &impl, reinterpret_cast<uintmax_t>(impl.wait_handle_), "close"));
 
     HANDLE wait_handle = impl.wait_handle_;
     impl.wait_handle_ = INVALID_HANDLE_VALUE;
@@ -226,7 +227,8 @@ asio::error_code win_object_handle_service::close(
 {
   if (is_open(impl))
   {
-    ASIO_HANDLER_OPERATION(("object_handle", &impl, "close"));
+    ASIO_HANDLER_OPERATION((io_service_.context(), "object_handle",
+          &impl, reinterpret_cast<uintmax_t>(impl.wait_handle_), "close"));
 
     mutex::scoped_lock lock(mutex_);
 
@@ -277,7 +279,8 @@ asio::error_code win_object_handle_service::cancel(
 {
   if (is_open(impl))
   {
-    ASIO_HANDLER_OPERATION(("object_handle", &impl, "cancel"));
+    ASIO_HANDLER_OPERATION((io_service_.context(), "object_handle",
+          &impl, reinterpret_cast<uintmax_t>(impl.wait_handle_), "cancel"));
 
     mutex::scoped_lock lock(mutex_);
 

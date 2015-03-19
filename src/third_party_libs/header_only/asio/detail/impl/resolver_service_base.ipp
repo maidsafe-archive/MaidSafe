@@ -2,7 +2,7 @@
 // detail/impl/resolver_service_base.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -92,7 +92,8 @@ void resolver_service_base::construct(
 void resolver_service_base::destroy(
     resolver_service_base::implementation_type& impl)
 {
-  ASIO_HANDLER_OPERATION(("resolver", &impl, "cancel"));
+  ASIO_HANDLER_OPERATION((io_service_impl_.context(),
+        "resolver", &impl, 0, "cancel"));
 
   impl.reset();
 }
@@ -100,7 +101,8 @@ void resolver_service_base::destroy(
 void resolver_service_base::cancel(
     resolver_service_base::implementation_type& impl)
 {
-  ASIO_HANDLER_OPERATION(("resolver", &impl, "cancel"));
+  ASIO_HANDLER_OPERATION((io_service_impl_.context(),
+        "resolver", &impl, 0, "cancel"));
 
   impl.reset(static_cast<void*>(0), socket_ops::noop_deleter());
 }
