@@ -36,8 +36,6 @@ set(DevLibDepends maidsafe_common
                   #maidsafe_launcher
                   ${AllBoostLibs}
                   cryptopp
-                  protobuf_lite
-                  protobuf
                   sqlite)
 list(REMOVE_ITEM DevLibDepends BoostContext BoostPython BoostGraphParallel BoostMath BoostMpi BoostRegex BoostSerialization BoostTest)
 
