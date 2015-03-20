@@ -192,6 +192,7 @@ set(b2Args <SOURCE_DIR>/b2
            stage
            -d+2
            --hash
+           --ignore-site-config
            )
 if(CMAKE_BUILD_TYPE STREQUAL "ReleaseNoInline")
   list(APPEND b2Args "cxxflags=${RELEASENOINLINE_FLAGS}")
@@ -227,21 +228,22 @@ elseif(UNIX)
     list(APPEND b2Args toolset=gcc-android target-os=linux)
   else()
     list(APPEND b2Args variant=release cxxflags=-fPIC cxxflags=-std=c++11)
-    # Need to configure the toolset based on whatever version CMAKE_CXX_COMPILER is
-    string(REGEX MATCH "[0-9]+\\.[0-9]+" ToolsetVer "${CMAKE_CXX_COMPILER_VERSION}")
+    # Need to configure the toolset based on CMAKE_CXX_COMPILER
     if(CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
-      list(APPEND b2Args toolset=clang-${ToolsetVer})
+      file(WRITE "${BoostSourceDir}/tools/build/src/user-config.jam" "using clang : : ${CMAKE_CXX_COMPILER} ;\n")
+      list(APPEND b2Args toolset=clang)
       if(HAVE_LIBC++)
         list(APPEND b2Args cxxflags=-stdlib=libc++ linkflags=-stdlib=libc++)
       endif()
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-      list(APPEND b2Args toolset=gcc-${ToolsetVer})
+      file(WRITE "${BoostSourceDir}/tools/build/src/user-config.jam" "using gcc : : ${CMAKE_CXX_COMPILER} ;\n")
+      list(APPEND b2Args toolset=gcc)
     endif()
   endif()
 endif()
 
 # Get list of components
-execute_process(COMMAND ./b2 --show-libraries WORKING_DIRECTORY ${BoostSourceDir}
+execute_process(COMMAND ./b2 --show-libraries --ignore-site-config WORKING_DIRECTORY ${BoostSourceDir}
                 ERROR_QUIET OUTPUT_VARIABLE Output)
 string(REGEX REPLACE "(^[^:]+:|[- ])" "" BoostComponents "${Output}")
 string(REGEX REPLACE "\n" ";" BoostComponents "${BoostComponents}")
