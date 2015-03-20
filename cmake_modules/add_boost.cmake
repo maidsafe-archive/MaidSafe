@@ -192,6 +192,7 @@ set(b2Args <SOURCE_DIR>/b2
            stage
            -d+2
            --hash
+           --ignore-site-config
            )
 if(CMAKE_BUILD_TYPE STREQUAL "ReleaseNoInline")
   list(APPEND b2Args "cxxflags=${RELEASENOINLINE_FLAGS}")
@@ -242,7 +243,7 @@ elseif(UNIX)
 endif()
 
 # Get list of components
-execute_process(COMMAND ./b2 --show-libraries WORKING_DIRECTORY ${BoostSourceDir}
+execute_process(COMMAND ./b2 --show-libraries --ignore-site-config WORKING_DIRECTORY ${BoostSourceDir}
                 ERROR_QUIET OUTPUT_VARIABLE Output)
 string(REGEX REPLACE "(^[^:]+:|[- ])" "" BoostComponents "${Output}")
 string(REGEX REPLACE "\n" ";" BoostComponents "${BoostComponents}")
