@@ -1,3 +1,10 @@
+# ***This repository is no longer maintained***
+# It has been moved to the maidsafe-archive organisation for reference only
+#
+#
+#
+#
+
 For full details about the MaidSafe platform, see the [wiki] (https://github.com/maidsafe/MaidSafe/wiki).
 
 To get started quickly, jump straight to the [build instructions] (https://github.com/maidsafe/MaidSafe/wiki/Build-Instructions).
