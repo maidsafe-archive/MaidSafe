@@ -93,7 +93,7 @@ set(SubModules
       crux
       routing
       encrypt
-      #nfs
+      nfs
       vault
       vault_manager
       #drive
